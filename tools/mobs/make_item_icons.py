@@ -81,7 +81,43 @@ def glitch_shard():
     return img
 
 
+# Same masks as CosmeticModels.EarShape (M outer, A inner, F fur, D dark tip); greys are dyed in game.
+EARS = {
+    "fox": ["...DD...", "..DDDD..", "..DMMD..", "..MAAM..", ".MMAAMM.", ".MAAAAM.", "MMAFFAMM", "MAFFFFAM",
+            "MAFFFFAM", "MFFFFFFM", "MFFFFFFM"],
+    "bunny": ["..MM..", ".MMMM.", ".MFFM.", "MMFFMM", "MFFFFM", "MFFFFM", "MFFFFM", "MFFFFM", "MFFFFM", "MFFFFM",
+              "MFFFFM", "MMFFMM", ".MFFM.", ".MMMM."],
+    "bear": [".MMMM.", "MMAAMM", "MAFFAM", "MAFFAM", "MMMMMM"],
+    "wolf": ["...MM...", "..MMMM..", "..MAAM..", ".MMAAMM.", ".MAAAAM.", "MMAFFAMM", "MAFFFFAM", "MAFFFFAM",
+             "MFFFFFFM"],
+}
+EAR_GREYS = {"M": hexc("#D6D6D6"), "A": hexc("#ABABAB"), "F": hexc("#FFFFFF"), "D": hexc("#3A3A3A")}
+
+
+def ears_icon(kind):
+    mask = EARS[kind]
+    img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    w, h = len(mask[0]), len(mask)
+    base_y = 23
+    for cx in (9, 22):                                   # two ears standing on the headband
+        x0, y0 = cx - w // 2, base_y - h
+        for r, row in enumerate(mask):
+            for c, ch in enumerate(row):
+                if ch in EAR_GREYS:
+                    img.putpixel((x0 + c, y0 + r), EAR_GREYS[ch])
+    for x in range(4, 28):                               # headband arc
+        y = base_y + int(round(((x - 15.5) / 12) ** 2 * 4))
+        for t in range(2):
+            img.putpixel((x, min(SIZE - 1, y + t)), EAR_GREYS["M"] if t == 0 else EAR_GREYS["A"])
+    outline(img, hexc("#6E6E6E"))
+    return img
+
+
 ICONS = {
+    "fox_ears.png": lambda: ears_icon("fox"),
+    "bunny_ears.png": lambda: ears_icon("bunny"),
+    "bear_ears.png": lambda: ears_icon("bear"),
+    "wolf_ears.png": lambda: ears_icon("wolf"),
     "glitch_shard.png": glitch_shard,
     "bug_spawn_egg.png": lambda: spawn_egg(hexc("#3B2A57"), hexc("#5CFF8A"), 1),
 }

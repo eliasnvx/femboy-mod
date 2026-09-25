@@ -24,6 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -105,6 +106,15 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
             world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
                     FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get())));
+            // Animal ears
+            for (var ears : List.of(FemboyItems.FOX_EARS, FemboyItems.BUNNY_EARS, FemboyItems.BEAR_EARS, FemboyItems.WOLF_EARS)) {
+                world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                        FemboySlots.HEAD_ACCESSORY, new ItemStack(ears.get())));
+                context.waitTicks(SETTLE_TICKS / 2);
+                closeUp(context, "femboymod_closeup_" + ears.getId().getPath());
+            }
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get())));
             world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
                     FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get())));
             // Patterns: Progress chevron on the hoodie, striped ears, bi skirt, trans tail rings.

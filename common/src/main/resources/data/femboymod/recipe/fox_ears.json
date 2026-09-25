@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:orange_wool",
+    "minecraft:sweet_berries",
+    "femboymod:glitch_shard",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:fox_ears"
+  }
+}

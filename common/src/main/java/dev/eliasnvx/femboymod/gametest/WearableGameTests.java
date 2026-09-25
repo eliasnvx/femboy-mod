@@ -35,7 +35,8 @@ public final class WearableGameTests {
             new CosmeticGameTests.Entry("socks_add_and_remove_mining_speed", WearableGameTests::socksAddAndRemoveMiningSpeed),
             new CosmeticGameTests.Entry("full_set_activates_bonus", WearableGameTests::fullSetActivatesBonus),
             new CosmeticGameTests.Entry("vanilla_dye_recipe_colors_cosmetic", WearableGameTests::vanillaDyeRecipeColorsCosmetic),
-            new CosmeticGameTests.Entry("cat_ear_hoodie_from_hoodie_and_ears", WearableGameTests::catEarHoodieFromHoodieAndEars));
+            new CosmeticGameTests.Entry("cat_ear_hoodie_from_hoodie_and_ears", WearableGameTests::catEarHoodieFromHoodieAndEars),
+            new CosmeticGameTests.Entry("fox_ears_crafted_and_count_as_ears", WearableGameTests::foxEarsCraftedAndCountAsEars));
 
     private static final Vec3 TEST_AREA_CENTER = new Vec3(1.5, 1.0, 1.5);
     private static final Identifier FULL_SET = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "full_femboy_mode");
@@ -118,6 +119,22 @@ public final class WearableGameTests {
             CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()));
             CosmeticEffectsManager.tick(player);
             helper.assertTrue(FemboyApi.get().getActiveSetBonuses(player).contains(FULL_SET), "full set with the cat ear hoodie");
+        });
+    }
+
+    /** Fox ears: wool + sweet berries + glitch shard + string; any ears complete the Full Femboy Mode set. */
+    public static void foxEarsCraftedAndCountAsEars(GameTestHelper helper) {
+        CraftingInput input = CraftingInput.of(2, 2, List.of(new ItemStack(Items.WOOL.pick(DyeColor.ORANGE)), new ItemStack(Items.SWEET_BERRIES),
+                new ItemStack(FemboyItems.GLITCH_SHARD.get()), new ItemStack(Items.STRING)));
+        var recipe = helper.getLevel().getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, helper.getLevel());
+        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input).is(FemboyItems.FOX_EARS.get()), "fox ears recipe");
+        withPlayer(helper, player -> {
+            CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.FOX_EARS.get()));
+            CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get()));
+            CosmeticsManager.set(player, FemboySlots.OUTFIT_BOTTOM, new ItemStack(FemboyItems.PLEATED_SKIRT.get()));
+            CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()));
+            CosmeticEffectsManager.tick(player);
+            helper.assertTrue(FemboyApi.get().getActiveSetBonuses(player).contains(FULL_SET), "fox ears count as the set's ears");
         });
     }
 
