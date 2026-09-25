@@ -2,6 +2,7 @@ package dev.eliasnvx.femboymod.fabric.gametest;
 
 import dev.eliasnvx.femboymod.gametest.BackpackGameTests;
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
+import dev.eliasnvx.femboymod.gametest.MobGameTests;
 import dev.eliasnvx.femboymod.gametest.WorldGameTests;
 import dev.eliasnvx.femboymod.gametest.WearableGameTests;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -66,6 +67,16 @@ public final class FemboyGameTestsFabric {
     @GameTest
     public void vanillaDyeRecipeColorsCosmetic(GameTestHelper helper) {
         WearableGameTests.vanillaDyeRecipeColorsCosmetic(helper);
+    }
+
+    @GameTest
+    public void dripReducesBugDamage(GameTestHelper helper) {
+        MobGameTests.dripReducesBugDamage(helper);
+    }
+
+    @GameTest
+    public void socksHitBugsHarder(GameTestHelper helper) {
+        MobGameTests.socksHitBugsHarder(helper);
     }
 
     @GameTest
@@ -160,7 +171,7 @@ public final class FemboyGameTestsFabric {
 
     @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 29, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 31, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

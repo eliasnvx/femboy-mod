@@ -3,6 +3,7 @@ package dev.eliasnvx.femboymod.example;
 import dev.eliasnvx.femboymod.api.FemboyApi;
 import dev.eliasnvx.femboymod.api.backpack.CharmStats;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
+import dev.eliasnvx.femboymod.api.combat.DripDamage;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import net.minecraft.core.registries.Registries;
@@ -11,6 +12,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -27,7 +29,8 @@ public final class ExampleAddonGameTests {
             new Entry("fresh_player_wears_nothing", ExampleAddonGameTests::freshPlayerWearsNothing),
             new Entry("effect_types_registered", ExampleAddonGameTests::effectTypesRegistered),
             new Entry("friendship_set_bonus_loaded", ExampleAddonGameTests::friendshipSetBonusLoaded),
-            new Entry("pin_is_charm", ExampleAddonGameTests::pinIsCharm));
+            new Entry("pin_is_charm", ExampleAddonGameTests::pinIsCharm),
+            new Entry("drip_damage_rule_loaded", ExampleAddonGameTests::dripDamageRuleLoaded));
 
     private ExampleAddonGameTests() {
     }
@@ -77,6 +80,14 @@ public final class ExampleAddonGameTests {
         helper.assertTrue(bonus != null && bonus.pieces().size() == 2, "friendship set bonus loaded with two pieces");
         helper.assertTrue(bonus.effects().getFirst().effect() instanceof ExampleEffects.XpTrickle, "set bonus uses the custom effect");
         helper.assertTrue(bonus.effects().getFirst().when().orElseThrow() instanceof ExampleEffects.Daytime, "set bonus uses the custom condition");
+        helper.succeed();
+    }
+
+    public static void dripDamageRuleLoaded(GameTestHelper helper) {
+        DripDamage rule = helper.getLevel().registryAccess().lookupOrThrow(DripDamage.REGISTRY_KEY)
+                .getValue(ResourceKey.create(DripDamage.REGISTRY_KEY, Identifier.fromNamespaceAndPath(ExampleAddon.MOD_ID, "phantoms")));
+        helper.assertTrue(rule != null && rule.attackers().contains(EntityTypes.PHANTOM.builtInRegistryHolder()), "phantom rule loaded");
+        helper.assertValueEqual(rule.multiplierFor(99), 0.75F, "tiers past the list use the last multiplier");
         helper.succeed();
     }
 

@@ -64,6 +64,7 @@ public final class PlatformHelperImpl {
             event.dataPackRegistry(DripRules.REGISTRY_KEY, DripRules.CODEC, DripRules.CODEC);
             event.dataPackRegistry(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
             event.dataPackRegistry(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
+            event.dataPackRegistry(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
             event.dataPackRegistry(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
         });
     }

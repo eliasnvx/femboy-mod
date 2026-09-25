@@ -42,8 +42,13 @@ public final class ExampleAddonGameTestsFabric {
     }
 
     @GameTest
+    public void dripDamageRuleLoaded(GameTestHelper helper) {
+        ExampleAddonGameTests.dripDamageRuleLoaded(helper);
+    }
+
+    @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(ExampleAddonGameTests.ALL.size(), 7, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(ExampleAddonGameTests.ALL.size(), 8, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

@@ -97,6 +97,7 @@ Built-in effect types:
 | `femboymod:step_sound` | `sound`, `distance` (blocks walked between sounds) |
 | `femboymod:follow_passive` | `radius`, `speed`, `interval`, `stop_distance` |
 | `femboymod:glow_hostiles` | `radius` (client-side outline only) |
+| `femboymod:damage_bonus` | `targets` (entity id, list or tag), `multiplier`: the wearer hits those mobs harder |
 
 Built-in conditions (`"when"`): `femboymod:cold_biome`, `femboymod:crouching`, `femboymod:sprinting`.
 
@@ -117,6 +118,13 @@ Built-in conditions (`"when"`): `femboymod:cold_biome`, `femboymod:crouching`, `
 - `required` (optional) is how many pieces you need; the default is all of them.
 - `scaling_per_tier` (optional) multiplies the effect strength per Drip tier (`EffectSource#scale`).
 - `SetBonusEvent.Activate` / `SetBonusEvent.Deactivate` fire when a bonus turns on or off.
+
+## Drip in combat
+`data/<ns>/femboymod/drip_damage/<name>.json` (`DripDamage`): damage that the listed mobs deal to a player is multiplied by the entry for the player's Drip tier.
+```json
+{ "attackers": "#femboymod:bugs", "multiplier_by_tier": [1.0, 0.9, 0.75, 0.6, 0.5, 0.4] }
+```
+Tiers past the end of the list use the last value. Rules stack if several match. The other direction is the `femboymod:damage_bonus` effect (see the table above).
 
 ## A charm
 Charms go into the charm slots of a backpack and work while the backpack is worn.

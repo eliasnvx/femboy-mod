@@ -187,6 +187,15 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.waitTicks(SETTLE_TICKS);
             context.takeScreenshot("femboymod_clothing_rack");
 
+            // Hostile meme mobs
+            world.getServer().runCommand("summon femboymod:bug ~-1 ~ ~-4 {NoAI:1b,PersistenceRequired:1b,Rotation:[-20f,0f]}");
+            world.getServer().runCommand("summon femboymod:bug ~0.3 ~ ~-3.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[10f,0f]}");
+            world.getServer().runCommand("summon femboymod:bug ~1.5 ~ ~-4.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[30f,0f]}");
+            world.getServer().runCommand("tp @p ~ ~ ~ 180 22");
+            context.waitTicks(SETTLE_TICKS);
+            closeUp(context, "femboymod_closeup_bugs");
+            world.getServer().runCommand("kill @e[type=femboymod:bug]");
+
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
                 var pos = player.blockPosition().offset(0, 0, -5);

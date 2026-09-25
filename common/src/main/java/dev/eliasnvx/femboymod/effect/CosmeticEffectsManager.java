@@ -1,6 +1,7 @@
 package dev.eliasnvx.femboymod.effect;
 
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.combat.DripCombat;
 import dev.eliasnvx.femboymod.api.drip.DripLevel;
 import dev.eliasnvx.femboymod.api.effect.ConfiguredEffect;
 import dev.eliasnvx.femboymod.api.event.cosmetic.DripLevelChangedEvent;
@@ -123,6 +124,7 @@ public final class CosmeticEffectsManager {
     /** The respawned entity is fresh (no modifiers); forget state without touching it. */
     public static void forget(ServerPlayer player) {
         STATES.remove(player.getUUID());
+        DripCombat.clear(player);
     }
 
     /** For tests: currently running (active or gated) effect source ids. */
