@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:iron_nugget",
+    "minecraft:string",
+    "minecraft:pink_dye"
+  ],
+  "result": {
+    "id": "femboymod:energy_can_charm"
+  }
+}

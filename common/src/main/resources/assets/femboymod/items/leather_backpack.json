@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/leather_backpack",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 9132587
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      }
+    ]
+  }
+}

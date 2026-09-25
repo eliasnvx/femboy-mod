@@ -3,6 +3,9 @@ package dev.eliasnvx.femboymod.registry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.architectury.registry.menu.MenuRegistry;
+import dev.eliasnvx.femboymod.backpack.BackpackMenu;
+import dev.eliasnvx.femboymod.backpack.BackpackMenuData;
 import dev.eliasnvx.femboymod.menu.CosmeticsMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
@@ -14,6 +17,9 @@ public final class FemboyMenus {
 
     public static final RegistrySupplier<MenuType<CosmeticsMenu>> COSMETICS =
             REGISTER.register("cosmetics", () -> new MenuType<>(CosmeticsMenu::new, FeatureFlags.VANILLA_SET));
+
+    public static final RegistrySupplier<MenuType<BackpackMenu>> BACKPACK = REGISTER.register("backpack",
+            () -> MenuRegistry.ofExtended(BackpackMenu::new, BackpackMenuData.STREAM_CODEC));
 
     private FemboyMenus() {
     }

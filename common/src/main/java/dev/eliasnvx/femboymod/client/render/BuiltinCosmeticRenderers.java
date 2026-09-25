@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
@@ -38,6 +39,10 @@ public final class BuiltinCosmeticRenderers {
     private static final int CHOKER_BLACK = 0x2A2A33;
 
     private static final int FUR_WHITE = 0xFFF6F8;
+    private static final int CANVAS = 0xD9C9A3;
+    private static final int LEATHER = 0x8B5A2B;
+    private static final int NETHERITE = 0x4A444A;
+    private static final int CREEPER_GREEN = 0x62B14F;
     private static final int CORD_WHITE = 0xF4F1EE;
     private static final int BOW_PINK = 0xFF8FB8;
     private static final int DARK = 0x2A2328;
@@ -80,6 +85,9 @@ public final class BuiltinCosmeticRenderers {
                 models, CosmeticModels.FISHNET, Groups.GroupModelFactory.PLAIN, FISHNET, FISHNET_BLACK, DARKER, BOW_PINK));
         registry.register(id("uwu_choker"), models -> new GroupedRenderer(
                 models, CosmeticModels.CHOKER, Groups.GroupModelFactory.PLAIN, FABRIC, CHOKER_BLACK, LIGHTER, FUR_WHITE));
+        registerBackpack(registry, "canvas_backpack", CANVAS);
+        registerBackpack(registry, "leather_backpack", LEATHER);
+        registerBackpack(registry, "netherite_backpack", NETHERITE);
         registry.register(id("hair_clip"), models -> {
             Map<String, GroupedRenderer> byShape = new HashMap<>();
             CosmeticModels.HAIR_CLIPS.forEach((shape, layer) -> byShape.put(shape, new GroupedRenderer(
@@ -90,6 +98,22 @@ public final class BuiltinCosmeticRenderers {
                 if (renderer != null) {
                     renderer.submit(ctx);
                 }
+            };
+        });
+    }
+
+    private static void registerBackpack(ApiRegistry<CosmeticRenderer.Factory> registry, String item, int color) {
+        registry.register(id(item), models -> {
+            GroupedRenderer bag = new GroupedRenderer(models, CosmeticModels.BACKPACK, Groups.GroupModelFactory.PLAIN,
+                    FABRIC, color, DARKER, CREEPER_GREEN);
+            BackpackCharmsRenderer charms = new BackpackCharmsRenderer(models.bakeLayer(CosmeticModels.BACKPACK_CHARMS));
+            return ctx -> {
+                // Elytra occupy the back (SPEC §4.5): hide the backpack while wearing a glider.
+                if (ctx.state().chestEquipment.has(DataComponents.GLIDER)) {
+                    return;
+                }
+                bag.submit(ctx);
+                charms.submit(ctx);
             };
         });
     }

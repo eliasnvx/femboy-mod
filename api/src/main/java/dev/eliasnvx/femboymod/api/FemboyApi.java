@@ -123,4 +123,12 @@ public interface FemboyApi {
      * @return an immutable set of set bonus ids
      */
     Set<Identifier> getActiveSetBonuses(Player player);
+
+    /**
+     * Returns the charms hanging on a backpack (SPEC §8.4).
+     *
+     * @param backpack a backpack item stack
+     * @return the non-empty charms, in slot order; empty if the item is not a backpack
+     */
+    java.util.List<ItemStack> getCharms(ItemStack backpack);
 }

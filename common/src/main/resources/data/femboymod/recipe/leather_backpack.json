@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_transmute",
+  "category": "equipment",
+  "input": "femboymod:canvas_backpack",
+  "material": "minecraft:leather",
+  "result": {
+    "id": "femboymod:leather_backpack"
+  }
+}

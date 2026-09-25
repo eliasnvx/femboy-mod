@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/netherite_backpack",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 4867146
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      }
+    ]
+  }
+}

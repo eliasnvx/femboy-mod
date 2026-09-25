@@ -30,4 +30,15 @@ public final class PlatformHelper {
     public static void setCosmetics(Player player, CosmeticInventory cosmetics) {
         throw new AssertionError();
     }
+
+    /** Recent energy drinks (persistent, reset on death). Never null. */
+    @ExpectPlatform
+    public static dev.eliasnvx.femboymod.energy.CaffeineLog getCaffeineLog(Player player) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static void setCaffeineLog(Player player, dev.eliasnvx.femboymod.energy.CaffeineLog log) {
+        throw new AssertionError();
+    }
 }

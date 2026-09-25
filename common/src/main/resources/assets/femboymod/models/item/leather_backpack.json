@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/backpack",
+    "layer1": "femboymod:item/backpack_patch"
+  }
+}

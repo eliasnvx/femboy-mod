@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:iron_nugget",
+    "minecraft:red_dye",
+    "minecraft:pink_dye"
+  ],
+  "result": {
+    "id": "femboymod:heart_pin"
+  }
+}

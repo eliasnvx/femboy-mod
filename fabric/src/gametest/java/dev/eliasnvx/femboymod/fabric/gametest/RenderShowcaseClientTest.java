@@ -15,6 +15,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 import java.util.Optional;
 
@@ -87,6 +88,45 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.takeScreenshot("femboymod_patterns_back");
             world.getServer().runCommand("tp @p ~ ~ ~ 0 0");
             context.runOnClient(mc -> mc.options.fov().set(DEFAULT_FOV));
+
+            // Backpack with charms on the back (SPEC §5.3)
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                ItemStack backpack = new ItemStack(FemboyItems.CANVAS_BACKPACK.get());
+                backpack.set(FemboyComponents.CHARMS.get(), ItemContainerContents.fromItems(java.util.List.of(
+                        new ItemStack(FemboyItems.SHARK_PLUSH_CHARM.get()), new ItemStack(FemboyItems.HEART_PIN.get()),
+                        new ItemStack(FemboyItems.ENERGY_CAN_CHARM.get()))));
+                backpack.set(net.minecraft.core.component.DataComponents.CONTAINER,
+                        ItemContainerContents.fromItems(java.util.List.of(new ItemStack(net.minecraft.world.item.Items.CAKE))));
+                CosmeticsManager.set(player, FemboySlots.BACK, backpack);
+            });
+            context.runOnClient(mc -> mc.options.fov().set(ZOOM_FOV));
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+            world.getServer().runCommand("tp @p ~ ~ ~ -30 0");
+            context.waitTicks(SETTLE_TICKS);
+            context.takeScreenshot("femboymod_backpack_back");
+            world.getServer().runCommand("tp @p ~ ~ ~ 90 0");
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_backpack_side");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_backpack_front");
+            world.getServer().runCommand("tp @p ~ ~ ~ 0 0");
+            context.runOnClient(mc -> mc.options.fov().set(DEFAULT_FOV));
+
+            // Backpack screen with the charm panel
+            world.getServer().runOnServer(server -> dev.eliasnvx.femboymod.backpack.BackpackMenus.openFromKey(
+                    server.getPlayerList().getPlayers().getFirst()));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_backpack_screen");
+            context.runOnClient(mc -> mc.player.closeContainer());
+            context.waitTicks(SETTLE_TICKS / 4);
+
+            // UwU choker: outgoing chat is rewritten before signing (SPEC §4.7); server log shows the result
+            context.runOnClient(mc -> mc.player.connection.sendChat("привет друг"));
+            context.runOnClient(mc -> mc.player.connection.sendChat("hello friend, see https://example.org/real"));
+            context.runOnClient(mc -> mc.player.connection.sendCommand("say command stays hello"));
+            context.waitTicks(SETTLE_TICKS);
 
             // First person: hoodie sleeve over the hand
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));

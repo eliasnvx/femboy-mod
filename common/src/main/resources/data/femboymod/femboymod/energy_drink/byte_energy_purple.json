@@ -1,0 +1,9 @@
+{
+  "effects": [
+    {
+      "effect": "minecraft:night_vision",
+      "duration": 3600,
+      "amplifier": 0
+    }
+  ]
+}

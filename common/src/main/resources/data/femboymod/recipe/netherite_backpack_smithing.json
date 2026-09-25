@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#minecraft:netherite_tool_materials",
+  "base": "femboymod:leather_backpack",
+  "result": {
+    "id": "femboymod:netherite_backpack"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

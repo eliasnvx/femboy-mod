@@ -9,6 +9,9 @@ import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
+import dev.eliasnvx.femboymod.energy.CaffeineLog;
+import dev.eliasnvx.femboymod.energy.CaffeineRules;
+import dev.eliasnvx.femboymod.energy.EnergyDrink;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
@@ -36,6 +39,9 @@ public final class PlatformHelperImpl {
                     .copyOnDeath()
                     .build());
 
+    private static final Supplier<AttachmentType<CaffeineLog>> CAFFEINE = ATTACHMENTS.register("caffeine",
+            () -> AttachmentType.builder(() -> CaffeineLog.EMPTY).serialize(CaffeineLog.CODEC.fieldOf("drinks")).build());
+
     private PlatformHelperImpl() {
     }
 
@@ -47,6 +53,9 @@ public final class PlatformHelperImpl {
             event.dataPackRegistry(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC, CosmeticStats.CODEC);
             event.dataPackRegistry(SetBonus.REGISTRY_KEY, SetBonus.CODEC, SetBonus.CODEC);
             event.dataPackRegistry(DripRules.REGISTRY_KEY, DripRules.CODEC, DripRules.CODEC);
+            event.dataPackRegistry(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
+            event.dataPackRegistry(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
+            event.dataPackRegistry(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
         });
     }
 
@@ -91,5 +100,13 @@ public final class PlatformHelperImpl {
             FemboyMod.LOGGER.error("Failed to instantiate femboymod addon {} from mod {}", className, modId, e);
             return null;
         }
+    }
+
+    public static CaffeineLog getCaffeineLog(Player player) {
+        return player.getData(CAFFEINE);
+    }
+
+    public static void setCaffeineLog(Player player, CaffeineLog log) {
+        player.setData(CAFFEINE, log);
     }
 }

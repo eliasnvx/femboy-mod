@@ -62,6 +62,10 @@ public final class CosmeticModels {
     public static final ModelLayerLocation HOODIE_CHEST_PANEL = layer("hoodie_chest_panel");
     /** Sleeves drawn over the first-person hand; same geometry as the hoodie's sleeves. */
     public static final ModelLayerLocation HOODIE_FIRST_PERSON = layer("hoodie_first_person");
+    public static final ModelLayerLocation BACKPACK = layer("backpack");
+    /** Charm hangers on the backpack's side; static relative to the body. */
+    public static final ModelLayerLocation BACKPACK_CHARMS = layer("backpack_charms");
+    public static final int CHARM_SLOTS = 3;
     public static final int PANEL_COLUMNS = 12;
     public static final int PANEL_ROWS = 16;
     public static final Map<String, ModelLayerLocation> HAIR_CLIPS = new LinkedHashMap<>();
@@ -87,6 +91,8 @@ public final class CosmeticModels {
         EntityModelLayerRegistry.register(CHOKER, CosmeticModels::choker);
         EntityModelLayerRegistry.register(HOODIE_CHEST_PANEL, CosmeticModels::hoodieChestPanel);
         EntityModelLayerRegistry.register(HOODIE_FIRST_PERSON, CosmeticModels::hoodieFirstPerson);
+        EntityModelLayerRegistry.register(BACKPACK, CosmeticModels::backpack);
+        EntityModelLayerRegistry.register(BACKPACK_CHARMS, CosmeticModels::backpackCharms);
         HAIR_CLIPS.forEach((shape, location) -> EntityModelLayerRegistry.register(location, () -> hairClip(shape)));
     }
 
@@ -320,6 +326,56 @@ public final class CosmeticModels {
                                 .addBox(left + col * cw, top + row * ch, front, cw, ch, 0.05F),
                         PartPose.ZERO);
             }
+        }
+        return layerOf(mesh);
+    }
+
+    // ------------------------------------------------------------------ backpack
+
+    /** Creeper face patch on the front pocket (SPEC §1.1: creeper is a Minecraft asset, fine to use). */
+    private static final String[] CREEPER_FACE = {
+            "GGGGGGGG",
+            "GDDGGDDG",
+            "GDDGGDDG",
+            "GGGDDGGG",
+            "GGDDDDGG",
+            "GGDDDDGG",
+            "GGDGGDGG",
+            "GGGGGGGG",
+    };
+    private static final float BACK_Z = 2.55F;
+    private static final float PACK_DEPTH = 4.0F;
+
+    private static LayerDefinition backpack() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild("body"), "backpack", PartPose.ZERO)).bandRange(1.0F, 10.5F);
+        b.bandedBox(-3.6F, 1.0F, BACK_Z, 7.2F, 9.5F, PACK_DEPTH, 0.0F);                  // main bag
+        b.box(ACCENT, -3.8F, 0.4F, BACK_Z - 0.1F, 7.6F, 2.2F, PACK_DEPTH + 0.3F);        // top flap
+        b.box(ACCENT, -2.6F, 5.2F, BACK_Z + PACK_DEPTH, 5.2F, 4.4F, 0.8F);                // front pocket
+        b.box(DARK, -0.4F, 2.4F, BACK_Z + PACK_DEPTH + 0.2F, 0.8F, 0.8F, 0.2F);          // flap buckle
+        b.box(ACCENT, -3.9F, 9.8F, BACK_Z - 0.1F, 7.8F, 0.8F, PACK_DEPTH + 0.2F);        // reinforced bottom
+        float face = 0.5F;
+        b.extrude(CREEPER_FACE, Map.of('G', DETAIL, 'D', DARK), -2.0F, 5.4F, BACK_Z + PACK_DEPTH + 0.8F, face, 0.15F);
+        // shoulder straps: over the shoulders and down the chest (over clothing)
+        for (float x : new float[]{-2.9F, 1.7F}) {
+            b.box(ACCENT, x, -0.55F, -2.6F, 1.2F, 0.5F, BACK_Z + 2.7F);
+            b.box(ACCENT, x, -0.3F, -2.65F, 1.2F, 8.0F, 0.2F);
+            b.box(METAL, x + 0.2F, 6.0F, -2.75F, 0.8F, 0.6F, 0.15F);                        // strap buckle
+        }
+        b.build();
+        return layerOf(mesh);
+    }
+
+    /** Charm hangers in body space on the backpack's right side (+x): chain + charm per slot. */
+    private static LayerDefinition backpackCharms() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        for (int i = 0; i < CHARM_SLOTS; i++) {
+            float z = BACK_Z + 0.8F + i * 1.3F;
+            root.addOrReplaceChild("chain" + i, CubeListBuilder.create().texOffs(0, 0)
+                    .addBox(3.6F, 2.0F, z, 0.3F, 1.6F, 0.3F), PartPose.ZERO);
+            root.addOrReplaceChild("charm" + i, CubeListBuilder.create().texOffs(4 * i, 8)
+                    .addBox(3.45F, 3.6F, z - 0.35F, 1.0F, 1.2F, 1.0F), PartPose.ZERO);
         }
         return layerOf(mesh);
     }
