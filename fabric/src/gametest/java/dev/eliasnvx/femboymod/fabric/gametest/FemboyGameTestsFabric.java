@@ -1,6 +1,7 @@
 package dev.eliasnvx.femboymod.fabric.gametest;
 
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
+import dev.eliasnvx.femboymod.gametest.WearableGameTests;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 
@@ -51,8 +52,23 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void socksAddAndRemoveMiningSpeed(GameTestHelper helper) {
+        WearableGameTests.socksAddAndRemoveMiningSpeed(helper);
+    }
+
+    @GameTest
+    public void fullSetActivatesBonus(GameTestHelper helper) {
+        WearableGameTests.fullSetActivatesBonus(helper);
+    }
+
+    @GameTest
+    public void vanillaDyeRecipeColorsCosmetic(GameTestHelper helper) {
+        WearableGameTests.vanillaDyeRecipeColorsCosmetic(helper);
+    }
+
+    @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.ALL.size(), 8, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 11, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

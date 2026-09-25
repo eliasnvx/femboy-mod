@@ -1,0 +1,13 @@
+{
+  "drip": 10,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:safe_fall_distance",
+        "amount": 1.0,
+        "operation": "add_value"
+      }
+    }
+  ]
+}

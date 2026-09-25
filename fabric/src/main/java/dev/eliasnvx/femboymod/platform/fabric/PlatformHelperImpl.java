@@ -4,6 +4,9 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.addon.AddonLoader.DiscoveredAddon;
 import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
+import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
+import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
+import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
@@ -31,6 +34,9 @@ public final class PlatformHelperImpl {
     /** Registers loader-side content; must run before {@link FemboyMod#init()}. */
     public static void init() {
         DynamicRegistries.registerSynced(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC);
+        DynamicRegistries.registerSynced(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC);
+        DynamicRegistries.registerSynced(SetBonus.REGISTRY_KEY, SetBonus.CODEC);
+        DynamicRegistries.registerSynced(DripRules.REGISTRY_KEY, DripRules.CODEC);
     }
 
     public static List<DiscoveredAddon> discoverAddons() {

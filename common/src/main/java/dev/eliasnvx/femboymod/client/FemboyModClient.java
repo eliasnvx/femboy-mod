@@ -9,8 +9,9 @@ import dev.architectury.registry.client.gui.MenuScreenRegistry;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.addon.AddonLoader;
-import dev.eliasnvx.femboymod.api.FemboyApi;
-import dev.eliasnvx.femboymod.api.FemboyClientApi;
+import dev.eliasnvx.femboymod.api.internal.FemboyClientApiHolder;
+import dev.eliasnvx.femboymod.client.render.BuiltinCosmeticRenderers;
+import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
@@ -72,9 +73,14 @@ public final class FemboyModClient {
 
         ClientTooltipEvent.ITEM.register(FemboyModClient::appendTooltip);
 
-        FemboyApi common = FemboyApi.get();
-        FemboyClientApi clientApi = () -> common;
+        FemboyClientApiImpl clientApi = new FemboyClientApiImpl();
+        FemboyClientApiHolder.install(clientApi);
+        CosmeticModels.registerLayers();
+        BuiltinCosmeticRenderers.register(clientApi.cosmeticRenderers());
+        ClientTickEvent.CLIENT_POST.register(GlowHostilesClient::tick);
+
         AddonLoader.initClient(clientApi);
+        clientApi.freeze();
         FemboyMod.LOGGER.info("femboymod client initialized");
     }
 
@@ -89,7 +95,7 @@ public final class FemboyModClient {
             lines.add(Component.translatable("tooltip.femboymod.slot",
                     Component.translatable(CosmeticSlotType.translationKey(cosmetic.slot()))).withStyle(ChatFormatting.GRAY));
         }
-        Colorway colorway = stack.get(FemboyComponents.COLORWAY.get());
+        Colorway colorway = dev.eliasnvx.femboymod.cosmetic.Colorways.effective(stack).orElse(null);
         if (colorway != null) {
             Component name = colorway.pattern()
                     .flatMap(holder -> holder.unwrapKey())

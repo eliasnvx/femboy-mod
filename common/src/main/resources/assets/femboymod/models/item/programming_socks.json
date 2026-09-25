@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/programming_socks",
+    "layer1": "femboymod:item/programming_socks_stripes"
+  }
+}

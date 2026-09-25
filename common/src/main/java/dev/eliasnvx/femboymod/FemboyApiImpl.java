@@ -7,7 +7,15 @@ import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticsView;
 import dev.eliasnvx.femboymod.api.event.FemboyEventBus;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
+import com.mojang.serialization.MapCodec;
+import dev.eliasnvx.femboymod.api.drip.DripLevel;
+import dev.eliasnvx.femboymod.api.effect.CosmeticCondition;
+import dev.eliasnvx.femboymod.api.effect.CosmeticEffect;
+import dev.eliasnvx.femboymod.cosmetic.Colorways;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
+import dev.eliasnvx.femboymod.drip.WornEvaluator;
+import net.minecraft.world.entity.player.Player;
+import java.util.Set;
 import dev.eliasnvx.femboymod.event.FemboyEventBusImpl;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.SimpleApiRegistry;
@@ -29,6 +37,10 @@ public final class FemboyApiImpl implements FemboyApi {
     private final FemboyEventBusImpl events = new FemboyEventBusImpl(FemboyMod.LOGGER);
     private final SimpleApiRegistry<CosmeticSlotType> cosmeticSlots =
             new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "cosmetic_slot"));
+    private final SimpleApiRegistry<MapCodec<? extends CosmeticEffect>> effectTypes =
+            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "cosmetic_effect_type"));
+    private final SimpleApiRegistry<MapCodec<? extends CosmeticCondition>> conditionTypes =
+            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "cosmetic_condition_type"));
 
     @Override
     public String apiVersion() {
@@ -61,11 +73,33 @@ public final class FemboyApiImpl implements FemboyApi {
 
     @Override
     public Optional<Colorway> getColorway(ItemStack stack) {
-        return Optional.ofNullable(stack.get(FemboyComponents.COLORWAY.get()));
+        return Colorways.effective(stack);
+    }
+
+    @Override
+    public ApiRegistry<MapCodec<? extends CosmeticEffect>> cosmeticEffectTypes() {
+        return effectTypes;
+    }
+
+    @Override
+    public ApiRegistry<MapCodec<? extends CosmeticCondition>> cosmeticConditionTypes() {
+        return conditionTypes;
+    }
+
+    @Override
+    public DripLevel getDripLevel(Player player) {
+        return WornEvaluator.evaluate(player).drip();
+    }
+
+    @Override
+    public Set<Identifier> getActiveSetBonuses(Player player) {
+        return WornEvaluator.evaluate(player).activeSets();
     }
 
     void freezeRegistries() {
         cosmeticSlots.freeze();
+        effectTypes.freeze();
+        conditionTypes.freeze();
     }
 
     private static String readApiVersion() {

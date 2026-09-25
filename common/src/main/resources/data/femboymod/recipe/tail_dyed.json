@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_dye",
+  "dye": "#minecraft:dyes",
+  "group": "femboymod_dyed",
+  "result": {
+    "id": "femboymod:tail"
+  },
+  "target": "femboymod:tail"
+}

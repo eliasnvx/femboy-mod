@@ -1,0 +1,13 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/oversized_hoodie",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 13148904,
+        "stripe": 0
+      }
+    ]
+  }
+}

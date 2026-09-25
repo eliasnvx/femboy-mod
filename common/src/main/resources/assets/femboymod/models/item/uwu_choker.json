@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/uwu_choker",
+    "layer1": "femboymod:item/uwu_choker_bell"
+  }
+}

@@ -3,6 +3,13 @@ package dev.eliasnvx.femboymod.api;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticsView;
+import dev.eliasnvx.femboymod.api.drip.DripLevel;
+import dev.eliasnvx.femboymod.api.effect.CosmeticCondition;
+import dev.eliasnvx.femboymod.api.effect.CosmeticEffect;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
+import java.util.Set;
 import dev.eliasnvx.femboymod.api.event.FemboyEventBus;
 import dev.eliasnvx.femboymod.api.internal.FemboyApiHolder;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
@@ -84,4 +91,36 @@ public interface FemboyApi {
      * @return the colorway, or empty if the item has none
      */
     Optional<Colorway> getColorway(ItemStack stack);
+
+    /**
+     * Returns the registry of {@link CosmeticEffect} types (the {@code "type"} field in JSON).
+     * Register the {@link MapCodec} of your effect record here.
+     *
+     * @return the effect type registry
+     */
+    ApiRegistry<MapCodec<? extends CosmeticEffect>> cosmeticEffectTypes();
+
+    /**
+     * Returns the registry of {@link CosmeticCondition} types (the {@code "type"} field in JSON).
+     *
+     * @return the condition type registry
+     */
+    ApiRegistry<MapCodec<? extends CosmeticCondition>> cosmeticConditionTypes();
+
+    /**
+     * Returns a player's Drip Level, computed from what they wear. Works on both logical sides.
+     *
+     * @param player the player
+     * @return the level and tier, never {@code null}
+     */
+    DripLevel getDripLevel(Player player);
+
+    /**
+     * Returns the ids of the set bonuses ({@code femboymod:set_bonus} entries) the player currently
+     * completes. Works on both logical sides.
+     *
+     * @param player the player
+     * @return an immutable set of set bonus ids
+     */
+    Set<Identifier> getActiveSetBonuses(Player player);
 }

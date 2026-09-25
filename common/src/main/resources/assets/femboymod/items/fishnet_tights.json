@@ -1,0 +1,13 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/fishnet_tights",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 2763306,
+        "stripe": 0
+      }
+    ]
+  }
+}

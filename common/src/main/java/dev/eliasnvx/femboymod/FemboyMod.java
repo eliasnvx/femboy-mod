@@ -6,6 +6,8 @@ import dev.eliasnvx.femboymod.api.FemboyApi;
 import dev.eliasnvx.femboymod.api.internal.FemboyApiHolder;
 import dev.eliasnvx.femboymod.command.FemboyCommands;
 import dev.eliasnvx.femboymod.cosmetic.BuiltinSlots;
+import dev.eliasnvx.femboymod.effect.BuiltinConditions;
+import dev.eliasnvx.femboymod.effect.BuiltinEffects;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsEvents;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.network.FemboyNetwork;
@@ -34,6 +36,8 @@ public final class FemboyMod {
         FemboyApiHolder.install(api);
 
         BuiltinSlots.register(api.cosmeticSlots());
+        BuiltinEffects.register(api.cosmeticEffectTypes());
+        BuiltinConditions.register(api.cosmeticConditionTypes());
 
         FemboyComponents.REGISTER.register();
         FemboyItems.TABS.register();

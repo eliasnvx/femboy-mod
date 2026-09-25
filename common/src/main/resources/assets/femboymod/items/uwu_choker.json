@@ -1,0 +1,17 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/uwu_choker",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 2763315,
+        "stripe": 0
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      }
+    ]
+  }
+}

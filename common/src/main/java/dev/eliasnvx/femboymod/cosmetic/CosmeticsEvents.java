@@ -4,6 +4,8 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.event.events.common.TickEvent;
+import dev.eliasnvx.femboymod.effect.CosmeticEffectsManager;
 import dev.eliasnvx.femboymod.network.CosmeticsSyncPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -22,7 +24,16 @@ public final class CosmeticsEvents {
 
     public static void register() {
         PlayerEvent.PLAYER_JOIN.register(CosmeticsSyncPayload::sendToTrackingAndSelf);
-        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, reason) -> CosmeticsSyncPayload.sendToTrackingAndSelf(player));
+        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, reason) -> {
+            CosmeticEffectsManager.forget(player);
+            CosmeticsSyncPayload.sendToTrackingAndSelf(player);
+        });
+        PlayerEvent.PLAYER_QUIT.register(CosmeticEffectsManager::stop);
+        TickEvent.PLAYER_POST.register(player -> {
+            if (player instanceof ServerPlayer serverPlayer) {
+                CosmeticEffectsManager.tick(serverPlayer);
+            }
+        });
         PlayerEvent.CHANGE_DIMENSION.register((player, from, to) -> CosmeticsSyncPayload.sendToTrackingAndSelf(player));
         EntityEvent.START_TRACKING.register((entity, watcher) -> {
             if (entity instanceof Player tracked) {
@@ -32,6 +43,7 @@ public final class CosmeticsEvents {
 
         EntityEvent.LIVING_DEATH.register((entity, source) -> {
             if (entity instanceof ServerPlayer player) {
+                CosmeticEffectsManager.stop(player);
                 dropOnDeath(player);
             }
             return EventResult.pass();

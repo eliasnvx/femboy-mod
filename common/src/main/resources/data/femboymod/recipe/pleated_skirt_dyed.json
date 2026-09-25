@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_dye",
+  "dye": "#minecraft:dyes",
+  "group": "femboymod_dyed",
+  "result": {
+    "id": "femboymod:pleated_skirt"
+  },
+  "target": "femboymod:pleated_skirt"
+}

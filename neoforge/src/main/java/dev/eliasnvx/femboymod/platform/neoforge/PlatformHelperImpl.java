@@ -5,6 +5,9 @@ import dev.eliasnvx.femboymod.addon.AddonLoader.DiscoveredAddon;
 import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.RegisterFemboyAddon;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
+import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
+import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
+import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
@@ -39,8 +42,12 @@ public final class PlatformHelperImpl {
     /** Registers loader-side content; must run before {@link FemboyMod#init()}. */
     public static void init(IEventBus modBus) {
         ATTACHMENTS.register(modBus);
-        modBus.addListener((DataPackRegistryEvent.NewRegistry event) ->
-                event.dataPackRegistry(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC, ColorwayPattern.CODEC));
+        modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
+            event.dataPackRegistry(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC, ColorwayPattern.CODEC);
+            event.dataPackRegistry(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC, CosmeticStats.CODEC);
+            event.dataPackRegistry(SetBonus.REGISTRY_KEY, SetBonus.CODEC, SetBonus.CODEC);
+            event.dataPackRegistry(DripRules.REGISTRY_KEY, DripRules.CODEC, DripRules.CODEC);
+        });
     }
 
     public static List<DiscoveredAddon> discoverAddons() {

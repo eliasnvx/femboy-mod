@@ -34,7 +34,7 @@ final class FemboyGameTestsNeoForge {
         }
         DeferredRegister<Consumer<GameTestHelper>> functions = DeferredRegister.create(Registries.TEST_FUNCTION, FemboyMod.MOD_ID);
         List<DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>>> holders = new ArrayList<>();
-        for (CosmeticGameTests.Entry entry : CosmeticGameTests.ALL) {
+        for (CosmeticGameTests.Entry entry : CosmeticGameTests.all()) {
             holders.add(functions.register(entry.name(), entry::body));
         }
         functions.register(modBus);

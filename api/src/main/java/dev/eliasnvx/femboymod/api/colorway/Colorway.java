@@ -62,6 +62,29 @@ public record Colorway(int baseColor, Optional<Holder<ColorwayPattern>> pattern,
     }
 
     /**
+     * Returns one stripe's color without allocating (safe to call every frame from renderers).
+     *
+     * @param index stripe index; wraps around the stripe count
+     * @return {@code 0xRRGGBB}
+     */
+    public int stripeColor(int index) {
+        if (pattern.isEmpty()) {
+            return baseColor;
+        }
+        java.util.List<ColorwayPattern.Stripe> stripes = pattern.get().value().stripes();
+        return stripes.get(Math.floorMod(index, stripes.size())).resolve(baseColor, secondaryColor.orElse(DEFAULT_SECONDARY));
+    }
+
+    /**
+     * Returns the number of stripes (1 for a solid colorway).
+     *
+     * @return stripe count
+     */
+    public int stripeCount() {
+        return pattern.map(p -> p.value().stripes().size()).orElse(1);
+    }
+
+    /**
      * Resolves the stripes to RGB colors, top to bottom. A solid colorway has one stripe.
      *
      * @return a new array of {@code 0xRRGGBB} values

@@ -1,0 +1,39 @@
+{
+  "pieces": [
+    "femboymod:cat_ears",
+    "femboymod:oversized_hoodie",
+    "femboymod:pleated_skirt",
+    "#femboymod:legwear"
+  ],
+  "scaling_per_tier": 0.1,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:movement_speed",
+        "amount": 0.05,
+        "operation": "add_multiplied_total"
+      }
+    },
+    {
+      "effect": {
+        "type": "femboymod:particles",
+        "particle": {
+          "type": "minecraft:heart"
+        },
+        "interval": 30,
+        "count": 1,
+        "spread": 0.4
+      }
+    },
+    {
+      "effect": {
+        "type": "femboymod:follow_passive",
+        "radius": 8,
+        "speed": 1.0,
+        "interval": 10,
+        "stop_distance": 2.5
+      }
+    }
+  ]
+}

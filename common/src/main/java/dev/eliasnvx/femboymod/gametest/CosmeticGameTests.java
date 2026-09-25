@@ -60,6 +60,13 @@ public final class CosmeticGameTests {
     private CosmeticGameTests() {
     }
 
+    /** Every shared test of femboymod (all Phase suites). */
+    public static List<Entry> all() {
+        List<Entry> all = new java.util.ArrayList<>(ALL);
+        all.addAll(WearableGameTests.ALL);
+        return all;
+    }
+
     public record Entry(String name, Consumer<GameTestHelper> body) {
     }
 

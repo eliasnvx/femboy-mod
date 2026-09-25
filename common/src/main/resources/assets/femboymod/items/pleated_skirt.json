@@ -1,0 +1,13 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/pleated_skirt",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 3816008,
+        "stripe": 0
+      }
+    ]
+  }
+}

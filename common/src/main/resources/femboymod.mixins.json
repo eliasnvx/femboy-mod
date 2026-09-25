@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.eliasnvx.femboymod.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "client.AvatarRenderStateMixin",
+    "client.AvatarRendererMixin",
+    "client.MinecraftGlowMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
