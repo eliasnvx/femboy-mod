@@ -75,7 +75,23 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.takeScreenshot("femboymod_front_hair_clip");
             world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
                     FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get())));
+            // Patterns: Progress chevron on the hoodie, striped ears, bi skirt, trans tail rings.
+            world.getServer().runOnServer(server -> wearPatterns(server.getPlayerList().getPlayers().getFirst()));
+            context.waitTicks(SETTLE_TICKS);
+            context.takeScreenshot("femboymod_patterns_front");
+            world.getServer().runCommand("tp @p ~ ~ ~ 35 0");
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_patterns_angled");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_patterns_back");
+            world.getServer().runCommand("tp @p ~ ~ ~ 0 0");
             context.runOnClient(mc -> mc.options.fov().set(DEFAULT_FOV));
+
+            // First person: hoodie sleeve over the hand
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_first_person_sleeve");
 
             // Cat Ears: hostile mobs within 16 blocks glow for the wearer.
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
@@ -84,6 +100,25 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.waitTicks(SETTLE_TICKS);
             context.takeScreenshot("femboymod_glowing_zombie");
         }
+    }
+
+    private static ItemStack withPattern(ServerPlayer player, ItemStack stack, String pattern, int base, int secondary) {
+        var patterns = player.level().registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY);
+        stack.set(FemboyComponents.COLORWAY.get(), new Colorway(base, Optional.of(patterns.getOrThrow(
+                ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, pattern)))),
+                Optional.of(secondary)));
+        return stack;
+    }
+
+    private static void wearPatterns(ServerPlayer player) {
+        CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP,
+                withPattern(player, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get()), "pride_progress", 0xFFFFFF, 0xFFFFFF));
+        CosmeticsManager.set(player, FemboySlots.OUTFIT_BOTTOM,
+                withPattern(player, new ItemStack(FemboyItems.PLEATED_SKIRT.get()), "pride_bi", 0xFFFFFF, 0xFFFFFF));
+        CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY,
+                withPattern(player, new ItemStack(FemboyItems.CAT_EARS.get()), "stripes", 0xF291BE, 0xFFFFFF));
+        CosmeticsManager.set(player, FemboySlots.TAIL,
+                withPattern(player, new ItemStack(FemboyItems.TAIL.get()), "pride_trans", 0xFFFFFF, 0xFFFFFF));
     }
 
     private static void wearFullSet(ServerPlayer player) {

@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static dev.eliasnvx.femboymod.client.render.model.Groups.ACCENT;
+import static dev.eliasnvx.femboymod.client.render.model.Groups.BANDED;
 import static dev.eliasnvx.femboymod.client.render.model.Groups.DARK;
 import static dev.eliasnvx.femboymod.client.render.model.Groups.DETAIL;
 import static dev.eliasnvx.femboymod.client.render.model.Groups.MAIN;
@@ -37,19 +38,18 @@ public final class CosmeticModels {
 
     private static final int TEXTURE_SIZE = 64;
     /** Overlay inflation above the skin's own second layer (0.25) to avoid z-fighting (SPEC §4.5). */
-    private static final CubeDeformation SOCK_INFLATE = new CubeDeformation(0.32F);
-    private static final CubeDeformation FISHNET_INFLATE = new CubeDeformation(0.29F);
+    private static final float SOCK_INFLATE = 0.32F;
+    private static final float FISHNET_INFLATE = 0.29F;
     private static final CubeDeformation SOCK_CUFF_INFLATE = new CubeDeformation(0.45F);
-    private static final CubeDeformation HOODIE_BODY_INFLATE = new CubeDeformation(0.42F);
+    private static final float HOODIE_BODY_INFLATE = 0.42F;
     private static final CubeDeformation HOODIE_HEM_INFLATE = new CubeDeformation(0.5F);
-    private static final CubeDeformation HOODIE_ARM_INFLATE = new CubeDeformation(0.38F);
+    private static final float HOODIE_ARM_INFLATE = 0.38F;
     private static final CubeDeformation HOODIE_CUFF_INFLATE = new CubeDeformation(0.46F);
     /** Sits above the hoodie (0.42) so the choker stays visible over clothing. */
     private static final CubeDeformation CHOKER_INFLATE = new CubeDeformation(0.52F);
 
     /** Socks cover the leg from this y (0 = hip) down to the foot. */
     public static final int SOCK_TOP = 2;
-    public static final int SOCK_BANDS = 12 - SOCK_TOP;
 
     public static final ModelLayerLocation CAT_EARS = layer("cat_ears");
     public static final ModelLayerLocation TAIL = layer("tail");
@@ -58,6 +58,12 @@ public final class CosmeticModels {
     public static final ModelLayerLocation SKIRT = layer("skirt");
     public static final ModelLayerLocation HOODIE = layer("hoodie");
     public static final ModelLayerLocation CHOKER = layer("choker");
+    /** Flat cell grid over the hoodie chest for 2D patterns (Progress chevron). */
+    public static final ModelLayerLocation HOODIE_CHEST_PANEL = layer("hoodie_chest_panel");
+    /** Sleeves drawn over the first-person hand; same geometry as the hoodie's sleeves. */
+    public static final ModelLayerLocation HOODIE_FIRST_PERSON = layer("hoodie_first_person");
+    public static final int PANEL_COLUMNS = 12;
+    public static final int PANEL_ROWS = 16;
     public static final Map<String, ModelLayerLocation> HAIR_CLIPS = new LinkedHashMap<>();
 
     static {
@@ -79,6 +85,8 @@ public final class CosmeticModels {
         EntityModelLayerRegistry.register(SKIRT, CosmeticModels::skirt);
         EntityModelLayerRegistry.register(HOODIE, CosmeticModels::hoodie);
         EntityModelLayerRegistry.register(CHOKER, CosmeticModels::choker);
+        EntityModelLayerRegistry.register(HOODIE_CHEST_PANEL, CosmeticModels::hoodieChestPanel);
+        EntityModelLayerRegistry.register(HOODIE_FIRST_PERSON, CosmeticModels::hoodieFirstPerson);
         HAIR_CLIPS.forEach((shape, location) -> EntityModelLayerRegistry.register(location, () -> hairClip(shape)));
     }
 
@@ -134,7 +142,8 @@ public final class CosmeticModels {
                     PartPose.offsetAndRotation(side * EAR_SPACING, -8.3F, -0.2F, 0.0F, 0.0F, side * EAR_TILT));
             Groups.Builder b = new Groups.Builder(ear);
             // back shell (full silhouette), inner ear in front, fur tufts furthest front
-            b.extrude(EAR, Map.of('M', MAIN, 'A', MAIN, 'F', MAIN), -width / 2, -height, -0.4F, EAR_PIXEL, 0.9F);
+            b.bandRange(-height, 0.0F);
+            b.extrude(EAR, Map.of('M', BANDED, 'A', BANDED, 'F', BANDED), -width / 2, -height, -0.4F, EAR_PIXEL, 0.9F);
             b.extrude(EAR, Map.of('A', ACCENT, 'F', ACCENT), -width / 2, -height, -0.6F, EAR_PIXEL, 0.2F);
             b.extrude(EAR, Map.of('F', DETAIL), -width / 2, -height, -0.75F, EAR_PIXEL, 0.2F);
             b.build();
@@ -159,8 +168,12 @@ public final class CosmeticModels {
             parent = pivot(parent, "segment" + i, pose);
             Groups body = i >= TAIL_TIP_FROM ? DETAIL : MAIN;
             Groups fluff = i >= TAIL_TIP_FROM ? DETAIL : (i == TAIL_TIP_FROM - 1 ? DETAIL : ACCENT);
-            Groups.Builder b = new Groups.Builder(parent);
-            b.box(body, -w / 2, -w / 2, 0.0F, w, w, TAIL_SEGMENT_LENGTH + 0.2F);
+            Groups.Builder b = new Groups.Builder(parent).bandRange(0.0F, TAIL_SEGMENTS);
+            if (body == MAIN) {
+                b.boxInBand(i + 0.5F, -w / 2, -w / 2, 0.0F, w, w, TAIL_SEGMENT_LENGTH + 0.2F); // one pattern ring per segment
+            } else {
+                b.box(body, -w / 2, -w / 2, 0.0F, w, w, TAIL_SEGMENT_LENGTH + 0.2F);
+            }
             // fluff: slightly offset, thinner slabs so the silhouette looks furry, not boxy
             b.box(fluff, -w / 2 - 0.2F, -w / 2 + 0.3F, 0.3F, 0.3F, w - 0.6F, TAIL_SEGMENT_LENGTH - 0.4F);
             b.box(fluff, w / 2 - 0.1F, -w / 2 + 0.3F, 0.3F, 0.3F, w - 0.6F, TAIL_SEGMENT_LENGTH - 0.4F);
@@ -175,17 +188,12 @@ public final class CosmeticModels {
 
     // ------------------------------------------------------------------ socks / tights
 
-    private static LayerDefinition legwear(CubeDeformation inflate, boolean withBow) {
+    private static LayerDefinition legwear(float inflate, boolean withBow) {
         MeshDefinition mesh = emptyPlayerMesh();
         for (String leg : new String[]{"left_leg", "right_leg"}) {
             PartDefinition legPart = mesh.getRoot().getChild(leg);
-            PartDefinition bands = pivot(legPart, "bands", PartPose.ZERO);
-            for (int band = 0; band < SOCK_BANDS; band++) {
-                bands.addOrReplaceChild("band" + band,
-                        CubeListBuilder.create().texOffs(band * 4 % 48, 0).addBox(-2.0F, SOCK_TOP + band, -2.0F, 4, 1, 4, inflate),
-                        PartPose.ZERO);
-            }
-            Groups.Builder b = new Groups.Builder(legPart);
+            Groups.Builder b = new Groups.Builder(legPart).bandRange(SOCK_TOP, 12.0F);
+            b.bandedBox(-2.0F, SOCK_TOP, -2.0F, 4, 12 - SOCK_TOP, 4, inflate);
             b.box(ACCENT, -2.0F, SOCK_TOP - 0.8F, -2.0F, 4, 1.4F, 4, SOCK_CUFF_INFLATE); // ribbed top
             b.box(ACCENT, -2.0F, 11.0F, -2.45F, 4, 1.0F, 0.4F);                           // toe cap
             b.box(ACCENT, -2.0F, 10.6F, 2.05F, 4, 1.4F, 0.4F);                            // heel
@@ -234,12 +242,12 @@ public final class CosmeticModels {
     }
 
     private static void skirtStrip(PartDefinition body, String name, PartPose pose, float width, boolean side) {
-        Groups.Builder b = new Groups.Builder(pivot(body, name, pose));
+        Groups.Builder b = new Groups.Builder(pivot(body, name, pose)).bandRange(0.0F, SKIRT_LENGTH);
         if (side) {
-            b.box(MAIN, -0.3F, 0.0F, -width / 2, 0.6F, SKIRT_LENGTH, width);
+            b.bandedBox(-0.3F, 0.0F, -width / 2, 0.6F, SKIRT_LENGTH, width, 0.0F);
             b.box(DETAIL, -0.35F, SKIRT_LENGTH - 1.2F, -width / 2, 0.7F, 0.4F, width); // hem stripe
         } else {
-            b.box(MAIN, -width / 2, 0.0F, -0.3F, width, SKIRT_LENGTH, 0.6F);
+            b.bandedBox(-width / 2, 0.0F, -0.3F, width, SKIRT_LENGTH, 0.6F, 0.0F);
             b.box(DETAIL, -width / 2, SKIRT_LENGTH - 1.2F, -0.35F, width, 0.4F, 0.7F);
         }
         b.build();
@@ -250,8 +258,8 @@ public final class CosmeticModels {
     private static LayerDefinition hoodie() {
         MeshDefinition mesh = emptyPlayerMesh();
         PartDefinition root = mesh.getRoot();
-        Groups.Builder body = new Groups.Builder(pivot(root.getChild("body"), "hoodie", PartPose.ZERO));
-        body.box(MAIN, -4.0F, 0.0F, -2.0F, 8, 12, 4, HOODIE_BODY_INFLATE);
+        Groups.Builder body = new Groups.Builder(pivot(root.getChild("body"), "hoodie", PartPose.ZERO)).bandRange(0.0F, 12.0F);
+        body.bandedBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, HOODIE_BODY_INFLATE);
         body.box(ACCENT, -4.0F, 12.0F, -2.0F, 8, 1.5F, 4, HOODIE_HEM_INFLATE);       // ribbed hem
         body.box(ACCENT, -3.2F, 7.2F, -2.75F, 6.4F, 3.3F, 0.35F);                    // kangaroo pocket
         body.box(DARK, -2.4F, 7.4F, -2.85F, 4.8F, 0.3F, 0.15F);                      // pocket opening
@@ -269,13 +277,49 @@ public final class CosmeticModels {
 
         for (String arm : new String[]{"right_arm", "left_arm"}) {
             float x0 = arm.equals("right_arm") ? -3.0F : -1.0F;
-            Groups.Builder sleeve = new Groups.Builder(pivot(root.getChild(arm), "sleeve", PartPose.ZERO));
-            sleeve.box(MAIN, x0, -2.0F, -2.0F, 4, 11, 4, HOODIE_ARM_INFLATE);
+            Groups.Builder sleeve = new Groups.Builder(pivot(root.getChild(arm), "sleeve", PartPose.ZERO)).bandRange(-2.0F, 9.0F);
+            sleeve.bandedBox(x0, -2.0F, -2.0F, 4, 11, 4, HOODIE_ARM_INFLATE);
             sleeve.box(ACCENT, x0, 9.0F, -2.0F, 4, 1.5F, 4, HOODIE_CUFF_INFLATE);    // ribbed cuff
             sleeve.build();
             Groups.Builder cuff = new Groups.Builder(pivot(root.getChild(arm), "cuff", PartPose.ZERO));
             cuff.box(ACCENT, x0, 10.5F, -2.0F, 4, 2.2F, 4, HOODIE_CUFF_INFLATE);     // hands hidden in sleeves
             cuff.build();
+        }
+        return layerOf(mesh);
+    }
+
+    /** Stand-alone sleeves; their pose is copied from the first-person arm each frame. */
+    private static LayerDefinition hoodieFirstPerson() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        for (String side : new String[]{"right", "left"}) {
+            float x0 = side.equals("right") ? -3.0F : -1.0F;
+            root.addOrReplaceChild(side + "_sleeve", CubeListBuilder.create().texOffs(0, 0)
+                    .addBox(x0, -2.0F, -2.0F, 4, 9, 4, new CubeDeformation(HOODIE_ARM_INFLATE)), PartPose.ZERO);
+            root.addOrReplaceChild(side + "_cuff", CubeListBuilder.create().texOffs(16, 16)
+                    .addBox(x0, 7.0F, -2.0F, 4, 1.5F, 4, HOODIE_CUFF_INFLATE), PartPose.ZERO);
+        }
+        return layerOf(mesh);
+    }
+
+    /** Cells in body space just in front of the hoodie torso's front face (x -4.42..4.42, y -0.42..12.42). */
+    private static LayerDefinition hoodieChestPanel() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        float left = -4.0F - HOODIE_BODY_INFLATE;
+        float top = -HOODIE_BODY_INFLATE;
+        float width = 8.0F + 2 * HOODIE_BODY_INFLATE;
+        float height = 12.0F + 2 * HOODIE_BODY_INFLATE;
+        float cw = width / PANEL_COLUMNS;
+        float ch = height / PANEL_ROWS;
+        float front = -2.0F - HOODIE_BODY_INFLATE - 0.06F;
+        for (int row = 0; row < PANEL_ROWS; row++) {
+            for (int col = 0; col < PANEL_COLUMNS; col++) {
+                root.addOrReplaceChild("cell" + (row * PANEL_COLUMNS + col),
+                        CubeListBuilder.create().texOffs(col * 3 % 48, row * 3 % 48)
+                                .addBox(left + col * cw, top + row * ch, front, cw, ch, 0.05F),
+                        PartPose.ZERO);
+            }
         }
         return layerOf(mesh);
     }
@@ -323,9 +367,9 @@ public final class CosmeticModels {
 
     /** Base: shows one color group of the layer. */
     public static class GroupModel extends PlayerModel {
-        public GroupModel(ModelPart root, Groups group) {
+        public GroupModel(ModelPart root, Groups group, int band) {
             super(root, false);
-            Groups.show(root, group);
+            Groups.show(root, group, band);
         }
     }
 
@@ -339,8 +383,8 @@ public final class CosmeticModels {
         private final ModelPart leftEar;
         private final ModelPart rightEar;
 
-        public CatEarsModel(ModelPart root, Groups group) {
-            super(root, group);
+        public CatEarsModel(ModelPart root, Groups group, int band) {
+            super(root, group, band);
             this.leftEar = head.getChild("left_ear");
             this.rightEar = head.getChild("right_ear");
         }
@@ -372,8 +416,8 @@ public final class CosmeticModels {
         private static final float WALK_LIFT = 0.25F;
         private final ModelPart[] segments = new ModelPart[TAIL_SEGMENTS];
 
-        public TailModel(ModelPart root, Groups group) {
-            super(root, group);
+        public TailModel(ModelPart root, Groups group, int band) {
+            super(root, group, band);
             ModelPart part = body;
             for (int i = 0; i < TAIL_SEGMENTS; i++) {
                 part = part.getChild("segment" + i);
@@ -395,23 +439,6 @@ public final class CosmeticModels {
         }
     }
 
-    /**
-     * Socks/tights: {@code group == MAIN} draws stripe band {@code band} (-1 = all bands),
-     * other groups draw cuffs, toe/heel and bow.
-     */
-    public static final class LegwearModel extends GroupModel {
-        public LegwearModel(ModelPart root, Groups group, int band) {
-            super(root, group);
-            for (ModelPart leg : new ModelPart[]{leftLeg, rightLeg}) {
-                ModelPart bands = leg.getChild("bands");
-                bands.visible = group == MAIN;
-                for (int i = 0; i < SOCK_BANDS; i++) {
-                    bands.getChild("band" + i).visible = band < 0 || band == i;
-                }
-            }
-        }
-    }
-
     /** Pleat strips follow the legs individually; outer strips flare more (SPEC §4.5). */
     public static final class SkirtModel extends GroupModel {
         private static final float REST_FLARE = 0.1F;
@@ -422,8 +449,8 @@ public final class CosmeticModels {
         private final ModelPart[] left = new ModelPart[SIDE_PLEATS];
         private final ModelPart[] right = new ModelPart[SIDE_PLEATS];
 
-        public SkirtModel(ModelPart root, Groups group) {
-            super(root, group);
+        public SkirtModel(ModelPart root, Groups group, int band) {
+            super(root, group, band);
             for (int i = 0; i < FRONT_PLEATS; i++) {
                 front[i] = body.getChild("front" + i);
                 back[i] = body.getChild("back" + i);
@@ -460,8 +487,8 @@ public final class CosmeticModels {
         private final ModelPart leftCuff;
         private final ModelPart rightCuff;
 
-        public HoodieModel(ModelPart root, Groups group) {
-            super(root, group);
+        public HoodieModel(ModelPart root, Groups group, int band) {
+            super(root, group, band);
             this.leftCuff = leftArm.getChild("cuff");
             this.rightCuff = rightArm.getChild("cuff");
         }

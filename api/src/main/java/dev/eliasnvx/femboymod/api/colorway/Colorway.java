@@ -76,6 +76,25 @@ public record Colorway(int baseColor, Optional<Holder<ColorwayPattern>> pattern,
     }
 
     /**
+     * Returns the color at a point of a 2D surface (stripes plus a chevron if the pattern has one).
+     * Does not allocate.
+     *
+     * @param u 0 (left) .. 1 (right)
+     * @param v 0 (top) .. 1 (bottom)
+     * @return {@code 0xRRGGBB}
+     */
+    public int colorAt(float u, float v) {
+        return pattern.map(p -> p.value().colorAt(u, v, baseColor, secondaryColor.orElse(DEFAULT_SECONDARY))).orElse(baseColor);
+    }
+
+    /**
+     * @return whether the pattern has a chevron (needs 2D surfaces to show)
+     */
+    public boolean hasChevron() {
+        return pattern.isPresent() && pattern.get().value().chevron().isPresent();
+    }
+
+    /**
      * Returns the number of stripes (1 for a solid colorway).
      *
      * @return stripe count

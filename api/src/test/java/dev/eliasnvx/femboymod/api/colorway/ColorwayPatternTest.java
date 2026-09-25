@@ -44,4 +44,21 @@ class ColorwayPatternTest {
             assertTrue(ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(bad)).isError(), bad);
         }
     }
+
+    @Test
+    void chevronCoversLeftEdgeAndStripesTheRest() {
+        ColorwayPattern progress = parse("{\"stripes\":[\"#FF0000\",\"#0000FF\"],"
+                + "\"chevron\":{\"colors\":[\"#FFFFFF\",\"#000000\"],\"band_width\":0.1}}");
+        assertEquals(0xFFFFFF, progress.colorAt(0.02F, 0.5F, 0, 0), "left edge, middle: first chevron band");
+        assertEquals(0x000000, progress.colorAt(0.15F, 0.5F, 0, 0), "second chevron band");
+        assertEquals(0xFF0000, progress.colorAt(0.9F, 0.2F, 0, 0), "right side top: first stripe");
+        assertEquals(0x0000FF, progress.colorAt(0.9F, 0.8F, 0, 0), "right side bottom: second stripe");
+        // chevron is an arrow: at the top edge it is narrower than in the middle
+        assertEquals(0xFF0000, progress.colorAt(0.15F, 0.05F, 0, 0), "outside the arrow near the top");
+    }
+
+    @Test
+    void chevronIsOptional() {
+        assertTrue(parse("{\"stripes\":[\"base\"]}").chevron().isEmpty());
+    }
 }
