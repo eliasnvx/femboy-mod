@@ -6,7 +6,8 @@
   "client": [
     "client.AvatarRenderStateMixin",
     "client.AvatarRendererMixin",
-    "client.MinecraftGlowMixin"
+    "client.MinecraftGlowMixin",
+    "client.AvatarRendererHandMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -8,6 +8,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A stripe pattern for colorways, loaded from data packs at
@@ -20,9 +21,18 @@ import java.util.List;
  * A stripe may also be {@code "base"} or {@code "secondary"} to use the item's own colors, e.g.
  * {@code { "stripes": ["base", "secondary"] }} for two-tone stripes.
  *
+ * <p>Optionally a {@code chevron} (like the Progress Pride flag) is drawn over the stripes from the left
+ * edge, on surfaces that support 2D patterns (other surfaces show only the stripes):
+ * <pre>{@code
+ * "chevron": { "colors": ["#FFFFFF", "#F5A9B8", "#5BCEFA", "#784F17", "#000000"], "band_width": 0.07 }
+ * }</pre>
+ * {@code colors} go from the left edge toward the arrow tip; {@code band_width} is each band's width as a
+ * fraction of the surface width.
+ *
  * @param stripes stripes from top to bottom; never empty
+ * @param chevron optional chevron drawn over the stripes
  */
-public record ColorwayPattern(List<Stripe> stripes) {
+public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron) {
 
     /** Registry key of the {@code femboymod:colorway} data pack registry. */
     public static final ResourceKey<Registry<ColorwayPattern>> REGISTRY_KEY =
@@ -30,7 +40,8 @@ public record ColorwayPattern(List<Stripe> stripes) {
 
     /** Codec for the JSON file format. */
     public static final Codec<ColorwayPattern> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Stripe.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("stripes").forGetter(ColorwayPattern::stripes)
+            Stripe.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("stripes").forGetter(ColorwayPattern::stripes),
+            Chevron.CODEC.optionalFieldOf("chevron").forGetter(ColorwayPattern::chevron)
     ).apply(instance, ColorwayPattern::new));
 
     /**
@@ -44,6 +55,66 @@ public record ColorwayPattern(List<Stripe> stripes) {
             throw new IllegalArgumentException("A colorway pattern needs at least one stripe");
         }
         stripes = List.copyOf(stripes);
+    }
+
+    /**
+     * Creates a stripes-only pattern.
+     *
+     * @param stripes stripes from top to bottom
+     */
+    public ColorwayPattern(List<Stripe> stripes) {
+        this(stripes, Optional.empty());
+    }
+
+    /**
+     * Returns the color at a point of a 2D surface, including the chevron. Does not allocate.
+     *
+     * @param u              0 (left edge) .. 1 (right edge)
+     * @param v              0 (top) .. 1 (bottom)
+     * @param baseColor      item base color
+     * @param secondaryColor item secondary color
+     * @return {@code 0xRRGGBB}
+     */
+    public int colorAt(float u, float v, int baseColor, int secondaryColor) {
+        if (chevron.isPresent()) {
+            int band = chevron.get().bandAt(u, v);
+            if (band >= 0) {
+                return chevron.get().colors().get(band);
+            }
+        }
+        int index = Math.min(stripes.size() - 1, Math.max(0, (int) (v * stripes.size())));
+        return stripes.get(index).resolve(baseColor, secondaryColor);
+    }
+
+    /**
+     * A Progress-style chevron: nested arrow bands pointing right from the left edge.
+     *
+     * @param colors    band colors from the left edge toward the tip, {@code 0xRRGGBB}
+     * @param bandWidth each band's width as a fraction of the surface width
+     */
+    public record Chevron(List<Integer> colors, float bandWidth) {
+
+        /** JSON codec. */
+        public static final Codec<Chevron> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Colors.RGB_HEX_CODEC.listOf(1, 16).fieldOf("colors").forGetter(Chevron::colors),
+                Codec.floatRange(0.01F, 0.5F).fieldOf("band_width").forGetter(Chevron::bandWidth)
+        ).apply(instance, Chevron::new));
+
+        /** Copies the color list. */
+        public Chevron {
+            colors = List.copyOf(colors);
+        }
+
+        /**
+         * @param u 0..1 from the left edge
+         * @param v 0..1 from the top
+         * @return band index, or -1 if the point is outside the chevron
+         */
+        public int bandAt(float u, float v) {
+            float distance = u + Math.abs(v - 0.5F);
+            int band = (int) (distance / bandWidth);
+            return band < colors.size() ? band : -1;
+        }
     }
 
     /**
