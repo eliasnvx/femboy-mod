@@ -12,6 +12,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -178,6 +181,15 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.takeScreenshot("femboymod_config_screen");
             context.setScreen(() -> null);
 
+            // Item icons at a large GUI scale (32x32 icons, SPEC 11.4)
+            world.getServer().runOnServer(server -> fillInventoryWithModItems(server.getPlayerList().getPlayers().getFirst()));
+            context.waitTicks(SETTLE_TICKS / 4);
+            context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
+            context.waitTicks(SETTLE_TICKS / 4);
+            context.takeScreenshot("femboymod_inventory_icons");
+            context.setScreen(() -> null);
+            world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst().getInventory().clearContent());
+
             // First person: hoodie sleeve over the hand
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
             context.waitTicks(SETTLE_TICKS / 2);
@@ -241,5 +253,12 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             mc.gui.hud.toggle();
         });
         context.waitTicks(SETTLE_TICKS / 4);
+    }
+
+    private static void fillInventoryWithModItems(ServerPlayer player) {
+        player.getInventory().clearContent();
+        BuiltInRegistries.ITEM.stream()
+                .filter(item -> BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(FemboyMod.MOD_ID))
+                .forEach(item -> player.getInventory().add(new ItemStack(item)));
     }
 }
