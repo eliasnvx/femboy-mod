@@ -56,3 +56,5 @@ assemble.dependsOn shadowJar
 
 // `build` -> `check` -> GameTests on NeoForge too (Fabric wires runGameTest into build itself).
 tasks.named("check") { dependsOn "runGameTestServer" }
+
+apply from: rootProject.file("gradle/publish-mod.gradle")

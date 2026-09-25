@@ -25,6 +25,17 @@ dependencies {
     implementation "dev.architectury:architectury-fabric:${rootProject.architectury_api_version}"
     implementation "com.geckolib:geckolib-fabric-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
+    // Compat smoke test (SPEC §9): ./gradlew :fabric:runClientGameTest -Pcompat_render=true
+    // loads Sodium + Iris into the dev runtime only. Never a compile dependency.
+    if (project.findProperty("compat_render") == "true") {
+        runtimeOnly "maven.modrinth:sodium:${rootProject.sodium_fabric_version}"
+        runtimeOnly "maven.modrinth:iris:${rootProject.iris_fabric_version}"
+    }
+    // JEI compat check (SPEC §9): ./gradlew :fabric:runClient -Pcompat_jei=true
+    if (project.findProperty("compat_jei") == "true") {
+        runtimeOnly "mezz.jei:jei-${rootProject.minecraft_version}-fabric:${rootProject.jei_version}"
+    }
+
     common(project(path: ":api")) { transitive false }
     common(project(path: ":common")) { transitive false }
     shadowBundle(project(path: ":api", configuration: "transformProductionFabric")) { transitive false }
@@ -60,3 +71,5 @@ shadowJar {
 }
 
 assemble.dependsOn shadowJar
+
+apply from: rootProject.file("gradle/publish-mod.gradle")

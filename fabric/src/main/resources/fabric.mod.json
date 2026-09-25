@@ -16,6 +16,9 @@
     "client": [
       "dev.eliasnvx.femboymod.fabric.FemboyModFabricClient"
     ],
+    "jei_mod_plugin": [
+      "dev.eliasnvx.femboymod.compat.jei.FemboyJeiPlugin"
+    ],
     "modmenu": [
       "dev.eliasnvx.femboymod.fabric.FemboyModMenu"
     ]
@@ -35,6 +38,7 @@
     "femboymod.mixins.json"
   ],
   "suggests": {
-    "modmenu": "*"
+    "modmenu": "*",
+    "jei": "*"
   }
 }

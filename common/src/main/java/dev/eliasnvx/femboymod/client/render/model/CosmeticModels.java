@@ -19,6 +19,7 @@ import net.minecraft.util.Mth;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static dev.eliasnvx.femboymod.client.render.model.Groups.ACCENT;
 import static dev.eliasnvx.femboymod.client.render.model.Groups.BANDED;
@@ -82,18 +83,25 @@ public final class CosmeticModels {
     }
 
     public static void registerLayers() {
-        EntityModelLayerRegistry.register(CAT_EARS, CosmeticModels::catEars);
-        EntityModelLayerRegistry.register(TAIL, CosmeticModels::tail);
-        EntityModelLayerRegistry.register(SOCKS, () -> legwear(SOCK_INFLATE, true));
-        EntityModelLayerRegistry.register(FISHNET, () -> legwear(FISHNET_INFLATE, false));
-        EntityModelLayerRegistry.register(SKIRT, CosmeticModels::skirt);
-        EntityModelLayerRegistry.register(HOODIE, CosmeticModels::hoodie);
-        EntityModelLayerRegistry.register(CHOKER, CosmeticModels::choker);
-        EntityModelLayerRegistry.register(HOODIE_CHEST_PANEL, CosmeticModels::hoodieChestPanel);
-        EntityModelLayerRegistry.register(HOODIE_FIRST_PERSON, CosmeticModels::hoodieFirstPerson);
-        EntityModelLayerRegistry.register(BACKPACK, CosmeticModels::backpack);
-        EntityModelLayerRegistry.register(BACKPACK_CHARMS, CosmeticModels::backpackCharms);
-        HAIR_CLIPS.forEach((shape, location) -> EntityModelLayerRegistry.register(location, () -> hairClip(shape)));
+        definitions().forEach(EntityModelLayerRegistry::register);
+    }
+
+    /** All code model layers in registration order; also read by the Blockbench starter exporter (dev tool). */
+    public static Map<ModelLayerLocation, Supplier<LayerDefinition>> definitions() {
+        Map<ModelLayerLocation, Supplier<LayerDefinition>> layers = new LinkedHashMap<>();
+        layers.put(CAT_EARS, CosmeticModels::catEars);
+        layers.put(TAIL, CosmeticModels::tail);
+        layers.put(SOCKS, () -> legwear(SOCK_INFLATE, true));
+        layers.put(FISHNET, () -> legwear(FISHNET_INFLATE, false));
+        layers.put(SKIRT, CosmeticModels::skirt);
+        layers.put(HOODIE, CosmeticModels::hoodie);
+        layers.put(CHOKER, CosmeticModels::choker);
+        layers.put(HOODIE_CHEST_PANEL, CosmeticModels::hoodieChestPanel);
+        layers.put(HOODIE_FIRST_PERSON, CosmeticModels::hoodieFirstPerson);
+        layers.put(BACKPACK, CosmeticModels::backpack);
+        layers.put(BACKPACK_CHARMS, CosmeticModels::backpackCharms);
+        HAIR_CLIPS.forEach((shape, location) -> layers.put(location, () -> hairClip(shape)));
+        return layers;
     }
 
     private static MeshDefinition emptyPlayerMesh() {
@@ -481,6 +489,15 @@ public final class CosmeticModels {
             }
         }
 
+        /** Pose with no motion (droop and curl); the Blockbench starter export bakes it into the bones. */
+        public static void applyRestPose(ModelPart root) {
+            ModelPart part = root.getChild("body");
+            for (int i = 0; i < TAIL_SEGMENTS; i++) {
+                part = part.getChild("segment" + i);
+                part.xRot = i == 0 ? DROOP : CURL;
+            }
+        }
+
         @Override
         public void setupAnim(AvatarRenderState state) {
             super.setupAnim(state);
@@ -514,6 +531,21 @@ public final class CosmeticModels {
             for (int i = 0; i < SIDE_PLEATS; i++) {
                 left[i] = body.getChild("left" + i);
                 right[i] = body.getChild("right" + i);
+            }
+        }
+
+        /** Standing pose (legs straight); the Blockbench starter export bakes it into the bones. */
+        public static void applyRestPose(ModelPart root) {
+            ModelPart body = root.getChild("body");
+            float half = (FRONT_PLEATS - 1) / 2.0F;
+            for (int i = 0; i < FRONT_PLEATS; i++) {
+                float outer = 1.0F + OUTER_EXTRA * Math.abs(i - half) / half;
+                body.getChild("front" + i).xRot = -REST_FLARE * outer;
+                body.getChild("back" + i).xRot = REST_FLARE * outer;
+            }
+            for (int i = 0; i < SIDE_PLEATS; i++) {
+                body.getChild("left" + i).zRot = -REST_FLARE;
+                body.getChild("right" + i).zRot = REST_FLARE;
             }
         }
 

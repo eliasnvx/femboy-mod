@@ -1,0 +1,37 @@
+GIMP Palette
+Name: femboymod
+Columns: 8
+# Project palette (SPEC 11.2): 32 colours, hand-picked starter set in 3-4 tone ramps.
+# Outlines use the darker end of each ramp; there is no pure black on purpose.
+ 36  28  40	ink
+ 64  52  70	shadow grey
+110  98 116	stone grey
+168 160 172	light grey
+232 228 236	off white
+255 255 255	white
+ 92  38  70	deep berry
+156  60 110	berry
+220 110 160	pink
+255 170 205	light pink
+255 214 232	blush
+ 58  44 108	deep purple
+104  76 168	purple
+160 130 220	lavender
+214 196 246	pale lavender
+ 30  56 110	deep blue
+ 52 102 180	blue
+100 160 230	sky blue
+170 214 250	pale blue
+ 32  96  96	deep teal
+ 60 150 140	teal
+ 80  48  30	dark brown
+128  84  52	brown
+184 132  84	tan
+228 190 140	sand
+120  28  36	dark red
+196  56  60	red
+232 120  40	orange
+248 200  64	yellow
+ 40  92  40	dark green
+ 84 148  64	green
+152 204 104	light green
