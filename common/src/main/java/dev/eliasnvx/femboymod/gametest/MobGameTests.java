@@ -3,9 +3,13 @@ package dev.eliasnvx.femboymod.gametest;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.combat.DripCombat;
+import dev.eliasnvx.femboymod.config.CommonConfig;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.effect.CosmeticEffectsManager;
 import dev.eliasnvx.femboymod.entity.Bug;
+import dev.eliasnvx.femboymod.entity.CaffeinatedZombie;
+import dev.eliasnvx.femboymod.entity.HissyCat;
 import dev.eliasnvx.femboymod.entity.FemboyEntities;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
 import net.minecraft.core.BlockPos;
@@ -22,7 +26,8 @@ public final class MobGameTests {
 
     public static final List<CosmeticGameTests.Entry> ALL = List.of(
             new CosmeticGameTests.Entry("drip_reduces_bug_damage", MobGameTests::dripReducesBugDamage),
-            new CosmeticGameTests.Entry("socks_hit_bugs_harder", MobGameTests::socksHitBugsHarder));
+            new CosmeticGameTests.Entry("socks_hit_bugs_harder", MobGameTests::socksHitBugsHarder),
+            new CosmeticGameTests.Entry("meme_mobs_use_config_and_drip", MobGameTests::memeMobsUseConfigAndDrip));
 
     private static final BlockPos MOB_POS = new BlockPos(1, 2, 1);
     private static final float HIT = 4.0F;
@@ -47,6 +52,24 @@ public final class MobGameTests {
             helper.assertValueEqual(tier, 3, "full set is drip tier 3");
             float reduced = DripCombat.modifyIncoming(player, helper.getLevel(), bite, HIT);
             helper.assertTrue(Math.abs(reduced - HIT * 0.6F) < EPSILON, "tier 3 takes 60% from bugs, got " + reduced);
+        });
+    }
+
+    /** Stats come from config; drip softens the angry memes too ({@code drip_damage/meme_monsters.json}). */
+    public static void memeMobsUseConfigAndDrip(GameTestHelper helper) {
+        CommonConfig.Mobs mobs = FemboyConfig.common().mobs();
+        CaffeinatedZombie zombie = helper.spawnWithNoFreeWill(FemboyEntities.CAFFEINATED_ZOMBIE.get(), MOB_POS);
+        HissyCat cat = helper.spawnWithNoFreeWill(FemboyEntities.HISSY_CAT.get(), MOB_POS.east());
+        helper.assertValueEqual((double) zombie.getMaxHealth(), mobs.caffeinatedZombie().health(), "zombie health from config");
+        helper.assertValueEqual((double) cat.getMaxHealth(), mobs.hissyCat().health(), "cat health from config");
+        WearableGameTests.withPlayer(helper, player -> {
+            CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get()));
+            CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get()));
+            CosmeticsManager.set(player, FemboySlots.OUTFIT_BOTTOM, new ItemStack(FemboyItems.PLEATED_SKIRT.get()));
+            CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.FISHNET_TIGHTS.get()));
+            CosmeticEffectsManager.tick(player);
+            float hit = DripCombat.modifyIncoming(player, helper.getLevel(), player.damageSources().mobAttack(zombie), HIT);
+            helper.assertTrue(Math.abs(hit - HIT * 0.75F) < EPSILON, "tier 3 takes 75% from meme monsters, got " + hit);
         });
     }
 

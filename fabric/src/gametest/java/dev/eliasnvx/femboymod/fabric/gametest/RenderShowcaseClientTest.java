@@ -205,6 +205,15 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.waitTicks(SETTLE_TICKS);
             closeUp(context, "femboymod_closeup_bugs");
             world.getServer().runCommand("kill @e[type=femboymod:bug]");
+            world.getServer().runCommand("summon femboymod:caffeinated_zombie ~-1.2 ~ ~-6 {NoAI:1b,PersistenceRequired:1b,Rotation:[10f,0f],equipment:{mainhand:{id:\"femboymod:byte_energy_pink\",count:1}}}");
+            world.getServer().runCommand("summon femboymod:hissy_cat ~0.8 ~ ~-3.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[-15f,0f]}");
+            world.getServer().runCommand("time set midnight");
+            world.getServer().runCommand("tp @p ~ ~ ~ 180 8");
+            context.waitTicks(SETTLE_TICKS * 2); // let the bugs' death particles fade
+            closeUp(context, "femboymod_closeup_meme_mobs");
+            world.getServer().runCommand("time set noon");
+            world.getServer().runCommand("kill @e[type=femboymod:caffeinated_zombie]");
+            world.getServer().runCommand("kill @e[type=femboymod:hissy_cat]");
 
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().getFirst();

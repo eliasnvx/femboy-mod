@@ -87,6 +87,8 @@ public final class FemboyItems {
     // Hostile meme mobs: drops and spawn eggs
     public static final RegistrySupplier<Item> GLITCH_SHARD = register("glitch_shard", props -> new Item(props));
     public static final RegistrySupplier<Item> BUG_SPAWN_EGG = spawnEgg("bug_spawn_egg", FemboyEntities.BUG_KEY);
+    public static final RegistrySupplier<Item> CAFFEINATED_ZOMBIE_SPAWN_EGG = spawnEgg("caffeinated_zombie_spawn_egg", FemboyEntities.CAFFEINATED_ZOMBIE_KEY);
+    public static final RegistrySupplier<Item> HISSY_CAT_SPAWN_EGG = spawnEgg("hissy_cat_spawn_egg", FemboyEntities.HISSY_CAT_KEY);
 
     /** Hair clip shapes (SPEC §5.1: "10 forms"); all share the hair_clip renderer. */
     public static final List<String> HAIR_CLIP_SHAPES = List.of(
