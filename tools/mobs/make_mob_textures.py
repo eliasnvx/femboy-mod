@@ -79,7 +79,18 @@ def bug():
     return img
 
 
-TEXTURES = {"bug.png": bug}
+def hissy_cat_eyes():
+    """Emissive eyes for the vanilla adult cat UV (head front face: x 5..9, y 5..8)."""
+    img = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
+    glow, pupil = hexc("#E8FF4A"), hexc("#FF7A2E")
+    for x, y in ((5, 6), (9, 6)):
+        img.putpixel((x, y), glow)
+    for x, y in ((6, 6), (8, 6)):     # inner half of each eye: slit pupil
+        img.putpixel((x, y), pupil)
+    return img
+
+
+TEXTURES = {"bug.png": bug, "hissy_cat_eyes.png": hissy_cat_eyes}
 
 
 def main():
