@@ -1,0 +1,34 @@
+{
+  "parent": "femboymod:main/full_femboy_mode",
+  "display": {
+    "icon": {
+      "id": "femboymod:wolf_ears"
+    },
+    "title": {
+      "translate": "advancements.femboymod.tough_crowd.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.tough_crowd.description"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "critic": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:entity_type": "femboymod:fashion_critic"
+          }
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "critic"
+    ]
+  ]
+}

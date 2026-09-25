@@ -74,19 +74,39 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
     }
 
     /** Hostile meme mobs: bugs, the caffeinated zombie, the hissy cat and the Fashion Critic mini-boss. */
-    public record Mobs(Mob bug, Mob caffeinatedZombie, Mob hissyCat, Mob fashionCritic) {
+    public record Mobs(Mob bug, Mob caffeinatedZombie, Mob hissyCat, Mob fashionCritic, CriticReview criticReview) {
 
         public static final Mobs DEFAULTS = new Mobs(
                 new Mob(40, 3, 5, 6.0, 2.0, 0.32),
                 new Mob(20, 1, 2, 20.0, 3.0, 0.3),
                 new Mob(15, 1, 1, 10.0, 3.0, 0.38),
-                new Mob(1, 1, 1, 80.0, 7.0, 0.3));
+                new Mob(1, 1, 1, 80.0, 7.0, 0.3),
+                CriticReview.DEFAULTS);
 
         public static final Codec<Mobs> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Mob.codec(DEFAULTS.bug).fieldOf("bug").orElse(DEFAULTS.bug).forGetter(Mobs::bug),
                 Mob.codec(DEFAULTS.caffeinatedZombie).fieldOf("caffeinated_zombie").orElse(DEFAULTS.caffeinatedZombie).forGetter(Mobs::caffeinatedZombie),
                 Mob.codec(DEFAULTS.hissyCat).fieldOf("hissy_cat").orElse(DEFAULTS.hissyCat).forGetter(Mobs::hissyCat),
-                Mob.codec(DEFAULTS.fashionCritic).fieldOf("fashion_critic").orElse(DEFAULTS.fashionCritic).forGetter(Mobs::fashionCritic)
+                Mob.codec(DEFAULTS.fashionCritic).fieldOf("fashion_critic").orElse(DEFAULTS.fashionCritic).forGetter(Mobs::fashionCritic),
+                CriticReview.CODEC.fieldOf("critic_review").orElse(DEFAULTS.criticReview).forGetter(Mobs::criticReview)
         ).apply(i, Mobs::new));
+    }
+
+    /**
+     * The Fashion Critic's "review": every {@code cooldownTicks} it judges its target within {@code range}.
+     * Drip tier below {@code impressedTier}: slowness + weakness on the player; otherwise the critic is
+     * impressed and gets weakness itself. Effects last {@code effectTicks}.
+     */
+    public record CriticReview(int cooldownTicks, double range, int impressedTier, int effectTicks, int slownessLevel) {
+
+        public static final CriticReview DEFAULTS = new CriticReview(160, 12.0, 3, 100, 1);
+
+        public static final Codec<CriticReview> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.intRange(20, 12000).fieldOf("cooldown_ticks").orElse(DEFAULTS.cooldownTicks).forGetter(CriticReview::cooldownTicks),
+                Codec.doubleRange(1, 64).fieldOf("range").orElse(DEFAULTS.range).forGetter(CriticReview::range),
+                Codec.intRange(0, 32).fieldOf("impressed_tier").orElse(DEFAULTS.impressedTier).forGetter(CriticReview::impressedTier),
+                Codec.intRange(1, 12000).fieldOf("effect_ticks").orElse(DEFAULTS.effectTicks).forGetter(CriticReview::effectTicks),
+                Codec.intRange(0, 4).fieldOf("slowness_level").orElse(DEFAULTS.slownessLevel).forGetter(CriticReview::slownessLevel)
+        ).apply(i, CriticReview::new));
     }
 }

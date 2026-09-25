@@ -122,6 +122,7 @@ ICONS = {
     "bug_spawn_egg.png": lambda: spawn_egg(hexc("#3B2A57"), hexc("#5CFF8A"), 1),
     "caffeinated_zombie_spawn_egg.png": lambda: spawn_egg(hexc("#4E8A4A"), hexc("#FF5CB8"), 2),
     "hissy_cat_spawn_egg.png": lambda: spawn_egg(hexc("#26222E"), hexc("#E8FF4A"), 3),
+    "fashion_critic_spawn_egg.png": lambda: spawn_egg(hexc("#1E1B22"), hexc("#E8C24A"), 4),
 }
 
 

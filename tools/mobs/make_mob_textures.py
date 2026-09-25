@@ -90,7 +90,64 @@ def hissy_cat_eyes():
     return img
 
 
-TEXTURES = {"bug.png": bug, "hissy_cat_eyes.png": hissy_cat_eyes}
+def fashion_critic():
+    """Player skin layout (64x64): head 0,0; hat 32,0; body 16,16; right arm 40,16; left arm 32,48;
+    right leg 0,16; left leg 16,48. Overlay layers (jacket, sleeves, pants) stay transparent."""
+    rng = random.Random(11)
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    skin, hair, beret = hexc("#EBC8AE"), hexc("#2B2230"), hexc("#7A1F45")
+    black, collar, gold = hexc("#1E1B22"), hexc("#2C2833"), hexc("#E8C24A")
+    trousers, shoes, lips, lens = hexc("#4A4A58"), hexc("#141216"), hexc("#B8506A"), hexc("#101014")
+    soft = (0.97, 1.0, 1.0, 1.03)
+
+    box(img, 0, 0, 8, 8, 8, skin, rng, soft)
+    f = faces(0, 0, 8, 8, 8)
+    fill(img, f["up"], hair, rng, soft)
+    fill(img, f["south"], hair, rng, soft)
+    for name in ("west", "east"):
+        x, y, w, h = f[name]
+        fill(img, (x, y, w, 4), hair, rng, soft)             # hair down to the ears
+    x, y, w, h = f["north"]                                   # face: fringe, sunglasses, smirk
+    fill(img, (x, y, w, 2), hair, rng, soft)
+    fill(img, (x + 1, y + 3, 3, 2), lens)
+    fill(img, (x + 4, y + 3, 3, 2), lens)
+    img.putpixel((x + 1, y + 3), hexc("#6A6A80"))            # lens shine
+    img.putpixel((x + 4, y + 3), hexc("#6A6A80"))
+    fill(img, (x + 3, y + 6, 3, 1), lips)
+    img.putpixel((x + 6, y + 5), lips)                        # smirk
+
+    hat = faces(32, 0, 8, 8, 8)                               # beret on the hat layer, tilted to the right
+    fill(img, hat["up"], beret, rng, soft)
+    for name in ("north", "south", "west", "east"):
+        x, y, w, h = hat[name]
+        fill(img, (x, y, w, 2), beret, rng, soft)
+    x, y, w, h = hat["east"]
+    fill(img, (x, y + 2, w, 1), beret, rng, soft)             # droops on one side
+    hx, hy, _, _ = hat["up"]
+    img.putpixel((hx + 4, hy + 3), shade(beret, 0.7))         # stem
+
+    box(img, 16, 16, 8, 12, 4, black, rng, soft)              # turtleneck with a gold chain
+    x, y, w, h = faces(16, 16, 8, 12, 4)["north"]
+    fill(img, (x, y, w, 2), collar, rng, soft)
+    for i, (cx, cy) in enumerate(((1, 2), (2, 3), (3, 4), (4, 4), (5, 3), (6, 2))):
+        img.putpixel((x + cx, y + cy), gold)
+    img.putpixel((x + 3, y + 5), gold)                         # pendant
+    for (u, v) in ((40, 16), (32, 48)):                       # arms: sleeves + hands
+        box(img, u, v, 4, 12, 4, black, rng, soft)
+        for name, (fx, fy, fw, fh) in faces(u, v, 4, 12, 4).items():
+            if name in ("north", "south", "west", "east"):
+                fill(img, (fx, fy + 9, fw, 3), skin, rng, soft)
+        fill(img, faces(u, v, 4, 12, 4)["down"], skin, rng, soft)
+    for (u, v) in ((0, 16), (16, 48)):                        # trousers + shoes
+        box(img, u, v, 4, 12, 4, trousers, rng, soft)
+        for name, (fx, fy, fw, fh) in faces(u, v, 4, 12, 4).items():
+            if name in ("north", "south", "west", "east"):
+                fill(img, (fx, fy + 10, fw, 2), shoes, rng, soft)
+        fill(img, faces(u, v, 4, 12, 4)["down"], shoes, rng, soft)
+    return img
+
+
+TEXTURES = {"bug.png": bug, "hissy_cat_eyes.png": hissy_cat_eyes, "fashion_critic.png": fashion_critic}
 
 
 def main():
