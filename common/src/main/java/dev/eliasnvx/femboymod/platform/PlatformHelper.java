@@ -31,6 +31,23 @@ public final class PlatformHelper {
         throw new AssertionError();
     }
 
+    /** Saved wardrobe outfits (persistent, kept on death). */
+    @ExpectPlatform
+    public static dev.eliasnvx.femboymod.wardrobe.WardrobePresets getWardrobePresets(Player player) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static void setWardrobePresets(Player player, dev.eliasnvx.femboymod.wardrobe.WardrobePresets presets) {
+        throw new AssertionError();
+    }
+
+    /** Registers the Thrifter's clothing-rack POI (Fabric needs PoiHelper to map block states). */
+    @ExpectPlatform
+    public static void registerPoi() {
+        throw new AssertionError();
+    }
+
     /** Recent energy drinks (persistent, reset on death). Never null. */
     @ExpectPlatform
     public static dev.eliasnvx.femboymod.energy.CaffeineLog getCaffeineLog(Player player) {

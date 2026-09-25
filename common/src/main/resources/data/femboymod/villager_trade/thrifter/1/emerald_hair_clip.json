@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 2
+  },
+  "gives": {
+    "id": "femboymod:hair_clip_heart"
+  },
+  "max_uses": 8,
+  "xp": 1,
+  "reputation_discount": 0.05
+}

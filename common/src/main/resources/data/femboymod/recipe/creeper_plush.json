@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:lime_wool",
+    "minecraft:lime_wool",
+    "minecraft:black_dye",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:creeper_plush"
+  }
+}

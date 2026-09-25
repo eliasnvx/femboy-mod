@@ -1,0 +1,85 @@
+{
+  "plush.squeak": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/bat/idle1",
+        "pitch": 1.8,
+        "volume": 0.5
+      },
+      {
+        "name": "minecraft:mob/bat/idle3",
+        "pitch": 1.9,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.femboymod.plush.squeak"
+  },
+  "choker.jingle": {
+    "sounds": [
+      {
+        "name": "minecraft:note/bell",
+        "pitch": 1.8,
+        "volume": 0.35
+      },
+      {
+        "name": "minecraft:note/icechime",
+        "pitch": 1.6,
+        "volume": 0.3
+      }
+    ],
+    "subtitle": "subtitles.femboymod.choker.jingle"
+  },
+  "skirt.rustle": {
+    "sounds": [
+      {
+        "name": "minecraft:step/cloth1",
+        "pitch": 1.3,
+        "volume": 0.4
+      },
+      {
+        "name": "minecraft:step/cloth3",
+        "pitch": 1.3,
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.femboymod.skirt.rustle"
+  },
+  "can.open": {
+    "sounds": [
+      {
+        "name": "minecraft:random/pop",
+        "pitch": 1.4,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.femboymod.can.open"
+  },
+  "confetti.pop": {
+    "sounds": [
+      {
+        "name": "minecraft:fireworks/twinkle1",
+        "pitch": 1.2
+      },
+      {
+        "name": "minecraft:fireworks/blast1",
+        "pitch": 1.4
+      }
+    ],
+    "subtitle": "subtitles.femboymod.confetti.pop"
+  },
+  "nya": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/cat/meow1",
+        "pitch": 1.3,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/cat/meow2",
+        "pitch": 1.3,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.femboymod.nya"
+  }
+}

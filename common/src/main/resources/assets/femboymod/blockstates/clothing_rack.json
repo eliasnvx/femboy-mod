@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "femboymod:block/clothing_rack"
+    },
+    "facing=east": {
+      "model": "femboymod:block/clothing_rack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "femboymod:block/clothing_rack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "femboymod:block/clothing_rack",
+      "y": 270
+    }
+  }
+}

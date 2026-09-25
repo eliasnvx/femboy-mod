@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "femboymod:block/creeper_plush"
+    },
+    "facing=east": {
+      "model": "femboymod:block/creeper_plush",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "femboymod:block/creeper_plush",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "femboymod:block/creeper_plush",
+      "y": 270
+    }
+  }
+}

@@ -4,6 +4,8 @@ import dev.eliasnvx.femboymod.api.client.CosmeticMotion;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
+import dev.eliasnvx.femboymod.config.ClientConfig;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
@@ -124,12 +126,21 @@ public final class CosmeticRenderData implements CosmeticMotion {
 
     @Override
     public float turnSway() {
-        return turnSway;
+        return FemboyConfig.client().physics() == ClientConfig.Physics.FULL ? turnSway : 0.0F;
     }
 
     @Override
     public float walkAmount() {
-        return walkAmount;
+        return FemboyConfig.client().physics() == ClientConfig.Physics.OFF ? 0.0F : walkAmount;
+    }
+
+    /** Idle animation strength for the physics option: full 1, simple 0.5, off 0. */
+    public static float idleScale() {
+        return switch (FemboyConfig.client().physics()) {
+            case FULL -> 1.0F;
+            case SIMPLE -> 0.5F;
+            case OFF -> 0.0F;
+        };
     }
 
     @Override

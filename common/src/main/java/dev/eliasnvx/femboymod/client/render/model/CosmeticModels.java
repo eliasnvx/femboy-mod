@@ -485,7 +485,7 @@ public final class CosmeticModels {
         public void setupAnim(AvatarRenderState state) {
             super.setupAnim(state);
             CosmeticMotion motion = motion(state);
-            float amplitude = IDLE_SWAY + WALK_SWAY * motion.walkAmount();
+            float amplitude = IDLE_SWAY * dev.eliasnvx.femboymod.client.render.CosmeticRenderData.idleScale() + WALK_SWAY * motion.walkAmount();
             for (int i = 0; i < TAIL_SEGMENTS; i++) {
                 ModelPart segment = segments[i];
                 segment.xRot = i == 0 ? DROOP + WALK_LIFT * motion.walkAmount() : CURL;

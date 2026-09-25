@@ -12,6 +12,7 @@ import dev.eliasnvx.femboymod.api.effect.EffectSource;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.api.backpack.CharmStats;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -91,7 +92,7 @@ public final class WornEvaluator {
 
         Set<Identifier> activeSets = new TreeSet<>();
         List<Map.Entry<ResourceKey<SetBonus>, SetBonus>> completed = new ArrayList<>();
-        registries.lookup(SetBonus.REGISTRY_KEY).ifPresent(sets -> {
+        registries.lookup(SetBonus.REGISTRY_KEY).filter(sets -> FemboyConfig.common().setBonusesEnabled()).ifPresent(sets -> {
             for (Map.Entry<ResourceKey<SetBonus>, SetBonus> entry : sets.entrySet()) {
                 if (isComplete(entry.getValue(), inventory.all().values())) {
                     activeSets.add(entry.getKey().identifier());

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "N": "minecraft:iron_nugget",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "NNN",
+    "S S",
+    "S S"
+  ],
+  "result": {
+    "id": "femboymod:clothing_rack"
+  }
+}

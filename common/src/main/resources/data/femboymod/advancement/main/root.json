@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "id": "femboymod:cat_ears"
+    },
+    "title": {
+      "translate": "advancements.femboymod.root.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.root.description"
+    },
+    "background": "minecraft:block/pink_wool",
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "got_cute": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#femboymod:thrifter_goods"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "got_cute"
+    ]
+  ]
+}

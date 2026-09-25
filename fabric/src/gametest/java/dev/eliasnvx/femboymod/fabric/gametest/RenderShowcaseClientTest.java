@@ -128,6 +128,49 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.runOnClient(mc -> mc.player.connection.sendCommand("say command stays hello"));
             context.waitTicks(SETTLE_TICKS);
 
+            // Phase 4: world content in front of the player (camera looks north)
+            world.getServer().runCommand("fill ~-4 ~ ~-6 ~4 ~3 ~-2 air");
+            world.getServer().runCommand("setblock ~-2 ~ ~-4 femboymod:clothing_rack[facing=south]");
+            world.getServer().runCommand("setblock ~ ~ ~-5 femboymod:wardrobe[facing=south]");
+            world.getServer().runCommand("setblock ~2 ~ ~-4 femboymod:shark_plush[facing=south]");
+            world.getServer().runCommand("setblock ~3 ~ ~-3 femboymod:cat_plush[facing=south]");
+            world.getServer().runCommand("setblock ~1 ~ ~-3 femboymod:creeper_plush[facing=south]");
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                var level = player.level();
+                var pos = player.blockPosition().offset(-2, 0, -4);
+                if (level.getBlockEntity(pos) instanceof dev.eliasnvx.femboymod.block.ClothingRackBlockEntity rack) {
+                    rack.hang(new ItemStack(FemboyItems.OVERSIZED_HOODIE.get()));
+                    rack.hang(new ItemStack(FemboyItems.PLEATED_SKIRT.get()));
+                    rack.hang(new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()));
+                }
+            });
+            world.getServer().runCommand("summon femboymod:pink_creeper ~-1 ~ ~-2 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}");
+            world.getServer().runCommand("summon minecraft:villager ~3 ~ ~-5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],VillagerData:{profession:\"femboymod:thrifter\",level:2,type:\"minecraft:plains\"}}");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            world.getServer().runCommand("tp @p ~ ~ ~ 180 20"); // yaw 180 = facing north
+            context.waitTicks(SETTLE_TICKS * 2);
+            context.takeScreenshot("femboymod_world_content");
+            world.getServer().runCommand("kill @e[type=femboymod:pink_creeper]");
+            world.getServer().runCommand("tp @p ~ ~ ~ 200 25");
+            context.waitTicks(SETTLE_TICKS);
+            context.takeScreenshot("femboymod_clothing_rack");
+
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                var pos = player.blockPosition().offset(0, 0, -5);
+                if (player.level().getBlockEntity(pos) instanceof dev.eliasnvx.femboymod.block.WardrobeBlockEntity wardrobe) {
+                    player.openMenu(wardrobe);
+                }
+            });
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_wardrobe_screen");
+            context.runOnClient(mc -> mc.player.closeContainer());
+            context.setScreen(() -> new dev.eliasnvx.femboymod.client.ConfigScreen(null));
+            context.waitTicks(SETTLE_TICKS / 4);
+            context.takeScreenshot("femboymod_config_screen");
+            context.setScreen(() -> null);
+
             // First person: hoodie sleeve over the hand
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
             context.waitTicks(SETTLE_TICKS / 2);

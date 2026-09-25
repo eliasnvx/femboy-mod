@@ -8,6 +8,8 @@ import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
+import dev.eliasnvx.femboymod.block.FemboyBlocks;
+import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import dev.eliasnvx.femboymod.energy.CaffeineLog;
 import dev.eliasnvx.femboymod.energy.CaffeineRules;
 import dev.eliasnvx.femboymod.energy.EnergyDrink;
@@ -34,6 +36,10 @@ public final class PlatformHelperImpl {
     private static final AttachmentType<CaffeineLog> CAFFEINE = AttachmentRegistry.create(
             Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "caffeine"),
             builder -> builder.initializer(() -> CaffeineLog.EMPTY).persistent(CaffeineLog.CODEC));
+
+    private static final AttachmentType<WardrobePresets> PRESETS = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "wardrobe_presets"),
+            builder -> builder.initializer(() -> WardrobePresets.EMPTY).persistent(WardrobePresets.CODEC).copyOnDeath());
 
     private PlatformHelperImpl() {
     }
@@ -77,5 +83,18 @@ public final class PlatformHelperImpl {
 
     public static void setCaffeineLog(Player player, CaffeineLog log) {
         player.setAttached(CAFFEINE, log);
+    }
+
+    public static WardrobePresets getWardrobePresets(Player player) {
+        return player.getAttachedOrElse(PRESETS, WardrobePresets.EMPTY);
+    }
+
+    public static void setWardrobePresets(Player player, WardrobePresets presets) {
+        player.setAttached(PRESETS, presets);
+    }
+
+    public static void registerPoi() {
+        net.fabricmc.fabric.api.object.builder.v1.world.poi.PoiHelper.register(FemboyBlocks.THRIFTER_POI.identifier(), 1, 1,
+                FemboyBlocks.CLOTHING_RACK.get());
     }
 }

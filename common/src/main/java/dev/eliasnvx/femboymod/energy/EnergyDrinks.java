@@ -30,6 +30,9 @@ public final class EnergyDrinks {
             CaffeineRules rules = rules(level);
             CaffeineLog log = PlatformHelper.getCaffeineLog(player).drink(level.getGameTime(), rules.jitterWindow());
             PlatformHelper.setCaffeineLog(player, log);
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                dev.eliasnvx.femboymod.entity.FemboyTriggers.fire(serverPlayer, dev.eliasnvx.femboymod.entity.FemboyTriggers.ENERGY_DRINKS, log.total());
+            }
             if (log.count() > rules.jitterAfter()) {
                 rules.jitter().forEach(buff -> player.addEffect(buff.instance()));
             }

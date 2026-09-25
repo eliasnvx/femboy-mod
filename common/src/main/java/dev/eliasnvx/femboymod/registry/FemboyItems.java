@@ -10,6 +10,10 @@ import net.minecraft.core.registries.Registries;
 import dev.eliasnvx.femboymod.energy.EmptyCanBlock;
 import dev.eliasnvx.femboymod.energy.EnergyDrinkItem;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.nbt.CompoundTag;
+import dev.eliasnvx.femboymod.entity.FemboyEntities;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -66,6 +70,13 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> BYTE_ENERGY_PURPLE = energyDrink("byte_energy_purple");
     public static final RegistrySupplier<Item> BYTE_ENERGY_RAINBOW = energyDrink("byte_energy_rainbow");
 
+    // SPEC §5.4: Pink Creeper drops and spawn egg
+    public static final RegistrySupplier<Item> GLITTER = register("glitter", props -> new Item(props));
+    public static final RegistrySupplier<Item> PINK_CREEPER_SPAWN_EGG = register("pink_creeper_spawn_egg", props -> new SpawnEggItem(
+            // ENTITY_DATA resolved late: on NeoForge items may be built before entity types are registered
+            props.delayedComponent(DataComponents.ENTITY_DATA, context -> TypedEntityData.of(
+                    context.lookupOrThrow(Registries.ENTITY_TYPE).getOrThrow(FemboyEntities.PINK_CREEPER_KEY).value(), new CompoundTag()))));
+
     /** Hair clip shapes (SPEC §5.1: "10 forms"); all share the hair_clip renderer. */
     public static final List<String> HAIR_CLIP_SHAPES = List.of(
             "heart", "star", "bow", "flower", "moon", "cherry", "bunny", "fish", "lightning", "butterfly");
@@ -81,6 +92,11 @@ public final class FemboyItems {
     }
 
     private static final int DRINK_STACK = 16;
+
+    /** Block item for a block registered elsewhere (FemboyBlocks). */
+    public static RegistrySupplier<Item> blockItem(String name, RegistrySupplier<Block> block) {
+        return register(name, props -> new BlockItem(block.get(), props.useBlockDescriptionPrefix()));
+    }
 
     private static RegistrySupplier<Item> energyDrink(String name) {
         return register(name, props -> new EnergyDrinkItem(props.stacksTo(DRINK_STACK)

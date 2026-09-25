@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "P": "#minecraft:planks",
+    "C": "minecraft:chest",
+    "D": "minecraft:pink_dye"
+  },
+  "pattern": [
+    "PPP",
+    "PCP",
+    "PDP"
+  ],
+  "result": {
+    "id": "femboymod:wardrobe"
+  }
+}

@@ -10,3 +10,6 @@ dependencies {
     implementation "dev.architectury:architectury:${rootProject.architectury_api_version}"
     implementation "com.geckolib:geckolib-common-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 }
+
+// The Architectury transformer reads :api classes; make sure the api jar is complete first (parallel builds).
+tasks.matching { it.name.startsWith("transformProduction") }.configureEach { dependsOn(":api:jar") }

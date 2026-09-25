@@ -2,19 +2,26 @@ package dev.eliasnvx.femboymod;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.eliasnvx.femboymod.addon.AddonLoader;
+import dev.eliasnvx.femboymod.entity.AdvancementHooks;
 import dev.eliasnvx.femboymod.api.FemboyApi;
 import dev.eliasnvx.femboymod.api.internal.FemboyApiHolder;
 import dev.eliasnvx.femboymod.command.FemboyCommands;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.cosmetic.BuiltinSlots;
 import dev.eliasnvx.femboymod.effect.BuiltinConditions;
 import dev.eliasnvx.femboymod.effect.BuiltinEffects;
 import dev.eliasnvx.femboymod.energy.FemboyEffects;
+import dev.eliasnvx.femboymod.entity.FemboyEntities;
+import dev.eliasnvx.femboymod.entity.FemboyTriggers;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsEvents;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.network.FemboyNetwork;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
 import dev.eliasnvx.femboymod.registry.FemboyMenus;
+import dev.eliasnvx.femboymod.registry.FemboySounds;
+import dev.eliasnvx.femboymod.block.FemboyBlocks;
+import dev.eliasnvx.femboymod.platform.PlatformHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +40,7 @@ public final class FemboyMod {
         if (api != null) {
             throw new IllegalStateException("FemboyMod.init() called twice");
         }
+        FemboyConfig.loadCommon();
         api = new FemboyApiImpl();
         FemboyApiHolder.install(api);
 
@@ -42,15 +50,22 @@ public final class FemboyMod {
 
         FemboyComponents.REGISTER.register();
         FemboyEffects.REGISTER.register();
+        FemboyTriggers.REGISTER.register();
+        FemboyEntities.init();
+        FemboySounds.REGISTER.register();
+        FemboyBlocks.CLOTHING_RACK.getId(); // class-init FemboyBlocks so its blocks and block items are queued first
         FemboyItems.BLOCKS.register();
         FemboyItems.TABS.register();
         FemboyItems.REGISTER.register();
         FemboyMenus.REGISTER.register();
+        FemboyBlocks.init();
+        PlatformHelper.registerPoi();
 
         FemboyNetwork.register();
         CosmeticsEvents.register();
         CommandRegistrationEvent.EVENT.register(FemboyCommands::register);
 
+        AdvancementHooks.register(api.events());
         AddonLoader.initCommon(api);
 
         // Addons may only register API extensions during onInitialize.
