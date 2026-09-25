@@ -25,6 +25,18 @@ dependencies {
     shadowBundle(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
+// Server GameTests (SPEC §13): shared bodies in common/.../gametest, Fabric glue in src/gametest.
+// They run as part of `build` via the generated `runGameTest` task.
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "femboymod-test"
+        enableGameTests = true
+        enableClientGameTests = false
+        eula = true // dev/CI test server only; accepted by the author on 2026-09-25
+    }
+}
+
 jar {
     archiveClassifier = "raw"
 }

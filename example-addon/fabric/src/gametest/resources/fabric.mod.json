@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "femboymod_example-test",
+  "version": "0.0.0",
+  "name": "Femboy Mod Example Addon GameTests",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": ["dev.eliasnvx.femboymod.example.fabric.ExampleAddonGameTestsFabric"]
+  },
+  "depends": {
+    "femboymod_example": "*"
+  }
+}

@@ -1,0 +1,14 @@
+package dev.eliasnvx.femboymod.network;
+
+import dev.architectury.networking.NetworkManager;
+
+public final class FemboyNetwork {
+
+    private FemboyNetwork() {
+    }
+
+    public static void register() {
+        NetworkManager.registerS2C(CosmeticsSyncPayload.TYPE, CosmeticsSyncPayload.STREAM_CODEC, CosmeticsSyncPayload::handle);
+        NetworkManager.registerC2S(OpenCosmeticsMenuPayload.TYPE, OpenCosmeticsMenuPayload.STREAM_CODEC, OpenCosmeticsMenuPayload::handle);
+    }
+}

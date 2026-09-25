@@ -4,6 +4,14 @@ loom {
             sourceSet project(":neoforge").sourceSets.main
         }
     }
+    runs {
+        gameTestServer {
+            server()
+            forgeTemplate("gameTestServer")
+            name "Example Addon GameTest Server"
+            runDir "build/run/gameTest"
+        }
+    }
 }
 
 architectury {
@@ -32,3 +40,6 @@ dependencies {
 }
 
 tasks.withType(PublishToMavenRepository).configureEach { enabled = false }
+
+// Addon GameTests run with `build` (CI): API regression check (SPEC §8.5, §13)
+tasks.named("check") { dependsOn "runGameTestServer" }

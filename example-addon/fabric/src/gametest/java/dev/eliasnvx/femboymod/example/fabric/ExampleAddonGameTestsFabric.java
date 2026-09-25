@@ -1,0 +1,34 @@
+package dev.eliasnvx.femboymod.example.fabric;
+
+import dev.eliasnvx.femboymod.example.ExampleAddonGameTests;
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
+
+public final class ExampleAddonGameTestsFabric {
+
+    @GameTest
+    public void pinSlotRegistered(GameTestHelper helper) {
+        ExampleAddonGameTests.pinSlotRegistered(helper);
+    }
+
+    @GameTest
+    public void pinIsCosmetic(GameTestHelper helper) {
+        ExampleAddonGameTests.pinIsCosmetic(helper);
+    }
+
+    @GameTest
+    public void candyPatternLoaded(GameTestHelper helper) {
+        ExampleAddonGameTests.candyPatternLoaded(helper);
+    }
+
+    @GameTest
+    public void freshPlayerWearsNothing(GameTestHelper helper) {
+        ExampleAddonGameTests.freshPlayerWearsNothing(helper);
+    }
+
+    @GameTest
+    public void allTestsRegistered(GameTestHelper helper) {
+        helper.assertValueEqual(ExampleAddonGameTests.ALL.size(), 4, "shared tests wired into the Fabric glue");
+        helper.succeed();
+    }
+}

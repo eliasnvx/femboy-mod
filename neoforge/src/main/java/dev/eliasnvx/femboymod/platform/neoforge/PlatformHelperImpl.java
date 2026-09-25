@@ -4,7 +4,15 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.addon.AddonLoader.DiscoveredAddon;
 import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.RegisterFemboyAddon;
+import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.registries.DataPackRegistryEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 
@@ -12,10 +20,27 @@ import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class PlatformHelperImpl {
 
+    private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
+            DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, FemboyMod.MOD_ID);
+
+    private static final Supplier<AttachmentType<CosmeticInventory>> COSMETICS = ATTACHMENTS.register("cosmetics",
+            () -> AttachmentType.builder(() -> CosmeticInventory.EMPTY)
+                    .serialize(CosmeticInventory.CODEC.fieldOf("items"))
+                    .copyOnDeath()
+                    .build());
+
     private PlatformHelperImpl() {
+    }
+
+    /** Registers loader-side content; must run before {@link FemboyMod#init()}. */
+    public static void init(IEventBus modBus) {
+        ATTACHMENTS.register(modBus);
+        modBus.addListener((DataPackRegistryEvent.NewRegistry event) ->
+                event.dataPackRegistry(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC, ColorwayPattern.CODEC));
     }
 
     public static List<DiscoveredAddon> discoverAddons() {
@@ -36,6 +61,14 @@ public final class PlatformHelperImpl {
                     });
         }
         return result;
+    }
+
+    public static CosmeticInventory getCosmetics(Player player) {
+        return player.getData(COSMETICS);
+    }
+
+    public static void setCosmetics(Player player, CosmeticInventory cosmetics) {
+        player.setData(COSMETICS, cosmetics);
     }
 
     private static FemboyAddon instantiate(String modId, String className) {

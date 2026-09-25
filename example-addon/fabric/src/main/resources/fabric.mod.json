@@ -11,6 +11,7 @@
     "femboymod": ["dev.eliasnvx.femboymod.example.ExampleAddon"]
   },
   "depends": {
-    "femboymod": "*"
+    "femboymod": "*",
+    "architectury": "*"
   }
 }

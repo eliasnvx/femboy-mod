@@ -10,7 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FemboyApiHolderTest {
 
-    private static final FemboyApi STUB = () -> "0.0.0-test";
+    /** Stub implementation; only identity matters for these tests. */
+    private static final FemboyApi STUB = (FemboyApi) java.lang.reflect.Proxy.newProxyInstance(
+            FemboyApi.class.getClassLoader(), new Class<?>[]{FemboyApi.class}, (proxy, method, args) -> null);
 
     @AfterEach
     void reset() {

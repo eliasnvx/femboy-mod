@@ -23,4 +23,15 @@ dependencies {
     common(project(path: ":example-addon-common")) { transitive false }
 }
 
+// Addon GameTests run with `build` (CI): API regression check (SPEC §8.5, §13)
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "femboymod_example-test"
+        enableGameTests = true
+        enableClientGameTests = false
+        eula = true // dev/CI test server only; accepted by the author on 2026-09-25
+    }
+}
+
 tasks.withType(PublishToMavenRepository).configureEach { enabled = false }

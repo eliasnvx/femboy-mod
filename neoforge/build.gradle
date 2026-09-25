@@ -24,6 +24,18 @@ dependencies {
     shadowBundle(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
 }
 
+// Server GameTests (SPEC §13): shared bodies in common/.../gametest, registered by FemboyGameTestsNeoForge.
+loom {
+    runs {
+        gameTestServer {
+            server()
+            forgeTemplate("gameTestServer")
+            name "NeoForge GameTest Server"
+            runDir "build/run/gameTest"
+        }
+    }
+}
+
 jar {
     archiveClassifier = "raw"
 }
@@ -41,3 +53,6 @@ shadowJar {
 }
 
 assemble.dependsOn shadowJar
+
+// `build` -> `check` -> GameTests on NeoForge too (Fabric wires runGameTest into build itself).
+tasks.named("check") { dependsOn "runGameTestServer" }
