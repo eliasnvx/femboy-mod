@@ -1,0 +1,35 @@
+{
+  "replacements": [
+    {
+      "from": "rr",
+      "to": "w"
+    },
+    {
+      "from": "r",
+      "to": "w"
+    },
+    {
+      "from": "l",
+      "to": "w"
+    },
+    {
+      "from": "na",
+      "to": "nya"
+    }
+  ],
+  "words": {
+    "hola": "howa",
+    "amigo": "amiguito",
+    "gracias": "gwacias",
+    "lindo": "kawaii"
+  },
+  "stutter_chance": 0.12,
+  "suffix_chance": 0.45,
+  "suffixes": [
+    " uwu",
+    " owo",
+    " >w<",
+    " :3",
+    " ^w^"
+  ]
+}

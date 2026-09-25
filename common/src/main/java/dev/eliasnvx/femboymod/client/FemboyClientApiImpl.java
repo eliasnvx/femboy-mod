@@ -17,6 +17,14 @@ final class FemboyClientApiImpl implements FemboyClientApi {
     private final SimpleApiRegistry<CosmeticRenderer.Factory> renderers =
             new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetic_renderer"));
 
+    private final SimpleApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers =
+            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "chat_transformer"));
+
+    @Override
+    public ApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers() {
+        return chatTransformers;
+    }
+
     @Override
     public FemboyApi common() {
         return FemboyApi.get();
@@ -35,5 +43,6 @@ final class FemboyClientApiImpl implements FemboyClientApi {
 
     void freeze() {
         renderers.freeze();
+        chatTransformers.freeze();
     }
 }

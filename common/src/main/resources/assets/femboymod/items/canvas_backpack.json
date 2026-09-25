@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/canvas_backpack",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 14272931
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      }
+    ]
+  }
+}

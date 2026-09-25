@@ -39,6 +39,13 @@ public interface FemboyClientApi {
     ApiRegistry<CosmeticRenderer.Factory> cosmeticRenderers();
 
     /**
+     * Returns the registry of outgoing chat transformers (the UwU choker is {@code femboymod:uwu}).
+     *
+     * @return the chat transformer registry
+     */
+    ApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers();
+
+    /**
      * Returns motion values of the player behind a render state, for procedural animation in
      * {@code setupAnim}.
      *

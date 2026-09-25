@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.gamerules.GameRules;
+import dev.eliasnvx.femboymod.registry.FemboyComponents;
 
 /** Game hooks for cosmetic slots: sync, right-click equip, death drops. */
 public final class CosmeticsEvents {
@@ -49,7 +50,7 @@ public final class CosmeticsEvents {
             return EventResult.pass();
         });
 
-        InteractionEvent.USE_ITEM.register((level, player, hand) -> equipFromHand(player, hand));
+        InteractionEvent.USE_ITEM.register((level, player, hand) -> equipFromHand(player, hand, false));
     }
 
     // TODO(Phase 4, SPEC §4.3/§10): honor the keepCosmeticsOnDeath config option in addition to keepInventory.
@@ -65,7 +66,17 @@ public final class CosmeticsEvents {
 
     /** Right-click a cosmetic in hand to wear it; swaps with whatever was in the slot. */
     public static EventResult equipFromHand(Player player, InteractionHand hand) {
+        return equipFromHand(player, hand, false);
+    }
+
+    /**
+     * @param force equip even items that have their own right-click action (backpacks call this on sneak-use)
+     */
+    public static EventResult equipFromHand(Player player, InteractionHand hand, boolean force) {
         ItemStack held = player.getItemInHand(hand);
+        if (!force && held.has(FemboyComponents.BACKPACK.get())) {
+            return EventResult.pass(); // backpacks open on right-click; BackpackItem handles sneak-equip
+        }
         Identifier slot = CosmeticsManager.slotOf(held);
         if (slot == null || !CosmeticsManager.canEquip(player, slot, held)) {
             return EventResult.pass();

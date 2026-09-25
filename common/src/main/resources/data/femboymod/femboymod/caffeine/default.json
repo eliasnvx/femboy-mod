@@ -1,0 +1,23 @@
+{
+  "crash": [
+    {
+      "effect": "minecraft:slowness",
+      "duration": 200,
+      "amplifier": 0
+    },
+    {
+      "effect": "minecraft:mining_fatigue",
+      "duration": 200,
+      "amplifier": 0
+    }
+  ],
+  "jitter_window": 12000,
+  "jitter_after": 3,
+  "jitter": [
+    {
+      "effect": "femboymod:jitter",
+      "duration": 600,
+      "amplifier": 0
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "femboymod:block/empty_energy_can",
+    "side": "femboymod:block/empty_energy_can"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        0,
+        5
+      ],
+      "to": [
+        11,
+        9,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side",
+          "uv": [
+            5,
+            0,
+            11,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#side",
+          "uv": [
+            5,
+            0,
+            11,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#side",
+          "uv": [
+            5,
+            0,
+            11,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#side",
+          "uv": [
+            5,
+            0,
+            11,
+            9
+          ]
+        },
+        "up": {
+          "texture": "#side",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#side",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        9,
+        6
+      ],
+      "to": [
+        10,
+        9.5,
+        10
+      ],
+      "faces": {
+        "up": {
+          "texture": "#side",
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ]
+        }
+      }
+    }
+  ]
+}

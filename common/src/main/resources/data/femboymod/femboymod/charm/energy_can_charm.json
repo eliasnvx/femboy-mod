@@ -1,0 +1,12 @@
+{
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:block_break_speed",
+        "amount": 0.08,
+        "operation": "add_multiplied_base"
+      }
+    }
+  ]
+}

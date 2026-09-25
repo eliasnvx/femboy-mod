@@ -1,0 +1,9 @@
+{
+  "effects": [
+    {
+      "effect": "minecraft:haste",
+      "duration": 1800,
+      "amplifier": 0
+    }
+  ]
+}

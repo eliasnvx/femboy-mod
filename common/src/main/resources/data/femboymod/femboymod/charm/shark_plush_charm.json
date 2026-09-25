@@ -1,0 +1,12 @@
+{
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:oxygen_bonus",
+        "amount": 1.0,
+        "operation": "add_value"
+      }
+    }
+  ]
+}

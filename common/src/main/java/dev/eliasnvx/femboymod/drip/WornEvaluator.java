@@ -12,6 +12,9 @@ import dev.eliasnvx.femboymod.api.effect.EffectSource;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
+import dev.eliasnvx.femboymod.api.backpack.CharmStats;
+import dev.eliasnvx.femboymod.registry.FemboyComponents;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -53,6 +56,11 @@ public final class WornEvaluator {
     private WornEvaluator() {
     }
 
+    /** Forget the cached evaluation (e.g. charms changed inside the worn backpack stack). */
+    public static synchronized void invalidate(Player player) {
+        CACHE.remove(player);
+    }
+
     public static synchronized Evaluation evaluate(Player player) {
         CosmeticInventory inventory = CosmeticsManager.get(player);
         RegistryAccess registries = player.level().registryAccess();
@@ -78,6 +86,7 @@ public final class WornEvaluator {
                     .orElse(CosmeticStats.NONE);
             worn.add(new DripCalculator.Worn(stats.drip(), colorKey(stack)));
             addEffects(effects, stats.effects(), sourceId("item", slot), 1.0);
+            addCharmEffects(effects, stack, slot, registries);
         });
 
         Set<Identifier> activeSets = new TreeSet<>();
@@ -98,6 +107,26 @@ public final class WornEvaluator {
             addEffects(effects, set.effects(), sourceId("set", entry.getKey().identifier()), scale);
         }
         return new Evaluation(drip, Set.copyOf(activeSets), List.copyOf(effects));
+    }
+
+    /** Charms hanging on a worn backpack (SPEC §5.3). */
+    private static void addCharmEffects(List<PlannedEffect> out, ItemStack stack, Identifier slot, RegistryAccess registries) {
+        if (!stack.has(FemboyComponents.BACKPACK.get())) {
+            return;
+        }
+        Optional<Registry<CharmStats>> charmRegistry = registries.lookup(CharmStats.REGISTRY_KEY);
+        if (charmRegistry.isEmpty()) {
+            return;
+        }
+        ItemContainerContents charms = stack.getOrDefault(FemboyComponents.CHARMS.get(), ItemContainerContents.EMPTY);
+        int index = 0;
+        for (ItemStack charm : (Iterable<ItemStack>) charms.nonEmptyItemCopyStream()::iterator) {
+            CharmStats stats = charmRegistry.get().getOptional(CharmStats.keyOf(charm.getItem())).orElse(null);
+            if (stats != null) {
+                addEffects(out, stats.effects(), sourceId("charm", slot) + "/" + index, 1.0);
+            }
+            index++;
+        }
     }
 
     static boolean isComplete(SetBonus set, Collection<ItemStack> worn) {

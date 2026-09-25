@@ -8,6 +8,8 @@ import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import dev.eliasnvx.femboymod.backpack.BackpackSpec;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 import java.util.function.Supplier;
 
@@ -27,6 +29,20 @@ public final class FemboyComponents {
             () -> DataComponentType.<Colorway>builder()
                     .persistent(Colorway.CODEC)
                     .networkSynchronized(Colorway.STREAM_CODEC)
+                    .cacheEncoding()
+                    .build());
+
+    public static final RegistrySupplier<DataComponentType<BackpackSpec>> BACKPACK = REGISTER.register("backpack",
+            () -> DataComponentType.<BackpackSpec>builder()
+                    .persistent(BackpackSpec.CODEC)
+                    .networkSynchronized(BackpackSpec.STREAM_CODEC)
+                    .build());
+
+    /** Charms on a backpack; same format as vanilla container contents. */
+    public static final RegistrySupplier<DataComponentType<ItemContainerContents>> CHARMS = REGISTER.register("charms",
+            () -> DataComponentType.<ItemContainerContents>builder()
+                    .persistent(ItemContainerContents.CODEC)
+                    .networkSynchronized(ItemContainerContents.STREAM_CODEC)
                     .cacheEncoding()
                     .build());
 

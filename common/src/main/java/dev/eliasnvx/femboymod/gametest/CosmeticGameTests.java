@@ -64,6 +64,7 @@ public final class CosmeticGameTests {
     public static List<Entry> all() {
         List<Entry> all = new java.util.ArrayList<>(ALL);
         all.addAll(WearableGameTests.ALL);
+        all.addAll(BackpackGameTests.ALL);
         return all;
     }
 

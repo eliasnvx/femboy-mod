@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.fabric.gametest;
 
+import dev.eliasnvx.femboymod.gametest.BackpackGameTests;
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
 import dev.eliasnvx.femboymod.gametest.WearableGameTests;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -67,8 +68,58 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void rejectsNesting(GameTestHelper helper) {
+        BackpackGameTests.rejectsNesting(helper);
+    }
+
+    @GameTest
+    public void contentsSurviveUpgrades(GameTestHelper helper) {
+        BackpackGameTests.contentsSurviveUpgrades(helper);
+    }
+
+    @GameTest
+    public void menuWritesThrough(GameTestHelper helper) {
+        BackpackGameTests.menuWritesThrough(helper);
+    }
+
+    @GameTest
+    public void droppedWhileOpen(GameTestHelper helper) {
+        BackpackGameTests.droppedWhileOpen(helper);
+    }
+
+    @GameTest
+    public void openSlotIsLocked(GameTestHelper helper) {
+        BackpackGameTests.openSlotIsLocked(helper);
+    }
+
+    @GameTest
+    public void unequipClosesMenu(GameTestHelper helper) {
+        BackpackGameTests.unequipClosesMenu(helper);
+    }
+
+    @GameTest
+    public void charmsWorkWhenWorn(GameTestHelper helper) {
+        BackpackGameTests.charmsWorkWhenWorn(helper);
+    }
+
+    @GameTest
+    public void netheriteIndestructible(GameTestHelper helper) {
+        BackpackGameTests.netheriteIndestructible(helper);
+    }
+
+    @GameTest
+    public void energyDrinkBuffsAndCrash(GameTestHelper helper) {
+        BackpackGameTests.energyDrinkBuffsAndCrash(helper);
+    }
+
+    @GameTest
+    public void energyDrinkJitter(GameTestHelper helper) {
+        BackpackGameTests.energyDrinkJitter(helper);
+    }
+
+    @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 11, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 21, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

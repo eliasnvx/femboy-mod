@@ -1,0 +1,19 @@
+{
+  "effects": [
+    {
+      "effect": "minecraft:speed",
+      "duration": 900,
+      "amplifier": 0
+    },
+    {
+      "effect": "minecraft:haste",
+      "duration": 900,
+      "amplifier": 0
+    },
+    {
+      "effect": "minecraft:night_vision",
+      "duration": 900,
+      "amplifier": 0
+    }
+  ]
+}

@@ -96,6 +96,15 @@ public final class FemboyApiImpl implements FemboyApi {
         return WornEvaluator.evaluate(player).activeSets();
     }
 
+    @Override
+    public java.util.List<ItemStack> getCharms(ItemStack backpack) {
+        if (!backpack.has(FemboyComponents.BACKPACK.get())) {
+            return java.util.List.of();
+        }
+        return backpack.getOrDefault(FemboyComponents.CHARMS.get(), net.minecraft.world.item.component.ItemContainerContents.EMPTY)
+                .nonEmptyItemCopyStream().toList();
+    }
+
     void freezeRegistries() {
         cosmeticSlots.freeze();
         effectTypes.freeze();

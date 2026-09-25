@@ -8,6 +8,7 @@ import dev.eliasnvx.femboymod.command.FemboyCommands;
 import dev.eliasnvx.femboymod.cosmetic.BuiltinSlots;
 import dev.eliasnvx.femboymod.effect.BuiltinConditions;
 import dev.eliasnvx.femboymod.effect.BuiltinEffects;
+import dev.eliasnvx.femboymod.energy.FemboyEffects;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsEvents;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.network.FemboyNetwork;
@@ -40,6 +41,8 @@ public final class FemboyMod {
         BuiltinConditions.register(api.cosmeticConditionTypes());
 
         FemboyComponents.REGISTER.register();
+        FemboyEffects.REGISTER.register();
+        FemboyItems.BLOCKS.register();
         FemboyItems.TABS.register();
         FemboyItems.REGISTER.register();
         FemboyMenus.REGISTER.register();

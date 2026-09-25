@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": "minecraft:string",
+    "W": "#minecraft:wool",
+    "C": "minecraft:chest"
+  },
+  "pattern": [
+    "SWS",
+    "WCW",
+    "WWW"
+  ],
+  "result": {
+    "id": "femboymod:canvas_backpack"
+  }
+}

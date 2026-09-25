@@ -11,11 +11,16 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.addon.AddonLoader;
 import dev.eliasnvx.femboymod.api.internal.FemboyClientApiHolder;
 import dev.eliasnvx.femboymod.client.render.BuiltinCosmeticRenderers;
+import dev.eliasnvx.femboymod.client.chat.UwuChat;
+import dev.architectury.registry.ReloadListenerRegistry;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackType;
 import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
+import dev.eliasnvx.femboymod.network.OpenBackpackPayload;
 import dev.eliasnvx.femboymod.network.OpenCosmeticsMenuPayload;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyMenus;
@@ -38,6 +43,9 @@ public final class FemboyModClient {
             KeyMapping.Category.INVENTORY);
 
     /** Inventory screen is 176x166; the button sits right of the recipe book button. */
+    public static final KeyMapping OPEN_BACKPACK = new KeyMapping(
+            "key.femboymod.backpack", InputConstants.Type.KEYBOARD, InputConstants.KEY_B, KeyMapping.Category.INVENTORY);
+
     private static final int INVENTORY_WIDTH = 176;
     private static final int INVENTORY_HEIGHT = 166;
     private static final int BUTTON_X = 126;
@@ -51,11 +59,18 @@ public final class FemboyModClient {
     public static void init() {
         FemboyMenus.COSMETICS.listen(type -> MenuScreenRegistry.registerScreenFactory(type, CosmeticsScreen::new));
 
+        FemboyMenus.BACKPACK.listen(type -> MenuScreenRegistry.registerScreenFactory(type, BackpackScreen::new));
         KeyMappingRegistry.register(OPEN_COSMETICS);
+        KeyMappingRegistry.register(OPEN_BACKPACK);
         ClientTickEvent.CLIENT_POST.register(minecraft -> {
             while (OPEN_COSMETICS.consumeClick()) {
                 if (minecraft.player != null && minecraft.gui.screen() == null) {
                     requestCosmeticsScreen();
+                }
+            }
+            while (OPEN_BACKPACK.consumeClick()) {
+                if (minecraft.player != null && minecraft.gui.screen() == null) {
+                    NetworkManager.sendToServer(OpenBackpackPayload.INSTANCE);
                 }
             }
         });
@@ -78,6 +93,9 @@ public final class FemboyModClient {
         FemboyClientApiHolder.install(clientApi);
         CosmeticModels.registerLayers();
         BuiltinCosmeticRenderers.register(clientApi.cosmeticRenderers());
+        clientApi.chatTransformers().register(UwuChat.ID, new UwuChat());
+        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new UwuChat.Loader(),
+                Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu_chat_rules"));
         ClientTickEvent.CLIENT_POST.register(GlowHostilesClient::tick);
 
         AddonLoader.initClient(clientApi);

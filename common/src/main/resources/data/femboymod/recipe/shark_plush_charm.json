@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:string",
+    "minecraft:light_blue_wool",
+    "minecraft:white_wool"
+  ],
+  "result": {
+    "id": "femboymod:shark_plush_charm"
+  }
+}
