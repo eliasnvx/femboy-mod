@@ -10,6 +10,7 @@ import dev.eliasnvx.femboymod.registry.FemboyItems;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions;
 import net.minecraft.client.CameraType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -29,6 +30,10 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
     private static final int SETTLE_TICKS = 20;
     private static final int WALK_TICKS = 12;
     private static final int ZOOM_FOV = 45;
+    /** Minimum FOV: close-ups for judging texture detail. */
+    private static final int CLOSE_UP_FOV = 30;
+    private static final int CLOSE_UP_WIDTH = 1920;
+    private static final int CLOSE_UP_HEIGHT = 1080;
     private static final int DEFAULT_FOV = 70;
 
     @Override
@@ -47,6 +52,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
             context.waitTicks(SETTLE_TICKS);
             context.takeScreenshot("femboymod_front_idle");
+            closeUp(context, "femboymod_closeup_front");
             world.getServer().runCommand("tp @p ~ ~ ~ 35 0");
             context.waitTicks(SETTLE_TICKS / 2);
             context.takeScreenshot("femboymod_front_angled");
@@ -63,6 +69,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
             context.waitTicks(SETTLE_TICKS);
             context.takeScreenshot("femboymod_back_idle");
+            closeUp(context, "femboymod_closeup_back");
             world.getServer().runCommand("tp @p ~ ~ ~ -40 0");
             context.waitTicks(SETTLE_TICKS / 2);
             context.takeScreenshot("femboymod_back_angled");
@@ -216,5 +223,23 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
         CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, socks);
         CosmeticsManager.set(player, FemboySlots.TAIL, new ItemStack(FemboyItems.TAIL.get()));
         CosmeticsManager.set(player, FemboySlots.NECK, new ItemStack(FemboyItems.UWU_CHOKER.get()));
+    }
+
+    /** Full-HD shot without HUD and toasts, so texture detail can be judged. */
+    private static void closeUp(ClientGameTestContext context, String name) {
+        context.runOnClient(mc -> {
+            mc.options.fov().set(CLOSE_UP_FOV);
+            mc.gui.toastManager().clear();
+            if (!mc.gui.hud.isHidden()) {
+                mc.gui.hud.toggle();
+            }
+        });
+        context.waitTicks(SETTLE_TICKS / 4);
+        context.takeScreenshot(TestScreenshotOptions.of(name).withSize(CLOSE_UP_WIDTH, CLOSE_UP_HEIGHT));
+        context.runOnClient(mc -> {
+            mc.options.fov().set(ZOOM_FOV);
+            mc.gui.hud.toggle();
+        });
+        context.waitTicks(SETTLE_TICKS / 4);
     }
 }
