@@ -9,4 +9,9 @@ Format: Keep a Changelog. SemVer for the API is independent of the mod version.
 - `ApiRegistry`; `cosmeticSlots()` registry with `CosmeticSlotType`, built-in `FemboySlots`
 - Data components `Cosmetic`, `Colorway`; `FemboyDataComponents`
 - Datapack registry `ColorwayPattern` (`data/<ns>/femboymod/colorway`), `Colors`
-- Queries `getCosmetics`, `getColorway`
+- Queries `getCosmetics`, `getColorway`, `getDripLevel`, `getActiveSetBonuses`, `getCharms`
+- Effects: `CosmeticEffect`, `CosmeticCondition`, `ConfiguredEffect`, `EffectSource`; registries `cosmeticEffectTypes()`, `cosmeticConditionTypes()`
+- Datapack registries `CosmeticStats` (`cosmetic_stats`), `SetBonus` (`set_bonus`), `DripRules` (`drip_rules`), `CharmStats` (`charm`)
+- Events `DripLevelChangedEvent`, `SetBonusEvent`, `BackpackOpenEvent`, `CharmsChangedEvent`, `ChatTransformEvent`, `PinkCreeperBlastEvent`
+- Client: `CosmeticRenderer` (+ `Factory`), `CosmeticRenderContext`, `CosmeticMotion`, `ChatTransformer`; registries `cosmeticRenderers()`, `chatTransformers()`
+- `ColorwayPattern` chevron (`Chevron`), `Colorway#colorAt`

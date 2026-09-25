@@ -1,5 +1,6 @@
 {
-  "item.femboymod_example.friendship_pin": "Pin de amistad",
+  "colorway.femboymod_example.candy": "Rayas de caramelo",
   "cosmetic_slot.femboymod_example.pin": "Pin",
-  "colorway.femboymod_example.candy": "Rayas de caramelo"
+  "item.femboymod_example.friendship_pin": "Pin de amistad",
+  "set_bonus.femboymod_example.friendship": "Amistad"
 }

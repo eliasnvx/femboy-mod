@@ -26,6 +26,7 @@ import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -75,10 +76,17 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         FemboyMod.LOGGER.info("Using GeckoLib model {} for cosmetic {}", model, itemId);
     }
 
-    /** Whether a geo model exists for the item (checked each frame; resource reloads can add/remove it). */
+    /** Item id -> geo model id; filled once per item so the per-frame check doesn't allocate. */
+    private static final Map<Identifier, Identifier> MODEL_IDS = new HashMap<>();
+
+    /**
+     * Whether a geo model exists for the item (checked each frame; resource reloads can add/remove it).
+     * Looks at the cache map directly: {@code getModel} logs an error for every miss.
+     */
     public static boolean hasModel(Identifier itemId) {
-        Identifier id = Identifier.fromNamespaceAndPath(itemId.getNamespace(), "cosmetic/" + itemId.getPath());
-        return !GeckoLibResources.getBakedModels().getModel(id).isMissingno();
+        Identifier id = MODEL_IDS.computeIfAbsent(itemId,
+                item -> Identifier.fromNamespaceAndPath(item.getNamespace(), "cosmetic/" + item.getPath()));
+        return GeckoLibResources.getBakedModels().cache().containsKey(id);
     }
 
     @Override

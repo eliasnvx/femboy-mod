@@ -1,5 +1,6 @@
 {
-  "item.femboymod_example.friendship_pin": "Значок дружбы",
+  "colorway.femboymod_example.candy": "Конфетные полоски",
   "cosmetic_slot.femboymod_example.pin": "Значок",
-  "colorway.femboymod_example.candy": "Конфетные полоски"
+  "item.femboymod_example.friendship_pin": "Значок дружбы",
+  "set_bonus.femboymod_example.friendship": "Дружба"
 }

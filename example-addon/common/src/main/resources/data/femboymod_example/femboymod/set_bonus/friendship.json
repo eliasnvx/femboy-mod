@@ -1,0 +1,17 @@
+{
+  "pieces": [
+    "femboymod_example:friendship_pin",
+    "femboymod:cat_ears"
+  ],
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod_example:xp_trickle",
+        "interval": 200
+      },
+      "when": {
+        "type": "femboymod_example:daytime"
+      }
+    }
+  ]
+}

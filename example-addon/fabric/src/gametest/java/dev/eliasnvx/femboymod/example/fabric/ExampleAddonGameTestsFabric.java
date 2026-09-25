@@ -27,8 +27,23 @@ public final class ExampleAddonGameTestsFabric {
     }
 
     @GameTest
+    public void effectTypesRegistered(GameTestHelper helper) {
+        ExampleAddonGameTests.effectTypesRegistered(helper);
+    }
+
+    @GameTest
+    public void friendshipSetBonusLoaded(GameTestHelper helper) {
+        ExampleAddonGameTests.friendshipSetBonusLoaded(helper);
+    }
+
+    @GameTest
+    public void pinIsCharm(GameTestHelper helper) {
+        ExampleAddonGameTests.pinIsCharm(helper);
+    }
+
+    @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(ExampleAddonGameTests.ALL.size(), 4, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(ExampleAddonGameTests.ALL.size(), 7, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

@@ -1,2 +1,0 @@
-[19:41:37] [Test worker/ERROR]: Config /var/folders/n4/s_b882g52_q0215vvrrdh5h80000gn/T/junit-3478640269212719425/s.json is invalid, using defaults (old file kept as .broken): com.google.gson.stream.MalformedJsonException: Unterminated object at line 1 column 33 path $.keep_cosmetics_on_death
-See https://github.com/google/gson/blob/main/Troubleshooting.md#malformed-json

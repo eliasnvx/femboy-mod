@@ -1,5 +1,6 @@
 {
-  "item.femboymod_example.friendship_pin": "Friendship Pin",
+  "colorway.femboymod_example.candy": "Candy Stripes",
   "cosmetic_slot.femboymod_example.pin": "Pin",
-  "colorway.femboymod_example.candy": "Candy Stripes"
+  "item.femboymod_example.friendship_pin": "Friendship Pin",
+  "set_bonus.femboymod_example.friendship": "Friendship"
 }

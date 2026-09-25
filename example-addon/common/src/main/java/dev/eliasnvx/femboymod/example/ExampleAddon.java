@@ -18,12 +18,17 @@ import net.minecraft.world.item.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 /**
  * Reference addon that exercises the public API (SPEC §8.5). It is built in CI, so any
  * breaking API change fails the build here first.
  *
- * <p>Uses: a new cosmetic slot type, a new cosmetic item (data component), a colorway pattern
- * from JSON ({@code data/femboymod_example/femboymod/colorway/candy.json}) and two event listeners.
+ * <p>Uses: a new cosmetic slot type, a new cosmetic item (data component) with its own renderer,
+ * a custom effect and condition type ({@link ExampleEffects}), and two event listeners. Data pack side
+ * ({@code data/femboymod_example/femboymod/}): a colorway pattern ({@code colorway/candy.json}), a set
+ * bonus ({@code set_bonus/friendship.json}), charm stats for the pin ({@code charm/friendship_pin.json},
+ * the pin is also in {@code #femboymod:charms}) and cosmetic stats ({@code cosmetic_stats/friendship_pin.json}).
  * Discovered via the "femboymod" entrypoint on Fabric and {@link RegisterFemboyAddon} on NeoForge.
  */
 @RegisterFemboyAddon
@@ -33,6 +38,8 @@ public final class ExampleAddon implements FemboyAddon {
     private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final Identifier PIN_SLOT = id("pin");
+    /** Custom renderer id (client side: {@link ExamplePinRenderer}). */
+    public static final Identifier PIN_RENDERER = id("pin");
     /** Just after the built-in slots (which use multiples of 100). */
     private static final int PIN_SLOT_ORDER = 1000;
 
@@ -48,13 +55,14 @@ public final class ExampleAddon implements FemboyAddon {
     @Override
     public void onInitialize(FemboyApi api) {
         api.cosmeticSlots().register(PIN_SLOT, new CosmeticSlotType(PIN_SLOT_ORDER));
+        ExampleEffects.register(api);
 
         ResourceKey<Item> pinKey = ResourceKey.create(Registries.ITEM, id("friendship_pin"));
         RegistrySupplier<Item> pin = friendshipPin = ITEMS.register(pinKey.identifier(), () -> new Item(new Item.Properties()
                 .setId(pinKey)
                 .stacksTo(1)
                 .arch$tab(FEMBOYMOD_TAB)
-                .component(api.components().cosmetic().get(), new Cosmetic(PIN_SLOT))));
+                .component(api.components().cosmetic().get(), new Cosmetic(PIN_SLOT, Optional.of(PIN_RENDERER)))));
         ITEMS.register();
 
         api.events().addListener(CosmeticChangedEvent.class, event ->
@@ -68,6 +76,7 @@ public final class ExampleAddon implements FemboyAddon {
 
     @Override
     public void onInitializeClient(FemboyClientApi api) {
+        ExamplePinRenderer.register(api);
         LOGGER.info("femboymod example addon client initialized");
     }
 
