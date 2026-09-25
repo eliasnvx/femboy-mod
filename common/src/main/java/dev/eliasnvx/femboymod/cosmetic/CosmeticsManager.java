@@ -12,6 +12,8 @@ import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.SimpleApiRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +23,9 @@ import java.util.List;
 
 /** Server-authoritative access to cosmetic slots. The client only mirrors synced state. */
 public final class CosmeticsManager {
+
+    private static final float EQUIP_SOUND_VOLUME = 1.0F;
+    private static final float EQUIP_SOUND_PITCH = 1.0F;
 
     private static SimpleApiRegistry<CosmeticSlotType> slotRegistry;
     private static List<Identifier> orderedSlots = List.of();
@@ -82,6 +87,11 @@ public final class CosmeticsManager {
                     FemboyMod.api().events().post(new CosmeticUnequipEvent(player, slot, previous));
                 }
                 FemboyMod.api().events().post(new CosmeticChangedEvent(player, slot, previous, stack));
+                if (!stack.isEmpty()) {
+                    // Audible feedback; heard by the wearer and players nearby, like equipping armor.
+                    player.level().playSound(null, player, SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS,
+                            EQUIP_SOUND_VOLUME, EQUIP_SOUND_PITCH);
+                }
             }
             CosmeticsSyncPayload.sendToTrackingAndSelf(serverPlayer);
         }
