@@ -1,7 +1,7 @@
 {
   "pieces": [
     "femboymod:cat_ears",
-    "femboymod:oversized_hoodie",
+    "#femboymod:hoodies",
     "femboymod:pleated_skirt",
     "#femboymod:legwear"
   ],

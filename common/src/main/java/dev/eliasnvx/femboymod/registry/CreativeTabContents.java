@@ -41,18 +41,21 @@ final class CreativeTabContents {
             Preset.solid(0xF4A6C8),  // pink
             Preset.solid(0xAE8BE0)); // purple
 
+    private static final List<Preset> HOODIE_COLORS = List.of(
+            Preset.solid(0xF7B8D2),  // pastel pink
+            Preset.solid(0xA8E6CF),  // mint
+            Preset.solid(0xA7D3F2),  // baby blue
+            Preset.solid(0xF2F0F2),  // white
+            Preset.solid(0x2B2A33)); // black
+
     /** Item path -> extra variants shown after the plain item (the plain socks are pink-white already). */
     private static final Map<String, List<Preset>> PRESETS = Map.of(
             "programming_socks", List.of(
                     Preset.stripes(0x2A2A33, WHITE),  // black-white
                     Preset.stripes(0x8FD3F4, WHITE),  // light blue-white
                     Preset.stripes(0xE0343F, WHITE)), // red-white
-            "oversized_hoodie", List.of(
-                    Preset.solid(0xF7B8D2),  // pastel pink
-                    Preset.solid(0xA8E6CF),  // mint
-                    Preset.solid(0xA7D3F2),  // baby blue
-                    Preset.solid(0xF2F0F2),  // white
-                    Preset.solid(0x2B2A33)), // black
+            "oversized_hoodie", HOODIE_COLORS,
+            "cat_ear_hoodie", HOODIE_COLORS,
             "canvas_backpack", BACKPACK_COLORS,
             "leather_backpack", BACKPACK_COLORS);
 

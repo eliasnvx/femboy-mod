@@ -46,6 +46,15 @@ public final class CosmeticModels {
     private static final CubeDeformation HOODIE_HEM_INFLATE = new CubeDeformation(0.5F);
     private static final float HOODIE_ARM_INFLATE = 0.38F;
     private static final CubeDeformation HOODIE_CUFF_INFLATE = new CubeDeformation(0.46F);
+    /** Hood shell distance from the head (above the hat layer, 0.5) and its fabric thickness. */
+    private static final float HOOD_OFFSET = 0.55F;
+    private static final float HOOD_THICKNESS = 0.6F;
+    private static final float HOOD_RIM = 0.3F;
+    private static final float HOOD_RIM_WIDTH = 0.6F;
+    private static final float HOOD_EAR_SPACING = 2.6F;
+    private static final float HOOD_EAR_Z = 0.3F;
+    /** Outward tilt; positive zRot leans toward +x (see EAR_TILT). */
+    private static final float HOOD_EAR_TILT = 0.22F;
     /** Sits above the hoodie (0.42) so the choker stays visible over clothing. */
     private static final CubeDeformation CHOKER_INFLATE = new CubeDeformation(0.52F);
 
@@ -58,6 +67,8 @@ public final class CosmeticModels {
     public static final ModelLayerLocation FISHNET = layer("fishnet");
     public static final ModelLayerLocation SKIRT = layer("skirt");
     public static final ModelLayerLocation HOODIE = layer("hoodie");
+    /** Same hoodie with the hood up and cat ears on it. */
+    public static final ModelLayerLocation CAT_EAR_HOODIE = layer("cat_ear_hoodie");
     public static final ModelLayerLocation CHOKER = layer("choker");
     /** Flat cell grid over the hoodie chest for 2D patterns (Progress chevron). */
     public static final ModelLayerLocation HOODIE_CHEST_PANEL = layer("hoodie_chest_panel");
@@ -94,7 +105,8 @@ public final class CosmeticModels {
         layers.put(SOCKS, () -> legwear(SOCK_INFLATE, true));
         layers.put(FISHNET, () -> legwear(FISHNET_INFLATE, false));
         layers.put(SKIRT, CosmeticModels::skirt);
-        layers.put(HOODIE, CosmeticModels::hoodie);
+        layers.put(HOODIE, () -> hoodie(false));
+        layers.put(CAT_EAR_HOODIE, () -> hoodie(true));
         layers.put(CHOKER, CosmeticModels::choker);
         layers.put(HOODIE_CHEST_PANEL, CosmeticModels::hoodieChestPanel);
         layers.put(HOODIE_FIRST_PERSON, CosmeticModels::hoodieFirstPerson);
@@ -269,7 +281,7 @@ public final class CosmeticModels {
 
     // ------------------------------------------------------------------ hoodie
 
-    private static LayerDefinition hoodie() {
+    private static LayerDefinition hoodie(boolean hoodUp) {
         MeshDefinition mesh = emptyPlayerMesh();
         PartDefinition root = mesh.getRoot();
         Groups.Builder body = new Groups.Builder(pivot(root.getChild("body"), "hoodie", PartPose.ZERO)).bandRange(0.0F, 12.0F);
@@ -277,11 +289,13 @@ public final class CosmeticModels {
         body.box(ACCENT, -4.0F, 12.0F, -2.0F, 8, 1.5F, 4, HOODIE_HEM_INFLATE);       // ribbed hem
         body.box(ACCENT, -3.2F, 7.2F, -2.75F, 6.4F, 3.3F, 0.35F);                    // kangaroo pocket
         body.box(DARK, -2.4F, 7.4F, -2.85F, 4.8F, 0.3F, 0.15F);                      // pocket opening
-        // hood: back panel, side flaps and rim lying on the shoulders
-        body.box(MAIN, -4.2F, -2.4F, 1.9F, 8.4F, 4.2F, 1.6F);
-        body.box(MAIN, -4.7F, -1.8F, -0.6F, 0.8F, 3.0F, 2.6F);
-        body.box(MAIN, 3.9F, -1.8F, -0.6F, 0.8F, 3.0F, 2.6F);
-        body.box(ACCENT, -4.3F, -2.6F, 3.4F, 8.6F, 0.5F, 0.4F);
+        if (!hoodUp) {
+            // hood: back panel, side flaps and rim lying on the shoulders
+            body.box(MAIN, -4.2F, -2.4F, 1.9F, 8.4F, 4.2F, 1.6F);
+            body.box(MAIN, -4.7F, -1.8F, -0.6F, 0.8F, 3.0F, 2.6F);
+            body.box(MAIN, 3.9F, -1.8F, -0.6F, 0.8F, 3.0F, 2.6F);
+            body.box(ACCENT, -4.3F, -2.6F, 3.4F, 8.6F, 0.5F, 0.4F);
+        }
         // drawstrings with aglets
         for (float x : new float[]{-2.1F, 1.7F}) {
             body.box(DETAIL, x, 0.2F, -2.75F, 0.4F, 4.2F, 0.3F);
@@ -299,7 +313,37 @@ public final class CosmeticModels {
             cuff.box(ACCENT, x0, 10.5F, -2.0F, 4, 2.2F, 4, HOODIE_CUFF_INFLATE);     // hands hidden in sleeves
             cuff.build();
         }
+        if (hoodUp) {
+            catEarHood(root.getChild("head"));
+        }
         return layerOf(mesh);
+    }
+
+    /** Hood worn up around the head (face left open) with two stepped fabric cat ears on top. */
+    private static void catEarHood(PartDefinition head) {
+        Groups.Builder hood = new Groups.Builder(pivot(head, "hood", PartPose.ZERO));
+        float o = HOOD_OFFSET;
+        hood.box(MAIN, -4 - o, -8 - o - HOOD_THICKNESS, -4 - o, 8 + 2 * o, HOOD_THICKNESS, 8 + 2 * o);   // top
+        hood.box(MAIN, -4 - o, -8 - o, 4 + o - HOOD_THICKNESS, 8 + 2 * o, 8 + o, HOOD_THICKNESS);        // back
+        hood.box(MAIN, -4 - o, -8 - o, -4 - o, HOOD_THICKNESS, 8 + o, 8 + 2 * o);                        // right side
+        hood.box(MAIN, 4 + o - HOOD_THICKNESS, -8 - o, -4 - o, HOOD_THICKNESS, 8 + o, 8 + 2 * o);        // left side
+        // rim framing the face, in the accent color like the inside of the hood
+        hood.box(ACCENT, -4 - o, -8 - o - HOOD_THICKNESS, -4 - o - HOOD_RIM, 8 + 2 * o, HOOD_RIM_WIDTH, HOOD_RIM);
+        hood.box(ACCENT, -4 - o, -8 - o, -4 - o - HOOD_RIM, HOOD_RIM_WIDTH, 8 + o, HOOD_RIM);
+        hood.box(ACCENT, 4 + o - HOOD_RIM_WIDTH, -8 - o, -4 - o - HOOD_RIM, HOOD_RIM_WIDTH, 8 + o, HOOD_RIM);
+        hood.build();
+
+        float top = -8 - o - HOOD_THICKNESS;
+        for (int side = -1; side <= 1; side += 2) {
+            PartDefinition ear = pivot(head, side < 0 ? "hood_ear_right" : "hood_ear_left",
+                    PartPose.offsetAndRotation(side * HOOD_EAR_SPACING, top, HOOD_EAR_Z, 0.0F, 0.0F, side * HOOD_EAR_TILT));
+            Groups.Builder b = new Groups.Builder(ear);
+            b.box(MAIN, -1.6F, -1.2F, -0.6F, 3.2F, 1.2F, 1.2F);   // base
+            b.box(MAIN, -1.1F, -2.2F, -0.5F, 2.2F, 1.0F, 1.0F);   // middle step
+            b.box(MAIN, -0.55F, -3.0F, -0.4F, 1.1F, 0.8F, 0.8F);  // tip
+            b.box(ACCENT, -0.9F, -2.0F, -0.75F, 1.8F, 1.7F, 0.2F); // inner ear
+            b.build();
+        }
     }
 
     /** Stand-alone sleeves; their pose is copied from the first-person arm each frame. */

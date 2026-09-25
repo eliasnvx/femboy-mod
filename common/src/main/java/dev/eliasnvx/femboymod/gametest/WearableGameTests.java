@@ -2,13 +2,16 @@ package dev.eliasnvx.femboymod.gametest;
 
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.FemboyApi;
+import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.api.drip.DripLevel;
 import dev.eliasnvx.femboymod.api.event.cosmetic.SetBonusEvent;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.effect.CosmeticEffectsManager;
+import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
+import dev.eliasnvx.femboymod.registry.FemboyTags;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,7 +34,8 @@ public final class WearableGameTests {
     public static final List<CosmeticGameTests.Entry> ALL = List.of(
             new CosmeticGameTests.Entry("socks_add_and_remove_mining_speed", WearableGameTests::socksAddAndRemoveMiningSpeed),
             new CosmeticGameTests.Entry("full_set_activates_bonus", WearableGameTests::fullSetActivatesBonus),
-            new CosmeticGameTests.Entry("vanilla_dye_recipe_colors_cosmetic", WearableGameTests::vanillaDyeRecipeColorsCosmetic));
+            new CosmeticGameTests.Entry("vanilla_dye_recipe_colors_cosmetic", WearableGameTests::vanillaDyeRecipeColorsCosmetic),
+            new CosmeticGameTests.Entry("cat_ear_hoodie_from_hoodie_and_ears", WearableGameTests::catEarHoodieFromHoodieAndEars));
 
     private static final Vec3 TEST_AREA_CENTER = new Vec3(1.5, 1.0, 1.5);
     private static final Identifier FULL_SET = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "full_femboy_mode");
@@ -94,6 +98,27 @@ public final class WearableGameTests {
         helper.assertTrue(result.is(FemboyItems.CAT_EARS.get()), "result is cat ears");
         helper.assertTrue(Colorways.effective(result).isPresent(), "dyed ears have a colorway");
         helper.succeed();
+    }
+
+    /** Hoodie + cat ears -> cat ear hoodie; the dye is kept and it still counts as the set's hoodie. */
+    public static void catEarHoodieFromHoodieAndEars(GameTestHelper helper) {
+        ItemStack hoodie = new ItemStack(FemboyItems.OVERSIZED_HOODIE.get());
+        hoodie.set(FemboyComponents.COLORWAY.get(), Colorway.solid(0xA8E6CF));
+        CraftingInput input = CraftingInput.of(2, 1, List.of(hoodie, new ItemStack(FemboyItems.CAT_EARS.get())));
+        var recipe = helper.getLevel().getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, helper.getLevel());
+        helper.assertTrue(recipe.isPresent(), "hoodie + cat ears has a recipe");
+        ItemStack result = recipe.get().value().assemble(input);
+        helper.assertTrue(result.is(FemboyItems.CAT_EAR_HOODIE.get()), "result is the cat ear hoodie");
+        helper.assertValueEqual(result.get(FemboyComponents.COLORWAY.get()), Colorway.solid(0xA8E6CF), "colorway kept");
+        helper.assertTrue(result.is(FemboyTags.HOODIES), "cat ear hoodie is a hoodie (sleeves, set bonus)");
+        withPlayer(helper, player -> {
+            CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get()));
+            CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, result);
+            CosmeticsManager.set(player, FemboySlots.OUTFIT_BOTTOM, new ItemStack(FemboyItems.PLEATED_SKIRT.get()));
+            CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()));
+            CosmeticEffectsManager.tick(player);
+            helper.assertTrue(FemboyApi.get().getActiveSetBonuses(player).contains(FULL_SET), "full set with the cat ear hoodie");
+        });
     }
 
     private static void withPlayer(GameTestHelper helper, Consumer<ServerPlayer> body) {

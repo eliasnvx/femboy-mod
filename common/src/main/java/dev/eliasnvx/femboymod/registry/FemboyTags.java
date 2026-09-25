@@ -11,6 +11,8 @@ public final class FemboyTags {
 
     /** Items that fit into backpack charm slots. */
     public static final TagKey<Item> CHARMS = TagKey.create(Registries.ITEM, id("charms"));
+    /** Hoodies: first-person sleeves, the Full Femboy Mode set. */
+    public static final TagKey<Item> HOODIES = TagKey.create(Registries.ITEM, id("hoodies"));
     /** Damage the netherite backpack (as an item entity) ignores: fire, lava, cactus, explosions. */
     public static final TagKey<DamageType> BACKPACK_IMMUNE_TO = TagKey.create(Registries.DAMAGE_TYPE, id("backpack_immune_to"));
 

@@ -69,6 +69,11 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void catEarHoodieFromHoodieAndEars(GameTestHelper helper) {
+        WearableGameTests.catEarHoodieFromHoodieAndEars(helper);
+    }
+
+    @GameTest
     public void rejectsNesting(GameTestHelper helper) {
         BackpackGameTests.rejectsNesting(helper);
     }
@@ -155,7 +160,7 @@ public final class FemboyGameTestsFabric {
 
     @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 28, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 29, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

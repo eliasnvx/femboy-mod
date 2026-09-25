@@ -1,0 +1,15 @@
+{
+  "drip": 18,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:mob_effect",
+        "effect": "minecraft:regeneration",
+        "amplifier": 0
+      },
+      "when": {
+        "type": "femboymod:cold_biome"
+      }
+    }
+  ]
+}
