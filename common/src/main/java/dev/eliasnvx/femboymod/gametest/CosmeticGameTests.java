@@ -25,6 +25,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -48,7 +51,8 @@ public final class CosmeticGameTests {
             new Entry("death_drops_cosmetics", CosmeticGameTests::deathDropsCosmetics),
             new Entry("attachment_codec_round_trip", CosmeticGameTests::attachmentCodecRoundTrip),
             new Entry("sync_payload_round_trip", CosmeticGameTests::syncPayloadRoundTrip),
-            new Entry("colorway_patterns_loaded", CosmeticGameTests::colorwayPatternsLoaded));
+            new Entry("colorway_patterns_loaded", CosmeticGameTests::colorwayPatternsLoaded),
+            new Entry("creative_tab_contains_items", CosmeticGameTests::creativeTabContainsItems));
 
     private static final Identifier HEAD = FemboySlots.HEAD_ACCESSORY;
     private static final Vec3 TEST_AREA_CENTER = new Vec3(1.5, 1.0, 1.5);
@@ -159,6 +163,14 @@ public final class CosmeticGameTests {
                 Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_trans")));
         helper.assertValueEqual(trans.value().stripes().size(), 5, "trans flag stripes");
         helper.assertTrue(registry.size() >= 12, "All built-in patterns should load, got " + registry.size());
+        helper.succeed();
+    }
+
+    public static void creativeTabContainsItems(GameTestHelper helper) {
+        CreativeModeTabs.tryRebuildTabContents(FeatureFlags.DEFAULT_FLAGS, true, helper.getLevel().registryAccess());
+        CreativeModeTab tab = FemboyItems.TAB.get();
+        helper.assertTrue(CreativeModeTabs.allTabs().contains(tab), "femboymod tab is registered");
+        helper.assertTrue(tab.contains(new ItemStack(FemboyItems.CAT_EARS.get())), "Cat Ears are in the femboymod tab");
         helper.succeed();
     }
 

@@ -46,8 +46,13 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void creativeTabContainsItems(GameTestHelper helper) {
+        CosmeticGameTests.creativeTabContainsItems(helper);
+    }
+
+    @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.ALL.size(), 7, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.ALL.size(), 8, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

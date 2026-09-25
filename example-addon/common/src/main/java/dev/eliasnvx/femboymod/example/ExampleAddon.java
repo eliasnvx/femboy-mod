@@ -13,6 +13,7 @@ import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticUnequipEvent;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,10 @@ public final class ExampleAddon implements FemboyAddon {
     /** Just after the built-in slots (which use multiples of 100). */
     private static final int PIN_SLOT_ORDER = 1000;
 
+    /** femboymod's creative tab, referenced by key so the addon does not touch femboymod internals. */
+    private static final ResourceKey<CreativeModeTab> FEMBOYMOD_TAB = ResourceKey.create(Registries.CREATIVE_MODE_TAB,
+            Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "main"));
+
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(MOD_ID, Registries.ITEM);
 
     /** The addon's cosmetic item; set during {@link #onInitialize}. */
@@ -48,6 +53,7 @@ public final class ExampleAddon implements FemboyAddon {
         RegistrySupplier<Item> pin = friendshipPin = ITEMS.register(pinKey.identifier(), () -> new Item(new Item.Properties()
                 .setId(pinKey)
                 .stacksTo(1)
+                .arch$tab(FEMBOYMOD_TAB)
                 .component(api.components().cosmetic().get(), new Cosmetic(PIN_SLOT))));
         ITEMS.register();
 
