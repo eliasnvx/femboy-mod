@@ -80,6 +80,11 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void fashionCriticJudgesDrip(GameTestHelper helper) {
+        MobGameTests.fashionCriticJudgesDrip(helper);
+    }
+
+    @GameTest
     public void socksHitBugsHarder(GameTestHelper helper) {
         MobGameTests.socksHitBugsHarder(helper);
     }
@@ -181,7 +186,7 @@ public final class FemboyGameTestsFabric {
 
     @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 33, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 34, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

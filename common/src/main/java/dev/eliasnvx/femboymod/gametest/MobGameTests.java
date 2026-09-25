@@ -9,12 +9,14 @@ import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.effect.CosmeticEffectsManager;
 import dev.eliasnvx.femboymod.entity.Bug;
 import dev.eliasnvx.femboymod.entity.CaffeinatedZombie;
+import dev.eliasnvx.femboymod.entity.FashionCritic;
 import dev.eliasnvx.femboymod.entity.HissyCat;
 import dev.eliasnvx.femboymod.entity.FemboyEntities;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +29,8 @@ public final class MobGameTests {
     public static final List<CosmeticGameTests.Entry> ALL = List.of(
             new CosmeticGameTests.Entry("drip_reduces_bug_damage", MobGameTests::dripReducesBugDamage),
             new CosmeticGameTests.Entry("socks_hit_bugs_harder", MobGameTests::socksHitBugsHarder),
-            new CosmeticGameTests.Entry("meme_mobs_use_config_and_drip", MobGameTests::memeMobsUseConfigAndDrip));
+            new CosmeticGameTests.Entry("meme_mobs_use_config_and_drip", MobGameTests::memeMobsUseConfigAndDrip),
+            new CosmeticGameTests.Entry("fashion_critic_judges_drip", MobGameTests::fashionCriticJudgesDrip));
 
     private static final BlockPos MOB_POS = new BlockPos(1, 2, 1);
     private static final float HIT = 4.0F;
@@ -70,6 +73,31 @@ public final class MobGameTests {
             CosmeticEffectsManager.tick(player);
             float hit = DripCombat.modifyIncoming(player, helper.getLevel(), player.damageSources().mobAttack(zombie), HIT);
             helper.assertTrue(Math.abs(hit - HIT * 0.75F) < EPSILON, "tier 3 takes 75% from meme monsters, got " + hit);
+        });
+    }
+
+    /** Low Drip: the critic hits x1.6 and its review slows you; tier 3: it hits softer and is weakened itself. */
+    public static void fashionCriticJudgesDrip(GameTestHelper helper) {
+        FashionCritic critic = helper.spawnWithNoFreeWill(FemboyEntities.FASHION_CRITIC.get(), MOB_POS);
+        WearableGameTests.withPlayer(helper, player -> {
+            DamageSource slap = player.damageSources().mobAttack(critic);
+            float hit = DripCombat.modifyIncoming(player, helper.getLevel(), slap, HIT);
+            helper.assertTrue(Math.abs(hit - HIT * 1.6F) < EPSILON, "no drip: the critic hits x1.6, got " + hit);
+            critic.review(player);
+            helper.assertTrue(player.hasEffect(MobEffects.SLOWNESS), "bad review slows the player");
+            helper.assertFalse(critic.hasEffect(MobEffects.WEAKNESS), "the critic is not impressed");
+
+            player.removeAllEffects();
+            CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get()));
+            CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get()));
+            CosmeticsManager.set(player, FemboySlots.OUTFIT_BOTTOM, new ItemStack(FemboyItems.PLEATED_SKIRT.get()));
+            CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.FISHNET_TIGHTS.get()));
+            CosmeticEffectsManager.tick(player);
+            critic.review(player);
+            helper.assertFalse(player.hasEffect(MobEffects.SLOWNESS), "good review does not slow the player");
+            helper.assertTrue(critic.hasEffect(MobEffects.WEAKNESS), "impressed critic is weakened");
+            float softer = DripCombat.modifyIncoming(player, helper.getLevel(), slap, HIT);
+            helper.assertTrue(Math.abs(softer - HIT * 0.9F) < EPSILON, "tier 3: the critic hits x0.9, got " + softer);
         });
     }
 

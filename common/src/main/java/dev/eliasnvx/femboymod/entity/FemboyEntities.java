@@ -51,6 +51,12 @@ public final class FemboyEntities {
                     .sized(0.6F, 0.7F).clientTrackingRange(8).notInPeaceful().build(HISSY_CAT_KEY));
     public static final TagKey<Biome> HISSY_CAT_SPAWNS = biomeTag("hissy_cat_spawns");
 
+    public static final ResourceKey<EntityType<?>> FASHION_CRITIC_KEY = key("fashion_critic");
+    public static final RegistrySupplier<EntityType<FashionCritic>> FASHION_CRITIC = REGISTER.register(FASHION_CRITIC_KEY.identifier(),
+            () -> EntityType.Builder.of(FashionCritic::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).notInPeaceful().build(FASHION_CRITIC_KEY));
+    public static final TagKey<Biome> FASHION_CRITIC_SPAWNS = biomeTag("fashion_critic_spawns");
+
     /** Flowery biomes (flower forest, cherry grove, meadow, sunflower plains, dappled forest); data-driven. */
     public static final TagKey<Biome> PINK_CREEPER_SPAWNS =
             TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "pink_creeper_spawns"));
@@ -87,6 +93,8 @@ public final class FemboyEntities {
         addMonsterSpawn(CAFFEINATED_ZOMBIE, CAFFEINATED_ZOMBIE_SPAWNS, mobs.caffeinatedZombie());
         EntityAttributeRegistry.register(HISSY_CAT, () -> HissyCat.createAttributes(mobs.hissyCat()));
         addMonsterSpawn(HISSY_CAT, HISSY_CAT_SPAWNS, mobs.hissyCat());
+        EntityAttributeRegistry.register(FASHION_CRITIC, () -> FashionCritic.createAttributes(mobs.fashionCritic()));
+        addMonsterSpawn(FASHION_CRITIC, FASHION_CRITIC_SPAWNS, mobs.fashionCritic());
         EntityAttributeRegistry.register(PINK_CREEPER, Creeper::createAttributes);
         SpawnPlacementsRegistry.register(PINK_CREEPER, SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
