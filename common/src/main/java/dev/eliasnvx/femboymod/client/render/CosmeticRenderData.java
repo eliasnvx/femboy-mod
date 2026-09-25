@@ -53,7 +53,7 @@ public final class CosmeticRenderData implements CosmeticMotion {
     private static final float SMOOTHING = 0.25F;
     private static final float GOLDEN_ANGLE = 2.39996F;
 
-    public record Worn(Identifier slot, ItemStack stack, Identifier renderer, @Nullable Colorway colorway) {
+    public record Worn(Identifier slot, ItemStack stack, Identifier itemId, Identifier renderer, @Nullable Colorway colorway) {
     }
 
     private static final Map<Entity, CosmeticRenderData> CACHE = new WeakHashMap<>();
@@ -91,10 +91,9 @@ public final class CosmeticRenderData implements CosmeticMotion {
         List<Worn> list = new ArrayList<>(inventory.all().size());
         inventory.all().forEach((slot, stack) -> {
             Cosmetic cosmetic = stack.get(FemboyComponents.COSMETIC.get());
-            Identifier renderer = cosmetic != null && cosmetic.renderer().isPresent()
-                    ? cosmetic.renderer().get()
-                    : BuiltInRegistries.ITEM.getKey(stack.getItem());
-            list.add(new Worn(slot, stack, renderer, Colorways.effective(stack).orElse(null)));
+            Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+            Identifier renderer = cosmetic != null && cosmetic.renderer().isPresent() ? cosmetic.renderer().get() : itemId;
+            list.add(new Worn(slot, stack, itemId, renderer, Colorways.effective(stack).orElse(null)));
         });
         this.worn = List.copyOf(list);
         this.source = inventory;

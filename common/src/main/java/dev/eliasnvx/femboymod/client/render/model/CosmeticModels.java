@@ -112,6 +112,10 @@ public final class CosmeticModels {
             "MFFAAFFM",
     };
     private static final float EAR_PIXEL = 0.45F;
+    /** Distance of each ear's pivot from the head's center line. */
+    private static final float EAR_SPACING = 2.9F;
+    /** Outward tilt; a positive zRot leans the top toward +x, so the -x ear needs a negative angle. */
+    private static final float EAR_TILT = 0.3F;
 
     private static LayerDefinition catEars() {
         MeshDefinition mesh = emptyPlayerMesh();
@@ -127,7 +131,7 @@ public final class CosmeticModels {
         float height = EAR.length * EAR_PIXEL;
         for (int side = -1; side <= 1; side += 2) {
             PartDefinition ear = pivot(head, side < 0 ? "left_ear" : "right_ear",
-                    PartPose.offsetAndRotation(side * 2.4F, -8.3F, -0.2F, 0.0F, 0.0F, side * -0.18F));
+                    PartPose.offsetAndRotation(side * EAR_SPACING, -8.3F, -0.2F, 0.0F, 0.0F, side * EAR_TILT));
             Groups.Builder b = new Groups.Builder(ear);
             // back shell (full silhouette), inner ear in front, fur tufts furthest front
             b.extrude(EAR, Map.of('M', MAIN, 'A', MAIN, 'F', MAIN), -width / 2, -height, -0.4F, EAR_PIXEL, 0.9F);
@@ -330,7 +334,7 @@ public final class CosmeticModels {
         private static final float TWITCH_SPEED = 0.35F;
         private static final float TWITCH_SHARPNESS = 12.0F;
         private static final float TWITCH_AMOUNT = 0.35F;
-        private static final float BASE_TILT = 0.18F;
+        private static final float BASE_TILT = EAR_TILT;
         private static final float WALK_BOUNCE = 0.08F;
         private final ModelPart leftEar;
         private final ModelPart rightEar;
@@ -349,8 +353,9 @@ public final class CosmeticModels {
             float left = (float) Math.pow(Math.max(Mth.sin(t), 0.0F), TWITCH_SHARPNESS) * TWITCH_AMOUNT;
             float right = (float) Math.pow(Math.max(Mth.sin(t * 0.83F + 1.7F), 0.0F), TWITCH_SHARPNESS) * TWITCH_AMOUNT;
             float bounce = Mth.sin(state.walkAnimationPos * 0.6662F * 2) * WALK_BOUNCE * motion.walkAmount();
-            leftEar.zRot = BASE_TILT + left + bounce;
-            rightEar.zRot = -BASE_TILT - right - bounce;
+            // "left_ear" sits at -x: tilt it outward (negative zRot); twitches flick further outward.
+            leftEar.zRot = -BASE_TILT - left - bounce;
+            rightEar.zRot = BASE_TILT + right + bounce;
             leftEar.xRot = -left * 0.5F;
             rightEar.xRot = -right * 0.5F;
         }
