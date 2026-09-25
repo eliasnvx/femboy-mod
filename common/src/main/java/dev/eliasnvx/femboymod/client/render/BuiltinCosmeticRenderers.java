@@ -6,8 +6,10 @@ import dev.eliasnvx.femboymod.api.client.CosmeticRenderer;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
 import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
+import dev.eliasnvx.femboymod.client.render.model.Groups;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -15,15 +17,19 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/** Placeholder renderers for the SPEC §5.1 items. Default colors match the item icons. */
+/** Renderers for the SPEC §5.1 items. Default colors match the item icons. */
 public final class BuiltinCosmeticRenderers {
 
-    private static final Identifier WHITE = texture("white");
+    private static final Identifier FUR = texture("fur");
+    private static final Identifier KNIT = texture("knit");
+    private static final Identifier FABRIC = texture("fabric");
     private static final Identifier FISHNET = texture("fishnet");
-    private static final Identifier GOLD = texture("gold");
 
     private static final int PINK = 0xF291BE;
     private static final int LAVENDER = 0xC8A2E8;
@@ -32,15 +38,21 @@ public final class BuiltinCosmeticRenderers {
     private static final int SOCK_WHITE = 0xFFFFFF;
     private static final int FISHNET_BLACK = 0x2A2A2A;
     private static final int CHOKER_BLACK = 0x2A2A33;
-    private static final int UNTINTED = 0xFFFFFF;
+
+    private static final int FUR_WHITE = 0xFFF6F8;
+    private static final int CORD_WHITE = 0xF4F1EE;
+    private static final int BOW_PINK = 0xFF8FB8;
+    private static final int DARK = 0x2A2328;
+    private static final int GOLD = 0xF2C94C;
+
+    /** Accent = main mixed toward white (>0) or black (<0) by this amount. */
+    private static final float LIGHTER = 0.45F;
+    private static final float DARKER = -0.22F;
 
     /** Hair clips are not dyeable; each shape has its own color (same as its icon). */
     private static final Map<String, Integer> HAIR_CLIP_COLORS = Map.of(
-            "hair_clip_heart", 0xE65082, "hair_clip_star", 0xFAD746, "hair_clip_bow", 0xF078AA,
-            "hair_clip_flower", 0xF5AAC8, "hair_clip_moon", 0xEBE18C, "hair_clip_cherry", 0xD7283C,
-            "hair_clip_bunny", 0xFAFAFA, "hair_clip_fish", 0x6EBEF0, "hair_clip_lightning", 0xFADC3C,
-            "hair_clip_butterfly", 0xAA82F0);
-    private static final int HAIR_CLIP_DEFAULT = 0xE65082;
+            "heart", 0xE65082, "star", 0xFAD746, "bow", 0xF078AA, "flower", 0xF5AAC8, "moon", 0xEBE18C,
+            "cherry", 0xD7283C, "bunny", 0xFAFAFA, "fish", 0x6EBEF0, "lightning", 0xFADC3C, "butterfly", 0xAA82F0);
 
     private BuiltinCosmeticRenderers() {
     }
@@ -54,38 +66,32 @@ public final class BuiltinCosmeticRenderers {
     }
 
     public static void register(ApiRegistry<CosmeticRenderer.Factory> registry) {
-        registry.register(id("cat_ears"), models -> solid(new CosmeticModels.CatEarsModel(models.bakeLayer(CosmeticModels.CAT_EARS)), WHITE, PINK));
-        registry.register(id("tail"), models -> solid(new CosmeticModels.TailModel(models.bakeLayer(CosmeticModels.TAIL)), WHITE, PINK));
-        registry.register(id("oversized_hoodie"), models -> solid(new CosmeticModels.HoodieModel(models.bakeLayer(CosmeticModels.HOODIE)), WHITE, LAVENDER));
-        registry.register(id("pleated_skirt"), models -> solid(new CosmeticModels.SkirtModel(models.bakeLayer(CosmeticModels.SKIRT)), WHITE, SKIRT_DARK));
-        registry.register(id("programming_socks"), models -> new BandedRenderer(
-                band -> new CosmeticModels.LegwearModel(models.bakeLayer(CosmeticModels.SOCKS), band), WHITE, SOCK_PINK, SOCK_WHITE));
-        registry.register(id("fishnet_tights"), models -> solid(new CosmeticModels.LegwearModel(models.bakeLayer(CosmeticModels.FISHNET), -1), FISHNET, FISHNET_BLACK));
-        registry.register(id("uwu_choker"), models -> {
-            ModelPart root = models.bakeLayer(CosmeticModels.CHOKER);
-            CosmeticRenderer band = solid(new CosmeticModels.ChokerModel(root, false), WHITE, CHOKER_BLACK);
-            Model<AvatarRenderState> bell = new CosmeticModels.ChokerModel(models.bakeLayer(CosmeticModels.CHOKER), true);
-            RenderType bellType = RenderTypes.entityCutout(GOLD);
+        registry.register(id("cat_ears"), models -> new GroupedRenderer(
+                models, CosmeticModels.CAT_EARS, CosmeticModels.CatEarsModel::new, FUR, PINK, LIGHTER, FUR_WHITE));
+        registry.register(id("tail"), models -> new GroupedRenderer(
+                models, CosmeticModels.TAIL, CosmeticModels.TailModel::new, FUR, PINK, LIGHTER, FUR_WHITE));
+        registry.register(id("oversized_hoodie"), models -> new GroupedRenderer(
+                models, CosmeticModels.HOODIE, CosmeticModels.HoodieModel::new, KNIT, LAVENDER, DARKER, CORD_WHITE));
+        registry.register(id("pleated_skirt"), models -> new GroupedRenderer(
+                models, CosmeticModels.SKIRT, CosmeticModels.SkirtModel::new, FABRIC, SKIRT_DARK, DARKER, CORD_WHITE));
+        registry.register(id("programming_socks"), models -> new LegwearRenderer(
+                models, CosmeticModels.SOCKS, KNIT, SOCK_PINK, SOCK_WHITE, BOW_PINK));
+        registry.register(id("fishnet_tights"), models -> new LegwearRenderer(
+                models, CosmeticModels.FISHNET, FISHNET, FISHNET_BLACK, FISHNET_BLACK, BOW_PINK));
+        registry.register(id("uwu_choker"), models -> new GroupedRenderer(
+                models, CosmeticModels.CHOKER, Groups.GroupModelFactory.PLAIN, FABRIC, CHOKER_BLACK, LIGHTER, FUR_WHITE));
+        registry.register(id("hair_clip"), models -> {
+            Map<String, GroupedRenderer> byShape = new HashMap<>();
+            CosmeticModels.HAIR_CLIPS.forEach((shape, layer) -> byShape.put(shape, new GroupedRenderer(
+                    models, layer, Groups.GroupModelFactory.PLAIN, FABRIC, HAIR_CLIP_COLORS.get(shape), DARKER * 2, FUR_WHITE)));
             return ctx -> {
-                band.submit(ctx);
-                submit(ctx, bell, bellType, UNTINTED);
+                String path = BuiltInRegistries.ITEM.getKey(ctx.stack().getItem()).getPath();
+                GroupedRenderer renderer = byShape.get(path.substring(path.lastIndexOf('_') + 1));
+                if (renderer != null) {
+                    renderer.submit(ctx);
+                }
             };
         });
-        registry.register(id("hair_clip"), models -> {
-            Model<AvatarRenderState> model = new CosmeticModels.HairClipModel(models.bakeLayer(CosmeticModels.HAIR_CLIP));
-            RenderType type = RenderTypes.entityCutout(WHITE);
-            return ctx -> submit(ctx, model, type, HAIR_CLIP_COLORS.getOrDefault(
-                    BuiltInRegistries.ITEM.getKey(ctx.stack().getItem()).getPath(), HAIR_CLIP_DEFAULT));
-        });
-    }
-
-    /** One model tinted with the first stripe of the colorway (or the default color). */
-    static CosmeticRenderer solid(Model<AvatarRenderState> model, Identifier texture, int defaultColor) {
-        RenderType type = RenderTypes.entityCutout(texture);
-        return ctx -> {
-            Colorway colorway = ctx.colorway();
-            submit(ctx, model, type, colorway == null ? defaultColor : colorway.stripeColor(0));
-        };
     }
 
     static void submit(CosmeticRenderContext ctx, Model<AvatarRenderState> model, RenderType type, int rgb) {
@@ -93,43 +99,109 @@ public final class BuiltinCosmeticRenderers {
                 ARGB.opaque(rgb), null, ctx.state().outlineColor);
     }
 
+    /** Mixes a color toward white ({@code amount > 0}) or black ({@code amount < 0}). */
+    static int shade(int rgb, float amount) {
+        int target = amount >= 0 ? 0xFFFFFF : 0x000000;
+        float t = Math.abs(amount);
+        int r = (int) (ARGB.red(rgb) + (ARGB.red(target) - ARGB.red(rgb)) * t);
+        int g = (int) (ARGB.green(rgb) + (ARGB.green(target) - ARGB.green(rgb)) * t);
+        int b = (int) (ARGB.blue(rgb) + (ARGB.blue(target) - ARGB.blue(rgb)) * t);
+        return ARGB.color(r, g, b) & 0xFFFFFF;
+    }
+
+    /** Fixed colors of the non-tinted groups. */
+    static int fixedColor(Groups group, int detail) {
+        return switch (group) {
+            case DETAIL -> detail;
+            case DARK -> DARK;
+            case METAL -> GOLD;
+            default -> throw new IllegalArgumentException(group.name());
+        };
+    }
+
+    /** One model instance per color group, each submitted with its color. */
+    static final class GroupedRenderer implements CosmeticRenderer {
+        private final Map<Groups, Model<AvatarRenderState>> models = new EnumMap<>(Groups.class);
+        private final RenderType type;
+        private final int defaultMain;
+        private final float accentShade;
+        private final int detailColor;
+
+        GroupedRenderer(EntityModelSet set, ModelLayerLocation layer, BiFunction<net.minecraft.client.model.geom.ModelPart, Groups, ? extends Model<AvatarRenderState>> factory,
+                        Identifier texture, int defaultMain, float accentShade, int detailColor) {
+            for (Groups group : Groups.values()) {
+                models.put(group, factory.apply(set.bakeLayer(layer), group));
+            }
+            this.type = RenderTypes.entityCutout(texture);
+            this.defaultMain = defaultMain;
+            this.accentShade = accentShade;
+            this.detailColor = detailColor;
+        }
+
+        @Override
+        public void submit(CosmeticRenderContext ctx) {
+            Colorway colorway = ctx.colorway();
+            int main = colorway == null ? defaultMain : colorway.stripeColor(0);
+            for (Map.Entry<Groups, Model<AvatarRenderState>> entry : models.entrySet()) {
+                Groups group = entry.getKey();
+                int rgb = switch (group) {
+                    case MAIN -> main;
+                    case ACCENT -> shade(main, accentShade);
+                    default -> fixedColor(group, detailColor);
+                };
+                BuiltinCosmeticRenderers.submit(ctx, entry.getValue(), type, rgb);
+            }
+        }
+    }
+
     /**
-     * Horizontal stripes: one model instance per band. Patterns with up to 3 stripes repeat
-     * (classic striped programming socks); longer ones (flags) are stretched top to bottom.
+     * Socks/tights: stripe bands (≤3 stripes repeat like classic striped socks, flags stretch
+     * top to bottom) plus cuff/toe/heel in a darker shade and a bow.
      */
-    static final class BandedRenderer implements CosmeticRenderer {
+    static final class LegwearRenderer implements CosmeticRenderer {
         private static final int REPEAT_MAX_STRIPES = 3;
-        private final Model<AvatarRenderState> all;
+        private final Model<AvatarRenderState> allBands;
         private final Model<AvatarRenderState>[] bands;
+        private final Model<AvatarRenderState> accent;
+        private final Model<AvatarRenderState> detail;
         private final RenderType type;
         private final int defaultBase;
         private final int defaultSecondary;
+        private final int bowColor;
 
         @SuppressWarnings("unchecked")
-        BandedRenderer(Function<Integer, Model<AvatarRenderState>> factory, Identifier texture, int defaultBase, int defaultSecondary) {
-            this.all = factory.apply(-1);
+        LegwearRenderer(EntityModelSet set, ModelLayerLocation layer, Identifier texture, int defaultBase, int defaultSecondary, int bowColor) {
+            Function<Integer, Model<AvatarRenderState>> bandModel =
+                    band -> new CosmeticModels.LegwearModel(set.bakeLayer(layer), Groups.MAIN, band);
+            this.allBands = bandModel.apply(-1);
             this.bands = new Model[CosmeticModels.SOCK_BANDS];
             for (int i = 0; i < bands.length; i++) {
-                bands[i] = factory.apply(i);
+                bands[i] = bandModel.apply(i);
             }
+            this.accent = new CosmeticModels.LegwearModel(set.bakeLayer(layer), Groups.ACCENT, -1);
+            this.detail = new CosmeticModels.LegwearModel(set.bakeLayer(layer), Groups.DETAIL, -1);
             this.type = RenderTypes.entityCutout(texture);
             this.defaultBase = defaultBase;
             this.defaultSecondary = defaultSecondary;
+            this.bowColor = bowColor;
         }
 
         @Override
         public void submit(CosmeticRenderContext ctx) {
             Colorway colorway = ctx.colorway();
             int stripes = colorway == null ? 2 : colorway.stripeCount();
+            int base = colorway == null ? defaultBase : colorway.stripeColor(0);
             if (stripes == 1) {
-                BuiltinCosmeticRenderers.submit(ctx, all, type, colorway.stripeColor(0));
-                return;
+                BuiltinCosmeticRenderers.submit(ctx, allBands, type, base);
+            } else {
+                for (int band = 0; band < bands.length; band++) {
+                    int stripe = stripes <= REPEAT_MAX_STRIPES ? band % stripes : band * stripes / bands.length;
+                    int rgb = colorway == null ? (stripe == 0 ? defaultBase : defaultSecondary) : colorway.stripeColor(stripe);
+                    BuiltinCosmeticRenderers.submit(ctx, bands[band], type, rgb);
+                }
             }
-            for (int band = 0; band < bands.length; band++) {
-                int stripe = stripes <= REPEAT_MAX_STRIPES ? band % stripes : band * stripes / bands.length;
-                int rgb = colorway == null ? (stripe == 0 ? defaultBase : defaultSecondary) : colorway.stripeColor(stripe);
-                BuiltinCosmeticRenderers.submit(ctx, bands[band], type, rgb);
-            }
+            BuiltinCosmeticRenderers.submit(ctx, accent, type, shade(base, DARKER));
+            BuiltinCosmeticRenderers.submit(ctx, detail, type, bowColor);
         }
     }
 }

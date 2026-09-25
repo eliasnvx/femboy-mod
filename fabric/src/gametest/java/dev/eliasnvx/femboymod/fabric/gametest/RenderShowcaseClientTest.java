@@ -27,6 +27,8 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
 
     private static final int SETTLE_TICKS = 20;
     private static final int WALK_TICKS = 12;
+    private static final int ZOOM_FOV = 45;
+    private static final int DEFAULT_FOV = 70;
 
     @Override
     public void runTest(ClientGameTestContext context) {
@@ -40,9 +42,14 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             });
             context.waitTicks(SETTLE_TICKS);
 
+            context.runOnClient(mc -> mc.options.fov().set(ZOOM_FOV));
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
             context.waitTicks(SETTLE_TICKS);
             context.takeScreenshot("femboymod_front_idle");
+            world.getServer().runCommand("tp @p ~ ~ ~ 35 0");
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_front_angled");
+            world.getServer().runCommand("tp @p ~ ~ ~ 0 0");
 
             context.getInput().holdKeyFor(options -> options.keyUp, WALK_TICKS);
             context.takeScreenshot("femboymod_front_walking");
@@ -55,8 +62,20 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
             context.waitTicks(SETTLE_TICKS);
             context.takeScreenshot("femboymod_back_idle");
+            world.getServer().runCommand("tp @p ~ ~ ~ -40 0");
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_back_angled");
             context.getInput().holdKeyFor(options -> options.keyLeft, WALK_TICKS);
             context.takeScreenshot("femboymod_back_strafing");
+
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.HAIR_CLIPS.getFirst().get())));
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            context.waitTicks(SETTLE_TICKS);
+            context.takeScreenshot("femboymod_front_hair_clip");
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get())));
+            context.runOnClient(mc -> mc.options.fov().set(DEFAULT_FOV));
 
             // Cat Ears: hostile mobs within 16 blocks glow for the wearer.
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
