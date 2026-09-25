@@ -27,6 +27,8 @@ public final class CosmeticLayer extends RenderLayer<AvatarRenderState, PlayerMo
 
     private final Map<Identifier, CosmeticRenderer> renderers = new HashMap<>();
     private final Context context = new Context();
+    /** Geo renderers per item id, created on first use (Blockbench models override code models). */
+    private final Map<Identifier, GeoCosmeticRenderer> geoRenderers = new HashMap<>();
 
     public CosmeticLayer(RenderLayerParent<AvatarRenderState, PlayerModel> parent, EntityModelSet models) {
         super(parent);
@@ -49,7 +51,10 @@ public final class CosmeticLayer extends RenderLayer<AvatarRenderState, PlayerMo
         context.set(poseStack, collector, light, LivingEntityRenderer.getOverlayCoords(state, 0.0F), state, getParentModel(), data);
         for (int i = 0; i < worn.size(); i++) {
             CosmeticRenderData.Worn item = worn.get(i);
-            CosmeticRenderer renderer = renderers.get(item.renderer());
+            Identifier itemId = item.itemId();
+            CosmeticRenderer renderer = GeoCosmeticRenderer.hasModel(itemId)
+                    ? geoRenderers.computeIfAbsent(itemId, GeoCosmeticRenderer::new)
+                    : renderers.get(item.renderer());
             if (renderer != null) {
                 context.worn = item;
                 renderer.submit(context);
