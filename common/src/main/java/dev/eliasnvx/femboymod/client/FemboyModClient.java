@@ -16,6 +16,7 @@ import dev.eliasnvx.femboymod.client.chat.UwuChat;
 import dev.eliasnvx.femboymod.block.FemboyBlocks;
 import dev.eliasnvx.femboymod.client.render.ClothingRackRenderer;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
+import dev.eliasnvx.femboymod.client.render.entity.BugRenderer;
 import dev.eliasnvx.femboymod.client.render.entity.PinkCreeperRenderer;
 import dev.eliasnvx.femboymod.entity.FemboyEntities;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
@@ -106,6 +107,8 @@ public final class FemboyModClient {
         CosmeticModels.registerLayers();
         PinkCreeperRenderer.registerLayers();
         EntityRendererRegistry.register(FemboyEntities.PINK_CREEPER, PinkCreeperRenderer::new);
+        BugRenderer.registerLayers();
+        EntityRendererRegistry.register(FemboyEntities.BUG, BugRenderer::new);
         BuiltinCosmeticRenderers.register(clientApi.cosmeticRenderers());
         clientApi.chatTransformers().register(UwuChat.ID, new UwuChat());
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new UwuChat.Loader(),

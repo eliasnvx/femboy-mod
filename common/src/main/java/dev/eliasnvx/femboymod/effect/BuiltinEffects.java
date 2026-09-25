@@ -7,9 +7,13 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.effect.CosmeticEffect;
 import dev.eliasnvx.femboymod.api.effect.EffectSource;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
+import dev.eliasnvx.femboymod.combat.DripCombat;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +21,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -38,6 +43,34 @@ public final class BuiltinEffects {
         registry.register(id("step_sound"), StepSoundEffect.CODEC);
         registry.register(id("follow_passive"), FollowPassiveEffect.CODEC);
         registry.register(id("glow_hostiles"), GlowHostilesEffect.CODEC);
+        registry.register(id("damage_bonus"), DamageBonusEffect.CODEC);
+    }
+
+    /**
+     * Player's melee and projectile damage against {@code targets} is multiplied by {@code multiplier}
+     * (the part above 1 scales with the source, e.g. set bonus tiers). Applied by {@link DripCombat}.
+     */
+    public record DamageBonusEffect(HolderSet<EntityType<?>> targets, float multiplier) implements CosmeticEffect {
+
+        public static final MapCodec<DamageBonusEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                RegistryCodecs.holderSet(Registries.ENTITY_TYPE).fieldOf("targets").forGetter(DamageBonusEffect::targets),
+                Codec.floatRange(0.0F, 10.0F).fieldOf("multiplier").forGetter(DamageBonusEffect::multiplier)
+        ).apply(i, DamageBonusEffect::new));
+
+        @Override
+        public MapCodec<DamageBonusEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public void onActivate(ServerPlayer player, EffectSource source) {
+            DripCombat.addBonus(player, source.id(), this, source.scale());
+        }
+
+        @Override
+        public void onDeactivate(ServerPlayer player, EffectSource source) {
+            DripCombat.removeBonus(player, source.id());
+        }
     }
 
     private static Identifier id(String path) {

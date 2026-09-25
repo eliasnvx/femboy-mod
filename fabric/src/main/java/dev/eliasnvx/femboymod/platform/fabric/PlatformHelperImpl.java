@@ -52,6 +52,7 @@ public final class PlatformHelperImpl {
         DynamicRegistries.registerSynced(DripRules.REGISTRY_KEY, DripRules.CODEC);
         DynamicRegistries.register(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
         DynamicRegistries.register(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
+        DynamicRegistries.register(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
         DynamicRegistries.registerSynced(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
     }
 

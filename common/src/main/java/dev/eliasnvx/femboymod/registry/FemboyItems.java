@@ -27,6 +27,7 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -76,10 +77,11 @@ public final class FemboyItems {
 
     // SPEC §5.4: Pink Creeper drops and spawn egg
     public static final RegistrySupplier<Item> GLITTER = register("glitter", props -> new Item(props));
-    public static final RegistrySupplier<Item> PINK_CREEPER_SPAWN_EGG = register("pink_creeper_spawn_egg", props -> new SpawnEggItem(
-            // ENTITY_DATA resolved late: on NeoForge items may be built before entity types are registered
-            props.delayedComponent(DataComponents.ENTITY_DATA, context -> TypedEntityData.of(
-                    context.lookupOrThrow(Registries.ENTITY_TYPE).getOrThrow(FemboyEntities.PINK_CREEPER_KEY).value(), new CompoundTag()))));
+    public static final RegistrySupplier<Item> PINK_CREEPER_SPAWN_EGG = spawnEgg("pink_creeper_spawn_egg", FemboyEntities.PINK_CREEPER_KEY);
+
+    // Hostile meme mobs: drops and spawn eggs
+    public static final RegistrySupplier<Item> GLITCH_SHARD = register("glitch_shard", props -> new Item(props));
+    public static final RegistrySupplier<Item> BUG_SPAWN_EGG = spawnEgg("bug_spawn_egg", FemboyEntities.BUG_KEY);
 
     /** Hair clip shapes (SPEC §5.1: "10 forms"); all share the hair_clip renderer. */
     public static final List<String> HAIR_CLIP_SHAPES = List.of(
@@ -102,6 +104,13 @@ public final class FemboyItems {
     /** Block item for a block registered elsewhere (FemboyBlocks). */
     public static RegistrySupplier<Item> blockItem(String name, RegistrySupplier<Block> block) {
         return register(name, props -> new BlockItem(block.get(), props.useBlockDescriptionPrefix()));
+    }
+
+    private static RegistrySupplier<Item> spawnEgg(String name, ResourceKey<EntityType<?>> entity) {
+        return register(name, props -> new SpawnEggItem(
+                // ENTITY_DATA resolved late: on NeoForge items may be built before entity types are registered
+                props.delayedComponent(DataComponents.ENTITY_DATA, context -> TypedEntityData.of(
+                        context.lookupOrThrow(Registries.ENTITY_TYPE).getOrThrow(entity).value(), new CompoundTag()))));
     }
 
     private static RegistrySupplier<Item> energyDrink(String name) {

@@ -67,6 +67,7 @@ public final class CosmeticGameTests {
         all.addAll(WearableGameTests.ALL);
         all.addAll(BackpackGameTests.ALL);
         all.addAll(WorldGameTests.ALL);
+        all.addAll(MobGameTests.ALL);
         return all;
     }
 

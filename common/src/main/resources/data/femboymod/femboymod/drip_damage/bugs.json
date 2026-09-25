@@ -1,0 +1,11 @@
+{
+  "attackers": "#femboymod:bugs",
+  "multiplier_by_tier": [
+    1.0,
+    0.9,
+    0.75,
+    0.6,
+    0.5,
+    0.4
+  ]
+}

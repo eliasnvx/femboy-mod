@@ -121,7 +121,7 @@ public final class WearableGameTests {
         });
     }
 
-    private static void withPlayer(GameTestHelper helper, Consumer<ServerPlayer> body) {
+    static void withPlayer(GameTestHelper helper, Consumer<ServerPlayer> body) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         player.snapTo(helper.absoluteVec(TEST_AREA_CENTER));
         try {
