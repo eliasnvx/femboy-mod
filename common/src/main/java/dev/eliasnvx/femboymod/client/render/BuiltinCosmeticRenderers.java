@@ -76,6 +76,9 @@ public final class BuiltinCosmeticRenderers {
         registry.register(id("oversized_hoodie"), models -> new GroupedRenderer(
                 models, CosmeticModels.HOODIE, CosmeticModels.HoodieModel::new, KNIT, LAVENDER, DARKER, CORD_WHITE)
                 .withChevronPanel(new ChevronPanel(models.bakeLayer(CosmeticModels.HOODIE_CHEST_PANEL), KNIT)));
+        registry.register(id("cat_ear_hoodie"), models -> new GroupedRenderer(
+                models, CosmeticModels.CAT_EAR_HOODIE, CosmeticModels.HoodieModel::new, KNIT, LAVENDER, DARKER, CORD_WHITE)
+                .withChevronPanel(new ChevronPanel(models.bakeLayer(CosmeticModels.HOODIE_CHEST_PANEL), KNIT)));
         registry.register(id("pleated_skirt"), models -> new GroupedRenderer(
                 models, CosmeticModels.SKIRT, CosmeticModels.SkirtModel::new, FABRIC, SKIRT_DARK, DARKER, CORD_WHITE));
         registry.register(id("programming_socks"), models -> new GroupedRenderer(

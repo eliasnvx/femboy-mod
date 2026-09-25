@@ -59,6 +59,7 @@ public final class BlockbenchStarterExport {
         TARGETS.put("fishnet", new Target("fishnet_tights", 0x2A2A2A, 0xFF8FB8));
         TARGETS.put("skirt", new Target("pleated_skirt", 0x3A3A48, 0xF4F1EE));
         TARGETS.put("hoodie", new Target("oversized_hoodie", 0xC8A2E8, 0xF4F1EE));
+        TARGETS.put("cat_ear_hoodie", new Target("cat_ear_hoodie", 0xC8A2E8, 0xF4F1EE));
         TARGETS.put("choker", new Target("uwu_choker", 0x2A2A33, 0xFFF6F8));
         TARGETS.put("backpack", new Target("backpack", 0xD9C9A3, 0x62B14F));
         // hair_clip_<shape> layers map to items of the same name (added below)

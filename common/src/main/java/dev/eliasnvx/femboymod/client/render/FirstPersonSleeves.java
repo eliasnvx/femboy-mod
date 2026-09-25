@@ -7,7 +7,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
-import dev.eliasnvx.femboymod.registry.FemboyItems;
+import dev.eliasnvx.femboymod.registry.FemboyTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelPart;
@@ -41,7 +41,7 @@ public final class FirstPersonSleeves {
             return;
         }
         ItemStack top = CosmeticsManager.get(player).get(FemboySlots.OUTFIT_TOP);
-        if (!top.is(FemboyItems.OVERSIZED_HOODIE.get())) {
+        if (!top.is(FemboyTags.HOODIES)) {
             return;
         }
         EntityModelSet models = Minecraft.getInstance().getEntityModels();

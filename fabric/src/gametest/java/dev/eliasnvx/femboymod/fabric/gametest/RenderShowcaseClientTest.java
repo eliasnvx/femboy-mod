@@ -89,6 +89,22 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
             context.waitTicks(SETTLE_TICKS);
             context.takeScreenshot("femboymod_front_hair_clip");
+            // Cat ear hoodie: hood up, so no headband
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, ItemStack.EMPTY);
+                CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.CAT_EAR_HOODIE.get()));
+            });
+            context.waitTicks(SETTLE_TICKS / 2);
+            closeUp(context, "femboymod_closeup_cat_ear_hoodie_front");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+            world.getServer().runCommand("tp @p ~ ~ ~ -30 0");
+            context.waitTicks(SETTLE_TICKS / 2);
+            closeUp(context, "femboymod_closeup_cat_ear_hoodie_back");
+            world.getServer().runCommand("tp @p ~ ~ ~ 0 0");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get())));
             world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
                     FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get())));
             // Patterns: Progress chevron on the hoodie, striped ears, bi skirt, trans tail rings.

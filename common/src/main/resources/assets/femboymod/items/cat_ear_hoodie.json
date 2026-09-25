@@ -1,0 +1,13 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/cat_ear_hoodie",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 13148904,
+        "stripe": 0
+      }
+    ]
+  }
+}
