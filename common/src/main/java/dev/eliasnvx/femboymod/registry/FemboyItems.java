@@ -31,6 +31,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -38,6 +39,8 @@ import java.util.function.Function;
 public final class FemboyItems {
 
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(FemboyMod.MOD_ID, Registries.ITEM);
+    /** Registration order = creative tab order (see {@link CreativeTabContents}). */
+    static final List<RegistrySupplier<Item>> TAB_ORDER = new ArrayList<>();
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(FemboyMod.MOD_ID, Registries.CREATIVE_MODE_TAB);
 
     // SPEC §5.1. Balance lives in data/femboymod/femboymod/cosmetic_stats/<item>.json, not here.
@@ -85,8 +88,10 @@ public final class FemboyItems {
                     Optional.of(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "hair_clip")))))
             .toList();
 
-    public static final RegistrySupplier<CreativeModeTab> TAB = TABS.register("main", () -> CreativeTabRegistry.create(
-            Component.translatable("itemGroup.femboymod"), () -> new ItemStack(CAT_EARS.get())));
+    public static final RegistrySupplier<CreativeModeTab> TAB = TABS.register("main", () -> CreativeTabRegistry.create(builder -> builder
+            .title(Component.translatable("itemGroup.femboymod"))
+            .icon(() -> new ItemStack(CAT_EARS.get()))
+            .displayItems(CreativeTabContents::fill)));
 
     private FemboyItems() {
     }
@@ -130,6 +135,8 @@ public final class FemboyItems {
 
     private static RegistrySupplier<Item> register(String name, Function<Item.Properties, Item> factory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
-        return REGISTER.register(name, () -> factory.apply(new Item.Properties().setId(key).arch$tab(TAB)));
+        RegistrySupplier<Item> item = REGISTER.register(name, () -> factory.apply(new Item.Properties().setId(key)));
+        TAB_ORDER.add(item);
+        return item;
     }
 }

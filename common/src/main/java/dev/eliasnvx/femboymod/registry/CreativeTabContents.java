@@ -1,0 +1,81 @@
+package dev.eliasnvx.femboymod.registry;
+
+import dev.architectury.registry.registries.RegistrySupplier;
+import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.api.colorway.Colorway;
+import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * Contents of the femboymod creative tab: every item in registration order, each followed by ready-made
+ * colorways. Presentation only: players get any colorway by dyeing, these are just a quick pick.
+ */
+final class CreativeTabContents {
+
+    private static final ResourceKey<ColorwayPattern> STRIPES = ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
+            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "stripes"));
+    private static final int WHITE = 0xFFFFFF;
+
+    /** A solid colorway, or two-color stripes (base + secondary) when {@code striped}. */
+    private record Preset(int base, boolean striped, int secondary) {
+        static Preset solid(int color) {
+            return new Preset(color, false, WHITE);
+        }
+
+        static Preset stripes(int base, int secondary) {
+            return new Preset(base, true, secondary);
+        }
+    }
+
+    private static final List<Preset> BACKPACK_COLORS = List.of(
+            Preset.solid(0x6FBF73),  // green
+            Preset.solid(0xF4A6C8),  // pink
+            Preset.solid(0xAE8BE0)); // purple
+
+    /** Item path -> extra variants shown after the plain item (the plain socks are pink-white already). */
+    private static final Map<String, List<Preset>> PRESETS = Map.of(
+            "programming_socks", List.of(
+                    Preset.stripes(0x2A2A33, WHITE),  // black-white
+                    Preset.stripes(0x8FD3F4, WHITE),  // light blue-white
+                    Preset.stripes(0xE0343F, WHITE)), // red-white
+            "oversized_hoodie", List.of(
+                    Preset.solid(0xF7B8D2),  // pastel pink
+                    Preset.solid(0xA8E6CF),  // mint
+                    Preset.solid(0xA7D3F2),  // baby blue
+                    Preset.solid(0xF2F0F2),  // white
+                    Preset.solid(0x2B2A33)), // black
+            "canvas_backpack", BACKPACK_COLORS,
+            "leather_backpack", BACKPACK_COLORS);
+
+    private CreativeTabContents() {
+    }
+
+    static void fill(CreativeModeTab.ItemDisplayParameters parameters, CreativeModeTab.Output output) {
+        Optional<Holder<ColorwayPattern>> stripes = parameters.holders().lookup(ColorwayPattern.REGISTRY_KEY)
+                .flatMap(lookup -> lookup.get(STRIPES))
+                .map(holder -> holder);
+        for (RegistrySupplier<Item> entry : FemboyItems.TAB_ORDER) {
+            Item item = entry.get();
+            output.accept(item);
+            for (Preset preset : PRESETS.getOrDefault(entry.getId().getPath(), List.of())) {
+                if (preset.striped() && stripes.isEmpty()) {
+                    continue; // data pack removed the pattern
+                }
+                ItemStack stack = new ItemStack(item);
+                stack.set(FemboyComponents.COLORWAY.get(), preset.striped()
+                        ? new Colorway(preset.base(), stripes, Optional.of(preset.secondary()))
+                        : Colorway.solid(preset.base()));
+                output.accept(stack);
+            }
+        }
+    }
+}

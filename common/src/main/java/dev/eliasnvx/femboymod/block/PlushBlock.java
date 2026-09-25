@@ -17,18 +17,23 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 /** Plushies (SPEC §5.6): decorative; right-click squeaks. */
 public class PlushBlock extends HorizontalDirectionalBlock {
 
-    private static final VoxelShape SHAPE = Block.column(10.0, 0.0, 9.0);
+    private final Map<Direction, VoxelShape> shapes;
     private static final float MIN_PITCH = 1.3F;
     private static final float PITCH_RANGE = 0.4F;
 
-    public PlushBlock(Properties properties) {
+    /** @param northShape outline with the face pointing north (the model's orientation) */
+    public PlushBlock(Properties properties, VoxelShape northShape) {
         super(properties);
+        this.shapes = Shapes.rotateHorizontal(northShape);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
@@ -44,7 +49,7 @@ public class PlushBlock extends HorizontalDirectionalBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return shapes.get(state.getValue(FACING));
     }
 
     @Override
