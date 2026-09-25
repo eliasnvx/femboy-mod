@@ -1,0 +1,47 @@
+# Gradle / IDE
+.gradle/
+build/
+out/
+run/
+runs/
+*.iml
+.idea/
+.vscode/
+bin/
+.architectury-transformer/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Raw AI drafts never go to git or the jar (SPEC §11.2)
+art/generated/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# OS
+.DS_Store
+
+# Local agent overrides
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Private notes and agent rules (kept locally)
+.agents/
+.claude/
+AGENTS.md
+CLAUDE.md
+SPEC.md
+ASSET_PROVENANCE.md
+docs/PROGRESS.md
+docs/decisions.md
+docs/release-checklist.md
+docs/art/
+docs/pages/
+tools/texgen/README.md
+tools/sync-agent-rules.sh

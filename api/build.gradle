@@ -1,0 +1,29 @@
+// Public API: interfaces, records, codecs, events. Must NOT depend on :common (SPEC §3.1).
+architectury {
+    common(rootProject.platforms.split(","))
+}
+
+version = rootProject.api_version
+
+dependencies {
+    // Addons compile against these annotations (@ApiStatus); exported as compile-only
+    compileOnlyApi "org.jetbrains:annotations:${rootProject.jetbrains_annotations_version}"
+}
+
+java {
+    withJavadocJar()
+}
+
+javadoc {
+    options.encoding = "UTF-8"
+    options.addBooleanOption("Xdoclint:all,-missing", true)
+}
+
+publishing {
+    publications {
+        mavenApi(MavenPublication) {
+            artifactId = "${rootProject.archives_base_name}-api"
+            from components.java
+        }
+    }
+}

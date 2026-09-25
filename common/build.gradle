@@ -1,0 +1,12 @@
+architectury {
+    common(rootProject.platforms.split(","))
+}
+
+dependencies {
+    // Only for @Environment-style annotations; do NOT use other Fabric Loader classes in common
+    compileOnly "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    api project(":api")
+    implementation "dev.architectury:architectury:${rootProject.architectury_api_version}"
+    implementation "com.geckolib:geckolib-common-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+}

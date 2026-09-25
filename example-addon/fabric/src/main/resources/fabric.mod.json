@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "femboymod_example",
+  "version": "${version}",
+  "name": "Femboy Mod Example Addon",
+  "description": "Reference addon for the Femboy Mod API. Not published.",
+  "authors": ["eliasnvx"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "femboymod": ["dev.eliasnvx.femboymod.example.ExampleAddon"]
+  },
+  "depends": {
+    "femboymod": "*"
+  }
+}

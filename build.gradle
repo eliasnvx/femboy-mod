@@ -1,0 +1,81 @@
+plugins {
+    id "architectury-plugin" version "3.5.170"
+    id "dev.architectury.loom-no-remap" version "1.17.493" apply false
+    id "com.gradleup.shadow" version "9.4.3" apply false
+}
+
+architectury {
+    minecraft = rootProject.minecraft_version
+}
+
+allprojects {
+    group = rootProject.maven_group
+    version = rootProject.mod_version
+}
+
+subprojects {
+    apply plugin: "java-library"
+    apply plugin: "architectury-plugin"
+    apply plugin: "dev.architectury.loom-no-remap"
+    apply plugin: "maven-publish"
+
+    base {
+        archivesName = "${rootProject.archives_base_name}-${project.name}"
+    }
+
+    repositories {
+        maven { url "https://maven.neoforged.net/releases/" }
+        maven { url "https://maven.architectury.dev/" }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "GeckoLib"
+                    url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
+                }
+            }
+            filter { includeGroupAndSubgroups("com.geckolib") }
+        }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        compileOnly "org.jetbrains:annotations:${rootProject.jetbrains_annotations_version}"
+
+        testImplementation platform("org.junit:junit-bom:${rootProject.junit_version}")
+        testImplementation "org.junit.jupiter:junit-jupiter"
+        testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    }
+
+    java {
+        withSourcesJar()
+        toolchain.languageVersion = JavaLanguageVersion.of(25)
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+        options.release = 25
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+
+    processResources {
+        def props = [
+                version          : project.version,
+                mod_id           : rootProject.mod_id,
+                mod_name         : rootProject.mod_name,
+                api_version      : rootProject.api_version,
+                minecraft_version: rootProject.minecraft_version,
+                fabric_loader_version: rootProject.fabric_loader_version,
+                fabric_api_version: rootProject.fabric_api_version.split("\\+")[0],
+                neoforge_version : rootProject.neoforge_version,
+                architectury_api_version: rootProject.architectury_api_version,
+                geckolib_version : rootProject.geckolib_version,
+        ]
+        inputs.properties props
+        filesMatching(["fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/femboymod-api.properties"]) {
+            expand props
+        }
+    }
+}

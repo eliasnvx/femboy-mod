@@ -1,0 +1,55 @@
+package dev.eliasnvx.femboymod.platform.neoforge;
+
+import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.addon.AddonLoader.DiscoveredAddon;
+import dev.eliasnvx.femboymod.api.FemboyAddon;
+import dev.eliasnvx.femboymod.api.RegisterFemboyAddon;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforgespi.language.IModFileInfo;
+import net.neoforged.neoforgespi.language.ModFileScanData;
+
+import java.lang.annotation.ElementType;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public final class PlatformHelperImpl {
+
+    private PlatformHelperImpl() {
+    }
+
+    public static List<DiscoveredAddon> discoverAddons() {
+        List<DiscoveredAddon> result = new ArrayList<>();
+        for (ModFileScanData scanData : ModList.get().getAllScanData()) {
+            List<IModFileInfo> infos = scanData.getIModInfoData();
+            String modId = infos.isEmpty() || infos.getFirst().getMods().isEmpty()
+                    ? "<unknown>"
+                    : infos.getFirst().getMods().getFirst().getModId();
+            scanData.getAnnotatedBy(RegisterFemboyAddon.class, ElementType.TYPE)
+                    .map(data -> data.clazz().getClassName())
+                    .sorted(Comparator.naturalOrder())
+                    .forEach(className -> {
+                        FemboyAddon addon = instantiate(modId, className);
+                        if (addon != null) {
+                            result.add(new DiscoveredAddon(modId, addon));
+                        }
+                    });
+        }
+        return result;
+    }
+
+    private static FemboyAddon instantiate(String modId, String className) {
+        try {
+            Class<?> clazz = Class.forName(className, true, PlatformHelperImpl.class.getClassLoader());
+            if (!FemboyAddon.class.isAssignableFrom(clazz)) {
+                FemboyMod.LOGGER.error("{} (mod {}) is annotated with @RegisterFemboyAddon but does not implement FemboyAddon",
+                        className, modId);
+                return null;
+            }
+            return (FemboyAddon) clazz.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException | LinkageError e) {
+            FemboyMod.LOGGER.error("Failed to instantiate femboymod addon {} from mod {}", className, modId, e);
+            return null;
+        }
+    }
+}

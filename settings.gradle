@@ -1,0 +1,22 @@
+pluginManagement {
+    repositories {
+        maven { url "https://maven.fabricmc.net/" }
+        maven { url "https://maven.architectury.dev/" }
+        maven { url "https://maven.neoforged.net/releases/" }
+        gradlePluginPortal()
+    }
+}
+
+if (JavaVersion.current().ordinal() + 1 < 25) {
+    throw new IllegalStateException("Please run Gradle with Java 25+")
+}
+
+rootProject.name = "femboymod"
+
+include("api", "common", "fabric", "neoforge")
+
+// Example addon: dogfoods the public API, never published (SPEC §8.5)
+include("example-addon-common", "example-addon-fabric", "example-addon-neoforge")
+project(":example-addon-common").projectDir = file("example-addon/common")
+project(":example-addon-fabric").projectDir = file("example-addon/fabric")
+project(":example-addon-neoforge").projectDir = file("example-addon/neoforge")

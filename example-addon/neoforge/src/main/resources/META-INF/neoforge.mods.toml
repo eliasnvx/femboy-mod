@@ -1,0 +1,19 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "femboymod_example"
+version = "${version}"
+displayName = "Femboy Mod Example Addon"
+authors = "eliasnvx"
+description = '''
+Reference addon for the Femboy Mod API. Not published.
+'''
+
+[[dependencies.femboymod_example]]
+modId = "femboymod"
+type = "required"
+versionRange = "[0,)"
+ordering = "AFTER"
+side = "BOTH"

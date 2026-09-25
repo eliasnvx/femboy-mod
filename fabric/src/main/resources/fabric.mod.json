@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "Meme cosmetics mod: programming socks, cat ears, backpacks, energy drinks and more. Comes with a public API for addons.",
+  "authors": ["eliasnvx"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["dev.eliasnvx.femboymod.fabric.FemboyModFabric"],
+    "client": ["dev.eliasnvx.femboymod.fabric.FemboyModFabricClient"]
+  },
+  "depends": {
+    "minecraft": ">=${minecraft_version}",
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": ">=${fabric_api_version}",
+    "architectury": ">=${architectury_api_version}",
+    "geckolib": ">=${geckolib_version}",
+    "java": ">=25"
+  },
+  "custom": {
+    "femboymod:api_version": "${api_version}"
+  }
+}
