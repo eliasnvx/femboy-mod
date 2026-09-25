@@ -6,6 +6,7 @@ import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.eliasnvx.femboymod.effect.CosmeticEffectsManager;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.network.CosmeticsSyncPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -53,10 +54,9 @@ public final class CosmeticsEvents {
         InteractionEvent.USE_ITEM.register((level, player, hand) -> equipFromHand(player, hand, false));
     }
 
-    // TODO(Phase 4, SPEC §4.3/§10): honor the keepCosmeticsOnDeath config option in addition to keepInventory.
     public static void dropOnDeath(ServerPlayer player) {
         ServerLevel level = (ServerLevel) player.level();
-        if (level.getGameRules().get(GameRules.KEEP_INVENTORY)) {
+        if (level.getGameRules().get(GameRules.KEEP_INVENTORY) || FemboyConfig.common().keepCosmeticsOnDeath()) {
             return; // the attachment is copyOnDeath, so cosmetics carry over to the respawned player
         }
         for (ItemStack stack : CosmeticsManager.clear(player)) {

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:light_blue_wool",
+    "minecraft:light_blue_wool",
+    "minecraft:white_wool",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:shark_plush"
+  }
+}

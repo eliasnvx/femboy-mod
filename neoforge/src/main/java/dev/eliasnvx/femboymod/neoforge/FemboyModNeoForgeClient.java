@@ -9,14 +9,18 @@ import net.minecraft.world.entity.player.PlayerModelType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import dev.eliasnvx.femboymod.client.ConfigScreen;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
 @Mod(value = FemboyMod.MOD_ID, dist = Dist.CLIENT)
 public final class FemboyModNeoForgeClient {
 
-    public FemboyModNeoForgeClient(IEventBus modBus) {
+    public FemboyModNeoForgeClient(IEventBus modBus, ModContainer container) {
         FemboyModClient.init();
+        container.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> new ConfigScreen(parent));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
                 event.register(ColorwayTintSource.ID, ColorwayTintSource.MAP_CODEC));
         modBus.addListener((EntityRenderersEvent.AddLayers event) -> {

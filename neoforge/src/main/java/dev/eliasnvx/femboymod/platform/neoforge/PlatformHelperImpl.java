@@ -9,6 +9,10 @@ import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
+import dev.eliasnvx.femboymod.block.FemboyBlocks;
+import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
 import dev.eliasnvx.femboymod.energy.CaffeineLog;
 import dev.eliasnvx.femboymod.energy.CaffeineRules;
 import dev.eliasnvx.femboymod.energy.EnergyDrink;
@@ -42,12 +46,17 @@ public final class PlatformHelperImpl {
     private static final Supplier<AttachmentType<CaffeineLog>> CAFFEINE = ATTACHMENTS.register("caffeine",
             () -> AttachmentType.builder(() -> CaffeineLog.EMPTY).serialize(CaffeineLog.CODEC.fieldOf("drinks")).build());
 
+    private static final Supplier<AttachmentType<WardrobePresets>> PRESETS = ATTACHMENTS.register("wardrobe_presets",
+            () -> AttachmentType.builder(() -> WardrobePresets.EMPTY).serialize(WardrobePresets.CODEC.fieldOf("presets")).copyOnDeath().build());
+    private static final DeferredRegister<PoiType> POIS = DeferredRegister.create(Registries.POINT_OF_INTEREST_TYPE, FemboyMod.MOD_ID);
+
     private PlatformHelperImpl() {
     }
 
     /** Registers loader-side content; must run before {@link FemboyMod#init()}. */
     public static void init(IEventBus modBus) {
         ATTACHMENTS.register(modBus);
+        POIS.register(modBus);
         modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
             event.dataPackRegistry(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC, ColorwayPattern.CODEC);
             event.dataPackRegistry(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC, CosmeticStats.CODEC);
@@ -108,5 +117,19 @@ public final class PlatformHelperImpl {
 
     public static void setCaffeineLog(Player player, CaffeineLog log) {
         player.setData(CAFFEINE, log);
+    }
+
+    public static WardrobePresets getWardrobePresets(Player player) {
+        return player.getData(PRESETS);
+    }
+
+    public static void setWardrobePresets(Player player, WardrobePresets presets) {
+        player.setData(PRESETS, presets);
+    }
+
+    /** NeoForge maps POI block states automatically on registration. */
+    public static void registerPoi() {
+        POIS.register(FemboyBlocks.THRIFTER_POI.identifier().getPath(), () -> new PoiType(
+                java.util.Set.copyOf(FemboyBlocks.CLOTHING_RACK.get().getStateDefinition().getPossibleStates()), 1, 1));
     }
 }

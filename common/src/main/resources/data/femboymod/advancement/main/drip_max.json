@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "id": "femboymod:oversized_hoodie"
+    },
+    "title": {
+      "translate": "advancements.femboymod.drip_max.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.drip_max.description"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "drip_tier",
+        "min": 5
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

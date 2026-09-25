@@ -2,6 +2,7 @@ package dev.eliasnvx.femboymod.fabric.gametest;
 
 import dev.eliasnvx.femboymod.gametest.BackpackGameTests;
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
+import dev.eliasnvx.femboymod.gametest.WorldGameTests;
 import dev.eliasnvx.femboymod.gametest.WearableGameTests;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -118,8 +119,43 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void pinkCreeperHarmless(GameTestHelper helper) {
+        WorldGameTests.pinkCreeperHarmless(helper);
+    }
+
+    @GameTest
+    public void pinkCreeperSpawns(GameTestHelper helper) {
+        WorldGameTests.pinkCreeperSpawns(helper);
+    }
+
+    @GameTest
+    public void rackIsJobSite(GameTestHelper helper) {
+        WorldGameTests.rackIsJobSite(helper);
+    }
+
+    @GameTest
+    public void thrifterTrades(GameTestHelper helper) {
+        WorldGameTests.thrifterTrades(helper);
+    }
+
+    @GameTest
+    public void rackHangAndTake(GameTestHelper helper) {
+        WorldGameTests.rackHangAndTake(helper);
+    }
+
+    @GameTest
+    public void wardrobePresets(GameTestHelper helper) {
+        WorldGameTests.wardrobePresets(helper);
+    }
+
+    @GameTest
+    public void advancementsLoaded(GameTestHelper helper) {
+        WorldGameTests.advancementsLoaded(helper);
+    }
+
+    @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 21, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 28, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

@@ -8,10 +8,17 @@ import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.client.gui.MenuScreenRegistry;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.addon.AddonLoader;
 import dev.eliasnvx.femboymod.api.internal.FemboyClientApiHolder;
 import dev.eliasnvx.femboymod.client.render.BuiltinCosmeticRenderers;
 import dev.eliasnvx.femboymod.client.chat.UwuChat;
+import dev.eliasnvx.femboymod.block.FemboyBlocks;
+import dev.eliasnvx.femboymod.client.render.ClothingRackRenderer;
+import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
+import dev.eliasnvx.femboymod.client.render.entity.PinkCreeperRenderer;
+import dev.eliasnvx.femboymod.entity.FemboyEntities;
+import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -60,6 +67,9 @@ public final class FemboyModClient {
         FemboyMenus.COSMETICS.listen(type -> MenuScreenRegistry.registerScreenFactory(type, CosmeticsScreen::new));
 
         FemboyMenus.BACKPACK.listen(type -> MenuScreenRegistry.registerScreenFactory(type, BackpackScreen::new));
+        FemboyMenus.WARDROBE.listen(type -> MenuScreenRegistry.registerScreenFactory(type, WardrobeScreen::new));
+        FemboyBlocks.CLOTHING_RACK_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, ClothingRackRenderer::new));
+        ClientTickEvent.CLIENT_POST.register(NyaSound::tick);
         KeyMappingRegistry.register(OPEN_COSMETICS);
         KeyMappingRegistry.register(OPEN_BACKPACK);
         ClientTickEvent.CLIENT_POST.register(minecraft -> {
@@ -88,10 +98,14 @@ public final class FemboyModClient {
         });
 
         ClientTooltipEvent.ITEM.register(FemboyModClient::appendTooltip);
+        ClientGuiEvent.RENDER_HUD.register(DripHud::render);
 
+        FemboyConfig.loadClient();
         FemboyClientApiImpl clientApi = new FemboyClientApiImpl();
         FemboyClientApiHolder.install(clientApi);
         CosmeticModels.registerLayers();
+        PinkCreeperRenderer.registerLayers();
+        EntityRendererRegistry.register(FemboyEntities.PINK_CREEPER, PinkCreeperRenderer::new);
         BuiltinCosmeticRenderers.register(clientApi.cosmeticRenderers());
         clientApi.chatTransformers().register(UwuChat.ID, new UwuChat());
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new UwuChat.Loader(),

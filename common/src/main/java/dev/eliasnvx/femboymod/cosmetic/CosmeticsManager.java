@@ -2,6 +2,7 @@ package dev.eliasnvx.femboymod.cosmetic;
 
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticChangedEvent;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticEquipEvent;
@@ -66,7 +67,7 @@ public final class CosmeticsManager {
 
     /** Side-effect free check used by slots (both sides) and right-click equip. */
     public static boolean canEquip(LivingEntity entity, Identifier slot, ItemStack stack) {
-        if (stack.isEmpty() || !slot.equals(slotOf(stack))) {
+        if (stack.isEmpty() || !slot.equals(slotOf(stack)) || FemboyConfig.common().disabledSlots().contains(slot)) {
             return false;
         }
         return !FemboyMod.api().events().post(new CosmeticEquipEvent(entity, slot, stack)).isCancelled();

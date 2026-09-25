@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 10
+  },
+  "gives": {
+    "id": "femboymod:heart_pin"
+  },
+  "max_uses": 4,
+  "xp": 15,
+  "reputation_discount": 0.05
+}

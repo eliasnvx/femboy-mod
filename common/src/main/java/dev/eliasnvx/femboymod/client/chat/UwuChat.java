@@ -29,7 +29,7 @@ public final class UwuChat implements ChatTransformer {
     @Override
     public String transform(String message) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null || rules.isEmpty()
+        if (player == null || rules.isEmpty() || !dev.eliasnvx.femboymod.config.FemboyConfig.client().uwuChat()
                 || !CosmeticsManager.get(player).get(FemboySlots.NECK).is(FemboyItems.UWU_CHOKER.get())) {
             return message;
         }

@@ -2,6 +2,7 @@ package dev.eliasnvx.femboymod.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.api.FemboyClientApi;
 import dev.eliasnvx.femboymod.api.client.CosmeticMotion;
 import dev.eliasnvx.femboymod.api.client.CosmeticRenderContext;
@@ -44,7 +45,7 @@ public final class CosmeticLayer extends RenderLayer<AvatarRenderState, PlayerMo
     @Override
     public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, AvatarRenderState state, float yRot, float xRot) {
         CosmeticRenderData data = ((CosmeticRenderStateAccess) state).femboymod$getCosmetics();
-        if (data == null || state.isInvisible) {
+        if (data == null || state.isInvisible || !visibleFor(state)) {
             return;
         }
         List<CosmeticRenderData.Worn> worn = data.worn();
@@ -60,6 +61,15 @@ public final class CosmeticLayer extends RenderLayer<AvatarRenderState, PlayerMo
                 renderer.submit(context);
             }
         }
+    }
+
+    /** "Show other players' cosmetics" (client option): your own are always shown. */
+    private static boolean visibleFor(AvatarRenderState state) {
+        if (FemboyConfig.client().showOthersCosmetics()) {
+            return true;
+        }
+        var self = net.minecraft.client.Minecraft.getInstance().player;
+        return self != null && self.getId() == state.id;
     }
 
     /** Reused per submission; no allocation per frame. */

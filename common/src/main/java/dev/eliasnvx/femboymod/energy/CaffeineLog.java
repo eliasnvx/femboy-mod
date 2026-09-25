@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Game times of recent cans (player attachment, persistent, not kept on death). Pure logic, unit tested. */
-public record CaffeineLog(List<Long> drinks) {
+public record CaffeineLog(List<Long> drinks, int total) {
 
-    public static final CaffeineLog EMPTY = new CaffeineLog(List.of());
-    public static final Codec<CaffeineLog> CODEC = Codec.LONG.listOf().xmap(CaffeineLog::new, CaffeineLog::drinks);
+    public static final CaffeineLog EMPTY = new CaffeineLog(List.of(), 0);
+    public static final Codec<CaffeineLog> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.create(i -> i.group(
+            Codec.LONG.listOf().fieldOf("recent").forGetter(CaffeineLog::drinks),
+            Codec.INT.optionalFieldOf("total", 0).forGetter(CaffeineLog::total)
+    ).apply(i, CaffeineLog::new));
 
     public CaffeineLog {
         drinks = List.copyOf(drinks);
@@ -24,7 +27,7 @@ public record CaffeineLog(List<Long> drinks) {
             }
         }
         kept.add(now);
-        return new CaffeineLog(kept);
+        return new CaffeineLog(kept, total + 1);
     }
 
     public int count() {
