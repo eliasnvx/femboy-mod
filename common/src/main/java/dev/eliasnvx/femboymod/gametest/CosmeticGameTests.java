@@ -14,6 +14,7 @@ import dev.eliasnvx.femboymod.registry.FemboyItems;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -180,6 +181,17 @@ public final class CosmeticGameTests {
         CreativeModeTab tab = FemboyItems.TAB.get();
         helper.assertTrue(CreativeModeTabs.allTabs().contains(tab), "femboymod tab is registered");
         helper.assertTrue(tab.contains(new ItemStack(FemboyItems.CAT_EARS.get())), "Cat Ears are in the femboymod tab");
+        long modItems = BuiltInRegistries.ITEM.stream()
+                .filter(item -> BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(FemboyApi.MOD_ID)).count();
+        long plainInTab = tab.getDisplayItems().stream()
+                .filter(stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(FemboyApi.MOD_ID))
+                .filter(stack -> !stack.has(FemboyComponents.COLORWAY.get())).count();
+        helper.assertValueEqual(plainInTab, modItems, "every femboymod item is in the tab once");
+        long stripedSocks = tab.getDisplayItems().stream()
+                .filter(stack -> stack.is(FemboyItems.PROGRAMMING_SOCKS.get()))
+                .filter(stack -> stack.has(FemboyComponents.COLORWAY.get()) && stack.get(FemboyComponents.COLORWAY.get()).stripeCount() == 2)
+                .count();
+        helper.assertValueEqual(stripedSocks, 3L, "black, blue and red striped socks next to the pink ones");
         helper.succeed();
     }
 

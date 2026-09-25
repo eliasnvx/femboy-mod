@@ -18,10 +18,15 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Visual check of the placeholder cosmetics (SPEC §16 Phase 2): full set on the player, screenshots
@@ -188,6 +193,12 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.waitTicks(SETTLE_TICKS / 4);
             context.takeScreenshot("femboymod_inventory_icons");
             context.setScreen(() -> null);
+            world.getServer().runOnServer(server -> fillInventoryWithTabVariants(server.getPlayerList().getPlayers().getFirst()));
+            context.waitTicks(SETTLE_TICKS / 4);
+            context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
+            context.waitTicks(SETTLE_TICKS / 4);
+            context.takeScreenshot("femboymod_inventory_colorways");
+            context.setScreen(() -> null);
             world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst().getInventory().clearContent());
 
             // First person: hoodie sleeve over the hand
@@ -260,5 +271,18 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
         BuiltInRegistries.ITEM.stream()
                 .filter(item -> BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(FemboyMod.MOD_ID))
                 .forEach(item -> player.getInventory().add(new ItemStack(item)));
+    }
+
+    /** Every colorway preset of the creative tab (socks, hoodies, backpacks), next to the plain item. */
+    private static void fillInventoryWithTabVariants(ServerPlayer player) {
+        player.getInventory().clearContent();
+        CreativeModeTabs.tryRebuildTabContents(FeatureFlags.DEFAULT_FLAGS, true, player.level().registryAccess());
+        Set<Item> withVariants = FemboyItems.TAB.get().getDisplayItems().stream()
+                .filter(stack -> stack.has(FemboyComponents.COLORWAY.get()))
+                .map(ItemStack::getItem)
+                .collect(Collectors.toSet());
+        FemboyItems.TAB.get().getDisplayItems().stream()
+                .filter(stack -> withVariants.contains(stack.getItem()))
+                .forEach(stack -> player.getInventory().add(stack.copy()));
     }
 }

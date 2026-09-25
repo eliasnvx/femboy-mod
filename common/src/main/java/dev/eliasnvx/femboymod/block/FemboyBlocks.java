@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Set;
 import java.util.function.Function;
@@ -33,9 +34,9 @@ public final class FemboyBlocks {
             BlockBehaviour.Properties.of().strength(1.5F).sound(SoundType.WOOD).noOcclusion());
     public static final RegistrySupplier<Block> WARDROBE = block("wardrobe", WardrobeBlock::new,
             BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.WOOD));
-    public static final RegistrySupplier<Block> SHARK_PLUSH = plush("shark_plush");
-    public static final RegistrySupplier<Block> CAT_PLUSH = plush("cat_plush");
-    public static final RegistrySupplier<Block> CREEPER_PLUSH = plush("creeper_plush");
+    public static final RegistrySupplier<Block> SHARK_PLUSH = plush("shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5));
+    public static final RegistrySupplier<Block> CAT_PLUSH = plush("cat_plush", Block.box(3.5, 0.0, 4.5, 14.0, 13.5, 11.5));
+    public static final RegistrySupplier<Block> CREEPER_PLUSH = plush("creeper_plush", Block.box(4.0, 0.0, 4.0, 12.0, 13.0, 12.0));
 
     public static final RegistrySupplier<BlockEntityType<ClothingRackBlockEntity>> CLOTHING_RACK_ENTITY = BLOCK_ENTITIES.register(
             "clothing_rack", () -> new BlockEntityType<>(ClothingRackBlockEntity::new, Set.of(CLOTHING_RACK.get())));
@@ -69,8 +70,10 @@ public final class FemboyBlocks {
         return block;
     }
 
-    private static RegistrySupplier<Block> plush(String name) {
-        return block(name, PlushBlock::new, BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.WOOL).noOcclusion());
+    /** Shapes match tools/plush/make_plushies.py (face pointing north). */
+    private static RegistrySupplier<Block> plush(String name, VoxelShape northShape) {
+        return block(name, props -> new PlushBlock(props, northShape),
+                BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.WOOL).noOcclusion());
     }
 
     /** Called from FemboyMod.init after the block register. */
