@@ -39,6 +39,11 @@ public final class BuiltinCosmeticRenderers {
     private static final int CHOKER_BLACK = 0x2A2A33;
 
     private static final int FUR_WHITE = 0xFFF6F8;
+    private static final int FOX_ORANGE = 0xE8863A;
+    private static final int BUNNY_PINK = 0xF6A9C2;
+    private static final int BEAR_BROWN = 0x8B5A3C;
+    private static final int BEAR_TAN = 0xD4AC82;
+    private static final int WOLF_GREY = 0x8E8E98;
     private static final int CANVAS = 0xD9C9A3;
     private static final int LEATHER = 0x8B5A2B;
     private static final int NETHERITE = 0x4A444A;
@@ -70,7 +75,15 @@ public final class BuiltinCosmeticRenderers {
 
     public static void register(ApiRegistry<CosmeticRenderer.Factory> registry) {
         registry.register(id("cat_ears"), models -> new GroupedRenderer(
-                models, CosmeticModels.CAT_EARS, CosmeticModels.CatEarsModel::new, FUR, PINK, LIGHTER, FUR_WHITE));
+                models, CosmeticModels.CAT_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.CAT), FUR, PINK, LIGHTER, FUR_WHITE));
+        registry.register(id("fox_ears"), models -> new GroupedRenderer(
+                models, CosmeticModels.FOX_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.FOX), FUR, FOX_ORANGE, LIGHTER, FUR_WHITE));
+        registry.register(id("bunny_ears"), models -> new GroupedRenderer(
+                models, CosmeticModels.BUNNY_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.BUNNY), FUR, FUR_WHITE, DARKER, BUNNY_PINK));
+        registry.register(id("bear_ears"), models -> new GroupedRenderer(
+                models, CosmeticModels.BEAR_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.BEAR), FUR, BEAR_BROWN, LIGHTER, BEAR_TAN));
+        registry.register(id("wolf_ears"), models -> new GroupedRenderer(
+                models, CosmeticModels.WOLF_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.WOLF), FUR, WOLF_GREY, LIGHTER, FUR_WHITE));
         registry.register(id("tail"), models -> new GroupedRenderer(
                 models, CosmeticModels.TAIL, CosmeticModels.TailModel::new, FUR, PINK, LIGHTER, FUR_WHITE));
         registry.register(id("oversized_hoodie"), models -> new GroupedRenderer(

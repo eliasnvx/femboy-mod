@@ -53,7 +53,7 @@ public final class CosmeticModels {
     private static final float HOOD_RIM_WIDTH = 0.6F;
     private static final float HOOD_EAR_SPACING = 2.6F;
     private static final float HOOD_EAR_Z = 0.3F;
-    /** Outward tilt; positive zRot leans toward +x (see EAR_TILT). */
+    /** Outward tilt; positive zRot leans toward +x (see EarShape#tilt). */
     private static final float HOOD_EAR_TILT = 0.22F;
     /** Sits above the hoodie (0.42) so the choker stays visible over clothing. */
     private static final CubeDeformation CHOKER_INFLATE = new CubeDeformation(0.52F);
@@ -62,6 +62,10 @@ public final class CosmeticModels {
     public static final int SOCK_TOP = 2;
 
     public static final ModelLayerLocation CAT_EARS = layer("cat_ears");
+    public static final ModelLayerLocation FOX_EARS = layer("fox_ears");
+    public static final ModelLayerLocation BUNNY_EARS = layer("bunny_ears");
+    public static final ModelLayerLocation BEAR_EARS = layer("bear_ears");
+    public static final ModelLayerLocation WOLF_EARS = layer("wolf_ears");
     public static final ModelLayerLocation TAIL = layer("tail");
     public static final ModelLayerLocation SOCKS = layer("socks");
     public static final ModelLayerLocation FISHNET = layer("fishnet");
@@ -100,7 +104,11 @@ public final class CosmeticModels {
     /** All code model layers in registration order; also read by the Blockbench starter exporter (dev tool). */
     public static Map<ModelLayerLocation, Supplier<LayerDefinition>> definitions() {
         Map<ModelLayerLocation, Supplier<LayerDefinition>> layers = new LinkedHashMap<>();
-        layers.put(CAT_EARS, CosmeticModels::catEars);
+        layers.put(CAT_EARS, () -> animalEars(EarShape.CAT));
+        layers.put(FOX_EARS, () -> animalEars(EarShape.FOX));
+        layers.put(BUNNY_EARS, () -> animalEars(EarShape.BUNNY));
+        layers.put(BEAR_EARS, () -> animalEars(EarShape.BEAR));
+        layers.put(WOLF_EARS, () -> animalEars(EarShape.WOLF));
         layers.put(TAIL, CosmeticModels::tail);
         layers.put(SOCKS, () -> legwear(SOCK_INFLATE, true));
         layers.put(FISHNET, () -> legwear(FISHNET_INFLATE, false));
@@ -132,26 +140,84 @@ public final class CosmeticModels {
 
     // ------------------------------------------------------------------ cat ears
 
-    /** One ear seen from the front, bottom row sits on the headband. M outer, A inner, F fur tuft. */
-    private static final String[] EAR = {
-            "...MM...",
-            "...MM...",
-            "..MMMM..",
-            "..MAAM..",
-            ".MMAAMM.",
-            ".MAAAAM.",
-            "MMAAAAMM",
-            "MAAAAAAM",
-            "MAFAAFAM",
-            "MFFAAFFM",
-    };
-    private static final float EAR_PIXEL = 0.45F;
-    /** Distance of each ear's pivot from the head's center line. */
-    private static final float EAR_SPACING = 2.9F;
-    /** Outward tilt; a positive zRot leans the top toward +x, so the -x ear needs a negative angle. */
-    private static final float EAR_TILT = 0.3F;
+    /**
+     * An ear type: the mask is one ear seen from the front (bottom row sits on the headband).
+     * M outer (dyed, pattern bands), A inner (accent shade), F fur/inner detail (fixed light color),
+     * D dark tip (fixed dark color).
+     *
+     * @param spacing distance of each ear's pivot from the head's center line
+     * @param tilt    outward tilt; a positive zRot leans the top toward +x, so the -x ear gets a negative angle
+     * @param extraRightTilt added to the right ear only (a lopsided bunny ear)
+     * @param twitch  how far the idle twitch flicks the ear (0 = no twitch)
+     */
+    public record EarShape(String[] mask, float pixel, float spacing, float tilt, float extraRightTilt, float twitch) {
 
-    private static LayerDefinition catEars() {
+        public static final EarShape CAT = new EarShape(new String[]{
+                "...MM...",
+                "...MM...",
+                "..MMMM..",
+                "..MAAM..",
+                ".MMAAMM.",
+                ".MAAAAM.",
+                "MMAAAAMM",
+                "MAAAAAAM",
+                "MAFAAFAM",
+                "MFFAAFFM",
+        }, 0.45F, 2.9F, 0.3F, 0.0F, 0.35F);
+
+        public static final EarShape FOX = new EarShape(new String[]{
+                "...DD...",
+                "..DDDD..",
+                "..DMMD..",
+                "..MAAM..",
+                ".MMAAMM.",
+                ".MAAAAM.",
+                "MMAFFAMM",
+                "MAFFFFAM",
+                "MAFFFFAM",
+                "MFFFFFFM",
+                "MFFFFFFM",
+        }, 0.45F, 2.8F, 0.22F, 0.0F, 0.3F);
+
+        public static final EarShape BUNNY = new EarShape(new String[]{
+                "..MM..",
+                ".MMMM.",
+                ".MFFM.",
+                "MMFFMM",
+                "MFFFFM",
+                "MFFFFM",
+                "MFFFFM",
+                "MFFFFM",
+                "MFFFFM",
+                "MFFFFM",
+                "MFFFFM",
+                "MMFFMM",
+                ".MFFM.",
+                ".MMMM.",
+        }, 0.45F, 1.9F, 0.08F, 0.35F, 0.15F);
+
+        public static final EarShape BEAR = new EarShape(new String[]{
+                ".MMMM.",
+                "MMAAMM",
+                "MAFFAM",
+                "MAFFAM",
+                "MMMMMM",
+        }, 0.5F, 3.2F, 0.0F, 0.0F, 0.1F);
+
+        public static final EarShape WOLF = new EarShape(new String[]{
+                "...MM...",
+                "..MMMM..",
+                "..MAAM..",
+                ".MMAAMM.",
+                ".MAAAAM.",
+                "MMAFFAMM",
+                "MAFFFFAM",
+                "MAFFFFAM",
+                "MFFFFFFM",
+        }, 0.5F, 3.0F, 0.26F, 0.0F, 0.25F);
+    }
+
+    private static LayerDefinition animalEars(EarShape shape) {
         MeshDefinition mesh = emptyPlayerMesh();
         PartDefinition head = mesh.getRoot().getChild("head");
 
@@ -161,17 +227,20 @@ public final class CosmeticModels {
         band.box(MAIN, 4.0F, -8.2F, -1.1F, 0.6F, 3.2F, 1.4F);
         band.build();
 
-        float width = EAR[0].length() * EAR_PIXEL;
-        float height = EAR.length * EAR_PIXEL;
+        String[] mask = shape.mask();
+        float pixel = shape.pixel();
+        float width = mask[0].length() * pixel;
+        float height = mask.length * pixel;
         for (int side = -1; side <= 1; side += 2) {
+            float tilt = side * shape.tilt() + (side > 0 ? shape.extraRightTilt() : 0.0F);
             PartDefinition ear = pivot(head, side < 0 ? "left_ear" : "right_ear",
-                    PartPose.offsetAndRotation(side * EAR_SPACING, -8.3F, -0.2F, 0.0F, 0.0F, side * EAR_TILT));
+                    PartPose.offsetAndRotation(side * shape.spacing(), -8.3F, -0.2F, 0.0F, 0.0F, tilt));
             Groups.Builder b = new Groups.Builder(ear);
-            // back shell (full silhouette), inner ear in front, fur tufts furthest front
+            // back shell (full silhouette), inner ear in front, fur furthest front
             b.bandRange(-height, 0.0F);
-            b.extrude(EAR, Map.of('M', BANDED, 'A', BANDED, 'F', BANDED), -width / 2, -height, -0.4F, EAR_PIXEL, 0.9F);
-            b.extrude(EAR, Map.of('A', ACCENT, 'F', ACCENT), -width / 2, -height, -0.6F, EAR_PIXEL, 0.2F);
-            b.extrude(EAR, Map.of('F', DETAIL), -width / 2, -height, -0.75F, EAR_PIXEL, 0.2F);
+            b.extrude(mask, Map.of('M', BANDED, 'A', BANDED, 'F', BANDED, 'D', DARK), -width / 2, -height, -0.4F, pixel, 0.9F);
+            b.extrude(mask, Map.of('A', ACCENT, 'F', ACCENT), -width / 2, -height, -0.6F, pixel, 0.2F);
+            b.extrude(mask, Map.of('F', DETAIL), -width / 2, -height, -0.75F, pixel, 0.2F);
             b.build();
         }
         return layerOf(mesh);
@@ -482,19 +551,24 @@ public final class CosmeticModels {
     }
 
     /** Ears flick independently now and then; phase differs per player. */
-    public static final class CatEarsModel extends GroupModel {
+    /** Ears with idle twitches and a walk bounce; the shape gives base tilt and twitch strength. */
+    public static final class EarsModel extends GroupModel {
         private static final float TWITCH_SPEED = 0.35F;
         private static final float TWITCH_SHARPNESS = 12.0F;
-        private static final float TWITCH_AMOUNT = 0.35F;
-        private static final float BASE_TILT = EAR_TILT;
         private static final float WALK_BOUNCE = 0.08F;
         private final ModelPart leftEar;
         private final ModelPart rightEar;
+        private final EarShape shape;
 
-        public CatEarsModel(ModelPart root, Groups group, int band) {
+        public EarsModel(ModelPart root, Groups group, int band, EarShape shape) {
             super(root, group, band);
             this.leftEar = head.getChild("left_ear");
             this.rightEar = head.getChild("right_ear");
+            this.shape = shape;
+        }
+
+        public static Groups.GroupModelFactory.Factory factory(EarShape shape) {
+            return (root, group, band) -> new EarsModel(root, group, band, shape);
         }
 
         @Override
@@ -502,12 +576,12 @@ public final class CosmeticModels {
             super.setupAnim(state);
             CosmeticMotion motion = motion(state);
             float t = state.ageInTicks * TWITCH_SPEED / Mth.PI + motion.phase();
-            float left = (float) Math.pow(Math.max(Mth.sin(t), 0.0F), TWITCH_SHARPNESS) * TWITCH_AMOUNT;
-            float right = (float) Math.pow(Math.max(Mth.sin(t * 0.83F + 1.7F), 0.0F), TWITCH_SHARPNESS) * TWITCH_AMOUNT;
+            float left = (float) Math.pow(Math.max(Mth.sin(t), 0.0F), TWITCH_SHARPNESS) * shape.twitch();
+            float right = (float) Math.pow(Math.max(Mth.sin(t * 0.83F + 1.7F), 0.0F), TWITCH_SHARPNESS) * shape.twitch();
             float bounce = Mth.sin(state.walkAnimationPos * 0.6662F * 2) * WALK_BOUNCE * motion.walkAmount();
             // "left_ear" sits at -x: tilt it outward (negative zRot); twitches flick further outward.
-            leftEar.zRot = -BASE_TILT - left - bounce;
-            rightEar.zRot = BASE_TILT + right + bounce;
+            leftEar.zRot = -shape.tilt() - left - bounce;
+            rightEar.zRot = shape.tilt() + shape.extraRightTilt() + right + bounce;
             leftEar.xRot = -left * 0.5F;
             rightEar.xRot = -right * 0.5F;
         }

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:white_wool",
+    "minecraft:carrot",
+    "femboymod:glitch_shard",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:bunny_ears"
+  }
+}

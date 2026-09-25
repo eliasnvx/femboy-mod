@@ -1,0 +1,21 @@
+{
+  "drip": 10,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:jump_strength",
+        "amount": 0.08,
+        "operation": "add_value"
+      }
+    },
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:safe_fall_distance",
+        "amount": 1.0,
+        "operation": "add_value"
+      }
+    }
+  ]
+}

@@ -47,6 +47,11 @@ public final class FemboyItems {
     // SPEC §5.1. Balance lives in data/femboymod/femboymod/cosmetic_stats/<item>.json, not here.
     public static final RegistrySupplier<Item> CAT_EARS = cosmetic("cat_ears", FemboySlots.HEAD_ACCESSORY);
     public static final RegistrySupplier<Item> TAIL = cosmetic("tail", FemboySlots.TAIL);
+    public static final RegistrySupplier<Item> FOX_EARS = cosmetic("fox_ears", FemboySlots.HEAD_ACCESSORY);
+    public static final RegistrySupplier<Item> BUNNY_EARS = cosmetic("bunny_ears", FemboySlots.HEAD_ACCESSORY);
+    public static final RegistrySupplier<Item> BEAR_EARS = cosmetic("bear_ears", FemboySlots.HEAD_ACCESSORY);
+    /** Fashion Critic drop only. */
+    public static final RegistrySupplier<Item> WOLF_EARS = cosmetic("wolf_ears", FemboySlots.HEAD_ACCESSORY);
     public static final RegistrySupplier<Item> OVERSIZED_HOODIE = cosmetic("oversized_hoodie", FemboySlots.OUTFIT_TOP);
     public static final RegistrySupplier<Item> CAT_EAR_HOODIE = cosmetic("cat_ear_hoodie", FemboySlots.OUTFIT_TOP);
     public static final RegistrySupplier<Item> PLEATED_SKIRT = cosmetic("pleated_skirt", FemboySlots.OUTFIT_BOTTOM);

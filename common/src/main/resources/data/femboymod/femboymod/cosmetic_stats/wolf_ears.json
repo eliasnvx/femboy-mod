@@ -1,0 +1,18 @@
+{
+  "drip": 16,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:glow_hostiles",
+        "radius": 24
+      }
+    },
+    {
+      "effect": {
+        "type": "femboymod:damage_bonus",
+        "targets": "#minecraft:skeletons",
+        "multiplier": 1.25
+      }
+    }
+  ]
+}

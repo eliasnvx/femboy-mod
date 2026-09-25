@@ -1,0 +1,13 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/wolf_ears",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 9342616,
+        "stripe": 0
+      }
+    ]
+  }
+}
