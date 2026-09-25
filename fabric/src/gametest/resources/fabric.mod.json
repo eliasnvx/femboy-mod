@@ -5,7 +5,12 @@
   "name": "Femboy Mod GameTests",
   "environment": "*",
   "entrypoints": {
-    "fabric-gametest": ["dev.eliasnvx.femboymod.fabric.gametest.FemboyGameTestsFabric"]
+    "fabric-gametest": [
+      "dev.eliasnvx.femboymod.fabric.gametest.FemboyGameTestsFabric"
+    ],
+    "fabric-client-gametest": [
+      "dev.eliasnvx.femboymod.fabric.gametest.RenderShowcaseClientTest"
+    ]
   },
   "depends": {
     "femboymod": "*"

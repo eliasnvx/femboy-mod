@@ -33,6 +33,8 @@ public final class CosmeticModels {
     private static final CubeDeformation HOODIE_BODY_INFLATE = new CubeDeformation(0.42F);
     private static final CubeDeformation HOODIE_ARM_INFLATE = new CubeDeformation(0.38F);
     private static final CubeDeformation CUFF_INFLATE = new CubeDeformation(0.44F);
+    /** Sits above the hoodie (0.42) so the choker stays visible over clothing. */
+    private static final CubeDeformation CHOKER_INFLATE = new CubeDeformation(0.52F);
 
     /** Socks cover the leg from this y (0 = hip) down to the foot. */
     public static final int SOCK_TOP = 2;
@@ -99,7 +101,8 @@ public final class CosmeticModels {
         float[] widths = {2.4F, 2.2F, 2.0F, 1.8F, 1.4F};
         for (int i = 0; i < widths.length; i++) {
             float w = widths[i];
-            PartPose pose = i == 0 ? PartPose.offset(0.0F, 10.5F, 1.5F) : PartPose.offset(0.0F, 0.0F, 2.6F);
+            // Root sits just outside the back (and any hoodie), above the skirt's waist.
+            PartPose pose = i == 0 ? PartPose.offset(0.0F, 9.5F, 2.6F) : PartPose.offset(0.0F, 0.0F, 2.6F);
             parent = parent.addOrReplaceChild("segment" + i, box(-w / 2, -w / 2, 0.0F, w, w, 3.0F), pose);
         }
         return LayerDefinition.create(mesh, TEXTURE_SIZE, TEXTURE_SIZE);
@@ -146,8 +149,8 @@ public final class CosmeticModels {
     private static LayerDefinition choker() {
         MeshDefinition mesh = emptyPlayerMesh();
         PartDefinition body = mesh.getRoot().getChild("body");
-        body.addOrReplaceChild("band", box(-4.3F, -0.2F, -2.3F, 8.6F, 1.2F, 4.6F), PartPose.ZERO);
-        body.addOrReplaceChild("bell", box(-0.75F, 0.8F, -3.0F, 1.5F, 1.5F, 1.2F), PartPose.ZERO);
+        body.addOrReplaceChild("band", box(-4.0F, 0.0F, -2.0F, 8, 1, 4, CHOKER_INFLATE), PartPose.ZERO);
+        body.addOrReplaceChild("bell", box(-0.75F, 1.0F, -3.4F, 1.5F, 1.5F, 1.2F), PartPose.ZERO);
         return LayerDefinition.create(mesh, TEXTURE_SIZE, TEXTURE_SIZE);
     }
 
@@ -194,8 +197,8 @@ public final class CosmeticModels {
     /** Tail droops down-back, sways with walking and swings out when turning (SPEC §4.5). */
     public static final class TailModel extends PlayerModel {
         private static final int SEGMENTS = 5;
-        private static final float DROOP = -1.05F;
-        private static final float CURL = 0.22F;
+        private static final float DROOP = -0.45F;
+        private static final float CURL = 0.2F;
         private static final float IDLE_SWAY = 0.12F;
         private static final float WALK_SWAY = 0.28F;
         private static final float SWAY_SPEED = 0.18F;

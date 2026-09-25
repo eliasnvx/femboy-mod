@@ -15,6 +15,7 @@ import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
+import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
 import dev.eliasnvx.femboymod.network.OpenCosmeticsMenuPayload;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyMenus;
@@ -92,6 +93,10 @@ public final class FemboyModClient {
                                       net.minecraft.world.item.TooltipFlag flag) {
         Cosmetic cosmetic = stack.get(FemboyComponents.COSMETIC.get());
         if (cosmetic != null) {
+            int drip = dripOf(stack);
+            if (drip > 0) {
+                lines.add(Component.translatable("tooltip.femboymod.drip", drip).withStyle(ChatFormatting.LIGHT_PURPLE));
+            }
             lines.add(Component.translatable("tooltip.femboymod.slot",
                     Component.translatable(CosmeticSlotType.translationKey(cosmetic.slot()))).withStyle(ChatFormatting.GRAY));
         }
@@ -103,6 +108,16 @@ public final class FemboyModClient {
                     .orElseGet(() -> Component.translatable("colorway.femboymod.solid"));
             lines.add(Component.translatable("tooltip.femboymod.colorway", name).withStyle(ChatFormatting.GRAY));
         }
+    }
+
+    private static int dripOf(ItemStack stack) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) {
+            return 0;
+        }
+        return level.registryAccess().lookup(CosmeticStats.REGISTRY_KEY)
+                .flatMap(registry -> registry.getOptional(CosmeticStats.keyOf(stack.getItem())))
+                .map(CosmeticStats::drip).orElse(0);
     }
 
     /** Minecraft instance accessor kept here so common code never touches it on a server. */

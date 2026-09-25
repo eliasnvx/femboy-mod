@@ -32,7 +32,8 @@ fabricApi {
         createSourceSet = true
         modId = "femboymod-test"
         enableGameTests = true
-        enableClientGameTests = false
+        // Client tests open a real window (screenshots of cosmetics); run manually: ./gradlew :fabric:runClientGameTest
+        enableClientGameTests = true
         eula = true // dev/CI test server only; accepted by the author on 2026-09-25
     }
 }
