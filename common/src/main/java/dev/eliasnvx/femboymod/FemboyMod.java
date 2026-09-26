@@ -1,5 +1,8 @@
 package dev.eliasnvx.femboymod;
 
+import dev.eliasnvx.femboymod.world.FemboyGameRules;
+import dev.eliasnvx.femboymod.world.FemboyWorldgen;
+import dev.eliasnvx.femboymod.profile.ProfileHooks;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.eliasnvx.femboymod.addon.AddonLoader;
 import dev.eliasnvx.femboymod.entity.AdvancementHooks;
@@ -47,6 +50,7 @@ public final class FemboyMod {
         BuiltinSlots.register(api.cosmeticSlots());
         BuiltinEffects.register(api.cosmeticEffectTypes());
         BuiltinConditions.register(api.cosmeticConditionTypes());
+        ProfileHooks.registerFields(api.profileFields());
 
         FemboyComponents.REGISTER.register();
         FemboyEffects.REGISTER.register();
@@ -59,6 +63,8 @@ public final class FemboyMod {
         FemboyItems.REGISTER.register();
         FemboyMenus.REGISTER.register();
         FemboyBlocks.init();
+        FemboyWorldgen.init();
+        FemboyGameRules.REGISTER.register();
         PlatformHelper.registerPoi();
 
         FemboyNetwork.register();
@@ -66,6 +72,7 @@ public final class FemboyMod {
         CommandRegistrationEvent.EVENT.register(FemboyCommands::register);
 
         AdvancementHooks.register(api.events());
+        ProfileHooks.register(api.events());
         AddonLoader.initCommon(api);
 
         // Addons may only register API extensions during onInitialize.

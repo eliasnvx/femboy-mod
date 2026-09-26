@@ -1,5 +1,7 @@
 package dev.eliasnvx.femboymod.entity;
 
+import net.minecraft.world.entity.animal.feline.Cat;
+import net.minecraft.world.entity.animal.Animal;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.level.entity.SpawnPlacementsRegistry;
@@ -57,6 +59,25 @@ public final class FemboyEntities {
                     .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).notInPeaceful().build(FASHION_CRITIC_KEY));
     public static final TagKey<Biome> FASHION_CRITIC_SPAWNS = biomeTag("fashion_critic_spawns");
 
+    /** Invisible seat for the Gamer Chair. Saved (26.3 refuses riding unsaved entities) but removes itself when empty. */
+    public static final ResourceKey<EntityType<?>> SEAT_KEY = key("seat");
+    public static final RegistrySupplier<EntityType<Seat>> SEAT = REGISTER.register(SEAT_KEY.identifier(),
+            () -> EntityType.Builder.<Seat>of(Seat::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).noSummon().noLootTable().clientTrackingRange(10).build(SEAT_KEY));
+
+    /** Stray Cat (SPEC v1.2): a vanilla-style tameable cat with a pastel coat and mod gifts. */
+    public static final ResourceKey<EntityType<?>> STRAY_CAT_KEY = key("stray_cat");
+    public static final RegistrySupplier<EntityType<StrayCat>> STRAY_CAT = REGISTER.register(STRAY_CAT_KEY.identifier(),
+            () -> EntityType.Builder.<StrayCat>of(StrayCat::new, MobCategory.CREATURE)
+                    .sized(0.6F, 0.7F).eyeHeight(0.35F).passengerAttachments(0.5125F).clientTrackingRange(8).build(STRAY_CAT_KEY));
+    public static final TagKey<Biome> STRAY_CAT_SPAWNS = biomeTag("stray_cat_spawns");
+
+    /** Wandering Cosplayer (SPEC v1.2): rare travelling trader with exclusive colorways (see CosplayerSpawner). */
+    public static final ResourceKey<EntityType<?>> COSPLAYER_KEY = key("cosplayer");
+    public static final RegistrySupplier<EntityType<Cosplayer>> COSPLAYER = REGISTER.register(COSPLAYER_KEY.identifier(),
+            () -> EntityType.Builder.<Cosplayer>of(Cosplayer::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).build(COSPLAYER_KEY));
+
     /** Flowery biomes (flower forest, cherry grove, meadow, sunflower plains, dappled forest); data-driven. */
     public static final TagKey<Biome> PINK_CREEPER_SPAWNS =
             TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "pink_creeper_spawns"));
@@ -95,6 +116,16 @@ public final class FemboyEntities {
         addMonsterSpawn(HISSY_CAT, HISSY_CAT_SPAWNS, mobs.hissyCat());
         EntityAttributeRegistry.register(FASHION_CRITIC, () -> FashionCritic.createAttributes(mobs.fashionCritic()));
         addMonsterSpawn(FASHION_CRITIC, FASHION_CRITIC_SPAWNS, mobs.fashionCritic());
+        EntityAttributeRegistry.register(STRAY_CAT, Cat::createAttributes);
+        EntityAttributeRegistry.register(COSPLAYER, net.minecraft.world.entity.Mob::createMobAttributes);
+        SpawnPlacementsRegistry.register(STRAY_CAT, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Animal::checkAnimalSpawnRules);
+        int strayCats = FemboyConfig.common().friends().strayCatSpawnWeight();
+        if (strayCats > 0) {
+            BiomeModifications.addProperties(ctx -> ctx.hasTag(STRAY_CAT_SPAWNS), (ctx, props) ->
+                    props.getSpawnProperties().addSpawn(MobCategory.CREATURE,
+                            new MobSpawnSettings.SpawnerData(STRAY_CAT.get(), UniformInt.of(1, 1)), strayCats));
+        }
         EntityAttributeRegistry.register(PINK_CREEPER, Creeper::createAttributes);
         SpawnPlacementsRegistry.register(PINK_CREEPER, SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);

@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.entity;
 
+import dev.eliasnvx.femboymod.profile.ProfileHooks;
 import dev.eliasnvx.femboymod.api.event.FemboyEventBus;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticChangedEvent;
 import dev.eliasnvx.femboymod.api.event.cosmetic.DripLevelChangedEvent;
@@ -17,6 +18,9 @@ public final class AdvancementHooks {
         events.addListener(CosmeticChangedEvent.class, e -> {
             if (e.entity() instanceof ServerPlayer player && e.current().is(FemboyItems.PROGRAMMING_SOCKS.get())) {
                 FemboyTriggers.fire(player, FemboyTriggers.PROGRAMMING_SOCKS);
+            }
+            if (e.entity() instanceof ServerPlayer player && !e.current().isEmpty()) {
+                FemboyTriggers.fire(player, FemboyTriggers.OUTFIT_CHANGES, ProfileHooks.countEquipToday(player));
             }
         });
         events.addListener(DripLevelChangedEvent.class, e -> {

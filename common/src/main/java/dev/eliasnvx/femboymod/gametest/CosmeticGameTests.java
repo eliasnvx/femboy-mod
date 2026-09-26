@@ -69,6 +69,8 @@ public final class CosmeticGameTests {
         all.addAll(WorldGameTests.ALL);
         all.addAll(MobGameTests.ALL);
         all.addAll(PanelGameTests.ALL);
+        all.addAll(DecorGameTests.ALL);
+        all.addAll(ProfileGameTests.ALL);
         return all;
     }
 
@@ -156,13 +158,14 @@ public final class CosmeticGameTests {
     }
 
     public static void syncPayloadRoundTrip(GameTestHelper helper) {
-        CosmeticsSyncPayload payload = new CosmeticsSyncPayload(42, sampleInventory(helper));
+        CosmeticsSyncPayload payload = new CosmeticsSyncPayload(42, sampleInventory(helper), false);
         RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), helper.getLevel().registryAccess());
         try {
             CosmeticsSyncPayload.STREAM_CODEC.encode(buf, payload);
             CosmeticsSyncPayload decoded = CosmeticsSyncPayload.STREAM_CODEC.decode(buf);
             helper.assertValueEqual(decoded.entityId(), 42, "entity id");
             assertSame(helper, payload.cosmetics(), decoded.cosmetics());
+            helper.assertFalse(decoded.armorHidingAllowed(), "armor hiding flag");
         } finally {
             buf.release();
         }
@@ -204,11 +207,14 @@ public final class CosmeticGameTests {
                 Optional.of(patterns.getOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
                         Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_bi")))),
                 Optional.of(0x123456)));
-        return CosmeticInventory.EMPTY.with(HEAD, ears);
+        return CosmeticInventory.EMPTY.with(HEAD, ears)
+                .withArmor(net.minecraft.world.entity.EquipmentSlot.HEAD, dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility.SHOW)
+                .withArmor(net.minecraft.world.entity.EquipmentSlot.FEET, dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility.HIDE);
     }
 
     private static void assertSame(GameTestHelper helper, CosmeticInventory expected, CosmeticInventory actual) {
         helper.assertValueEqual(actual.all().keySet(), expected.all().keySet(), "slots");
+        helper.assertValueEqual(actual.armor(), expected.armor(), "armor visibility");
         expected.all().forEach((slot, stack) ->
                 helper.assertTrue(ItemStack.matches(stack, actual.get(slot)), "Stack in " + slot + " should survive the round trip"));
     }

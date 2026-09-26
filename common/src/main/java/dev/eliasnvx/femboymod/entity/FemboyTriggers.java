@@ -25,6 +25,18 @@ public final class FemboyTriggers {
     public static final String DRIP_TIER = "drip_tier";
     public static final String ENERGY_DRINKS = "energy_drinks";
     public static final String SET_BONUS = "set_bonus";
+    /** Stars of the gamer setup when sitting down (value = stars). */
+    public static final String SETUP_RATING = "setup_rating";
+    /** Sat in a Gamer Chair at one heart or less. */
+    public static final String CHAIR_BREAK = "chair_break";
+    /** Cosmetics put on during the current day (value = count). */
+    public static final String OUTFIT_CHANGES = "outfit_changes";
+    /** Drank Byte Energy while wearing programming socks. */
+    public static final String READY_TO_DEPLOY = "ready_to_deploy";
+    /** Explained your code to the rubber duck and got Insight. */
+    public static final String DUCK_DEBUGGING = "duck_debugging";
+    /** A Vibe Check Scanner rated the player (value = score). */
+    public static final String VIBE_CHECK = "vibe_check";
 
     public static final DeferredRegister<CriterionTrigger<?>> REGISTER = DeferredRegister.create(FemboyMod.MOD_ID, Registries.TRIGGER_TYPE);
     public static final RegistrySupplier<EventTrigger> EVENT = REGISTER.register("event", EventTrigger::new);

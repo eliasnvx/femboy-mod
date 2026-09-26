@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.client;
 
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
@@ -61,6 +62,10 @@ public final class FemboyModClient {
             "key.femboymod.backpack", InputConstants.Type.KEYBOARD, InputConstants.KEY_B, KeyMapping.Category.INVENTORY);
 
 
+    /** Emote wheel (SPEC v1.2). */
+    public static final KeyMapping EMOTES = new KeyMapping(
+            "key.femboymod.emotes", InputConstants.Type.KEYBOARD, InputConstants.KEY_G, KeyMapping.Category.MULTIPLAYER);
+
     private FemboyModClient() {
     }
 
@@ -72,6 +77,16 @@ public final class FemboyModClient {
         FemboyBlocks.CLOTHING_RACK_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, ClothingRackRenderer::new));
         ClientTickEvent.CLIENT_POST.register(NyaSound::tick);
         KeyMappingRegistry.register(OPEN_COSMETICS);
+        KeyMappingRegistry.register(EMOTES);
+        dev.eliasnvx.femboymod.emote.EmoteClientHooks.onShow = EmoteClient::show;
+        ClientTickEvent.CLIENT_POST.register(EmoteClient::tick);
+        ClientTickEvent.CLIENT_POST.register(minecraft -> {
+            while (EMOTES.consumeClick()) {
+                if (minecraft.gui.screen() == null && minecraft.player != null) {
+                    minecraft.gui.setScreen(new EmoteScreen());
+                }
+            }
+        });
         KeyMappingRegistry.register(OPEN_BACKPACK);
         ClientTickEvent.CLIENT_POST.register(minecraft -> {
             while (OPEN_COSMETICS.consumeClick()) {
@@ -103,6 +118,9 @@ public final class FemboyModClient {
         EntityRendererRegistry.register(FemboyEntities.PINK_CREEPER, PinkCreeperRenderer::new);
         BugRenderer.registerLayers();
         EntityRendererRegistry.register(FemboyEntities.BUG, BugRenderer::new);
+        EntityRendererRegistry.register(FemboyEntities.SEAT, NoopRenderer::new);
+        EntityRendererRegistry.register(FemboyEntities.COSPLAYER, dev.eliasnvx.femboymod.client.render.entity.CosplayerRenderer::new);
+        EntityRendererRegistry.register(FemboyEntities.STRAY_CAT, dev.eliasnvx.femboymod.client.render.entity.StrayCatRenderer::new);
         EntityRendererRegistry.register(FemboyEntities.CAFFEINATED_ZOMBIE, CaffeinatedZombieRenderer::new);
         EntityRendererRegistry.register(FemboyEntities.HISSY_CAT, HissyCatRenderer::new);
         EntityRendererRegistry.register(FemboyEntities.FASHION_CRITIC, FashionCriticRenderer::new);
@@ -111,6 +129,9 @@ public final class FemboyModClient {
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new UwuChat.Loader(),
                 Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu_chat_rules"));
         ClientTickEvent.CLIENT_POST.register(GlowHostilesClient::tick);
+        ClientTickEvent.CLIENT_POST.register(PhotoMode::tick);
+        dev.eliasnvx.femboymod.item.PhoneItem.onClientUse = PhotoMode::start;
+        ClientTickEvent.CLIENT_POST.register(dev.eliasnvx.femboymod.client.render.HeadphonesLight::tick);
 
         AddonLoader.initClient(clientApi);
         clientApi.freeze();
