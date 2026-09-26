@@ -8,6 +8,7 @@ import dev.eliasnvx.femboymod.api.effect.CosmeticEffect;
 import dev.eliasnvx.femboymod.api.effect.EffectSource;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
 import dev.eliasnvx.femboymod.combat.DripCombat;
+import dev.eliasnvx.femboymod.registry.FemboyTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleOptions;
@@ -27,6 +28,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.animal.Animal;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -201,13 +204,22 @@ public final class BuiltinEffects {
     }
 
     /** Passive animals nearby walk after the wearer, like players holding wheat. */
-    public record FollowPassiveEffect(double radius, double speed, int interval, double stopDistance) implements CosmeticEffect {
+    /**
+     * Small cute animals ({@code followers}, default {@code #femboymod:cute_followers}) walk after the player.
+     * At most {@code max_followers} of the nearest ones, never while the player rides something.
+     */
+    public record FollowPassiveEffect(double radius, double speed, int interval, double stopDistance,
+                                      HolderSet<EntityType<?>> followers, int maxFollowers) implements CosmeticEffect {
+
+        private static final HolderSet<EntityType<?>> NO_TAG = HolderSet.empty();
 
         public static final MapCodec<FollowPassiveEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Codec.doubleRange(1, 32).fieldOf("radius").forGetter(FollowPassiveEffect::radius),
                 Codec.doubleRange(0.1, 3).optionalFieldOf("speed", 1.0).forGetter(FollowPassiveEffect::speed),
                 Codec.intRange(1, 200).optionalFieldOf("interval", 10).forGetter(FollowPassiveEffect::interval),
-                Codec.doubleRange(1, 16).optionalFieldOf("stop_distance", 2.5).forGetter(FollowPassiveEffect::stopDistance)
+                Codec.doubleRange(1, 16).optionalFieldOf("stop_distance", 2.5).forGetter(FollowPassiveEffect::stopDistance),
+                RegistryCodecs.holderSet(Registries.ENTITY_TYPE).optionalFieldOf("followers", NO_TAG).forGetter(FollowPassiveEffect::followers),
+                Codec.intRange(0, 16).optionalFieldOf("max_followers", 3).forGetter(FollowPassiveEffect::maxFollowers)
         ).apply(i, FollowPassiveEffect::new));
 
         @Override
@@ -215,15 +227,31 @@ public final class BuiltinEffects {
             return CODEC;
         }
 
+        private boolean follows(Animal animal) {
+            return followers.size() > 0
+                    ? followers.contains(animal.getType().builtInRegistryHolder())
+                    : animal.getType().builtInRegistryHolder().is(FemboyTags.CUTE_FOLLOWERS);
+        }
+
+        /** The nearest {@code maxFollowers} free cute animals in range. */
+        public List<Animal> pickFollowers(ServerPlayer player) {
+            List<Animal> nearby = player.level().getEntitiesOfClass(Animal.class, player.getBoundingBox().inflate(radius),
+                    animal -> follows(animal) && !animal.isLeashed() && !animal.isVehicle() && !animal.isPassenger());
+            nearby.sort(Comparator.comparingDouble(animal -> animal.distanceToSqr(player)));
+            return nearby.subList(0, Math.min(maxFollowers, nearby.size()));
+        }
+
         @Override
         public void tick(ServerPlayer player, EffectSource source) {
-            if (player.tickCount % interval != 0 || player.isSpectator()) {
+            if (player.tickCount % interval != 0 || player.isSpectator() || player.isPassenger() || maxFollowers == 0) {
                 return;
             }
             double stopSq = stopDistance * stopDistance;
-            for (Animal animal : player.level().getEntitiesOfClass(Animal.class, player.getBoundingBox().inflate(radius))) {
-                if (!animal.isLeashed() && !animal.isVehicle() && animal.distanceToSqr(player) > stopSq) {
+            for (Animal animal : pickFollowers(player)) {
+                if (animal.distanceToSqr(player) > stopSq) {
                     animal.getNavigation().moveTo(player, speed * source.scale());
+                } else {
+                    animal.getNavigation().stop(); // close enough: don't push into the player
                 }
             }
         }

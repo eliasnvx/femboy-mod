@@ -96,7 +96,7 @@ Built-in effect types:
 | `femboymod:mob_effect` | `effect`, `amplifier` (0), `duration` in ticks (60, refreshed), `show_icon` (true) |
 | `femboymod:particles` | `particle`, `interval`, `count`, `spread` |
 | `femboymod:step_sound` | `sound`, `distance` (blocks walked between sounds) |
-| `femboymod:follow_passive` | `radius`, `speed`, `interval`, `stop_distance` |
+| `femboymod:follow_passive` | `radius`, `speed`, `interval`, `stop_distance`, `followers` (entity tag/list, default `#femboymod:cute_followers`), `max_followers` (3) |
 | `femboymod:glow_hostiles` | `radius` (client-side outline only) |
 | `femboymod:damage_bonus` | `targets` (entity id, list or tag), `multiplier`: the wearer hits those mobs harder |
 
