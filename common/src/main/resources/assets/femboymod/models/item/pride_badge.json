@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/pride_badge_stripe0",
+    "layer1": "femboymod:item/pride_badge_stripe1",
+    "layer2": "femboymod:item/pride_badge_stripe2",
+    "layer3": "femboymod:item/pride_badge_stripe3",
+    "layer4": "femboymod:item/pride_badge_stripe4",
+    "layer5": "femboymod:item/pride_badge_pin"
+  }
+}

@@ -32,7 +32,7 @@ public record ColorwayTintSource(int defaultColor, int stripe) implements ItemTi
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner) {
         Colorway colorway = Colorways.effective(stack).orElse(null);
-        return ARGB.opaque(colorway == null ? defaultColor : colorway.stripeColor(stripe));
+        return ARGB.opaque(colorway == null ? defaultColor : colorway.stripeColor(stripe, ColorwayClock.ticks()));
     }
 
     @Override

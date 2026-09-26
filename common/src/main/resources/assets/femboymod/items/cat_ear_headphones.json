@@ -1,0 +1,17 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/cat_ear_headphones",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 16230604,
+        "stripe": 0
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      }
+    ]
+  }
+}

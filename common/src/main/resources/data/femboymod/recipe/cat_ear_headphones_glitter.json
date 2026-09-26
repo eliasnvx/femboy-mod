@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_glitter",
+  "ingredients": [
+    "femboymod:cat_ear_headphones",
+    "femboymod:glitter",
+    "femboymod:glitter"
+  ],
+  "result": {
+    "id": "femboymod:cat_ear_headphones",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFD1EC",
+        "pattern": "femboymod:glitter"
+      }
+    }
+  }
+}

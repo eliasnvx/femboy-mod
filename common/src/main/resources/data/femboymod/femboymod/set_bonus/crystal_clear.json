@@ -1,0 +1,15 @@
+{
+  "pieces": [
+    "femboymod:rose_quartz_earrings",
+    "femboymod:rose_quartz_bracelet"
+  ],
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:mob_effect",
+        "effect": "minecraft:haste",
+        "amplifier": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_glitter",
+  "ingredients": [
+    "femboymod:pleated_skirt",
+    "femboymod:glitter",
+    "femboymod:glitter"
+  ],
+  "result": {
+    "id": "femboymod:pleated_skirt",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFD1EC",
+        "pattern": "femboymod:glitter"
+      }
+    }
+  }
+}

@@ -47,6 +47,8 @@ public final class BuiltinEffects {
         registry.register(id("follow_passive"), FollowPassiveEffect.CODEC);
         registry.register(id("glow_hostiles"), GlowHostilesEffect.CODEC);
         registry.register(id("damage_bonus"), DamageBonusEffect.CODEC);
+        registry.register(id("glow_friends"), GlowFriendsEffect.CODEC);
+        registry.register(id("muffle_sounds"), MuffleSoundsEffect.CODEC);
     }
 
     /**
@@ -266,6 +268,41 @@ public final class BuiltinEffects {
 
         @Override
         public MapCodec<GlowHostilesEffect> codec() {
+            return CODEC;
+        }
+    }
+
+    /**
+     * Client-side only: other players within {@code radius} glow for the wearer. With {@code teammates_only},
+     * only players on the wearer's scoreboard team (everyone, if the wearer has no team).
+     */
+    public record GlowFriendsEffect(double radius, boolean teammatesOnly) implements CosmeticEffect {
+
+        public static final MapCodec<GlowFriendsEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.doubleRange(1, 64).fieldOf("radius").forGetter(GlowFriendsEffect::radius),
+                Codec.BOOL.optionalFieldOf("teammates_only", true).forGetter(GlowFriendsEffect::teammatesOnly)
+        ).apply(i, GlowFriendsEffect::new));
+
+        @Override
+        public MapCodec<GlowFriendsEffect> codec() {
+            return CODEC;
+        }
+    }
+
+    /** Client-side only: the listed sounds play at {@code volume} (0..1) for the wearer. */
+    public record MuffleSoundsEffect(java.util.List<Identifier> sounds, float volume) implements CosmeticEffect {
+
+        public static final MapCodec<MuffleSoundsEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Identifier.CODEC.listOf().fieldOf("sounds").forGetter(MuffleSoundsEffect::sounds),
+                Codec.floatRange(0, 1).fieldOf("volume").forGetter(MuffleSoundsEffect::volume)
+        ).apply(i, MuffleSoundsEffect::new));
+
+        public MuffleSoundsEffect {
+            sounds = java.util.List.copyOf(sounds);
+        }
+
+        @Override
+        public MapCodec<MuffleSoundsEffect> codec() {
             return CODEC;
         }
     }

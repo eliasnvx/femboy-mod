@@ -1,5 +1,11 @@
 package dev.eliasnvx.femboymod.entity;
 
+import dev.eliasnvx.femboymod.registry.FemboyTags;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
+import dev.eliasnvx.femboymod.profile.StylePoints;
+import dev.eliasnvx.femboymod.api.profile.PlayerProfile;
+import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
+import dev.eliasnvx.femboymod.api.event.profile.CriticReviewEvent;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
@@ -103,7 +109,8 @@ public class FashionCritic extends Monster {
     /** Judges the player's outfit now (also used by GameTests). */
     public void review(ServerPlayer player) {
         CommonConfig.CriticReview config = FemboyConfig.common().mobs().criticReview();
-        boolean impressed = FemboyMod.api().getDripLevel(player).tier() >= config.impressedTier();
+        int tier = FemboyMod.api().getDripLevel(player).tier();
+        boolean impressed = tier >= config.impressedTier() || wearsApproved(player);
         String verdict = impressed ? "impressed" : "unimpressed";
         int line = random.nextInt(REVIEW_LINES);
         player.sendOverlayMessage(Component.translatable("entity.femboymod.fashion_critic.review." + verdict + "." + line));
@@ -114,6 +121,24 @@ public class FashionCritic extends Monster {
             player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, config.effectTicks()));
         }
         playSound(impressed ? SoundEvents.VILLAGER_YES : SoundEvents.VILLAGER_NO, 1.0F, REVIEW_PITCH);
+
+        PlayerProfile profile = FemboyMod.api().getProfile(player);
+        profile.update(FemboyProfileFields.CRITIC_REVIEWS, count -> count + 1);
+        if (impressed) {
+            profile.update(FemboyProfileFields.CRITIC_PASSED, count -> count + 1);
+            StylePoints.earn(player, FemboyConfig.common().stylePoints().criticPassed(), StylePoints.CRITIC_PASSED);
+        }
+        FemboyMod.api().events().post(new CriticReviewEvent(player, this, tier, impressed));
+    }
+
+    private static boolean wearsApproved(ServerPlayer player) {
+        var worn = CosmeticsManager.get(player);
+        for (var entry : worn.all().entrySet()) {
+            if (!worn.isHidden(entry.getKey()) && entry.getValue().is(FemboyTags.CRITIC_APPROVED)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

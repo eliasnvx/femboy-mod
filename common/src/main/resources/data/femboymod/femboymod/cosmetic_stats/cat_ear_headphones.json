@@ -1,0 +1,16 @@
+{
+  "drip": 12,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:muffle_sounds",
+        "sounds": [
+          "minecraft:entity.creeper.primed",
+          "minecraft:entity.creeper.hurt",
+          "minecraft:entity.creeper.death"
+        ],
+        "volume": 0.3
+      }
+    }
+  ]
+}

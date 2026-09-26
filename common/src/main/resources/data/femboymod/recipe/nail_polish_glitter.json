@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_glitter",
+  "ingredients": [
+    "femboymod:nail_polish",
+    "femboymod:glitter",
+    "femboymod:glitter"
+  ],
+  "result": {
+    "id": "femboymod:nail_polish",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFD1EC",
+        "pattern": "femboymod:glitter"
+      }
+    }
+  }
+}

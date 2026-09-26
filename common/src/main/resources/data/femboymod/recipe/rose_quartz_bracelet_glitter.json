@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_glitter",
+  "ingredients": [
+    "femboymod:rose_quartz_bracelet",
+    "femboymod:glitter",
+    "femboymod:glitter"
+  ],
+  "result": {
+    "id": "femboymod:rose_quartz_bracelet",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFD1EC",
+        "pattern": "femboymod:glitter"
+      }
+    }
+  }
+}

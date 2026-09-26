@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "femboymod:item/tail"
+    "layer0": "femboymod:item/tail",
+    "layer1": "femboymod:item/tail_detail"
   }
 }

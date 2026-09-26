@@ -1,5 +1,7 @@
 package dev.eliasnvx.femboymod.mixin.client;
 
+import net.minecraft.world.entity.player.Player;
+import dev.eliasnvx.femboymod.cosmetic.ArmorHiding;
 import dev.eliasnvx.femboymod.client.render.CosmeticRenderData;
 import dev.eliasnvx.femboymod.client.render.CosmeticRenderStateAccess;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -18,5 +20,15 @@ public abstract class AvatarRendererMixin {
             at = @At("TAIL"))
     private void femboymod$extractCosmetics(Avatar entity, AvatarRenderState state, float partialTick, CallbackInfo ci) {
         ((CosmeticRenderStateAccess) state).femboymod$setCosmetics(CosmeticRenderData.capture(entity, state));
+        // Armor under the outfit: visual only, the armor still protects (ArmorHiding, game rule allow_hidden_armor)
+        if (entity instanceof Player player) {
+            int hidden = ArmorHiding.cachedMask(player);
+            if (hidden != 0) {
+                state.headEquipment = ArmorHiding.visible(state.headEquipment, (hidden & 1) != 0);
+                state.chestEquipment = ArmorHiding.visible(state.chestEquipment, (hidden & 2) != 0);
+                state.legsEquipment = ArmorHiding.visible(state.legsEquipment, (hidden & 4) != 0);
+                state.feetEquipment = ArmorHiding.visible(state.feetEquipment, (hidden & 8) != 0);
+            }
+        }
     }
 }

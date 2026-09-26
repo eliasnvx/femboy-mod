@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:iron_chain",
+    "minecraft:iron_chain",
+    "minecraft:leather",
+    "minecraft:gold_nugget"
+  ],
+  "result": {
+    "id": "femboymod:belt_chains"
+  }
+}

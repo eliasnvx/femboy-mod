@@ -94,7 +94,7 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         Colorway colorway = ctx.colorway();
         boolean tinted = colorway != null && Minecraft.getInstance().getResourceManager().getResource(dyeableTexture).isPresent();
         related.entityId = ctx.state().id;
-        related.color = colorway == null ? 0xFFFFFFFF : ARGB.opaque(colorway.stripeColor(0));
+        related.color = colorway == null ? 0xFFFFFFFF : ARGB.opaque(colorway.stripeColor(0, ColorwayClock.ticks()));
         related.texture = tinted ? dyeableTexture : texture;
         if (!tinted) {
             related.color = 0xFFFFFFFF;

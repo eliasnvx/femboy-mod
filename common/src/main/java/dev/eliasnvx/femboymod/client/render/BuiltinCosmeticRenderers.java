@@ -52,6 +52,12 @@ public final class BuiltinCosmeticRenderers {
     private static final int BOW_PINK = 0xFF8FB8;
     private static final int DARK = 0x2A2328;
     private static final int GOLD = 0xF2C94C;
+    private static final int ROSE_QUARTZ = 0xF7B8CF;
+    private static final int MOONSTONE = 0xDCE8FF;
+    /** Default headset pink; black and white come as creative presets (any dye works). */
+    private static final int HEADPHONES_PINK = 0xF7A8CC;
+    private static final int NEON_CYAN = 0x7CF7FF;
+    private static final int SHADES_LENS = 0x121218;
 
     /** Accent = main mixed toward white (>0) or black (<0) by this amount. */
     private static final float LIGHTER = 0.45F;
@@ -104,6 +110,30 @@ public final class BuiltinCosmeticRenderers {
                 models, CosmeticModels.FISHNET, Groups.GroupModelFactory.PLAIN, FISHNET, FISHNET_BLACK, DARKER, BOW_PINK));
         registry.register(id("uwu_choker"), models -> new GroupedRenderer(
                 models, CosmeticModels.CHOKER, Groups.GroupModelFactory.PLAIN, FABRIC, CHOKER_BLACK, LIGHTER, FUR_WHITE));
+        registry.register(id("cat_ear_headphones"), models -> new GroupedRenderer(
+                models, CosmeticModels.HEADPHONES, Groups.GroupModelFactory.PLAIN, FABRIC, HEADPHONES_PINK, LIGHTER, 0xFFB6DA)
+                .withDynamicDetail(HeadphonesLight::color));
+        registry.register(id("heart_glasses"), models -> new GroupedRenderer(
+                models, CosmeticModels.HEART_GLASSES, Groups.GroupModelFactory.PLAIN, FABRIC, PINK, LIGHTER, FUR_WHITE));
+        registry.register(id("arm_warmers"), models -> new GroupedRenderer(
+                models, CosmeticModels.ARM_WARMERS, Groups.GroupModelFactory.PLAIN, KNIT, LAVENDER, DARKER, BOW_PINK)
+                .withDefaultSecondary(SOCK_WHITE));
+        registry.register(id("crop_sweater"), models -> new GroupedRenderer(
+                models, CosmeticModels.CROP_SWEATER, Groups.GroupModelFactory.PLAIN, KNIT, SOCK_PINK, DARKER, BOW_PINK));
+        registry.register(id("belt_chains"), models -> new GroupedRenderer(
+                models, CosmeticModels.BELT_CHAINS, Groups.GroupModelFactory.PLAIN, FABRIC, CHOKER_BLACK, LIGHTER, BOW_PINK));
+        registry.register(id("nail_polish"), models -> new GroupedRenderer(
+                models, CosmeticModels.NAIL_POLISH, Groups.GroupModelFactory.PLAIN, FABRIC, PINK, LIGHTER, PINK));
+        registry.register(id("moonstone_pendant"), models -> new GroupedRenderer(
+                models, CosmeticModels.MOONSTONE_PENDANT, Groups.GroupModelFactory.PLAIN, FABRIC, GOLD, DARKER, MOONSTONE));
+        registry.register(id("dark_shades"), models -> new GroupedRenderer(
+                models, CosmeticModels.DARK_SHADES, Groups.GroupModelFactory.PLAIN, FABRIC, CHOKER_BLACK, 0.55F, SHADES_LENS));
+        registry.register(id("cyber_visor"), models -> new GroupedRenderer(
+                models, CosmeticModels.CYBER_VISOR, Groups.GroupModelFactory.PLAIN, FABRIC, CHOKER_BLACK, LIGHTER, NEON_CYAN));
+        registry.register(id("rose_quartz_earrings"), models -> new GroupedRenderer(
+                models, CosmeticModels.EARRINGS, Groups.GroupModelFactory.PLAIN, FABRIC, ROSE_QUARTZ, LIGHTER, GOLD));
+        registry.register(id("rose_quartz_bracelet"), models -> new GroupedRenderer(
+                models, CosmeticModels.BRACELET, Groups.GroupModelFactory.PLAIN, FABRIC, ROSE_QUARTZ, LIGHTER, GOLD));
         registerBackpack(registry, "canvas_backpack", CANVAS);
         registerBackpack(registry, "leather_backpack", LEATHER);
         registerBackpack(registry, "netherite_backpack", NETHERITE);
@@ -179,6 +209,7 @@ public final class BuiltinCosmeticRenderers {
         private final int detailColor;
         private int defaultSecondary = -1;
         private ChevronPanel chevronPanel;
+        private java.util.function.IntSupplier dynamicDetail;
 
         @SuppressWarnings("unchecked")
         GroupedRenderer(EntityModelSet set, ModelLayerLocation layer, Groups.GroupModelFactory.Factory factory,
@@ -204,6 +235,12 @@ public final class BuiltinCosmeticRenderers {
             return this;
         }
 
+        /** DETAIL color computed every frame (Cat-ear Headphones light ring). */
+        GroupedRenderer withDynamicDetail(java.util.function.IntSupplier color) {
+            this.dynamicDetail = color;
+            return this;
+        }
+
         /** Draws a Progress-style chevron as a patch when the pattern has one. */
         GroupedRenderer withChevronPanel(ChevronPanel panel) {
             this.chevronPanel = panel;
@@ -213,7 +250,7 @@ public final class BuiltinCosmeticRenderers {
         @Override
         public void submit(CosmeticRenderContext ctx) {
             Colorway colorway = ctx.colorway();
-            int main = colorway == null ? defaultMain : colorway.stripeColor(0);
+            int main = colorway == null ? defaultMain : colorway.stripeColor(0, ColorwayClock.ticks());
             int stripes = colorway != null ? colorway.stripeCount() : (defaultSecondary >= 0 ? 2 : 1);
             if (stripes == 1) {
                 BuiltinCosmeticRenderers.submit(ctx, mainAll, type, main);
@@ -225,7 +262,8 @@ public final class BuiltinCosmeticRenderers {
             }
             for (Map.Entry<Groups, Model<AvatarRenderState>> entry : groupModels.entrySet()) {
                 Groups group = entry.getKey();
-                int rgb = group == Groups.ACCENT ? shade(main, accentShade) : fixedColor(group, detailColor);
+                int detail = dynamicDetail != null ? dynamicDetail.getAsInt() : detailColor;
+                int rgb = group == Groups.ACCENT ? shade(main, accentShade) : fixedColor(group, detail);
                 BuiltinCosmeticRenderers.submit(ctx, entry.getValue(), type, rgb);
             }
             if (chevronPanel != null && colorway != null && colorway.hasChevron()) {
@@ -238,9 +276,9 @@ public final class BuiltinCosmeticRenderers {
                 return band % 2 == 0 ? defaultMain : defaultSecondary;
             }
             if (stripes <= REPEAT_MAX_STRIPES) {
-                return colorway.stripeColor(band % stripes);
+                return colorway.stripeColor(band % stripes, ColorwayClock.ticks());
             }
-            return colorway.stripeColor(band * stripes / bands.length);
+            return colorway.stripeColor(band * stripes / bands.length, ColorwayClock.ticks());
         }
     }
 }

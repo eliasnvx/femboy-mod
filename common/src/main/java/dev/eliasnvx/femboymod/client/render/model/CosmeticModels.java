@@ -1,5 +1,8 @@
 package dev.eliasnvx.femboymod.client.render.model;
 
+import net.minecraft.world.item.equipment.Equippable;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.core.component.DataComponents;
 import dev.architectury.registry.client.level.entity.EntityModelLayerRegistry;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.FemboyClientApi;
@@ -83,6 +86,28 @@ public final class CosmeticModels {
     /** Same hoodie with the hood up and cat ears on it. */
     public static final ModelLayerLocation CAT_EAR_HOODIE = layer("cat_ear_hoodie");
     public static final ModelLayerLocation CHOKER = layer("choker");
+    /** Cat-ear headphones: band over the head, round cups with a light ring, small ears on the band. */
+    public static final ModelLayerLocation HEADPHONES = layer("headphones");
+    /** Heart-shaped glasses with temples back to the ears. */
+    public static final ModelLayerLocation HEART_GLASSES = layer("heart_glasses");
+    /** Striped arm warmers from the elbow to the wrist. */
+    public static final ModelLayerLocation ARM_WARMERS = layer("arm_warmers");
+    /** Short knit sweater that ends above the waist, with a turtle collar. */
+    public static final ModelLayerLocation CROP_SWEATER = layer("crop_sweater");
+    /** Belt with hanging chains and a heart buckle. */
+    public static final ModelLayerLocation BELT_CHAINS = layer("belt_chains");
+    /** Painted fingertips. */
+    public static final ModelLayerLocation NAIL_POLISH = layer("nail_polish");
+    /** Moonstone pendant: thin chain with a crescent moonstone on the chest. */
+    public static final ModelLayerLocation MOONSTONE_PENDANT = layer("moonstone_pendant");
+    /** Dark shades: chunky black sunglasses with a brow bar and a lens shine. */
+    public static final ModelLayerLocation DARK_SHADES = layer("dark_shades");
+    /** Cyber visor: a glowing band across the eyes with side pieces. */
+    public static final ModelLayerLocation CYBER_VISOR = layer("cyber_visor");
+    /** Rose quartz earrings: gold studs with a hanging crystal under each ear. */
+    public static final ModelLayerLocation EARRINGS = layer("earrings");
+    /** Rose quartz bracelet: a crystal band on each wrist. */
+    public static final ModelLayerLocation BRACELET = layer("bracelet");
     /** Flat cell grid over the hoodie chest for 2D patterns (Progress chevron). */
     public static final ModelLayerLocation HOODIE_CHEST_PANEL = layer("hoodie_chest_panel");
     /** Sleeves drawn over the first-person hand; same geometry as the hoodie's sleeves. */
@@ -91,6 +116,9 @@ public final class CosmeticModels {
     /** Charm hangers on the backpack's side; static relative to the body. */
     public static final ModelLayerLocation BACKPACK_CHARMS = layer("backpack_charms");
     public static final int CHARM_SLOTS = 3;
+    /** Stripes of a pride badge flag hanging on a backpack. */
+    public static final int FLAG_STRIPES = 5;
+    private static final float FLAG_STRIPE_H = 0.32F;
     public static final int PANEL_COLUMNS = 12;
     public static final int PANEL_ROWS = 16;
     public static final Map<String, ModelLayerLocation> HAIR_CLIPS = new LinkedHashMap<>();
@@ -127,6 +155,17 @@ public final class CosmeticModels {
         layers.put(HOODIE, () -> hoodie(false));
         layers.put(CAT_EAR_HOODIE, () -> hoodie(true));
         layers.put(CHOKER, CosmeticModels::choker);
+        layers.put(EARRINGS, CosmeticModels::earrings);
+        layers.put(MOONSTONE_PENDANT, CosmeticModels::moonstonePendant);
+        layers.put(CYBER_VISOR, CosmeticModels::cyberVisor);
+        layers.put(DARK_SHADES, CosmeticModels::darkShades);
+        layers.put(HEADPHONES, CosmeticModels::headphones);
+        layers.put(HEART_GLASSES, CosmeticModels::heartGlasses);
+        layers.put(ARM_WARMERS, CosmeticModels::armWarmers);
+        layers.put(CROP_SWEATER, CosmeticModels::cropSweater);
+        layers.put(BELT_CHAINS, CosmeticModels::beltChains);
+        layers.put(NAIL_POLISH, CosmeticModels::nailPolish);
+        layers.put(BRACELET, CosmeticModels::bracelet);
         layers.put(HOODIE_CHEST_PANEL, CosmeticModels::hoodieChestPanel);
         layers.put(HOODIE_FIRST_PERSON, CosmeticModels::hoodieFirstPerson);
         layers.put(BACKPACK, CosmeticModels::backpack);
@@ -259,33 +298,55 @@ public final class CosmeticModels {
 
     // ------------------------------------------------------------------ tail
 
-    private static final int TAIL_SEGMENTS = 8;
-    private static final float[] TAIL_WIDTH = {2.0F, 2.3F, 2.5F, 2.5F, 2.4F, 2.2F, 2.0F, 1.6F};
-    private static final float TAIL_SEGMENT_LENGTH = 1.7F;
+    /** Fox-style brush: thin at the base, bushiest toward the end, white tip. */
+    private static final int TAIL_SEGMENTS = 10;
+    private static final float[] TAIL_WIDTH = {1.4F, 2.0F, 2.6F, 3.1F, 3.5F, 3.7F, 3.6F, 3.2F, 2.6F, 1.7F};
+    private static final float TAIL_SEGMENT_LENGTH = 1.45F;
+    /** Fur strands stick out this far past the core. */
+    private static final float TAIL_FUR = 0.45F;
     /** Last segments are the (white) fur tip. */
-    private static final int TAIL_TIP_FROM = 6;
+    private static final int TAIL_TIP_FROM = 7;
 
     private static LayerDefinition tail() {
         MeshDefinition mesh = emptyPlayerMesh();
         PartDefinition parent = mesh.getRoot().getChild("body");
         for (int i = 0; i < TAIL_SEGMENTS; i++) {
             float w = TAIL_WIDTH[i];
-            PartPose pose = i == 0 ? PartPose.offset(0.0F, 9.5F, 2.6F) : PartPose.offset(0.0F, 0.0F, TAIL_SEGMENT_LENGTH);
+            float h = w / 2;
+            float len = TAIL_SEGMENT_LENGTH;
+            PartPose pose = i == 0 ? PartPose.offset(0.0F, 9.5F, 2.4F) : PartPose.offset(0.0F, 0.0F, len);
             parent = pivot(parent, "segment" + i, pose);
-            Groups body = i >= TAIL_TIP_FROM ? DETAIL : MAIN;
-            Groups fluff = i >= TAIL_TIP_FROM ? DETAIL : (i == TAIL_TIP_FROM - 1 ? DETAIL : ACCENT);
+            boolean tip = i >= TAIL_TIP_FROM;
+            Groups body = tip ? DETAIL : MAIN;
+            // the last colored segment already lightens toward the tip, fur is lighter than the core
+            Groups fur = tip || i == TAIL_TIP_FROM - 1 ? DETAIL : ACCENT;
             Groups.Builder b = new Groups.Builder(parent).bandRange(0.0F, TAIL_SEGMENTS);
             if (body == MAIN) {
-                b.boxInBand(i + 0.5F, -w / 2, -w / 2, 0.0F, w, w, TAIL_SEGMENT_LENGTH + 0.2F); // one pattern ring per segment
+                b.boxInBand(i + 0.5F, -h, -h, 0.0F, w, w, len + 0.2F);   // one pattern ring per segment
             } else {
-                b.box(body, -w / 2, -w / 2, 0.0F, w, w, TAIL_SEGMENT_LENGTH + 0.2F);
+                b.box(body, -h, -h, 0.0F, w, w, len + 0.2F);
             }
-            // fluff: slightly offset, thinner slabs so the silhouette looks furry, not boxy
-            b.box(fluff, -w / 2 - 0.2F, -w / 2 + 0.3F, 0.3F, 0.3F, w - 0.6F, TAIL_SEGMENT_LENGTH - 0.4F);
-            b.box(fluff, w / 2 - 0.1F, -w / 2 + 0.3F, 0.3F, 0.3F, w - 0.6F, TAIL_SEGMENT_LENGTH - 0.4F);
-            b.box(fluff, -w / 2 + 0.3F, -w / 2 - 0.2F, 0.2F, w - 0.6F, 0.3F, TAIL_SEGMENT_LENGTH - 0.3F);
+            if (i == 0) {
+                b.build();
+                continue; // the base stays slim where it meets the body
+            }
+            // fur strands on all four sides, a little shorter than the segment so neighbours overlap softly
+            float strand = w - 0.8F;
+            b.box(fur, -h - TAIL_FUR, -strand / 2, 0.15F, TAIL_FUR, strand, len - 0.1F);
+            b.box(fur, h, -strand / 2, 0.15F, TAIL_FUR, strand, len - 0.1F);
+            b.box(fur, -strand / 2, -h - TAIL_FUR, 0.15F, strand, TAIL_FUR, len - 0.1F);
+            b.box(fur, -strand / 2, h, 0.15F, strand, TAIL_FUR, len - 0.1F);
+            // tufts: corner clumps on every other segment break the boxy outline
+            if (i % 2 == 1 && w > 2.4F) {
+                float c = h - 0.2F;
+                b.box(fur, -c - 0.4F, -c - 0.4F, 0.4F, 0.9F, 0.9F, len * 0.7F);
+                b.box(fur, c - 0.5F, -c - 0.4F, 0.6F, 0.9F, 0.9F, len * 0.6F);
+                b.box(fur, -c - 0.4F, c - 0.5F, 0.7F, 0.9F, 0.9F, len * 0.6F);
+                b.box(fur, c - 0.5F, c - 0.5F, 0.3F, 0.9F, 0.9F, len * 0.7F);
+            }
             if (i == TAIL_SEGMENTS - 1) {
-                b.box(DETAIL, -w / 2 + 0.3F, -w / 2 + 0.3F, TAIL_SEGMENT_LENGTH, w - 0.6F, w - 0.6F, 0.8F); // rounded tip
+                b.box(DETAIL, -h + 0.3F, -h + 0.3F, len, w - 0.6F, w - 0.6F, 0.7F);   // rounded tip
+                b.box(DETAIL, -0.4F, -0.4F, len + 0.7F, 0.8F, 0.8F, 0.4F);           // pointy end
             }
             b.build();
         }
@@ -327,6 +388,28 @@ public final class CosmeticModels {
             root.addOrReplaceChild(side + "_mitten_stripes", stripes, PartPose.ZERO);
             root.addOrReplaceChild(side + "_mitten_cuff", CubeListBuilder.create().texOffs(16, 16)
                     .addBox(x0, MITTEN_TOP - 1.0F, -2.0F, 4, 1.2F, 4, MITTEN_CUFF_INFLATE), PartPose.ZERO);
+
+            // arm warmers: same idea from the elbow to the wrist
+            float warmerBand = (WARMER_BOTTOM - WARMER_TOP) / Groups.BANDS;
+            root.addOrReplaceChild(side + "_warmer", CubeListBuilder.create().texOffs(0, 0)
+                    .addBox(x0, WARMER_TOP, -2.0F, 4, WARMER_BOTTOM - WARMER_TOP, 4, new CubeDeformation(MITTEN_INFLATE)), PartPose.ZERO);
+            CubeListBuilder warmerStripes = CubeListBuilder.create().texOffs(0, 0);
+            for (int i = 1; i < Groups.BANDS; i += 2) {
+                warmerStripes.addBox(x0, WARMER_TOP + i * warmerBand, -2.0F, 4, warmerBand, 4,
+                        new CubeDeformation(MITTEN_INFLATE + 0.02F, 0.0F, MITTEN_INFLATE + 0.02F));
+            }
+            root.addOrReplaceChild(side + "_warmer_stripes", warmerStripes, PartPose.ZERO);
+            root.addOrReplaceChild(side + "_warmer_cuff", CubeListBuilder.create().texOffs(16, 16)
+                    .addBox(x0, WARMER_TOP - 1.0F, -2.0F, 4, 1.2F, 4, MITTEN_CUFF_INFLATE)
+                    .addBox(x0, WARMER_BOTTOM - 0.4F, -2.0F, 4, 1.0F, 4, MITTEN_CUFF_INFLATE), PartPose.ZERO);
+
+            // nail polish: painted fingertips
+            CubeListBuilder nails = CubeListBuilder.create().texOffs(0, 0);
+            for (int i = 0; i < 4; i++) {
+                nails.addBox(x0 + 0.3F + i * 0.95F, 11.2F, -2.12F, 0.6F, 0.7F, 0.15F);
+            }
+            nails.addBox(x0 + 0.3F, 11.94F, -1.8F, 3.4F, 0.1F, 1.2F);
+            root.addOrReplaceChild(side + "_nails", nails, PartPose.ZERO);
         }
         return layerOf(mesh);
     }
@@ -545,6 +628,10 @@ public final class CosmeticModels {
                     .addBox(3.6F, 2.0F, z, 0.3F, 1.6F, 0.3F), PartPose.ZERO);
             root.addOrReplaceChild("charm" + i, CubeListBuilder.create().texOffs(4 * i, 8)
                     .addBox(3.45F, 3.6F, z - 0.35F, 1.0F, 1.2F, 1.0F), PartPose.ZERO);
+            for (int k = 0; k < FLAG_STRIPES; k++) { // a little flag instead of the charm cube for pride badges
+                root.addOrReplaceChild("flag" + i + "_" + k, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox(3.5F, 3.6F + k * FLAG_STRIPE_H, z - 0.9F, 0.25F, FLAG_STRIPE_H, 1.8F), PartPose.ZERO);
+            }
         }
         return layerOf(mesh);
     }
@@ -563,6 +650,239 @@ public final class CosmeticModels {
         b.box(METAL, -0.4F, 2.8F, -3.1F, 0.8F, 0.25F, 0.8F);   // bell rim
         b.box(DARK, -0.4F, 2.45F, -3.25F, 0.8F, 0.15F, 0.1F);  // bell slit
         b.build();
+        return layerOf(mesh);
+    }
+
+    // ------------------------------------------------------------------ v1.1 clothing
+
+    /**
+     * Chunky gamer headset with cat ears: padded headband, big ears whose inner part lights up, oval over-ear cups
+     * with a light ring and cushions, and a boom mic on the left. DETAIL = the lights (RGB near music).
+     */
+    /** Headset ears: base sunk a little into the band, leaning outward. */
+    private static final float HEADSET_EAR_SPACING = 2.6F;
+    private static final float HEADSET_EAR_BASE_Y = -9.6F;
+    private static final float HEADSET_EAR_TILT = 0.3F;
+
+    private static LayerDefinition headphones() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild("head"), "headphones", PartPose.ZERO));
+        // padded headband arching over the head, with a softer cushion underneath
+        b.box(MAIN, -4.2F, -10.0F, -1.6F, 8.4F, 1.4F, 3.2F);
+        b.box(ACCENT, -3.6F, -8.8F, -1.2F, 7.2F, 0.4F, 2.4F);
+        b.box(MAIN, -5.4F, -9.4F, -1.4F, 1.4F, 1.6F, 2.8F);                        // band shoulders
+        b.box(MAIN, 4.0F, -9.4F, -1.4F, 1.4F, 1.6F, 2.8F);
+        // yokes down to the cups
+        b.box(DARK, -6.0F, -8.0F, -0.6F, 0.8F, 2.4F, 1.2F);
+        b.box(DARK, 5.2F, -8.0F, -0.6F, 0.8F, 2.4F, 1.2F);
+        for (float side : new float[]{-1.0F, 1.0F}) {
+            float cup = side < 0 ? -6.6F : 4.6F;                                    // cup x start (2.0 deep)
+            b.box(ACCENT, side < 0 ? -4.9F : 4.3F, -6.0F, -2.2F, 0.6F, 4.6F, 4.4F); // cushion against the head
+            b.box(MAIN, cup, -6.4F, -2.6F, 2.0F, 5.4F, 5.2F);                        // cup shell
+            b.box(MAIN, cup, -6.9F, -1.8F, 2.0F, 0.5F, 3.6F);                        // rounded top
+            b.box(MAIN, cup, -1.0F, -1.8F, 2.0F, 0.5F, 3.6F);                        // rounded bottom
+            float face = side < 0 ? cup - 0.3F : cup + 2.0F;                        // outer face of the cup
+            b.box(DETAIL, face, -5.8F, -2.0F, 0.3F, 0.5F, 4.0F);                     // light ring (four sides)
+            b.box(DETAIL, face, -2.1F, -2.0F, 0.3F, 0.5F, 4.0F);
+            b.box(DETAIL, face, -5.3F, -2.0F, 0.3F, 3.2F, 0.5F);
+            b.box(DETAIL, face, -5.3F, 1.5F, 0.3F, 3.2F, 0.5F);
+            b.box(DARK, face, -5.3F, -1.5F, 0.3F, 3.2F, 3.0F);                        // plate inside the ring
+            // cat ear sunk into the band and tilted outward: stepped triangle with a glowing inner ear
+            PartDefinition earPivot = pivot(mesh.getRoot().getChild("head"), side < 0 ? "headset_left_ear" : "headset_right_ear",
+                    PartPose.offsetAndRotation(side * HEADSET_EAR_SPACING, HEADSET_EAR_BASE_Y, 0.0F, 0.0F, 0.0F, side * HEADSET_EAR_TILT));
+            Groups.Builder ear = new Groups.Builder(earPivot);
+            ear.box(MAIN, -1.5F, -1.2F, -0.8F, 3.0F, 1.2F, 1.6F);
+            ear.box(MAIN, -1.1F, -2.4F, -0.8F, 2.2F, 1.2F, 1.6F);
+            ear.box(MAIN, -0.6F, -3.4F, -0.8F, 1.2F, 1.0F, 1.6F);
+            ear.box(DETAIL, -0.8F, -2.2F, -1.0F, 1.6F, 1.2F, 0.3F);
+            ear.box(DETAIL, -0.4F, -3.0F, -1.0F, 0.8F, 0.8F, 0.3F);
+            ear.build();
+        }
+        // boom mic on the left cup, curving toward the mouth
+        b.box(DARK, -6.9F, -2.2F, -2.4F, 0.5F, 0.5F, 2.0F);
+        b.box(DARK, -6.6F, -1.9F, -4.2F, 0.5F, 0.5F, 2.0F);
+        b.box(DARK, -5.9F, -1.7F, -5.0F, 1.6F, 0.5F, 0.5F);
+        b.box(DETAIL, -4.6F, -1.8F, -5.1F, 0.8F, 0.7F, 0.7F);                      // mic tip light
+        b.build();
+        return layerOf(mesh);
+    }
+
+    private static LayerDefinition heartGlasses() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild("head"), "glasses", PartPose.ZERO));
+        float z = -4.55F;
+        for (float cx : new float[]{-2.0F, 2.0F}) {
+            // heart: two bumps on top, wide middle, narrowing to a point
+            b.box(MAIN, cx - 1.6F, -5.6F, z, 1.4F, 0.6F, 0.3F);
+            b.box(MAIN, cx + 0.2F, -5.6F, z, 1.4F, 0.6F, 0.3F);
+            b.box(MAIN, cx - 1.8F, -5.0F, z, 3.6F, 1.0F, 0.3F);
+            b.box(MAIN, cx - 1.3F, -4.0F, z, 2.6F, 0.6F, 0.3F);
+            b.box(MAIN, cx - 0.6F, -3.4F, z, 1.2F, 0.5F, 0.3F);
+            b.box(ACCENT, cx - 1.1F, -5.0F, z - 0.05F, 2.2F, 0.9F, 0.1F);          // lens shine
+        }
+        b.box(MAIN, -0.4F, -4.9F, z, 0.8F, 0.4F, 0.3F);                           // bridge
+        b.box(MAIN, -4.6F, -4.9F, -4.4F, 0.4F, 0.4F, 4.6F);                       // temples
+        b.box(MAIN, 4.2F, -4.9F, -4.4F, 0.4F, 0.4F, 4.6F);
+        b.build();
+        return layerOf(mesh);
+    }
+
+    private static final float WARMER_TOP = 3.0F;
+    private static final float WARMER_BOTTOM = 10.4F;
+
+    private static LayerDefinition armWarmers() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        for (String arm : new String[]{"right_arm", "left_arm"}) {
+            float x0 = arm.equals("right_arm") ? -3.0F : -1.0F;
+            Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild(arm), "warmer", PartPose.ZERO))
+                    .bandRange(WARMER_TOP, WARMER_BOTTOM);
+            b.bandedBox(x0, WARMER_TOP, -2.0F, 4, WARMER_BOTTOM - WARMER_TOP, 4, MITTEN_INFLATE);
+            b.box(ACCENT, x0, WARMER_TOP - 1.0F, -2.0F, 4, 1.2F, 4, MITTEN_CUFF_INFLATE);      // top rib
+            b.box(ACCENT, x0, WARMER_BOTTOM - 0.4F, -2.0F, 4, 1.0F, 4, MITTEN_CUFF_INFLATE);   // wrist rib
+            b.build();
+        }
+        return layerOf(mesh);
+    }
+
+    private static final float CROP_BOTTOM = 7.0F;
+
+    private static LayerDefinition cropSweater() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        PartDefinition root = mesh.getRoot();
+        Groups.Builder body = new Groups.Builder(pivot(root.getChild("body"), "sweater", PartPose.ZERO)).bandRange(0.0F, CROP_BOTTOM);
+        body.bandedBox(-4.0F, 0.0F, -2.0F, 8, CROP_BOTTOM, 4, HOODIE_BODY_INFLATE);
+        body.box(ACCENT, -4.0F, CROP_BOTTOM, -2.0F, 8, 1.0F, 4, HOODIE_HEM_INFLATE);      // ribbed hem above the waist
+        body.box(ACCENT, -3.0F, -1.4F, -2.2F, 6.0F, 1.6F, 4.4F);                         // turtle collar
+        body.box(DETAIL, -0.6F, 2.4F, -2.62F, 1.2F, 1.0F, 0.2F);                         // tiny heart
+        body.build();
+        for (String arm : new String[]{"right_arm", "left_arm"}) {
+            float x0 = arm.equals("right_arm") ? -3.0F : -1.0F;
+            Groups.Builder sleeve = new Groups.Builder(pivot(root.getChild(arm), "sleeve", PartPose.ZERO)).bandRange(-2.0F, 9.0F);
+            sleeve.bandedBox(x0, -2.0F, -2.0F, 4, 11, 4, HOODIE_ARM_INFLATE);
+            sleeve.box(ACCENT, x0, 9.0F, -2.0F, 4, 1.5F, 4, HOODIE_CUFF_INFLATE);
+            sleeve.build();
+        }
+        return layerOf(mesh);
+    }
+
+    private static final CubeDeformation BELT_INFLATE = new CubeDeformation(0.62F);
+
+    private static LayerDefinition beltChains() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild("body"), "belt", PartPose.ZERO));
+        b.box(MAIN, -4.0F, 10.2F, -2.0F, 8, 1.2F, 4, BELT_INFLATE);
+        b.box(DETAIL, -1.0F, 10.0F, -2.95F, 2.0F, 1.6F, 0.4F);                            // heart buckle
+        b.box(DETAIL, -0.6F, 11.6F, -2.95F, 1.2F, 0.4F, 0.4F);
+        // two chain loops hanging on the left hip and one across the back
+        for (int i = 0; i < 5; i++) {
+            float x = 1.4F + i * 0.6F;
+            float sag = (float) Math.sin(i / 4.0 * Math.PI) * 1.6F;
+            b.box(METAL, x, 11.5F + sag, -2.85F, 0.5F, 0.4F, 0.3F);
+            b.box(METAL, x - 0.4F, 11.8F + sag * 1.6F, -2.8F, 0.5F, 0.4F, 0.3F);
+        }
+        for (int i = 0; i < 9; i++) {
+            float x = -3.6F + i * 0.9F;
+            float sag = (float) Math.sin(i / 8.0 * Math.PI) * 1.4F;
+            b.box(METAL, x, 11.5F + sag, 2.55F, 0.6F, 0.4F, 0.3F);
+        }
+        b.build();
+        return layerOf(mesh);
+    }
+
+    private static LayerDefinition nailPolish() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        for (String arm : new String[]{"right_arm", "left_arm"}) {
+            float x0 = arm.equals("right_arm") ? -3.0F : -1.0F;
+            Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild(arm), "nails", PartPose.ZERO));
+            for (int i = 0; i < 4; i++) {                                            // four fingertips at the front
+                b.box(MAIN, x0 + 0.3F + i * 0.95F, 11.2F, -2.12F, 0.6F, 0.7F, 0.15F);
+            }
+            b.box(MAIN, x0 + 0.3F, 11.94F, -1.8F, 3.4F, 0.1F, 1.2F);                  // tips seen from below
+            b.build();
+        }
+        return layerOf(mesh);
+    }
+
+    // ------------------------------------------------------------------ jewelry
+
+    private static final CubeDeformation PENDANT_CHAIN_INFLATE = new CubeDeformation(0.5F, 0.0F, 0.5F);
+
+    private static LayerDefinition moonstonePendant() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild("body"), "pendant", PartPose.ZERO));
+        b.box(MAIN, -4.0F, 0.2F, -2.0F, 8, 0.35F, 4, PENDANT_CHAIN_INFLATE);          // chain around the neck
+        b.box(MAIN, -1.8F, 0.5F, -2.6F, 0.35F, 1.4F, 0.2F);                          // chain down to the stone
+        b.box(MAIN, 1.45F, 0.5F, -2.6F, 0.35F, 1.4F, 0.2F);
+        b.box(MAIN, -1.5F, 1.9F, -2.6F, 3.0F, 0.35F, 0.2F);
+        b.box(DETAIL, -1.0F, 2.3F, -2.75F, 2.0F, 2.0F, 0.35F);                       // crescent moonstone
+        b.box(DETAIL, -1.4F, 2.7F, -2.75F, 0.4F, 1.2F, 0.35F);
+        b.box(ACCENT, 0.2F, 2.5F, -2.85F, 0.6F, 1.4F, 0.15F);                        // inner shadow of the crescent
+        b.build();
+        return layerOf(mesh);
+    }
+
+    private static LayerDefinition darkShades() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild("head"), "shades", PartPose.ZERO));
+        float z = -4.75F;
+        b.box(MAIN, -4.4F, -6.0F, z, 8.8F, 0.7F, 0.4F);                               // thick brow bar
+        for (float x0 : new float[]{-4.1F, 0.5F}) {
+            b.box(MAIN, x0, -5.3F, z, 3.6F, 0.3F, 0.4F);                               // lens rims
+            b.box(MAIN, x0, -3.2F, z, 3.6F, 0.35F, 0.4F);
+            b.box(MAIN, x0 - 0.1F, -5.3F, z, 0.35F, 2.45F, 0.4F);
+            b.box(MAIN, x0 + 3.35F, -5.3F, z, 0.35F, 2.45F, 0.4F);
+            b.box(DETAIL, x0 + 0.25F, -5.0F, z + 0.05F, 3.1F, 1.8F, 0.25F);           // dark lens
+            b.box(ACCENT, x0 + 0.5F, -4.8F, z - 0.02F, 1.2F, 0.35F, 0.05F);            // shine
+            b.box(ACCENT, x0 + 0.5F, -4.4F, z - 0.02F, 0.5F, 0.3F, 0.05F);
+        }
+        b.box(MAIN, -0.5F, -5.1F, z, 1.0F, 0.5F, 0.4F);                               // bridge
+        b.box(MAIN, -4.75F, -5.8F, z, 0.45F, 0.9F, 4.8F);                             // temples back to the ears
+        b.box(MAIN, 4.3F, -5.8F, z, 0.45F, 0.9F, 4.8F);
+        b.build();
+        return layerOf(mesh);
+    }
+
+    private static LayerDefinition cyberVisor() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild("head"), "visor", PartPose.ZERO));
+        b.box(DETAIL, -4.3F, -5.4F, -4.75F, 8.6F, 1.8F, 0.3F);                       // glowing lens
+        b.box(MAIN, -4.5F, -5.6F, -4.6F, 9.0F, 0.3F, 0.3F);                         // frame top and bottom
+        b.box(MAIN, -4.5F, -3.7F, -4.6F, 9.0F, 0.3F, 0.3F);
+        b.box(MAIN, -4.7F, -5.6F, -4.5F, 0.4F, 2.2F, 5.0F);                         // side pieces back to the ears
+        b.box(MAIN, 4.3F, -5.6F, -4.5F, 0.4F, 2.2F, 5.0F);
+        b.box(DARK, 4.4F, -6.6F, -0.2F, 0.3F, 1.2F, 0.3F);                          // tiny antenna
+        b.box(DETAIL, 4.35F, -7.0F, -0.25F, 0.4F, 0.4F, 0.4F);
+        b.build();
+        return layerOf(mesh);
+    }
+
+    private static LayerDefinition earrings() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild("head"), "earrings", PartPose.ZERO));
+        for (float side : new float[]{-1.0F, 1.0F}) {
+            float outer = side < 0 ? -5.05F : 4.55F;                            // clear of the hat layer (0.5 inflate)
+            b.box(METAL, outer, -2.9F, -0.3F, 0.5F, 0.6F, 0.6F);               // stud
+            b.box(METAL, outer + 0.1F, -2.3F, -0.15F, 0.3F, 0.5F, 0.3F);       // little chain
+            b.box(MAIN, outer - 0.05F, -1.8F, -0.4F, 0.6F, 1.2F, 0.8F);        // crystal
+            b.box(ACCENT, outer, -0.6F, -0.25F, 0.5F, 0.35F, 0.5F);            // crystal tip
+        }
+        b.build();
+        return layerOf(mesh);
+    }
+
+    private static final CubeDeformation BRACELET_INFLATE = new CubeDeformation(0.55F, 0.0F, 0.55F);
+
+    private static LayerDefinition bracelet() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        for (String arm : new String[]{"right_arm", "left_arm"}) {
+            float x0 = arm.equals("right_arm") ? -3.0F : -1.0F;
+            Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild(arm), "bracelet", PartPose.ZERO));
+            b.box(MAIN, x0, 7.6F, -2.0F, 4, 1.0F, 4, BRACELET_INFLATE);
+            float outer = arm.equals("right_arm") ? x0 - 0.9F : x0 + 4.3F;
+            b.box(METAL, outer, 7.5F, -0.6F, 0.6F, 1.2F, 1.2F);                 // clasp with the big crystal
+            b.box(ACCENT, outer + (arm.equals("right_arm") ? -0.3F : 0.3F), 7.7F, -0.4F, 0.6F, 0.8F, 0.8F);
+            b.build();
+        }
         return layerOf(mesh);
     }
 
@@ -604,14 +924,18 @@ public final class CosmeticModels {
         private static final float TWITCH_SPEED = 0.35F;
         private static final float TWITCH_SHARPNESS = 12.0F;
         private static final float WALK_BOUNCE = 0.08F;
+        /** Helmet shell top is 1 px above the head (armor inflate 1.0); ears sit just on top of it. */
+        private static final float HELMET_LIFT = 0.8F;
         private final ModelPart leftEar;
         private final ModelPart rightEar;
+        private final ModelPart headband;
         private final EarShape shape;
 
         public EarsModel(ModelPart root, Groups group, int band, EarShape shape) {
             super(root, group, band);
             this.leftEar = head.getChild("left_ear");
             this.rightEar = head.getChild("right_ear");
+            this.headband = head.getChild("headband");
             this.shape = shape;
         }
 
@@ -632,13 +956,29 @@ public final class CosmeticModels {
             rightEar.zRot = shape.tilt() + shape.extraRightTilt() + right + bounce;
             leftEar.xRot = -left * 0.5F;
             rightEar.xRot = -right * 0.5F;
+            // A visible helmet (the wearer chose "show", or the server forbids hiding armor): ears poke out on top
+            // of it and the headband, which would be inside the helmet, is not drawn.
+            boolean helmet = wearsHelmet(state);
+            float lift = helmet ? HELMET_LIFT : 0.0F;
+            leftEar.y = leftEar.getInitialPose().y() - lift;
+            rightEar.y = rightEar.getInitialPose().y() - lift;
+            headband.visible = !helmet;
+        }
+
+        /** Head armor drawn by the armor layer (not a carved pumpkin or skull, which use their own shapes). */
+        static boolean wearsHelmet(AvatarRenderState state) {
+            if (state.headEquipment.isEmpty()) {
+                return false;
+            }
+            Equippable equippable = state.headEquipment.get(DataComponents.EQUIPPABLE);
+            return equippable != null && equippable.slot() == EquipmentSlot.HEAD && equippable.assetId().isPresent();
         }
     }
 
     /** Tail droops down-back, waves along its length, swings out when turning (SPEC §4.5). */
     public static final class TailModel extends GroupModel {
         private static final float DROOP = -0.5F;
-        private static final float CURL = 0.14F;
+        private static final float CURL = 0.1F;
         private static final float IDLE_SWAY = 0.08F;
         private static final float WALK_SWAY = 0.2F;
         private static final float SWAY_SPEED = 0.16F;

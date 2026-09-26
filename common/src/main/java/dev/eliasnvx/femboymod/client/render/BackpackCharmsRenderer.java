@@ -1,5 +1,7 @@
 package dev.eliasnvx.femboymod.client.render;
 
+import dev.eliasnvx.femboymod.registry.FemboyItems;
+import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
@@ -26,6 +28,8 @@ final class BackpackCharmsRenderer {
 
     private final ModelPart[] chains = new ModelPart[CosmeticModels.CHARM_SLOTS];
     private final ModelPart[] charms = new ModelPart[CosmeticModels.CHARM_SLOTS];
+    private final ModelPart[][] flags = new ModelPart[CosmeticModels.CHARM_SLOTS][CosmeticModels.FLAG_STRIPES];
+    private static final int BADGE_DEFAULT = 0xF291BE;
     private final RenderType type = RenderTypes.entityCutout(
             Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png"));
 
@@ -33,6 +37,9 @@ final class BackpackCharmsRenderer {
         for (int i = 0; i < CosmeticModels.CHARM_SLOTS; i++) {
             chains[i] = root.getChild("chain" + i);
             charms[i] = root.getChild("charm" + i);
+            for (int k = 0; k < CosmeticModels.FLAG_STRIPES; k++) {
+                flags[i][k] = root.getChild("flag" + i + "_" + k);
+            }
         }
     }
 
@@ -50,9 +57,20 @@ final class BackpackCharmsRenderer {
             if (i >= chains.length) {
                 break;
             }
-            int color = CHARM_COLORS.getOrDefault(BuiltInRegistries.ITEM.getKey(charm.item().value()).getPath(), DEFAULT_CHARM);
             ctx.collector().submitModelPart(chains[i], pose, type, ctx.light(), ctx.overlay(), null, ARGB.opaque(CHAIN_COLOR));
-            ctx.collector().submitModelPart(charms[i], pose, type, ctx.light(), ctx.overlay(), null, ARGB.opaque(color));
+            if (charm.item().value() == FemboyItems.PRIDE_BADGE.get()) {
+                // the badge's flag: stripes spread over the pattern (a 3-stripe flag shows each stripe ~twice as tall)
+                Colorway colorway = charm.get(FemboyComponents.COLORWAY.get());
+                int count = colorway == null ? 1 : colorway.stripeCount();
+                for (int k = 0; k < CosmeticModels.FLAG_STRIPES; k++) {
+                    int color = colorway == null ? BADGE_DEFAULT
+                            : colorway.stripeColor(k * count / CosmeticModels.FLAG_STRIPES, ColorwayClock.ticks());
+                    ctx.collector().submitModelPart(flags[i][k], pose, type, ctx.light(), ctx.overlay(), null, ARGB.opaque(color));
+                }
+            } else {
+                int color = CHARM_COLORS.getOrDefault(BuiltInRegistries.ITEM.getKey(charm.item().value()).getPath(), DEFAULT_CHARM);
+                ctx.collector().submitModelPart(charms[i], pose, type, ctx.light(), ctx.overlay(), null, ARGB.opaque(color));
+            }
             i++;
         }
         pose.popPose();

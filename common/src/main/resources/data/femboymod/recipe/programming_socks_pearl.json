@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_pearl",
+  "ingredients": [
+    "femboymod:programming_socks",
+    "femboymod:moonstone"
+  ],
+  "result": {
+    "id": "femboymod:programming_socks",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFFFFF",
+        "pattern": "femboymod:pearl"
+      }
+    }
+  }
+}

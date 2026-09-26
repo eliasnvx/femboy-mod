@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/nail_polish",
+    "layer1": "femboymod:item/nail_polish_detail"
+  }
+}

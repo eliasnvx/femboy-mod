@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.combat;
 
+import dev.eliasnvx.femboymod.world.FemboyGameRules;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.combat.DripDamage;
 import dev.eliasnvx.femboymod.effect.BuiltinEffects.DamageBonusEffect;
@@ -46,6 +47,10 @@ public final class DripCombat {
                 }
             }
         }
+        int pvpPercent = level.getGameRules().get(FemboyGameRules.DRIP_PVP_PERCENT.get());
+        if (pvpPercent > 0 && attacker instanceof ServerPlayer attackerPlayer && victim instanceof ServerPlayer victimPlayer) {
+            result *= pvpMultiplier(FemboyMod.api().getDripLevel(attackerPlayer).tier(), FemboyMod.api().getDripLevel(victimPlayer).tier(), pvpPercent);
+        }
         if (attacker instanceof ServerPlayer player) {
             Map<Identifier, ActiveBonus> bonuses = BONUSES.get(player.getUUID());
             if (bonuses != null) {
@@ -57,6 +62,11 @@ public final class DripCombat {
             }
         }
         return result;
+    }
+
+    /** Drip PvP: {@code percent}% more damage per tier the attacker is above the victim, less when below (never below 0). */
+    public static float pvpMultiplier(int attackerTier, int victimTier, int percent) {
+        return Math.max(0.0F, 1.0F + (attackerTier - victimTier) * percent / 100.0F);
     }
 
     public static void addBonus(ServerPlayer player, Identifier source, DamageBonusEffect effect, double scale) {

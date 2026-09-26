@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/heart_glasses",
+    "layer1": "femboymod:item/heart_glasses_detail"
+  }
+}

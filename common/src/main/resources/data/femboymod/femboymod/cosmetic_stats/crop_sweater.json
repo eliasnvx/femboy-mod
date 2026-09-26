@@ -1,0 +1,13 @@
+{
+  "drip": 14,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:movement_speed",
+        "amount": 0.03,
+        "operation": "add_multiplied_base"
+      }
+    }
+  ]
+}
