@@ -77,6 +77,8 @@ public final class CosmeticModels {
     public static final ModelLayerLocation FISHNET = layer("fishnet");
     public static final ModelLayerLocation SKIRT = layer("skirt");
     public static final ModelLayerLocation MITTENS = layer("mittens");
+    /** Mittens on the first-person hand: base, stripes (second colorway color) and cuff as separate parts. */
+    public static final ModelLayerLocation MITTENS_FIRST_PERSON = layer("mittens_first_person");
     public static final ModelLayerLocation HOODIE = layer("hoodie");
     /** Same hoodie with the hood up and cat ears on it. */
     public static final ModelLayerLocation CAT_EAR_HOODIE = layer("cat_ear_hoodie");
@@ -121,6 +123,7 @@ public final class CosmeticModels {
         layers.put(FISHNET, () -> legwear(FISHNET_INFLATE, false));
         layers.put(SKIRT, CosmeticModels::skirt);
         layers.put(MITTENS, CosmeticModels::mittens);
+        layers.put(MITTENS_FIRST_PERSON, CosmeticModels::mittensFirstPerson);
         layers.put(HOODIE, () -> hoodie(false));
         layers.put(CAT_EAR_HOODIE, () -> hoodie(true));
         layers.put(CHOKER, CosmeticModels::choker);
@@ -303,6 +306,27 @@ public final class CosmeticModels {
             float outer = arm.equals("right_arm") ? x0 - 0.62F : x0 + 4.22F;
             b.box(DETAIL, outer, MITTEN_BOTTOM - 1.6F, -0.5F, 0.4F, 1.0F, 1.0F);             // little heart on the back of the hand
             b.build();
+        }
+        return layerOf(mesh);
+    }
+
+    private static LayerDefinition mittensFirstPerson() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        float band = (MITTEN_BOTTOM - MITTEN_TOP) / Groups.BANDS;
+        for (String side : new String[]{"right", "left"}) {
+            float x0 = side.equals("right") ? -3.0F : -1.0F;
+            root.addOrReplaceChild(side + "_mitten", CubeListBuilder.create().texOffs(0, 0)
+                    .addBox(x0, MITTEN_TOP, -2.0F, 4, MITTEN_BOTTOM - MITTEN_TOP, 4, new CubeDeformation(MITTEN_INFLATE)), PartPose.ZERO);
+            CubeListBuilder stripes = CubeListBuilder.create().texOffs(0, 0);
+            for (int i = 1; i < Groups.BANDS; i += 2) { // same bands as the third-person model: every other one
+                // grow sideways only: vertical inflation would merge neighbouring stripes into one block
+                stripes.addBox(x0, MITTEN_TOP + i * band, -2.0F, 4, band, 4,
+                        new CubeDeformation(MITTEN_INFLATE + 0.02F, 0.0F, MITTEN_INFLATE + 0.02F));
+            }
+            root.addOrReplaceChild(side + "_mitten_stripes", stripes, PartPose.ZERO);
+            root.addOrReplaceChild(side + "_mitten_cuff", CubeListBuilder.create().texOffs(16, 16)
+                    .addBox(x0, MITTEN_TOP - 1.0F, -2.0F, 4, 1.2F, 4, MITTEN_CUFF_INFLATE), PartPose.ZERO);
         }
         return layerOf(mesh);
     }

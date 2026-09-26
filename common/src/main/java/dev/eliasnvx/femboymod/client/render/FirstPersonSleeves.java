@@ -7,6 +7,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
+import dev.eliasnvx.femboymod.registry.FemboyItems;
 import dev.eliasnvx.femboymod.registry.FemboyTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -21,16 +22,20 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 
-/** Hoodie sleeve on the first-person hand (called from AvatarRendererHandMixin). */
+/** Hoodie sleeve and mittens on the first-person hand (called from AvatarRendererHandMixin). */
 public final class FirstPersonSleeves {
 
     private static final int DEFAULT_COLOR = 0xC8A2E8;
     private static final float CUFF_SHADE = -0.22F;
+    /** Same defaults as the striped_mittens renderer (pink with white stripes). */
+    private static final int MITTEN_COLOR = 0xF5A9B8;
+    private static final int MITTEN_STRIPE_COLOR = 0xFFFFFF;
     private static final RenderType TYPE = RenderTypes.entityCutout(
             Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/knit.png"));
 
     private static EntityModelSet bakedFrom;
     private static ModelPart root;
+    private static ModelPart mittens;
 
     private FirstPersonSleeves() {
     }
@@ -40,25 +45,35 @@ public final class FirstPersonSleeves {
         if (player == null) {
             return;
         }
-        ItemStack top = CosmeticsManager.get(player).get(FemboySlots.OUTFIT_TOP);
-        if (!top.is(FemboyTags.HOODIES) || CosmeticsManager.get(player).isHidden(FemboySlots.OUTFIT_TOP)) {
-            return;
-        }
         EntityModelSet models = Minecraft.getInstance().getEntityModels();
         if (models != bakedFrom) { // re-bake after resource reloads
             root = models.bakeLayer(CosmeticModels.HOODIE_FIRST_PERSON);
+            mittens = models.bakeLayer(CosmeticModels.MITTENS_FIRST_PERSON);
             bakedFrom = models;
         }
         String side = arm == model.rightArm ? "right" : "left";
-        ModelPart sleeve = root.getChild(side + "_sleeve");
-        ModelPart cuff = root.getChild(side + "_cuff");
-        sleeve.loadPose(arm.storePose());
-        cuff.loadPose(arm.storePose());
+        var worn = CosmeticsManager.get(player);
+        ItemStack top = worn.get(FemboySlots.OUTFIT_TOP);
+        if (top.is(FemboyTags.HOODIES) && !worn.isHidden(FemboySlots.OUTFIT_TOP)) {
+            Colorway colorway = Colorways.effective(top).orElse(null);
+            int main = colorway == null ? DEFAULT_COLOR : colorway.stripeColor(0);
+            part(root, side + "_sleeve", arm, pose, collector, light, main);
+            part(root, side + "_cuff", arm, pose, collector, light, BuiltinCosmeticRenderers.shade(main, CUFF_SHADE));
+        }
+        ItemStack hands = worn.get(FemboySlots.HANDS);
+        if (hands.is(FemboyItems.STRIPED_MITTENS.get()) && !worn.isHidden(FemboySlots.HANDS)) {
+            Colorway colorway = Colorways.effective(hands).orElse(null);
+            int main = colorway == null ? MITTEN_COLOR : colorway.stripeColor(0);
+            int stripe = colorway == null ? MITTEN_STRIPE_COLOR : colorway.stripeColor(1);
+            part(mittens, side + "_mitten", arm, pose, collector, light, main);
+            part(mittens, side + "_mitten_stripes", arm, pose, collector, light, stripe);
+            part(mittens, side + "_mitten_cuff", arm, pose, collector, light, BuiltinCosmeticRenderers.shade(main, CUFF_SHADE));
+        }
+    }
 
-        Colorway colorway = Colorways.effective(top).orElse(null);
-        int main = colorway == null ? DEFAULT_COLOR : colorway.stripeColor(0);
-        collector.submitModelPart(sleeve, pose, TYPE, light, OverlayTexture.NO_OVERLAY, null, ARGB.opaque(main));
-        collector.submitModelPart(cuff, pose, TYPE, light, OverlayTexture.NO_OVERLAY, null,
-                ARGB.opaque(BuiltinCosmeticRenderers.shade(main, CUFF_SHADE)));
+    private static void part(ModelPart parts, String name, ModelPart arm, PoseStack pose, SubmitNodeCollector collector, int light, int color) {
+        ModelPart part = parts.getChild(name);
+        part.loadPose(arm.storePose());
+        collector.submitModelPart(part, pose, TYPE, light, OverlayTexture.NO_OVERLAY, null, ARGB.opaque(color));
     }
 }

@@ -2,6 +2,7 @@ package dev.eliasnvx.femboymod.entity;
 
 import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
@@ -26,6 +27,9 @@ public class CaffeinatedZombie extends Zombie {
             FemboyItems.BYTE_ENERGY_PURPLE::get);
     /** The can in hand is decoration; the loot table decides what drops. */
     private static final float HELD_CAN_DROP_CHANCE = 0.0F;
+    /** One spark every ~6 ticks on average. */
+    private static final int SPARK_CHANCE = 6;
+    private static final double SPARK_SPREAD = 0.6;
 
     public CaffeinatedZombie(EntityType<? extends Zombie> type, Level level) {
         super(type, level);
@@ -42,6 +46,16 @@ public class CaffeinatedZombie extends Zombie {
     protected void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty) {
         setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(CANS.get(random.nextInt(CANS.size())).get()));
         setDropChance(EquipmentSlot.MAINHAND, HELD_CAN_DROP_CHANCE);
+    }
+
+    /** Client only: a few electric sparks crackle around it. */
+    @Override
+    public void aiStep() {
+        super.aiStep();
+        if (level().isClientSide() && random.nextInt(SPARK_CHANCE) == 0) {
+            level().addParticle(ParticleTypes.ELECTRIC_SPARK, getRandomX(SPARK_SPREAD), getRandomY(), getRandomZ(SPARK_SPREAD),
+                    0.0, 0.0, 0.0);
+        }
     }
 
     @Override
