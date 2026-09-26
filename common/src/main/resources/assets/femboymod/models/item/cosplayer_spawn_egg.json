@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/cosplayer_spawn_egg"
+  }
+}

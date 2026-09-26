@@ -1,0 +1,18 @@
+{
+  "wants": {
+    "id": "femboymod:style_coupon",
+    "count": 5
+  },
+  "gives": {
+    "id": "femboymod:programming_socks",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFD1EC",
+        "pattern": "femboymod:glitter"
+      }
+    }
+  },
+  "max_uses": 2,
+  "xp": 30,
+  "reputation_discount": 0.05
+}

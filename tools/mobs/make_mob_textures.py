@@ -147,6 +147,69 @@ def fashion_critic():
     return img
 
 
+def cosplayer():
+    """Wandering Cosplayer in player skin layout: lavender hair with a star clip, blush, a white top with a pink
+    ribbon, lavender skirt, striped thigh-highs and pink shoes. Original design, no existing character."""
+    rng = random.Random(21)
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    skin, hair, hair_dark = hexc("#F1D2BD"), hexc("#C8A2E8"), hexc("#A07FC8")
+    top, ribbon, skirt = hexc("#FAF6F8"), hexc("#F291BE"), hexc("#B58CFF")
+    sock, stripe, shoe, star = hexc("#FFFFFF"), hexc("#FFB6DA"), hexc("#E0789E"), hexc("#FFE7A0")
+    soft = (0.97, 1.0, 1.0, 1.03)
+
+    box(img, 0, 0, 8, 8, 8, skin, rng, soft)
+    f = faces(0, 0, 8, 8, 8)
+    fill(img, f["up"], hair, rng, soft)
+    fill(img, f["south"], hair, rng, soft)
+    for name in ("west", "east"):
+        x, y, w, h = f[name]
+        fill(img, (x, y, w, 6), hair, rng, soft)
+    x, y, w, h = f["north"]
+    fill(img, (x, y, w, 2), hair, rng, soft)
+    for fx in (0, 7):
+        fill(img, (x + fx, y + 2, 1, 3), hair_dark)
+    for ex in (1, 5):                                          # big eyes with a highlight
+        fill(img, (x + ex, y + 3, 2, 2), hexc("#4A2E6A"))
+        img.putpixel((x + ex, y + 3), hexc("#FFFFFF"))
+    fill(img, (x + 1, y + 5, 1, 1), hexc("#F6A9C2"))           # blush
+    fill(img, (x + 6, y + 5, 1, 1), hexc("#F6A9C2"))
+    img.putpixel((x + 4, y + 6), hexc("#C0506A"))              # little smile
+    hat = faces(32, 0, 8, 8, 8)
+    hx, hy, _, _ = hat["west"]
+    for dx, dy in ((2, 1), (1, 2), (2, 2), (3, 2), (2, 3)):    # star hair clip on the side
+        img.putpixel((hx + dx, hy + dy), star)
+
+    box(img, 16, 16, 8, 12, 4, top, rng, soft)                 # top with a ribbon, skirt over the hips
+    b = faces(16, 16, 8, 12, 4)
+    x, y, w, h = b["north"]
+    fill(img, (x + 2, y + 1, 4, 2), ribbon)
+    img.putpixel((x + 3, y + 3), ribbon)
+    img.putpixel((x + 4, y + 3), ribbon)
+    img.putpixel((x + 4, y + 6), star)
+    for name in ("north", "south", "west", "east"):
+        fx, fy, fw, fh = b[name]
+        fill(img, (fx, fy + 8, fw, 4), skirt, rng, soft)
+        for px in range(fx, fx + fw, 2):
+            img.putpixel((px, fy + 11), shade(skirt, 0.82))    # pleats
+    for (u, v) in ((40, 16), (32, 48)):                        # puffy sleeves, bare hands
+        box(img, u, v, 4, 12, 4, top, rng, soft)
+        for name, (fx, fy, fw, fh) in faces(u, v, 4, 12, 4).items():
+            if name in ("north", "south", "west", "east"):
+                fill(img, (fx, fy + 4, fw, 1), ribbon)
+                fill(img, (fx, fy + 8, fw, 4), skin, rng, soft)
+        fill(img, faces(u, v, 4, 12, 4)["down"], skin, rng, soft)
+    for (u, v) in ((0, 16), (16, 48)):                         # skirt hem, striped thigh-highs, shoes
+        box(img, u, v, 4, 12, 4, sock, rng, soft)
+        for name, (fx, fy, fw, fh) in faces(u, v, 4, 12, 4).items():
+            if name in ("north", "south", "west", "east"):
+                fill(img, (fx, fy, fw, 2), skirt, rng, soft)
+                for sy in range(fy + 3, fy + 10, 2):
+                    fill(img, (fx, sy, fw, 1), stripe)
+                fill(img, (fx, fy + 10, fw, 2), shoe, rng, soft)
+        fill(img, faces(u, v, 4, 12, 4)["down"], shoe, rng, soft)
+    return img
+
+
 def caffeinated_zombie():
     """Vanilla zombie model UV (64x64; left arm/leg mirror the right ones): lime skin, pink hair,
     huge sleepless eyes with bags, pink sweatband, black tank top with a lightning bolt, wristbands,
@@ -229,7 +292,7 @@ def caffeinated_zombie_eyes():
     return img
 
 
-TEXTURES = {"bug.png": bug, "caffeinated_zombie.png": caffeinated_zombie, "caffeinated_zombie_eyes.png": caffeinated_zombie_eyes, "hissy_cat_eyes.png": hissy_cat_eyes, "fashion_critic.png": fashion_critic}
+TEXTURES = {"bug.png": bug, "caffeinated_zombie.png": caffeinated_zombie, "caffeinated_zombie_eyes.png": caffeinated_zombie_eyes, "hissy_cat_eyes.png": hissy_cat_eyes, "fashion_critic.png": fashion_critic, "cosplayer.png": cosplayer}
 
 
 def main():
