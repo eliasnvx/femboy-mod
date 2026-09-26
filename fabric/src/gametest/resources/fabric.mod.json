@@ -9,7 +9,8 @@
       "dev.eliasnvx.femboymod.fabric.gametest.FemboyGameTestsFabric"
     ],
     "fabric-client-gametest": [
-      "dev.eliasnvx.femboymod.fabric.gametest.RenderShowcaseClientTest"
+      "dev.eliasnvx.femboymod.fabric.gametest.RenderShowcaseClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.DocsShotsClientTest"
     ]
   },
   "depends": {
