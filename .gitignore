@@ -13,7 +13,7 @@ bin/
 # Secrets
 .env
 .env.*
-!.env.example
+.env.example
 
 # Raw AI drafts never go to git or the jar (SPEC §11.2)
 art/generated/
@@ -47,5 +47,12 @@ docs/decisions.md
 docs/release-checklist.md
 docs/art/
 docs/pages/
-tools/texgen/README.md
 tools/sync-agent-rules.sh
+
+# AI image tooling (drafts and helpers stay local)
+tools/texgen/
+art/picks.yaml
+tools/docs/square_icon.py
+
+# Rejected procedural icon options
+art/icon/options/

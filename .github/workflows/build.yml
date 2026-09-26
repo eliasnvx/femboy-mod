@@ -30,19 +30,3 @@ jobs:
             neoforge/build/libs/*+*-neoforge.jar
             api/build/libs/*.jar
           if-no-files-found: error
-
-  texgen:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-
-      # Fake backend only: no API key in CI, no network calls (SPEC §11.2)
-      - name: texgen tests
-        run: |
-          pip install -e "tools/texgen[dev]"
-          python -m pytest tools/texgen
-
