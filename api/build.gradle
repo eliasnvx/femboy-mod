@@ -31,6 +31,19 @@ publishing {
             pom {
                 name = "Femboy Mod API"
                 description = "Public API for femboymod addons"
+                url = "https://github.com/eliasnvx/femboy-mod"
+                licenses {
+                    license {
+                        name = "MIT"
+                        url = "https://opensource.org/licenses/MIT"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "eliasnvx"
+                        name = "eliasnvx"
+                    }
+                }
             }
         }
     }

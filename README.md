@@ -6,6 +6,7 @@
 [![Fabric](https://img.shields.io/badge/Fabric-0.19.5+-DBD0B4?style=for-the-badge)](https://fabricmc.net/)
 [![NeoForge](https://img.shields.io/badge/NeoForge-26.3-E68A00?style=for-the-badge)](https://neoforged.net/)
 [![Architectury](https://img.shields.io/badge/Architectury-22.0.2-9C6ADE?style=for-the-badge)](https://modrinth.com/mod/architectury-api)
+[![License](https://img.shields.io/badge/License-MIT-C9A7FF?style=for-the-badge)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-0.1.0-F291BE?style=for-the-badge)](CHANGELOG.md)
 
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1BD96A?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/mod/femboy-mod)
@@ -24,6 +25,8 @@
 **Femboy Mod** lets you dress up. Ten cosmetic slots that live next to your armor, dozens of clothes and accessories in any color, pride flags and shimmering glitter, and a little game around looking good: your **Drip Level** grows with every piece, full sets give bonuses, the Fashion Critic judges you mid-fight and the whole server competes at the Vibe Check Scanner.
 
 It's SFW and meme-flavored — socks = coding skill, energy drinks, "btw" — with no third-party brands and no flashing effects.
+
+🌍 **Languages:** English, Русский, Español, Deutsch, Français, Português (Brasil), Nederlands, Svenska, 日本語, 简体中文
 
 ![Outfits](docs/images/outfits.png)
 
@@ -204,12 +207,12 @@ Architectury multi-loader: `api` / `common` / `fabric` / `neoforge` / `example-a
 ## 🙏 Credits & Notes
 
 - **Author:** eliasnvx
-- Screenshots are real in-game renders; banners, headers and the pixel font are drawn by `tools/docs/make_readme_images.py`. Some item icons started as AI drafts and were picked and cleaned up by hand; every other texture, model and page image is procedural or hand-made.
+- Screenshots are real in-game renders; banners, headers and the pixel font are drawn by `tools/docs/make_readme_images.py`. The mod icon and some item icons started as AI drafts (OpenAI image models) and were picked and cleaned up by hand; every other texture, model and page image is procedural or hand-made.
 - SFW, no third-party brands or characters, no flashing effects. Pride content appears only as optional colorways and badges.
 
 ## 📜 License
 
-To be decided before the first release.
+[MIT](LICENSE) © eliasnvx
 
 <div align="center">
 

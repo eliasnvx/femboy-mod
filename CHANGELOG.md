@@ -13,6 +13,8 @@ Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/
 - "Femboy Level" HUD panel in the top-left corner: level, tier name, bar with tier notches, distance to the next tier, active sets (on by default, client option)
 - Ores: rose quartz (mountains and cave biomes, stone + deepslate) and glitter (flower biomes); Block of Rose Quartz
 - Rose quartz jewelry: earrings (luck) and bracelet (mining speed), set "Crystal Clear" (Haste)
+- Translations: German, French, Brazilian Portuguese, Dutch, Swedish, Japanese and Simplified Chinese (plus English, Russian, Spanish)
+- Mod icon and a NeoForge mod list banner
 - Glitter colorway: any dyeable cosmetic + 2 glitter gets a slowly shimmering pastel colorway
 - Gamer corner: Gamer Chair (sit to slowly regenerate), Pink Monitor (scrolling code, toggles on/off), Clacky Keyboard, LED Strip (4 colors + slow rainbow, server option to disable the rainbow)
 - 8 posters (paintings 1x1, 1x2, 2x2), also in the random painting pool
