@@ -1092,6 +1092,9 @@ def photo_watermark():
     text(img, "FEMBOY MOD", 11, 3, hexc("#F291BE"))
     outline(img, hexc("#FFFFFF"))
     save(img, "textures", "gui", "photo_watermark.png")
+    # Same logo as the NeoForge mod list banner (bannerFile), upscaled 8x nearest so the pixels stay crisp
+    banner = img.resize((img.width * 8, img.height * 8), Image.NEAREST)
+    banner.save(os.path.join(ROOT, "banner.png"))
 
 
 # ------------------------------------------------------------------------------------------------ moonstone, neon quartz, geodes
