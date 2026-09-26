@@ -32,7 +32,8 @@
         "radius": 8,
         "speed": 1.0,
         "interval": 10,
-        "stop_distance": 2.5
+        "stop_distance": 3.0,
+        "max_followers": 3
       }
     }
   ]

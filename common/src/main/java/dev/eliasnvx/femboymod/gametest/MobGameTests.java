@@ -6,6 +6,7 @@ import dev.eliasnvx.femboymod.combat.DripCombat;
 import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
+import dev.eliasnvx.femboymod.effect.BuiltinEffects;
 import dev.eliasnvx.femboymod.effect.CosmeticEffectsManager;
 import dev.eliasnvx.femboymod.entity.Bug;
 import dev.eliasnvx.femboymod.entity.CaffeinatedZombie;
@@ -18,6 +19,8 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.animal.equine.Horse;
+import net.minecraft.world.entity.animal.feline.Cat;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 
@@ -30,7 +33,8 @@ public final class MobGameTests {
             new CosmeticGameTests.Entry("drip_reduces_bug_damage", MobGameTests::dripReducesBugDamage),
             new CosmeticGameTests.Entry("socks_hit_bugs_harder", MobGameTests::socksHitBugsHarder),
             new CosmeticGameTests.Entry("meme_mobs_use_config_and_drip", MobGameTests::memeMobsUseConfigAndDrip),
-            new CosmeticGameTests.Entry("fashion_critic_judges_drip", MobGameTests::fashionCriticJudgesDrip));
+            new CosmeticGameTests.Entry("fashion_critic_judges_drip", MobGameTests::fashionCriticJudgesDrip),
+            new CosmeticGameTests.Entry("only_a_few_cute_animals_follow", MobGameTests::onlyAFewCuteAnimalsFollow));
 
     private static final BlockPos MOB_POS = new BlockPos(1, 2, 1);
     private static final float HIT = 4.0F;
@@ -98,6 +102,21 @@ public final class MobGameTests {
             helper.assertTrue(critic.hasEffect(MobEffects.WEAKNESS), "impressed critic is weakened");
             float softer = DripCombat.modifyIncoming(player, helper.getLevel(), slap, HIT);
             helper.assertTrue(Math.abs(softer - HIT * 0.9F) < EPSILON, "tier 3: the critic hits x0.9, got " + softer);
+        });
+    }
+
+    /** The set's "followers": at most 3 small animals from #femboymod:cute_followers; horses stay put. */
+    public static void onlyAFewCuteAnimalsFollow(GameTestHelper helper) {
+        Horse horse = helper.spawn(EntityTypes.HORSE, MOB_POS.offset(4, 0, 4));
+        List<Cat> cats = helper.spawn(EntityTypes.CAT, MOB_POS.offset(5, 0, 1), 5);
+        WearableGameTests.withPlayer(helper, player -> {
+            player.snapTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(1.5, 2, 1.5)));
+            var effect = new BuiltinEffects.FollowPassiveEffect(16, 1.0, 1, 2.0,
+                    net.minecraft.core.HolderSet.empty(), 3);
+            var picked = effect.pickFollowers(player);
+            helper.assertFalse(picked.contains(horse), "horses do not follow");
+            helper.assertValueEqual(picked.size(), 3, "only the 3 nearest cats follow");
+            helper.assertTrue(cats.containsAll(picked), "the followers are cats");
         });
     }
 
