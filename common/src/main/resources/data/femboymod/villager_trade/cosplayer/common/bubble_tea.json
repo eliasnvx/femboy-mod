@@ -1,0 +1,13 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 2
+  },
+  "gives": {
+    "id": "femboymod:bubble_tea",
+    "count": 2
+  },
+  "max_uses": 8,
+  "xp": 2,
+  "reputation_discount": 0.0
+}

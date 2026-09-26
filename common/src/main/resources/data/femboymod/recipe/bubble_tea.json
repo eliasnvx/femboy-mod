@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:glass_bottle",
+    "minecraft:sugar",
+    "minecraft:wheat",
+    "minecraft:sweet_berries"
+  ],
+  "result": {
+    "id": "femboymod:bubble_tea"
+  }
+}

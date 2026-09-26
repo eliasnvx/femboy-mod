@@ -1,0 +1,10 @@
+{
+  "weight": 2,
+  "effects": [
+    {
+      "effect": "minecraft:absorption",
+      "duration": 1200,
+      "amplifier": 0
+    }
+  ]
+}
