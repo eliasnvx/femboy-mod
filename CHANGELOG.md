@@ -3,7 +3,7 @@
 All notable changes to Femboy Mod. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/api/CHANGELOG.md`.
 
-## [0.1.0] - unreleased
+## [0.1.0] - 2026-09-27
 ### Added
 - 9 cosmetic slots (head accessory, face, neck, back, tail, legs overlay, outfit top, outfit bottom, hands) with a Cosmetics screen and key binding
 - Cat ears, tail, programming socks, fishnet tights, pleated skirt, oversized hoodie, UwU choker, 10 hair clips
