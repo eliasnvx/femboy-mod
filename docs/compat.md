@@ -1,4 +1,4 @@
-# Compatibility (SPEC §9)
+# Compatibility
 
 All integrations are soft dependencies in `compat.<modid>`. The mod works without them.
 Checked on MC 26.3, 2026-09-25.
@@ -12,7 +12,7 @@ Checked on MC 26.3, 2026-09-25.
 | NeoForge mods list | ✅ config button (`IConfigScreenFactory`) | Phase 4 |
 | Jade 26.3 | ✅ no integration needed: block names/containers come from vanilla data | ⏳ quick manual look |
 | EMI, REI | ⏸ no 26.3 builds yet | re-check on release |
-| Curios / Accessories / Trinkets | ⏸ not available for 26.3; our own slots are used (SPEC §4.3) | re-check on release |
+| Curios / Accessories / Trinkets | ⏸ not available for 26.3; our own slots are used | re-check on release |
 | 3D Skin Layers, First-person Model, EMF/Fresh Animations, Figura | ⏸ not checked yet (26.3 builds pending) | minimum goal: no crashes |
 | Emotecraft | v1.2 | |
 
