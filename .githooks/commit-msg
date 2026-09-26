@@ -1,0 +1,9 @@
+#!/bin/sh
+# Strip AI co-author trailers and "Generated with" footers from commit messages.
+# Enable once per clone: git config core.hooksPath .githooks
+msg="$1"
+tmp="$msg.tmp"
+grep -viE '^[[:space:]]*co-authored-by:.*(claude|anthropic|noreply@anthropic\.com)|generated with \[?claude' "$msg" > "$tmp"
+# Drop trailing blank lines left behind by the removed trailer
+awk 'NF{for(;n>0;n--)print "";print;next}{n++}' "$tmp" > "$msg"
+rm -f "$tmp"
