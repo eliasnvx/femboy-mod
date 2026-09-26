@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:block/medium_rose_quartz_bud"
+  }
+}

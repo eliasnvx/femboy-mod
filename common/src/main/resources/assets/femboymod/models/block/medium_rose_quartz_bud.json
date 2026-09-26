@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "femboymod:block/medium_rose_quartz_bud"
+  }
+}
