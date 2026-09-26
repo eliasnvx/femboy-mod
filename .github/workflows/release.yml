@@ -22,6 +22,20 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
+      - name: Check release secrets
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: |
+          if [ -z "$MODRINTH_TOKEN" ]; then
+            echo "::error::MODRINTH_TOKEN is not set in the 'release' environment"
+            exit 1
+          fi
+          id=$(grep '^modrinth_project_id=' gradle.properties | cut -d= -f2)
+          if ! echo "$id" | grep -Eq '^[A-Za-z0-9]{8}$'; then
+            echo "::error::modrinth_project_id must be the 8-character project ID, not the slug (got '$id')"
+            exit 1
+          fi
+
       - name: Check tag matches mod_version
         run: |
           version=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
