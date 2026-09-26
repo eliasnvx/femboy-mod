@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "design=0,facing=north": {
+      "model": "femboymod:block/neon_sign_heart"
+    },
+    "design=0,facing=east": {
+      "model": "femboymod:block/neon_sign_heart",
+      "y": 90
+    },
+    "design=0,facing=south": {
+      "model": "femboymod:block/neon_sign_heart",
+      "y": 180
+    },
+    "design=0,facing=west": {
+      "model": "femboymod:block/neon_sign_heart",
+      "y": 270
+    },
+    "design=1,facing=north": {
+      "model": "femboymod:block/neon_sign_cat"
+    },
+    "design=1,facing=east": {
+      "model": "femboymod:block/neon_sign_cat",
+      "y": 90
+    },
+    "design=1,facing=south": {
+      "model": "femboymod:block/neon_sign_cat",
+      "y": 180
+    },
+    "design=1,facing=west": {
+      "model": "femboymod:block/neon_sign_cat",
+      "y": 270
+    },
+    "design=2,facing=north": {
+      "model": "femboymod:block/neon_sign_btw"
+    },
+    "design=2,facing=east": {
+      "model": "femboymod:block/neon_sign_btw",
+      "y": 90
+    },
+    "design=2,facing=south": {
+      "model": "femboymod:block/neon_sign_btw",
+      "y": 180
+    },
+    "design=2,facing=west": {
+      "model": "femboymod:block/neon_sign_btw",
+      "y": 270
+    }
+  }
+}

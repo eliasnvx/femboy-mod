@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=true": {
+      "model": "femboymod:block/moonstone_lamp"
+    },
+    "lit=false": {
+      "model": "femboymod:block/moonstone_lamp_off"
+    }
+  }
+}

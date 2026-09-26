@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": "minecraft:tool/can_silk_touch",
+          "name": "femboymod:small_rose_quartz_bud"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "femboymod:blocks/small_rose_quartz_bud"
+}
