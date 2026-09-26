@@ -226,6 +226,241 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             closeUp(context, "femboymod_closeup_fashion_critic");
             world.getServer().runCommand("kill @e[type=femboymod:fashion_critic]");
 
+            // Gamer corner: desk with monitor and keyboard, chair, LED strips, posters, ores
+            world.getServer().runCommand("fill ~-4 ~ ~-7 ~4 ~4 ~-1 air");
+            world.getServer().runCommand("fill ~-4 ~ ~-6 ~4 ~3 ~-6 white_concrete");
+            world.getServer().runCommand("fill ~-1 ~ ~-5 ~1 ~ ~-4 pink_concrete");
+            world.getServer().runCommand("setblock ~ ~1 ~-5 femboymod:gamer_monitor[facing=south]");
+            world.getServer().runCommand("setblock ~-1 ~1 ~-5 femboymod:gamer_monitor[facing=south,lit=false]");
+            world.getServer().runCommand("setblock ~ ~1 ~-4 femboymod:gamer_keyboard[facing=south]");
+            world.getServer().runCommand("setblock ~ ~ ~-3 femboymod:gamer_chair[facing=north]");
+            for (int x = -4; x <= 4; x++) {
+                world.getServer().runCommand("setblock ~" + x + " ~3 ~-5 femboymod:led_strip[facing=south,color=" + Math.floorMod(x, 5) + "]");
+            }
+            world.getServer().runCommand("setblock ~-3 ~ ~-5 femboymod:rose_quartz_ore");
+            world.getServer().runCommand("setblock ~-3 ~1 ~-5 femboymod:deepslate_rose_quartz_ore");
+            world.getServer().runCommand("setblock ~3 ~ ~-5 femboymod:glitter_ore");
+            world.getServer().runCommand("setblock ~3 ~1 ~-5 femboymod:rose_quartz_block");
+            world.getServer().runCommand("summon minecraft:painting ~-3 ~2 ~-5 {facing:0b,variant:\"femboymod:btw\"}");
+            world.getServer().runCommand("summon minecraft:painting ~2 ~2 ~-5 {facing:0b,variant:\"femboymod:code_with_love\"}");
+            world.getServer().runCommand("summon minecraft:painting ~4 ~1 ~-5 {facing:0b,variant:\"femboymod:stay_warm\"}");
+            world.getServer().runCommand("tp @p ~ ~ ~ 180 15");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            context.waitTicks(SETTLE_TICKS * 2);
+            closeUp(context, "femboymod_closeup_gamer_corner");
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                dev.eliasnvx.femboymod.entity.Seat.sit(player.level(), player.blockPosition().offset(0, 0, -3), player, 0.3);
+            });
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+            context.waitTicks(SETTLE_TICKS);
+            closeUp(context, "femboymod_closeup_gamer_chair_sitting");
+            world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst().stopRiding());
+            world.getServer().runCommand("kill @e[type=minecraft:painting]");
+            world.getServer().runCommand("fill ~-4 ~ ~-7 ~4 ~4 ~-1 air");
+
+            // Rose quartz jewelry and the shimmering glitter colorway
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, ItemStack.EMPTY);
+                CosmeticsManager.set(player, FemboySlots.FACE, new ItemStack(FemboyItems.ROSE_QUARTZ_EARRINGS.get()));
+                CosmeticsManager.set(player, FemboySlots.HANDS, new ItemStack(FemboyItems.ROSE_QUARTZ_BRACELET.get()));
+                ItemStack socks = new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get());
+                server.registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY)
+                        .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "glitter")))
+                        .ifPresent(glitter -> socks.set(FemboyComponents.COLORWAY.get(),
+                                new Colorway(0xFFD1EC, Optional.of(glitter), Optional.empty())));
+                CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, socks);
+            });
+            world.getServer().runCommand("tp @p ~ ~ ~ 20 10");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            context.waitTicks(SETTLE_TICKS);
+            closeUp(context, "femboymod_closeup_jewelry_glitter");
+            context.waitTicks(SETTLE_TICKS);
+            closeUp(context, "femboymod_closeup_jewelry_glitter_later");
+            // Armor under the outfit: auto-hidden where cosmetics cover it; the game rule can force it visible
+            world.getServer().runCommand("item replace entity @p armor.head with minecraft:iron_helmet");
+            world.getServer().runCommand("item replace entity @p armor.chest with minecraft:diamond_chestplate");
+            world.getServer().runCommand("item replace entity @p armor.legs with minecraft:iron_leggings");
+            world.getServer().runCommand("item replace entity @p armor.feet with minecraft:golden_boots");
+            context.waitTicks(SETTLE_TICKS / 2);
+            closeUp(context, "femboymod_closeup_armor_hidden");
+            world.getServer().runCommand("gamerule femboymod:allow_hidden_armor false");
+            context.waitTicks(SETTLE_TICKS / 2);
+            closeUp(context, "femboymod_closeup_armor_forced_visible");
+            world.getServer().runCommand("gamerule femboymod:allow_hidden_armor true");
+            // v1.1 clothing: headphones, heart glasses, crop sweater, belt chains, arm warmers (armor off)
+            world.getServer().runCommand("item replace entity @p armor.head with minecraft:air");
+            world.getServer().runCommand("item replace entity @p armor.chest with minecraft:air");
+            world.getServer().runCommand("item replace entity @p armor.legs with minecraft:air");
+            world.getServer().runCommand("item replace entity @p armor.feet with minecraft:air");
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EAR_HEADPHONES.get()));
+                CosmeticsManager.set(player, FemboySlots.FACE, new ItemStack(FemboyItems.HEART_GLASSES.get()));
+                CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.CROP_SWEATER.get()));
+                CosmeticsManager.set(player, FemboySlots.WAIST, new ItemStack(FemboyItems.BELT_CHAINS.get()));
+                CosmeticsManager.set(player, FemboySlots.HANDS, new ItemStack(FemboyItems.ARM_WARMERS.get()));
+                CosmeticsManager.set(player, FemboySlots.OUTFIT_BOTTOM, new ItemStack(FemboyItems.PLEATED_SKIRT.get()));
+                ItemStack backpack = new ItemStack(FemboyItems.CANVAS_BACKPACK.get());
+                ItemStack badge = new ItemStack(FemboyItems.PRIDE_BADGE.get());
+                server.registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY)
+                        .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "pride_trans")))
+                        .ifPresent(trans -> badge.set(FemboyComponents.COLORWAY.get(), new Colorway(0xFFFFFF, Optional.of(trans), Optional.empty())));
+                backpack.set(FemboyComponents.CHARMS.get(), ItemContainerContents.fromItems(List.of(badge)));
+                CosmeticsManager.set(player, FemboySlots.BACK, backpack);
+            });
+            world.getServer().runCommand("tp @p ~ ~ ~ 20 10");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            context.waitTicks(SETTLE_TICKS);
+            closeUp(context, "femboymod_closeup_v11_clothing_front");
+            for (int color : new int[]{0x2B2A33, 0xF2F0F2}) { // black and white headphone presets
+                world.getServer().runOnServer(server -> {
+                    ItemStack headphones = new ItemStack(FemboyItems.CAT_EAR_HEADPHONES.get());
+                    headphones.set(FemboyComponents.COLORWAY.get(), Colorway.solid(color));
+                    CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(), FemboySlots.HEAD_ACCESSORY, headphones);
+                });
+                context.waitTicks(SETTLE_TICKS / 4);
+                closeUp(context, "femboymod_closeup_headphones_" + Integer.toHexString(color));
+            }
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EAR_HEADPHONES.get())));
+            // Dark shades from the front, the fox-style tail from the side and the back
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                CosmeticsManager.set(player, FemboySlots.FACE, new ItemStack(FemboyItems.DARK_SHADES.get()));
+                CosmeticsManager.set(player, FemboySlots.TAIL, new ItemStack(FemboyItems.TAIL.get()));
+                CosmeticsManager.set(player, FemboySlots.BACK, ItemStack.EMPTY);
+            });
+            context.waitTicks(SETTLE_TICKS / 4);
+            closeUp(context, "femboymod_closeup_dark_shades");
+            context.runOnClient(mc -> {
+                mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+                if (!mc.gui.hud.isHidden()) {
+                    mc.gui.hud.toggle();
+                }
+            });
+            world.getServer().runCommand("tp @p ~ ~ ~ 110 40");
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_fox_tail_side");
+            world.getServer().runCommand("tp @p ~ ~ ~ 180 50");
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_fox_tail_back");
+            context.runOnClient(mc -> mc.gui.hud.toggle());
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            world.getServer().runCommand("tp @p ~ ~ ~ 20 10");
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.FACE, new ItemStack(FemboyItems.HEART_GLASSES.get())));
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+            world.getServer().runCommand("tp @p ~ ~ ~ 160 10");
+            context.waitTicks(SETTLE_TICKS / 2);
+            closeUp(context, "femboymod_closeup_v11_clothing_back");
+            context.takeScreenshot("femboymod_v11_back_full");
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.HANDS, new ItemStack(FemboyItems.NAIL_POLISH.get())));
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            world.getServer().runCommand("item replace entity @p weapon.mainhand with minecraft:air");
+            world.getServer().runCommand("tp @p ~ ~ ~ 20 10");
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_first_person_nails");
+            // Emotes (SPEC v1.2): heart hands, wave and peace, seen from the front
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            world.getServer().runCommand("tp @p ~ ~ ~ 20 -10");
+            context.runOnClient(mc -> dev.eliasnvx.femboymod.client.EmoteClient.show(mc.player.getId(), dev.eliasnvx.femboymod.emote.Emote.HEART_HANDS));
+            context.waitTicks(SETTLE_TICKS / 4);
+            closeUp(context, "femboymod_emote_heart_hands");
+            context.runOnClient(mc -> dev.eliasnvx.femboymod.client.EmoteClient.show(mc.player.getId(), dev.eliasnvx.femboymod.emote.Emote.WAVE));
+            context.waitTicks(SETTLE_TICKS / 4);
+            closeUp(context, "femboymod_emote_wave");
+            context.runOnClient(mc -> dev.eliasnvx.femboymod.client.EmoteClient.show(mc.player.getId(), dev.eliasnvx.femboymod.emote.Emote.PEACE));
+            context.waitTicks(SETTLE_TICKS / 4);
+            closeUp(context, "femboymod_emote_peace");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            // Stray cats (SPEC v1.2): five pastel coats
+            for (int coat = 0; coat < 5; coat++) {
+                world.getServer().runCommand("summon femboymod:stray_cat ~" + (coat - 2) + " ~ ~-3 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],femboymod_coat:" + coat + "}");
+            }
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            world.getServer().runCommand("tp @p ~ ~ ~ 180 35"); // yaw 180 = facing north, toward the cats
+            context.waitTicks(SETTLE_TICKS);
+            closeUp(context, "femboymod_closeup_stray_cats");
+            world.getServer().runCommand("kill @e[type=femboymod:stray_cat]");
+            world.getServer().runCommand("summon femboymod:cosplayer ~ ~ ~-3 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f]}");
+            world.getServer().runCommand("tp @p ~ ~ ~ 180 5");
+            context.waitTicks(SETTLE_TICKS * 2); // let the cats' poof clouds fade
+            closeUp(context, "femboymod_closeup_cosplayer");
+            world.getServer().runCommand("kill @e[type=femboymod:cosplayer]");
+            world.getServer().runCommand("setblock ~ ~ ~-3 femboymod:vibe_scanner[facing=south]");
+            context.waitTicks(SETTLE_TICKS * 2);
+            closeUp(context, "femboymod_closeup_vibe_scanner");
+            world.getServer().runCommand("setblock ~ ~ ~-3 air");
+            // Moonstone, neon quartz and rose quartz geode pieces, at night so the glow shows
+            world.getServer().runCommand("fill ~-4 ~ ~-7 ~4 ~4 ~-1 air");
+            world.getServer().runCommand("fill ~-4 ~ ~-6 ~4 ~3 ~-6 deepslate");
+            world.getServer().runCommand("setblock ~-3 ~ ~-5 femboymod:deepslate_moonstone_ore");
+            world.getServer().runCommand("setblock ~-3 ~1 ~-5 femboymod:neon_quartz_ore");
+            world.getServer().runCommand("fill ~-1 ~ ~-5 ~2 ~ ~-5 femboymod:budding_rose_quartz");
+            world.getServer().runCommand("setblock ~-1 ~1 ~-5 femboymod:small_rose_quartz_bud[facing=up]");
+            world.getServer().runCommand("setblock ~ ~1 ~-5 femboymod:medium_rose_quartz_bud[facing=up]");
+            world.getServer().runCommand("setblock ~1 ~1 ~-5 femboymod:large_rose_quartz_bud[facing=up]");
+            world.getServer().runCommand("setblock ~2 ~1 ~-5 femboymod:rose_quartz_cluster[facing=up]");
+            world.getServer().runCommand("setblock ~3 ~ ~-5 femboymod:moonstone_lamp");
+            for (int design = 0; design < 3; design++) {
+                world.getServer().runCommand("setblock ~" + (design - 1) + " ~3 ~-5 femboymod:neon_sign[facing=south,design=" + design + "]");
+            }
+            world.getServer().runCommand("time set midnight");
+            world.getServer().runCommand("tp @p ~ ~ ~ 180 12");
+            context.runOnClient(mc -> {
+                mc.options.setCameraType(CameraType.FIRST_PERSON);
+                mc.options.fov().set(DEFAULT_FOV);
+                if (!mc.gui.hud.isHidden()) {
+                    mc.gui.hud.toggle();
+                }
+            });
+            context.waitTicks(SETTLE_TICKS * 2);
+            context.takeScreenshot("femboymod_new_ores_night");
+            world.getServer().runCommand("time set noon");
+            context.waitTicks(SETTLE_TICKS);
+            context.takeScreenshot("femboymod_new_ores_day");
+            context.runOnClient(mc -> mc.gui.hud.toggle());
+            world.getServer().runCommand("fill ~-4 ~ ~-7 ~4 ~4 ~-1 air");
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                var patterns = server.registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY);
+                ItemStack pendant = new ItemStack(FemboyItems.MOONSTONE_PENDANT.get());
+                ItemStack visor = new ItemStack(FemboyItems.CYBER_VISOR.get());
+                patterns.get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "neon")))
+                        .ifPresent(neon -> visor.set(FemboyComponents.COLORWAY.get(), new Colorway(0xFFFFFF, Optional.of(neon), Optional.empty())));
+                CosmeticsManager.set(player, FemboySlots.NECK, pendant);
+                CosmeticsManager.set(player, FemboySlots.FACE, visor);
+            });
+            world.getServer().runCommand("tp @p ~ ~ ~ 20 10");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            context.waitTicks(SETTLE_TICKS);
+            closeUp(context, "femboymod_closeup_pendant_visor");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            world.getServer().runCommand("tp @p ~ ~ ~ 20 10");
+            // Photo Mode: selfie with frame and watermark (saved to screenshots/)
+            context.runOnClient(mc -> dev.eliasnvx.femboymod.client.PhotoMode.start());
+            context.waitTicks(SETTLE_TICKS * 2);
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+
+            // Ears with a visible helmet: they sit on top of it
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get())));
+            world.getServer().runOnServer(server -> CosmeticsManager.setArmorVisibility(server.getPlayerList().getPlayers().getFirst(),
+                    net.minecraft.world.entity.EquipmentSlot.HEAD, dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility.SHOW));
+            context.waitTicks(SETTLE_TICKS / 2);
+            closeUp(context, "femboymod_closeup_ears_on_helmet");
+            world.getServer().runCommand("tp @p ~ ~ ~ 70 10");
+            context.waitTicks(SETTLE_TICKS / 2);
+            closeUp(context, "femboymod_closeup_ears_on_helmet_side");
+            world.getServer().runCommand("tp @p ~ ~ ~ 20 10");
+            world.getServer().runOnServer(server -> CosmeticsManager.setArmorVisibility(server.getPlayerList().getPlayers().getFirst(),
+                    net.minecraft.world.entity.EquipmentSlot.HEAD, dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility.AUTO));
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            world.getServer().runCommand("tp @p ~ ~ ~ 0 0");
+
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
                 var pos = player.blockPosition().offset(0, 0, -5);

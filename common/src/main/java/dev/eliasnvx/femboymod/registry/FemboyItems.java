@@ -1,5 +1,10 @@
 package dev.eliasnvx.femboymod.registry;
 
+import dev.eliasnvx.femboymod.item.PhoneItem;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.food.FoodProperties;
+import dev.eliasnvx.femboymod.food.StrawberryMilkItem;
+import dev.eliasnvx.femboymod.food.BubbleTeaItem;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -59,6 +64,20 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> PROGRAMMING_SOCKS = cosmetic("programming_socks", FemboySlots.LEGS_OVERLAY);
     public static final RegistrySupplier<Item> FISHNET_TIGHTS = cosmetic("fishnet_tights", FemboySlots.LEGS_OVERLAY);
     public static final RegistrySupplier<Item> UWU_CHOKER = cosmetic("uwu_choker", FemboySlots.NECK);
+    // SPEC v1.1 clothing
+    public static final RegistrySupplier<Item> CAT_EAR_HEADPHONES = cosmetic("cat_ear_headphones", FemboySlots.HEAD_ACCESSORY);
+    public static final RegistrySupplier<Item> HEART_GLASSES = cosmetic("heart_glasses", FemboySlots.FACE);
+    public static final RegistrySupplier<Item> ARM_WARMERS = cosmetic("arm_warmers", FemboySlots.HANDS);
+    public static final RegistrySupplier<Item> NAIL_POLISH = cosmetic("nail_polish", FemboySlots.HANDS);
+    public static final RegistrySupplier<Item> CROP_SWEATER = cosmetic("crop_sweater", FemboySlots.OUTFIT_TOP);
+    public static final RegistrySupplier<Item> BELT_CHAINS = cosmetic("belt_chains", FemboySlots.WAIST);
+    /** Rose quartz jewelry (crafted from the ore's crystals). */
+    public static final RegistrySupplier<Item> ROSE_QUARTZ_EARRINGS = cosmetic("rose_quartz_earrings", FemboySlots.FACE);
+    public static final RegistrySupplier<Item> ROSE_QUARTZ_BRACELET = cosmetic("rose_quartz_bracelet", FemboySlots.HANDS);
+    public static final RegistrySupplier<Item> MOONSTONE_PENDANT = cosmetic("moonstone_pendant", FemboySlots.NECK);
+    public static final RegistrySupplier<Item> CYBER_VISOR = cosmetic("cyber_visor", FemboySlots.FACE);
+    /** Chunky black sunglasses; the Fashion Critic can't argue with them (#femboymod:critic_approved). */
+    public static final RegistrySupplier<Item> DARK_SHADES = cosmetic("dark_shades", FemboySlots.FACE);
 
     // SPEC §5.3: backpacks (worn in the back slot) and charms
     public static final RegistrySupplier<Item> CANVAS_BACKPACK = backpack("canvas_backpack", 1, false);
@@ -68,6 +87,8 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> CAT_PAW_CHARM = register("cat_paw_charm", props -> new Item(props.stacksTo(1)));
     public static final RegistrySupplier<Item> HEART_PIN = register("heart_pin", props -> new Item(props.stacksTo(1)));
     public static final RegistrySupplier<Item> ENERGY_CAN_CHARM = register("energy_can_charm", props -> new Item(props.stacksTo(1)));
+    /** Pride flag badge (SPEC v1.1): a charm whose flag is its colorway pattern. */
+    public static final RegistrySupplier<Item> PRIDE_BADGE = register("pride_badge", props -> new Item(props.stacksTo(1)));
 
     // SPEC §5.2: Byte Energy (balance in data/femboymod/femboymod/energy_drink/*.json)
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(FemboyMod.MOD_ID, Registries.BLOCK);
@@ -81,8 +102,31 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> BYTE_ENERGY_PURPLE = energyDrink("byte_energy_purple");
     public static final RegistrySupplier<Item> BYTE_ENERGY_RAINBOW = energyDrink("byte_energy_rainbow");
 
+    /** Photo Mode (SPEC v1.1): selfie with a frame and watermark. */
+    public static final RegistrySupplier<Item> PHONE = register("phone", props -> new PhoneItem(props.stacksTo(1)));
+
+    // SPEC v1.1: food. Nutrition like comparable vanilla food; buffs are data-driven (bubble_tea_flavor)
+    public static final RegistrySupplier<Item> BUBBLE_TEA = register("bubble_tea", props -> new BubbleTeaItem(props.stacksTo(FemboyItems.DRINK_STACK)
+            .food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.3F).alwaysEdible().build(), Consumables.defaultDrink().build())
+            .usingConvertsTo(Items.GLASS_BOTTLE)));
+    public static final RegistrySupplier<Item> STRAWBERRY_MILK = register("strawberry_milk", props -> new StrawberryMilkItem(props.stacksTo(FemboyItems.DRINK_STACK)
+            .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.4F).alwaysEdible().build(), Consumables.defaultDrink().build())
+            .usingConvertsTo(Items.GLASS_BOTTLE)));
+    public static final RegistrySupplier<Item> MOCHI = register("mochi", props -> new Item(props
+            .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.5F).build(), Consumables.defaultFood().consumeSeconds(0.8F).build())));
+    public static final RegistrySupplier<Item> ONIGIRI = register("onigiri", props -> new Item(props
+            .food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.7F).build())));
+
     // SPEC §5.4: Pink Creeper drops and spawn egg
     public static final RegistrySupplier<Item> GLITTER = register("glitter", props -> new Item(props));
+    /** Bought with Style Points (Outfit screen), spent at the Thrifter; tradeable between players. */
+    public static final RegistrySupplier<Item> STYLE_COUPON = register("style_coupon", props -> new Item(props));
+    /** Deep moonstone: night jewelry, the pearl colorway, the moonstone lamp. */
+    public static final RegistrySupplier<Item> MOONSTONE = register("moonstone", props -> new Item(props));
+    /** Nether neon quartz: neon signs, the cyber visor, the neon colorway. */
+    public static final RegistrySupplier<Item> NEON_QUARTZ = register("neon_quartz", props -> new Item(props));
+    /** Mined from rose quartz ore; jewelry, furniture and the rose quartz block. */
+    public static final RegistrySupplier<Item> ROSE_QUARTZ = register("rose_quartz", props -> new Item(props));
     public static final RegistrySupplier<Item> PINK_CREEPER_SPAWN_EGG = spawnEgg("pink_creeper_spawn_egg", FemboyEntities.PINK_CREEPER_KEY);
 
     // Hostile meme mobs: drops and spawn eggs
@@ -90,6 +134,8 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> BUG_SPAWN_EGG = spawnEgg("bug_spawn_egg", FemboyEntities.BUG_KEY);
     public static final RegistrySupplier<Item> CAFFEINATED_ZOMBIE_SPAWN_EGG = spawnEgg("caffeinated_zombie_spawn_egg", FemboyEntities.CAFFEINATED_ZOMBIE_KEY);
     public static final RegistrySupplier<Item> HISSY_CAT_SPAWN_EGG = spawnEgg("hissy_cat_spawn_egg", FemboyEntities.HISSY_CAT_KEY);
+    public static final RegistrySupplier<Item> STRAY_CAT_SPAWN_EGG = spawnEgg("stray_cat_spawn_egg", FemboyEntities.STRAY_CAT_KEY);
+    public static final RegistrySupplier<Item> COSPLAYER_SPAWN_EGG = spawnEgg("cosplayer_spawn_egg", FemboyEntities.COSPLAYER_KEY);
     public static final RegistrySupplier<Item> FASHION_CRITIC_SPAWN_EGG = spawnEgg("fashion_critic_spawn_egg", FemboyEntities.FASHION_CRITIC_KEY);
 
     /** Hair clip shapes (SPEC §5.1: "10 forms"); all share the hair_clip renderer. */

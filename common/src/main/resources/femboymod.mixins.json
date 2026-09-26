@@ -9,7 +9,9 @@
     "client.MinecraftGlowMixin",
     "client.AvatarRendererHandMixin",
     "client.ClientPacketListenerChatMixin",
-    "client.AbstractContainerScreenAccessor"
+    "client.AbstractContainerScreenAccessor",
+    "client.SoundEngineMuffleMixin",
+    "client.PlayerModelEmoteMixin"
   ],
   "injectors": {
     "defaultRequire": 1

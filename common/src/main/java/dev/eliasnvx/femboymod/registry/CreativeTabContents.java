@@ -1,5 +1,9 @@
 package dev.eliasnvx.femboymod.registry;
 
+import java.util.Comparator;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Items;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
@@ -54,13 +58,19 @@ final class CreativeTabContents {
             Preset.solid(0xF2F0F2),  // white
             Preset.solid(0x2B2A33)); // black
 
+    /** Headphones come in pink (the plain item), black and white. */
+    private static final List<Preset> HEADPHONE_COLORS = List.of(
+            Preset.solid(0x2B2A33),  // black
+            Preset.solid(0xF2F0F2)); // white
+
     /** Item path -> extra variants shown after the plain item (the plain socks are pink-white already). */
     private static final Map<String, List<Preset>> PRESETS = Map.of(
             "programming_socks", STRIPED,
             "striped_mittens", STRIPED,
             "oversized_hoodie", HOODIE_COLORS,
             "cat_ear_hoodie", HOODIE_COLORS,
-            "canvas_backpack", BACKPACK_COLORS);
+            "canvas_backpack", BACKPACK_COLORS,
+            "cat_ear_headphones", HEADPHONE_COLORS);
 
     private CreativeTabContents() {
     }
@@ -72,6 +82,17 @@ final class CreativeTabContents {
         for (RegistrySupplier<Item> entry : FemboyItems.TAB_ORDER) {
             Item item = entry.get();
             output.accept(item);
+            if (item == FemboyItems.PRIDE_BADGE.get()) {
+                // one badge per pride pattern (data-driven: any colorway named pride_*)
+                parameters.holders().lookup(ColorwayPattern.REGISTRY_KEY).ifPresent(patterns -> patterns.listElements()
+                        .filter(pattern -> pattern.key().identifier().getPath().startsWith("pride_"))
+                        .sorted(Comparator.comparing(pattern -> pattern.key().identifier().getPath()))
+                        .forEach(pattern -> {
+                            ItemStack badge = new ItemStack(item);
+                            badge.set(FemboyComponents.COLORWAY.get(), new Colorway(WHITE, Optional.of(pattern), Optional.empty()));
+                            output.accept(badge);
+                        }));
+            }
             for (Preset preset : PRESETS.getOrDefault(entry.getId().getPath(), List.of())) {
                 if (preset.striped() && stripes.isEmpty()) {
                     continue; // data pack removed the pattern
@@ -83,5 +104,14 @@ final class CreativeTabContents {
                 output.accept(stack);
             }
         }
+        // Posters: the mod's painting variants (data-driven), as ready-to-hang paintings
+        parameters.holders().lookup(Registries.PAINTING_VARIANT).ifPresent(lookup -> lookup.listElements()
+                .filter(holder -> holder.key().identifier().getNamespace().equals(FemboyMod.MOD_ID))
+                .sorted(Comparator.comparing(holder -> holder.key().identifier().getPath()))
+                .forEach(holder -> {
+                    ItemStack poster = new ItemStack(Items.PAINTING);
+                    poster.set(DataComponents.PAINTING_VARIANT, holder);
+                    output.accept(poster);
+                }));
     }
 }

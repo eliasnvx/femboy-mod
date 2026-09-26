@@ -2,8 +2,10 @@ package dev.eliasnvx.femboymod.fabric.gametest;
 
 import dev.eliasnvx.femboymod.gametest.BackpackGameTests;
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
+import dev.eliasnvx.femboymod.gametest.DecorGameTests;
 import dev.eliasnvx.femboymod.gametest.MobGameTests;
 import dev.eliasnvx.femboymod.gametest.PanelGameTests;
+import dev.eliasnvx.femboymod.gametest.ProfileGameTests;
 import dev.eliasnvx.femboymod.gametest.WorldGameTests;
 import dev.eliasnvx.femboymod.gametest.WearableGameTests;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -206,8 +208,108 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void gamerChairSeatsAndHeals(GameTestHelper helper) {
+        DecorGameTests.gamerChairSeatsAndHeals(helper);
+    }
+
+    @GameTest
+    public void setupRatingCountsKinds(GameTestHelper helper) {
+        DecorGameTests.setupRatingCountsKinds(helper);
+    }
+
+    @GameTest
+    public void rubberDuckGrantsInsight(GameTestHelper helper) {
+        DecorGameTests.rubberDuckGrantsInsight(helper);
+    }
+
+    @GameTest
+    public void ledStripCyclesColors(GameTestHelper helper) {
+        DecorGameTests.ledStripCyclesColors(helper);
+    }
+
+    @GameTest
+    public void oresGenerateAndDrop(GameTestHelper helper) {
+        DecorGameTests.oresGenerateAndDrop(helper);
+    }
+
+    @GameTest
+    public void postersAndGlitterColorway(GameTestHelper helper) {
+        DecorGameTests.postersAndGlitterColorway(helper);
+    }
+
+    @GameTest
+    public void profileSavesAndKeepsUnknownFields(GameTestHelper helper) {
+        ProfileGameTests.profileSavesAndKeepsUnknownFields(helper);
+    }
+
+    @GameTest
+    public void stylePointsEarnSpendAndEvents(GameTestHelper helper) {
+        ProfileGameTests.stylePointsEarnSpendAndEvents(helper);
+    }
+
+    @GameTest
+    public void collectionUnlocksOnce(GameTestHelper helper) {
+        ProfileGameTests.collectionUnlocksOnce(helper);
+    }
+
+    @GameTest
+    public void gameRulesGateFeatures(GameTestHelper helper) {
+        ProfileGameTests.gameRulesGateFeatures(helper);
+    }
+
+    @GameTest
+    public void armorHidesUnderOutfit(GameTestHelper helper) {
+        ProfileGameTests.armorHidesUnderOutfit(helper);
+    }
+
+    @GameTest
+    public void foodBubbleTeaAndStrawberryMilk(GameTestHelper helper) {
+        DecorGameTests.foodBubbleTeaAndStrawberryMilk(helper);
+    }
+
+    @GameTest
+    public void terminalCraftsAndSaysBtw(GameTestHelper helper) {
+        DecorGameTests.terminalCraftsAndSaysBtw(helper);
+    }
+
+    @GameTest
+    public void v11ClothingSlotsAndStats(GameTestHelper helper) {
+        DecorGameTests.v11ClothingSlotsAndStats(helper);
+    }
+
+    @GameTest
+    public void vibeScannerScoresAndRanks(GameTestHelper helper) {
+        DecorGameTests.vibeScannerScoresAndRanks(helper);
+    }
+
+    @GameTest
+    public void emotesPlayOnServer(GameTestHelper helper) {
+        DecorGameTests.emotesPlayOnServer(helper);
+    }
+
+    @GameTest
+    public void strayCatTamesAndBringsGifts(GameTestHelper helper) {
+        DecorGameTests.strayCatTamesAndBringsGifts(helper);
+    }
+
+    @GameTest
+    public void cosplayerSellsExclusiveColorways(GameTestHelper helper) {
+        DecorGameTests.cosplayerSellsExclusiveColorways(helper);
+    }
+
+    @GameTest
+    public void geodeCrystalsGrowAndNewOresDrop(GameTestHelper helper) {
+        DecorGameTests.geodeCrystalsGrowAndNewOresDrop(helper);
+    }
+
+    @GameTest
+    public void darkShadesImpressTheCritic(GameTestHelper helper) {
+        DecorGameTests.darkShadesImpressTheCritic(helper);
+    }
+
+    @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 38, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 58, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }
