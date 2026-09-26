@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.menu;
 
+import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.registry.FemboyMenus;
 import net.minecraft.resources.Identifier;
@@ -9,40 +10,94 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-/** "Wardrobe slots" screen: cosmetic slots in rows of nine above the player inventory. */
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+/**
+ * Wardrobe: cosmetic slots arranged around a player doll (head items on the left, body and legs on the
+ * right), extra slots (addons) in a row under the doll, player inventory below.
+ */
 public final class CosmeticsMenu extends AbstractContainerMenu {
 
-    public static final int COLUMNS = 9;
     public static final int SLOT_SIZE = 18;
-    public static final int SLOTS_LEFT = 8;
-    public static final int SLOTS_TOP = 18;
-    /** Gap between the cosmetic rows and the player inventory, as in chest menus. */
-    public static final int INVENTORY_GAP = 13;
+    public static final int WIDTH = 176;
+    public static final int TOP = 18;
+    public static final int LEFT_X = 8;
+    public static final int RIGHT_X = WIDTH - 8 - 16;
+    public static final int COLUMN_SLOTS = 5;
+    /** The doll's window and the info box between the two slot columns. */
+    public static final int DOLL_X = 28;
+    public static final int DOLL_W = 62;
+    public static final int INFO_X = DOLL_X + DOLL_W + 2;
+    public static final int INFO_W = RIGHT_X - 4 - INFO_X;
+    public static final int SIDE_H = COLUMN_SLOTS * SLOT_SIZE;
+    public static final int EXTRA_GAP = 4;
+    public static final int MAX_EXTRA_PER_ROW = 6;
+    /** Label row plus gap between the wardrobe part and the player inventory, as in vanilla. */
+    public static final int INVENTORY_GAP = 14;
+    public static final int INVENTORY_PART = 83;
+
+    /** Slots shown in the left column (top to bottom); everything else goes right, then to the extra row. */
+    private static final List<Identifier> LEFT = List.of(FemboySlots.HEAD_ACCESSORY, FemboySlots.FACE, FemboySlots.NECK,
+            FemboySlots.OUTFIT_TOP, FemboySlots.HANDS);
+    private static final List<Identifier> RIGHT = List.of(FemboySlots.BACK, FemboySlots.TAIL, FemboySlots.OUTFIT_BOTTOM,
+            FemboySlots.LEGS_OVERLAY);
 
     private final CosmeticsContainer cosmetics;
     private final int cosmeticSlotCount;
-    private final int rows;
+    private final int extraRows;
 
     public CosmeticsMenu(int containerId, Inventory inventory) {
         super(FemboyMenus.COSMETICS.get(), containerId);
         Player player = inventory.player;
         this.cosmetics = new CosmeticsContainer(player);
         this.cosmeticSlotCount = cosmetics.getContainerSize();
-        this.rows = Math.max(1, (cosmeticSlotCount + COLUMNS - 1) / COLUMNS);
 
+        List<Integer> left = new ArrayList<>();
+        List<Integer> right = new ArrayList<>();
+        List<Integer> extra = new ArrayList<>();
         for (int i = 0; i < cosmeticSlotCount; i++) {
-            addSlot(new CosmeticSlot(cosmetics, player, i,
-                    SLOTS_LEFT + (i % COLUMNS) * SLOT_SIZE, SLOTS_TOP + (i / COLUMNS) * SLOT_SIZE));
+            Identifier id = cosmetics.slotId(i);
+            (LEFT.contains(id) ? left : RIGHT.contains(id) ? right : extra).add(i);
         }
-        addStandardInventorySlots(inventory, SLOTS_LEFT, inventoryTop());
-    }
+        left.sort(Comparator.comparingInt(i -> LEFT.indexOf(cosmetics.slotId(i))));
+        right.sort(Comparator.comparingInt(i -> RIGHT.indexOf(cosmetics.slotId(i))));
+        while (right.size() < COLUMN_SLOTS && !extra.isEmpty()) {
+            right.add(extra.removeFirst()); // first addon slot fills the free spot on the right
+        }
+        this.extraRows = (extra.size() + MAX_EXTRA_PER_ROW - 1) / MAX_EXTRA_PER_ROW;
 
-    public int rows() {
-        return rows;
+        int[] xs = new int[cosmeticSlotCount];
+        int[] ys = new int[cosmeticSlotCount];
+        for (int row = 0; row < left.size(); row++) {
+            xs[left.get(row)] = LEFT_X;
+            ys[left.get(row)] = TOP + row * SLOT_SIZE;
+        }
+        for (int row = 0; row < right.size(); row++) {
+            xs[right.get(row)] = RIGHT_X;
+            ys[right.get(row)] = TOP + row * SLOT_SIZE;
+        }
+        for (int n = 0; n < extra.size(); n++) {
+            xs[extra.get(n)] = DOLL_X + 1 + (n % MAX_EXTRA_PER_ROW) * SLOT_SIZE;
+            ys[extra.get(n)] = TOP + SIDE_H + EXTRA_GAP + (n / MAX_EXTRA_PER_ROW) * SLOT_SIZE;
+        }
+        for (int i = 0; i < cosmeticSlotCount; i++) {
+            addSlot(new CosmeticSlot(cosmetics, player, i, xs[i], ys[i]));
+        }
+        addStandardInventorySlots(inventory, LEFT_X, inventoryTop());
     }
 
     public int inventoryTop() {
-        return SLOTS_TOP + rows * SLOT_SIZE + INVENTORY_GAP;
+        return TOP + SIDE_H + (extraRows > 0 ? EXTRA_GAP + extraRows * SLOT_SIZE : 0) + INVENTORY_GAP;
+    }
+
+    public int height() {
+        return inventoryTop() + INVENTORY_PART;
+    }
+
+    public int cosmeticSlotCount() {
+        return cosmeticSlotCount;
     }
 
     @Override

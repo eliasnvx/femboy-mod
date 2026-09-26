@@ -8,7 +8,8 @@
     "client.AvatarRendererMixin",
     "client.MinecraftGlowMixin",
     "client.AvatarRendererHandMixin",
-    "client.ClientPacketListenerChatMixin"
+    "client.ClientPacketListenerChatMixin",
+    "client.AbstractContainerScreenAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

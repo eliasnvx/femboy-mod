@@ -248,6 +248,12 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.waitTicks(SETTLE_TICKS / 4);
             context.takeScreenshot("femboymod_inventory_colorways");
             context.setScreen(() -> null);
+            world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst().openMenu(
+                    new net.minecraft.world.SimpleMenuProvider((id, inventory, p) -> new dev.eliasnvx.femboymod.menu.CosmeticsMenu(id, inventory),
+                            net.minecraft.network.chat.Component.translatable("container.femboymod.cosmetics"))));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_outfit_screen");
+            context.runOnClient(mc -> mc.player.closeContainer());
             world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst().getInventory().clearContent());
 
             // First person: hoodie sleeve over the hand

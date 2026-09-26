@@ -76,6 +76,7 @@ new Item(new Item.Properties().setId(key).stacksTo(1)
 api.cosmeticSlots().register(id("pin"), new CosmeticSlotType(1000)); // sort order; built-ins use multiples of 100
 ```
 The slot name is the lang key `cosmetic_slot.<ns>.<path>`. The built-in slots are listed in `FemboySlots`.
+Give it a silhouette for when it's empty with `new CosmeticSlotType(order, Optional.of(spriteId))`: a 16x16 GUI sprite at `assets/<ns>/textures/gui/sprites/<path>.png` (built-ins use `femboymod:container/slot/cosmetic/<slot>`). It shows in the inventory panel and in the outfit screen, where addon slots go in a row under the doll.
 
 ## Stats: Drip and effects
 `data/<ns>/femboymod/cosmetic_stats/<item path>.json`. The file name is the item id, so the file for `femboymod_example:friendship_pin` is `data/femboymod_example/femboymod/cosmetic_stats/friendship_pin.json`.
