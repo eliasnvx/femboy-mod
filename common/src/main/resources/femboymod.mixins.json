@@ -16,6 +16,7 @@
   },
   "mixins": [
     "CreeperMixin",
-    "LivingEntityHurtMixin"
+    "LivingEntityHurtMixin",
+    "InventoryMenuMixin"
   ]
 }

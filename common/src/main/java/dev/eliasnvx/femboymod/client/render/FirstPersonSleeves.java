@@ -41,7 +41,7 @@ public final class FirstPersonSleeves {
             return;
         }
         ItemStack top = CosmeticsManager.get(player).get(FemboySlots.OUTFIT_TOP);
-        if (!top.is(FemboyTags.HOODIES)) {
+        if (!top.is(FemboyTags.HOODIES) || CosmeticsManager.get(player).isHidden(FemboySlots.OUTFIT_TOP)) {
             return;
         }
         EntityModelSet models = Minecraft.getInstance().getEntityModels();

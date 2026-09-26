@@ -5,11 +5,13 @@ import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.drip.WornEvaluator;
 import dev.eliasnvx.femboymod.mixin.client.AbstractContainerScreenAccessor;
 import dev.eliasnvx.femboymod.network.CosmeticPanelClickPayload;
+import dev.eliasnvx.femboymod.network.CreativeCosmeticSetPayload;
+import dev.eliasnvx.femboymod.network.ToggleCosmeticHiddenPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -30,10 +32,10 @@ public final class CosmeticsPanel extends AbstractWidget {
     private static final int ROWS = 5;
     private static final int GAP = 2;
 
-    private final InventoryScreen screen;
+    private final AbstractContainerScreen<?> screen;
     private final Runnable openWardrobe;
 
-    public CosmeticsPanel(InventoryScreen screen, Runnable openWardrobe) {
+    public CosmeticsPanel(AbstractContainerScreen<?> screen, Runnable openWardrobe) {
         super(0, 0, 0, 0, Component.translatable("gui.femboymod.cosmetics_button.tooltip"));
         this.screen = screen;
         this.openWardrobe = openWardrobe;
@@ -98,7 +100,7 @@ public final class CosmeticsPanel extends AbstractWidget {
         int hovered = slotAt(mouseX, mouseY);
         for (int i = 0; i < slots().size(); i++) {
             Identifier slot = slots().get(i);
-            FemboyGui.cosmeticSlot(g, font, slot, worn.get(slot), slotX(i), slotY(i), i == hovered);
+            FemboyGui.cosmeticSlot(g, font, slot, worn.get(slot), slotX(i), slotY(i), i == hovered, worn.isHidden(slot));
         }
 
         if (headerHovered) {
@@ -108,7 +110,10 @@ public final class CosmeticsPanel extends AbstractWidget {
                             .withColor(FemboyGui.DRIP)), java.util.Optional.empty(), mouseX, mouseY);
         } else if (hovered >= 0 && screen.getMenu().getCarried().isEmpty()) {
             ItemStack stack = worn.get(slots().get(hovered));
-            if (stack.isEmpty()) {
+            if (!stack.isEmpty() && FemboyGui.onEye(mouseX, mouseY, slotX(hovered), slotY(hovered))) {
+                g.setTooltipForNextFrame(font, Component.translatable(worn.isHidden(slots().get(hovered))
+                        ? "gui.femboymod.cosmetic.show" : "gui.femboymod.cosmetic.hide"), mouseX, mouseY);
+            } else if (stack.isEmpty()) {
                 g.setTooltipForNextFrame(font, FemboyGui.slotName(slots().get(hovered)), mouseX, mouseY);
             } else {
                 g.setTooltipForNextFrame(font, stack, mouseX, mouseY);
@@ -124,8 +129,26 @@ public final class CosmeticsPanel extends AbstractWidget {
             return;
         }
         int index = slotAt(event.x(), event.y());
-        if (index >= 0) {
-            NetworkManager.sendToServer(new CosmeticPanelClickPayload(slots().get(index), event.hasShiftDown()));
+        Player player = Minecraft.getInstance().player;
+        if (index >= 0 && player != null && FemboyGui.onEye(event.x(), event.y(), slotX(index), slotY(index))
+                && (!CosmeticsManager.get(player).get(slots().get(index)).isEmpty() || CosmeticsManager.get(player).isHidden(slots().get(index)))) {
+            NetworkManager.sendToServer(new ToggleCosmeticHiddenPayload(slots().get(index)));
+            return;
+        }
+        if (index >= 0 && player != null) {
+            Identifier slot = slots().get(index);
+            if (player.hasInfiniteMaterials() && !event.hasShiftDown()) {
+                // creative: the cursor is client-side; swap it with the worn item and tell the server
+                ItemStack carried = screen.getMenu().getCarried();
+                ItemStack worn = CosmeticsManager.get(player).get(slot);
+                if (!carried.isEmpty() && !CosmeticsManager.canEquip(player, slot, carried)) {
+                    return;
+                }
+                NetworkManager.sendToServer(new CreativeCosmeticSetPayload(slot, carried.copyWithCount(Math.min(1, carried.getCount()))));
+                screen.getMenu().setCarried(worn.copy());
+            } else {
+                NetworkManager.sendToServer(new CosmeticPanelClickPayload(slot, event.hasShiftDown()));
+            }
         }
     }
 

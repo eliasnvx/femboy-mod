@@ -5,7 +5,9 @@ import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Prediction;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -47,6 +49,38 @@ public final class CosmeticPanelActions {
             menu.broadcastChanges();
         }
         return changed;
+    }
+
+    /**
+     * Shift-click on a cosmetic in the inventory: wear it if its slot is empty. Runs on both sides; only the
+     * server changes anything, the client just skips the vanilla move (the server's slot update follows).
+     *
+     * @return whether the vanilla quick move should be skipped
+     */
+    public static boolean quickEquip(InventoryMenu menu, Player player, int index) {
+        ItemStack stack = menu.getSlot(index).getItem();
+        Identifier slot = CosmeticsManager.slotOf(stack);
+        if (slot == null || !CosmeticsManager.get(player).get(slot).isEmpty() || !CosmeticsManager.canEquip(player, slot, stack)) {
+            return false;
+        }
+        if (player instanceof ServerPlayer) {
+            CosmeticsManager.set(player, slot, menu.getSlot(index).remove(1));
+            menu.getSlot(index).setChanged();
+        }
+        return true;
+    }
+
+    /** Creative inventory panel: the cursor is client-side, so the item arrives in the packet (creative only). */
+    public static boolean creativeSet(ServerPlayer player, Identifier slot, ItemStack stack) {
+        if (!player.hasInfiniteMaterials() || !CosmeticsManager.orderedSlots().contains(slot)) {
+            return false;
+        }
+        ItemStack single = stack.copyWithCount(Math.min(1, stack.getCount()));
+        if (!single.isEmpty() && !CosmeticsManager.canEquip(player, slot, single)) {
+            return false;
+        }
+        CosmeticsManager.set(player, slot, single);
+        return true;
     }
 
     private static boolean moveToInventory(ServerPlayer player, Identifier slot, ItemStack worn) {

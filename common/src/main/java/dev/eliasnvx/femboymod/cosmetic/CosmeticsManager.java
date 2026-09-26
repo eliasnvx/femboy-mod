@@ -99,6 +99,12 @@ public final class CosmeticsManager {
     }
 
     /** Server: empties all slots and returns what was worn (used for death drops). */
+    /** Show or hide a slot's item for everyone (it stays worn). */
+    public static void setHidden(ServerPlayer player, Identifier slot, boolean hidden) {
+        PlatformHelper.setCosmetics(player, PlatformHelper.getCosmetics(player).withHidden(slot, hidden));
+        CosmeticsSyncPayload.sendToTrackingAndSelf(player);
+    }
+
     public static List<ItemStack> clear(ServerPlayer player) {
         List<ItemStack> removed = List.copyOf(get(player).all().values());
         for (Identifier slot : List.copyOf(get(player).all().keySet())) {

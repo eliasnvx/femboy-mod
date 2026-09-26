@@ -41,6 +41,8 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -85,8 +87,8 @@ public final class FemboyModClient {
         });
 
         ClientGuiEvent.INIT_POST.register((screen, access) -> {
-            if (screen instanceof InventoryScreen inventory) {
-                access.addRenderableWidget(new CosmeticsPanel(inventory, FemboyModClient::requestCosmeticsScreen));
+            if (screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen) {
+                access.addRenderableWidget(new CosmeticsPanel((AbstractContainerScreen<?>) screen, FemboyModClient::requestCosmeticsScreen));
             }
         });
 
