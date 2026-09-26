@@ -24,6 +24,9 @@ public final class FemboySlots {
     public static final Identifier OUTFIT_BOTTOM = id("outfit_bottom");
     /** Arm warmers, nail polish. */
     public static final Identifier HANDS = id("hands");
+    /** Belts and belt chains, worn over skirts and tops. */
+    @org.jetbrains.annotations.ApiStatus.AvailableSince("0.1.0")
+    public static final Identifier WAIST = id("waist");
 
     private FemboySlots() {
     }

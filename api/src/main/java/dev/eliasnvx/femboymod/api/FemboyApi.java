@@ -131,4 +131,36 @@ public interface FemboyApi {
      * @return the non-empty charms, in slot order; empty if the item is not a backpack
      */
     java.util.List<ItemStack> getCharms(ItemStack backpack);
+
+    /**
+     * Returns the registry of {@link dev.eliasnvx.femboymod.api.profile.ProfileField}s. Register your fields
+     * during {@link FemboyAddon#onInitialize}; built-in ones are in
+     * {@link dev.eliasnvx.femboymod.api.profile.FemboyProfileFields}.
+     *
+     * @return the profile field registry
+     */
+    @org.jetbrains.annotations.ApiStatus.AvailableSince("0.1.0")
+    ApiRegistry<dev.eliasnvx.femboymod.api.profile.ProfileField<?>> profileFields();
+
+    /**
+     * Returns a player's persistent profile.
+     *
+     * @param player the player
+     * @return the profile, never {@code null}
+     */
+    @org.jetbrains.annotations.ApiStatus.AvailableSince("0.1.0")
+    dev.eliasnvx.femboymod.api.profile.PlayerProfile getProfile(Player player);
+
+    /**
+     * Gives (positive) or takes (negative) Style Points, posting a
+     * {@link dev.eliasnvx.femboymod.api.event.profile.StylePointsEvent} first. Points are only earned when the
+     * {@code femboymod:style_points} game rule is on; spending always works.
+     *
+     * @param player the player
+     * @param amount points to add, or a negative amount to spend
+     * @param reason why, for listeners (for example {@code myaddon:quest_reward})
+     * @return whether the balance changed (false if cancelled, zero, earning is off, or the player can't afford it)
+     */
+    @org.jetbrains.annotations.ApiStatus.AvailableSince("0.1.0")
+    boolean addStylePoints(net.minecraft.server.level.ServerPlayer player, int amount, Identifier reason);
 }
