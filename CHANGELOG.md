@@ -14,7 +14,7 @@ Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/
 - UwU choker chat transform (EN, RU, ES)
 - Pink Creeper, Thrifter villager, Clothing Rack, Wardrobe with outfit presets, plushies
 - Advancements, config screen (Mod Menu / NeoForge mods list)
-- Cat Ear Hoodie; fox, bunny, bear and wolf ears; ready-made colorways in the creative tab
+- Cat Ear Hoodie; fox, bunny, bear and wolf ears; Striped Mittens; ready-made colorways in the creative tab
 - Hostile meme mobs: Bugs, Caffeinated Zombie, Hissy Cat and the Fashion Critic mini-boss; Drip reduces the damage they deal
 - Compat: JEI info pages; checked with Sodium and Iris
 - Public API for addons (`femboymod-api`)

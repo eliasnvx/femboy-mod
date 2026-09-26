@@ -313,6 +313,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
         CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, socks);
         CosmeticsManager.set(player, FemboySlots.TAIL, new ItemStack(FemboyItems.TAIL.get()));
         CosmeticsManager.set(player, FemboySlots.NECK, new ItemStack(FemboyItems.UWU_CHOKER.get()));
+        CosmeticsManager.set(player, FemboySlots.HANDS, new ItemStack(FemboyItems.STRIPED_MITTENS.get()));
     }
 
     /** Full-HD shot without HUD and toasts, so texture detail can be judged. */

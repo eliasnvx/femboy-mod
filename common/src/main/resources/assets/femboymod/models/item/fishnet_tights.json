@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "femboymod:item/fishnet_tights"
+    "layer0": "femboymod:item/fishnet_tights",
+    "layer1": "femboymod:item/fishnet_tights_net"
   }
 }

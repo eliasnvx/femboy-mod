@@ -97,6 +97,9 @@ public final class BuiltinCosmeticRenderers {
         registry.register(id("programming_socks"), models -> new GroupedRenderer(
                 models, CosmeticModels.SOCKS, Groups.GroupModelFactory.PLAIN, KNIT, SOCK_PINK, DARKER, BOW_PINK)
                 .withDefaultSecondary(SOCK_WHITE));
+        registry.register(id("striped_mittens"), models -> new GroupedRenderer(
+                models, CosmeticModels.MITTENS, Groups.GroupModelFactory.PLAIN, KNIT, SOCK_PINK, DARKER, BOW_PINK)
+                .withDefaultSecondary(SOCK_WHITE));
         registry.register(id("fishnet_tights"), models -> new GroupedRenderer(
                 models, CosmeticModels.FISHNET, Groups.GroupModelFactory.PLAIN, FISHNET, FISHNET_BLACK, DARKER, BOW_PINK));
         registry.register(id("uwu_choker"), models -> new GroupedRenderer(
