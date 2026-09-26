@@ -1,0 +1,10 @@
+{
+  "weight": 3,
+  "effects": [
+    {
+      "effect": "minecraft:speed",
+      "duration": 900,
+      "amplifier": 0
+    }
+  ]
+}

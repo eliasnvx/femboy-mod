@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:milk_bucket",
+    "minecraft:glass_bottle",
+    "minecraft:glass_bottle",
+    "minecraft:glass_bottle",
+    "minecraft:sweet_berries",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "id": "femboymod:strawberry_milk",
+    "count": 3
+  }
+}

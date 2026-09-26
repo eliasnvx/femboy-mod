@@ -1,0 +1,10 @@
+{
+  "weight": 4,
+  "effects": [
+    {
+      "effect": "minecraft:saturation",
+      "duration": 1,
+      "amplifier": 0
+    }
+  ]
+}

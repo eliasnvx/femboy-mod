@@ -19,6 +19,9 @@ public final class FemboyEffects {
 
     private static final int CAFFEINE_COLOR = 0xF07AB0;
     private static final int JITTER_COLOR = 0xB0E0FF;
+    private static final int INSIGHT_COLOR = 0xFFD84A;
+    /** Insight (rubber duck debugging): the fix is obvious now, so you dig a bit faster. */
+    private static final double INSIGHT_BREAK_SPEED = 0.2;
     /** Jitter: slightly slower attacks. No visual screen effect at all (photosensitivity, SPEC §5.2). */
     private static final double JITTER_ATTACK_SPEED = -0.15;
 
@@ -26,6 +29,10 @@ public final class FemboyEffects {
     public static final RegistrySupplier<MobEffect> JITTER = REGISTER.register("jitter", () -> new Jitter()
             .addAttributeModifier(Attributes.ATTACK_SPEED, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "effect.jitter"),
                     JITTER_ATTACK_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+
+    public static final RegistrySupplier<MobEffect> INSIGHT = REGISTER.register("insight", () -> new Insight()
+            .addAttributeModifier(Attributes.BLOCK_BREAK_SPEED, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "effect.insight"),
+                    INSIGHT_BREAK_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
 
     private FemboyEffects() {
     }
@@ -45,6 +52,12 @@ public final class FemboyEffects {
         public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
             EnergyDrinks.crash(level, entity);
             return true;
+        }
+    }
+
+    static final class Insight extends MobEffect {
+        Insight() {
+            super(MobEffectCategory.BENEFICIAL, INSIGHT_COLOR);
         }
     }
 

@@ -1,5 +1,11 @@
 package dev.eliasnvx.femboymod.energy;
 
+import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
+import dev.eliasnvx.femboymod.api.event.profile.EnergyDrinkEvent;
+import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.registry.FemboyItems;
+import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.platform.PlatformHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -32,10 +38,15 @@ public final class EnergyDrinks {
             PlatformHelper.setCaffeineLog(player, log);
             if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
                 dev.eliasnvx.femboymod.entity.FemboyTriggers.fire(serverPlayer, dev.eliasnvx.femboymod.entity.FemboyTriggers.ENERGY_DRINKS, log.total());
+                FemboyMod.api().getProfile(serverPlayer).update(FemboyProfileFields.ENERGY_DRINKS, count -> count + 1);
+                if (CosmeticsManager.get(serverPlayer).get(FemboySlots.LEGS_OVERLAY).is(FemboyItems.PROGRAMMING_SOCKS.get())) {
+                    dev.eliasnvx.femboymod.entity.FemboyTriggers.fire(serverPlayer, dev.eliasnvx.femboymod.entity.FemboyTriggers.READY_TO_DEPLOY);
+                }
             }
             if (log.count() > rules.jitterAfter()) {
                 rules.jitter().forEach(buff -> player.addEffect(buff.instance()));
             }
+            FemboyMod.api().events().post(new EnergyDrinkEvent(player, can, log.count()));
         }
     }
 
