@@ -4,6 +4,8 @@
 apply plugin: "me.modmuss50.mod-publish-plugin"
 
 def loader = project.name // "fabric" | "neoforge"
+// CurseForge only gives a project id after moderation; until then (id 0) only Modrinth is published
+def curseforgeEnabled = rootProject.curseforge_project_id != "0"
 def changelogText = providers.provider {
     // Section "## [<version>]" of CHANGELOG.md (Keep a Changelog), up to the next "## ["
     def text = rootProject.file("CHANGELOG.md").getText("UTF-8")
@@ -19,7 +21,7 @@ publishMods {
     type = rootProject.mod_version.contains("-alpha") ? ALPHA : rootProject.mod_version.contains("-beta") ? BETA : STABLE
     modLoaders.add(loader)
     dryRun = providers.environmentVariable("MODRINTH_TOKEN").orNull == null
-            || providers.environmentVariable("CURSEFORGE_TOKEN").orNull == null
+            || (curseforgeEnabled && providers.environmentVariable("CURSEFORGE_TOKEN").orNull == null)
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
@@ -33,7 +35,7 @@ publishMods {
         optional("jei")
     }
 
-    curseforge {
+    if (curseforgeEnabled) curseforge {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = rootProject.curseforge_project_id
         minecraftVersions.add(rootProject.minecraft_version)
