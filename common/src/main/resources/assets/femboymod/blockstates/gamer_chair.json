@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "femboymod:block/gamer_chair"
+    },
+    "facing=east": {
+      "model": "femboymod:block/gamer_chair",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "femboymod:block/gamer_chair",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "femboymod:block/gamer_chair",
+      "y": 270
+    }
+  }
+}

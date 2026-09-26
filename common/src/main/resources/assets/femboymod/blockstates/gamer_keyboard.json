@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "femboymod:block/gamer_keyboard"
+    },
+    "facing=east": {
+      "model": "femboymod:block/gamer_keyboard",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "femboymod:block/gamer_keyboard",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "femboymod:block/gamer_keyboard",
+      "y": 270
+    }
+  }
+}

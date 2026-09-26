@@ -1,0 +1,30 @@
+{
+  "parent": "femboymod:main/battlestation",
+  "display": {
+    "icon": {
+      "id": "femboymod:gamer_chair"
+    },
+    "title": {
+      "translate": "advancements.femboymod.just_need_a_break.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.just_need_a_break.description"
+    },
+    "frame": "task",
+    "hidden": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "chair_break",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

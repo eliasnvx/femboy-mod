@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "femboymod:style_coupon",
+    "count": 2
+  },
+  "gives": {
+    "id": "femboymod:rubber_duck"
+  },
+  "max_uses": 4,
+  "xp": 10,
+  "reputation_discount": 0.05
+}

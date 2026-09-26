@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "W": "minecraft:pink_wool",
+    "I": "minecraft:iron_ingot",
+    "Q": "femboymod:rose_quartz"
+  },
+  "pattern": [
+    "  W",
+    "WWW",
+    "IQI"
+  ],
+  "result": {
+    "id": "femboymod:gamer_chair"
+  }
+}

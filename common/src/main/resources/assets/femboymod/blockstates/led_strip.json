@@ -1,0 +1,134 @@
+{
+  "variants": {
+    "color=0,facing=up": {
+      "model": "femboymod:block/led_strip_pink"
+    },
+    "color=1,facing=up": {
+      "model": "femboymod:block/led_strip_purple"
+    },
+    "color=2,facing=up": {
+      "model": "femboymod:block/led_strip_blue"
+    },
+    "color=3,facing=up": {
+      "model": "femboymod:block/led_strip_white"
+    },
+    "color=4,facing=up": {
+      "model": "femboymod:block/led_strip_rainbow"
+    },
+    "color=0,facing=down": {
+      "model": "femboymod:block/led_strip_pink",
+      "x": 180
+    },
+    "color=1,facing=down": {
+      "model": "femboymod:block/led_strip_purple",
+      "x": 180
+    },
+    "color=2,facing=down": {
+      "model": "femboymod:block/led_strip_blue",
+      "x": 180
+    },
+    "color=3,facing=down": {
+      "model": "femboymod:block/led_strip_white",
+      "x": 180
+    },
+    "color=4,facing=down": {
+      "model": "femboymod:block/led_strip_rainbow",
+      "x": 180
+    },
+    "color=0,facing=north": {
+      "model": "femboymod:block/led_strip_pink",
+      "x": 90
+    },
+    "color=1,facing=north": {
+      "model": "femboymod:block/led_strip_purple",
+      "x": 90
+    },
+    "color=2,facing=north": {
+      "model": "femboymod:block/led_strip_blue",
+      "x": 90
+    },
+    "color=3,facing=north": {
+      "model": "femboymod:block/led_strip_white",
+      "x": 90
+    },
+    "color=4,facing=north": {
+      "model": "femboymod:block/led_strip_rainbow",
+      "x": 90
+    },
+    "color=0,facing=south": {
+      "model": "femboymod:block/led_strip_pink",
+      "x": 90,
+      "y": 180
+    },
+    "color=1,facing=south": {
+      "model": "femboymod:block/led_strip_purple",
+      "x": 90,
+      "y": 180
+    },
+    "color=2,facing=south": {
+      "model": "femboymod:block/led_strip_blue",
+      "x": 90,
+      "y": 180
+    },
+    "color=3,facing=south": {
+      "model": "femboymod:block/led_strip_white",
+      "x": 90,
+      "y": 180
+    },
+    "color=4,facing=south": {
+      "model": "femboymod:block/led_strip_rainbow",
+      "x": 90,
+      "y": 180
+    },
+    "color=0,facing=east": {
+      "model": "femboymod:block/led_strip_pink",
+      "x": 90,
+      "y": 90
+    },
+    "color=1,facing=east": {
+      "model": "femboymod:block/led_strip_purple",
+      "x": 90,
+      "y": 90
+    },
+    "color=2,facing=east": {
+      "model": "femboymod:block/led_strip_blue",
+      "x": 90,
+      "y": 90
+    },
+    "color=3,facing=east": {
+      "model": "femboymod:block/led_strip_white",
+      "x": 90,
+      "y": 90
+    },
+    "color=4,facing=east": {
+      "model": "femboymod:block/led_strip_rainbow",
+      "x": 90,
+      "y": 90
+    },
+    "color=0,facing=west": {
+      "model": "femboymod:block/led_strip_pink",
+      "x": 90,
+      "y": 270
+    },
+    "color=1,facing=west": {
+      "model": "femboymod:block/led_strip_purple",
+      "x": 90,
+      "y": 270
+    },
+    "color=2,facing=west": {
+      "model": "femboymod:block/led_strip_blue",
+      "x": 90,
+      "y": 270
+    },
+    "color=3,facing=west": {
+      "model": "femboymod:block/led_strip_white",
+      "x": 90,
+      "y": 270
+    },
+    "color=4,facing=west": {
+      "model": "femboymod:block/led_strip_rainbow",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

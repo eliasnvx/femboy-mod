@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 8
+  },
+  "gives": {
+    "id": "femboymod:rubber_duck"
+  },
+  "max_uses": 2,
+  "xp": 5,
+  "reputation_discount": 0.0
+}

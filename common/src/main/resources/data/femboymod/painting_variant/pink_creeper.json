@@ -1,0 +1,13 @@
+{
+  "asset_id": "femboymod:pink_creeper",
+  "author": {
+    "color": "gray",
+    "translate": "painting.femboymod.pink_creeper.author"
+  },
+  "height": 1,
+  "title": {
+    "color": "light_purple",
+    "translate": "painting.femboymod.pink_creeper.title"
+  },
+  "width": 1
+}

@@ -253,11 +253,31 @@ def creeper():
     ]
 
 
+def duck():
+    yellow, beak, wing = hexc("#FFD84A"), hexc("#FF9A3C"), hexc("#F5C63A")
+
+    def face(img, w, h):  # head north face: 10 x 8 texels
+        eyes(img, 2, 6, 2, 2, 2)
+        blush(img, 0, 8, 5)
+
+    def wing_side(img, w, h):
+        put(img, rect(2, 1, max(1, w - 4), max(1, h - 2)), wing)
+
+    return [
+        Box("body", (4, 0, 5), (12, 5, 13), yellow, {"east": wing_side, "west": wing_side}),
+        Box("tail", (6, 3, 12.5), (10, 6, 14), yellow),
+        Box("head", (5, 5, 5), (11, 10, 9), yellow, {"north": face}),
+        Box("tuft", (7.5, 10, 6.5), (8.5, 11, 7.5), yellow),
+        Box("beak", (6.5, 6, 3.5), (9.5, 7.5, 5), beak, seam=False),
+    ]
+
+
 PLUSHIES = {
     # name: (design, gui scale, gui translation)
     "cat_plush": (cat, 0.78, [0, 0, 0]),
     "shark_plush": (shark, 0.95, [0, 2, 0]),
     "creeper_plush": (creeper, 0.78, [0, 0, 0]),
+    "rubber_duck": (duck, 1.0, [0, 3, 0]),
 }
 
 
