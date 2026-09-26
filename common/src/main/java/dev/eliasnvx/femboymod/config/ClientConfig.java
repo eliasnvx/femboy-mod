@@ -8,11 +8,11 @@ import net.minecraft.util.StringRepresentable;
 public record ClientConfig(boolean showOthersCosmetics, boolean dripHud, boolean nyaSound, boolean rgbAnimations,
                            Physics physics, boolean uwuChat) {
 
-    public static final ClientConfig DEFAULTS = new ClientConfig(true, false, false, true, Physics.FULL, true);
+    public static final ClientConfig DEFAULTS = new ClientConfig(true, true, false, true, Physics.FULL, true);
 
     public static final Codec<ClientConfig> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.BOOL.fieldOf("show_others_cosmetics").orElse(DEFAULTS.showOthersCosmetics).forGetter(ClientConfig::showOthersCosmetics),
-            Codec.BOOL.fieldOf("drip_hud").orElse(DEFAULTS.dripHud).forGetter(ClientConfig::dripHud),
+            Codec.BOOL.fieldOf("femboy_level_panel").orElse(DEFAULTS.dripHud).forGetter(ClientConfig::dripHud),
             Codec.BOOL.fieldOf("nya_sound").orElse(DEFAULTS.nyaSound).forGetter(ClientConfig::nyaSound),
             Codec.BOOL.fieldOf("rgb_animations").orElse(DEFAULTS.rgbAnimations).forGetter(ClientConfig::rgbAnimations),
             Physics.CODEC.fieldOf("tail_skirt_physics").orElse(DEFAULTS.physics).forGetter(ClientConfig::physics),
