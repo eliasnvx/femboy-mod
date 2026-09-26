@@ -375,6 +375,11 @@ def curseforge_page(base):
         text = f.read()
     text = re.sub(r"\]\((docs/images/[^)]+)\)", lambda m: "](" + base.rstrip("/") + "/" + m.group(1) + ")", text)
     text = re.sub(r'src="(docs/images/[^"]+)"', lambda m: 'src="' + base.rstrip("/") + "/" + m.group(1) + '"', text)
+    # Other repo-relative links (LICENSE, docs/api/README.md, ...) point at the GitHub file view
+    raw = re.match(r"https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/([^/]+)", base)
+    if raw:
+        blob = f"https://github.com/{raw.group(1)}/{raw.group(2)}/blob/{raw.group(3)}/"
+        text = re.sub(r"\]\((?!https?://|#|docs/images/)([^)]+)\)", lambda m: "](" + blob + m.group(1) + ")", text)
     out = os.path.join(ROOT, "docs", "pages", "curseforge.md")
     with open(out, "w", encoding="utf-8") as f:
         f.write(text)
@@ -384,7 +389,9 @@ def curseforge_page(base):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--page-base", help="raw URL of the repo root, e.g. https://raw.githubusercontent.com/<user>/<repo>/<branch>")
+    parser.add_argument("--page-only", action="store_true", help="only rewrite docs/pages/curseforge.md (no screenshots needed)")
     args = parser.parse_args()
-    build()
+    if not args.page_only:
+        build()
     if args.page_base:
         curseforge_page(args.page_base)

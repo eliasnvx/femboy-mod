@@ -14,19 +14,19 @@
 
 **A cozy, meme-flavored fashion mod: programming socks, cat ears and fox tails, backpacks full of charms,<br>a gamer room, new friends, new gems — and a public API for addons.**
 
-[Cosmetics](#-cosmetics--outfits) • [Drip](#-drip-sets--style-points) • [Backpacks](#-backpacks--charms) • [Snacks](#-byte-energy--snacks) • [Gamer Room](#-gamer-room) • [Friends](#-friends) • [Ores](#-ores--gems) • [Mobs](#-meme-mobs) • [Servers & API](#-servers--addons) • [Installation](#-installation)
+[Cosmetics](#cosmetics--outfits) • [Drip](#drip-sets--style-points) • [Backpacks](#backpacks--charms) • [Snacks](#byte-energy--snacks) • [Gamer Room](#gamer-room) • [Friends](#friends) • [Ores](#ores--gems) • [Mobs](#meme-mobs) • [Servers & API](#servers--addons) • [Installation](#installation)
 
 </div>
 
 ---
 
-## 📖 About
+## About
 
 **Femboy Mod** lets you dress up. Ten cosmetic slots that live next to your armor, dozens of clothes and accessories in any color, pride flags and shimmering glitter, and a little game around looking good: your **Drip Level** grows with every piece, full sets give bonuses, the Fashion Critic judges you mid-fight and the whole server competes at the Vibe Check Scanner.
 
 It's SFW and meme-flavored — socks = coding skill, energy drinks, "btw" — with no third-party brands and no flashing effects.
 
-🌍 **Languages:** English, Русский, Español, Deutsch, Français, Português (Brasil), Nederlands, Svenska, 日本語, 简体中文
+**Languages:** English, Русский, Español, Deutsch, Français, Português (Brasil), Nederlands, Svenska, 日本語, 简体中文
 
 ![Outfits](docs/images/outfits.png)
 
@@ -34,7 +34,7 @@ It's SFW and meme-flavored — socks = coding skill, energy drinks, "btw" — wi
 
 ![Cosmetics & Outfits](docs/images/header_cosmetics.png)
 
-## 👗 Cosmetics & Outfits
+## Cosmetics & Outfits
 
 Ten **cosmetic slots**, separate from armor, shown to everyone on the server:
 
@@ -51,12 +51,12 @@ Ten **cosmetic slots**, separate from armor, shown to everyone on the server:
 | Tail | a fluffy fox-style tail that sways and curls |
 | Back | backpacks with charms |
 
-- 🎨 **Every piece can be dyed** in a crafting grid — plus **19 colorways**: pride flags, glitter, pearl, neon and four exclusives you can only buy from the Wandering Cosplayer
-- 👁️ **Hide any piece** with the eye in its slot; it stays worn and keeps its bonus
-- 🛡️ **Armor doesn't cover your look** — armor under your outfit is hidden (it still protects); toggle each piece auto / hide / show
-- 🧥 **First person too** — hoodie sleeves, mittens, arm warmers and nail polish on your hand
-- 👕 **Outfit presets** — save up to five looks and switch in one click (also at the Wardrobe block)
-- 🖱️ **Shift-click** a cosmetic in your inventory to wear it; a slot panel sits right next to the vanilla inventory
+- **Every piece can be dyed** in a crafting grid — plus **19 colorways**: pride flags, glitter, pearl, neon and four exclusives you can only buy from the Wandering Cosplayer
+- **Hide any piece** with the eye in its slot; it stays worn and keeps its bonus
+- **Armor doesn't cover your look** — armor under your outfit is hidden (it still protects); toggle each piece auto / hide / show
+- **First person too** — hoodie sleeves, mittens, arm warmers and nail polish on your hand
+- **Outfit presets** — save up to five looks and switch in one click (also at the Wardrobe block)
+- **Shift-click** a cosmetic in your inventory to wear it; a slot panel sits right next to the vanilla inventory
 
 ![Dress up](docs/images/ui.png)
 
@@ -64,19 +64,19 @@ Ten **cosmetic slots**, separate from armor, shown to everyone on the server:
 
 ![Drip, Sets & Style](docs/images/header_drip.png)
 
-## ✨ Drip, Sets & Style Points
+## Drip, Sets & Style Points
 
-- 📈 **Drip Level** — every piece adds Drip, matching colors add more; a compact **Femboy Level** panel in the corner shows your tier, from *Just a Guy* to *Final Form*
-- 🧩 **Set bonuses** — *Full Femboy Mode* (ears + hoodie + skirt + legwear): a bit of speed, heart particles and small animals that follow you · *Crystal Clear* (rose quartz earrings + bracelet): Haste
+- **Drip Level** — every piece adds Drip, matching colors add more; a compact **Femboy Level** panel in the corner shows your tier, from *Just a Guy* to *Final Form*
+- **Set bonuses** — *Full Femboy Mode* (ears + hoodie + skirt + legwear): a bit of speed, heart particles and small animals that follow you · *Crystal Clear* (rose quartz earrings + bracelet): Haste
 - ✿ **Style Points** — earned for wearing sets, impressing the critic, new pieces in your collection, the rubber duck and the daily vibe check; trade them for **Style Coupons**, the currency of the Thrifter and the Cosplayer
-- 📚 **Collection** — every piece you've ever worn counts (23/37…)
-- 🏆 **Advancements** — *Programming Socks Equipped*, *Drip: Maximum*, *Can't Decide What to Wear*, *Ready to Deploy*, *Battlestation*, *Immaculate Vibes* and more
+- **Collection** — every piece you've ever worn counts (23/37…)
+- **Advancements** — *Programming Socks Equipped*, *Drip: Maximum*, *Can't Decide What to Wear*, *Ready to Deploy*, *Battlestation*, *Immaculate Vibes* and more
 
 ---
 
 ![Backpacks & Charms](docs/images/header_backpacks.png)
 
-## 🎒 Backpacks & Charms
+## Backpacks & Charms
 
 - **Canvas → Leather → Netherite** backpacks (1–3 rows) — upgrades keep everything inside; netherite doesn't burn
 - Worn in the back slot, opened with **B**; they can't go inside each other (tested against dupes)
@@ -86,7 +86,7 @@ Ten **cosmetic slots**, separate from armor, shown to everyone on the server:
 
 ![Byte Energy & Snacks](docs/images/header_food.png)
 
-## ⚡ Byte Energy & Snacks
+## Byte Energy & Snacks
 
 - **Byte Energy** in four flavors — caffeine stacks up: first you're fast, then you're jittery, then comes the crash
 - **Bubble tea** with 7 surprise flavors (taro, matcha, mango, lychee…) — each cup is a random buff
@@ -96,63 +96,63 @@ Ten **cosmetic slots**, separate from armor, shown to everyone on the server:
 
 ![Gamer Room](docs/images/header_gamer_room.png)
 
-## 🎮 Gamer Room
+## Gamer Room
 
 ![Gamer room](docs/images/gamer_room.png)
 
-- 🪑 **Gamer Chair** — sit down and slowly heal; the better your **setup rating** (up to ★★★★★★: screen, keyboard, lights, comfort, rubber duck, posters) the faster
-- 🖥️ **Pink Monitor** with scrolling code · ⌨️ **Clacky Keyboard** · 💻 **Terminal** — a crafting table that reminds you, btw, that you use Terminal
-- 🌈 **LED Strip** — four colors and a slow rainbow (never strobes) · 🌙 **Moonstone Night Light** · 💜 **Neon Signs** (heart / cat / btw)
-- 🦆 **Rubber Duck** — explain your code to it: a meme answer, a bit of XP and *Insight* (faster digging)
-- 🖼️ **20 posters** in 1×1, 1×2 and 2×2
-- 📸 **Phone** — Photo Mode takes a selfie as an instant print with the mod's watermark
+- **Gamer Chair** — sit down and slowly heal; the better your **setup rating** (up to ★★★★★★: screen, keyboard, lights, comfort, rubber duck, posters) the faster
+- **Pink Monitor** with scrolling code · ⌨ **Clacky Keyboard** ·  **Terminal** — a crafting table that reminds you, btw, that you use Terminal
+- **LED Strip** — four colors and a slow rainbow (never strobes) ·  **Moonstone Night Light** ·  **Neon Signs** (heart / cat / btw)
+- **Rubber Duck** — explain your code to it: a meme answer, a bit of XP and *Insight* (faster digging)
+- **20 posters** in 1×1, 1×2 and 2×2
+- **Phone** — Photo Mode takes a selfie as an instant print with the mod's watermark
 
 ---
 
 ![Friends](docs/images/header_friends.png)
 
-## 💕 Friends
+## Friends
 
 ![Friends](docs/images/friends.png)
 
-- 🐱 **Stray Cats** in five pastel coats — tame them with fish; they sleep on your bed and bring small gifts in the morning
-- 🎭 **Wandering Cosplayer** — a rare travelling trader with colorways found nowhere else (Sakura, Starlight, Cyber Pastel, Witchy)
-- 👋 **Emotes** on **G** — wave, peace, heart hands; everyone around sees them
-- 📡 **Vibe Check Scanner** — step in, get your vibe (0–100 %) and a place on the **server leaderboard**
+- **Stray Cats** in five pastel coats — tame them with fish; they sleep on your bed and bring small gifts in the morning
+- **Wandering Cosplayer** — a rare travelling trader with colorways found nowhere else (Sakura, Starlight, Cyber Pastel, Witchy)
+- **Emotes** on **G** — wave, peace, heart hands; everyone around sees them
+- **Vibe Check Scanner** — step in, get your vibe (0–100 %) and a place on the **server leaderboard**
 
 ---
 
 ![Ores & Gems](docs/images/header_ores.png)
 
-## 💎 Ores & Gems
+## Ores & Gems
 
 ![The world](docs/images/world.png)
 
 | Ore | Where | Used for |
 |---|---|---|
-| 🌸 **Rose Quartz** | mountains, windswept hills, lush & dripstone caves | earrings, bracelet, furniture, quartz blocks |
-| ✨ **Glitter** | flower biomes | the shimmering **glitter** colorway |
-| 🌙 **Moonstone** | deep deepslate, glows faintly | moonstone pendant (night vision at night), **pearl** colorway, night light |
-| 💜 **Neon Quartz** | the Nether, glows | neon signs, cyber visor, **neon** colorway |
-| 💎 **Rose quartz geodes** | underground, like amethyst | budding rose quartz grows crystals in four stages |
+| **Rose Quartz** | mountains, windswept hills, lush & dripstone caves | earrings, bracelet, furniture, quartz blocks |
+| **Glitter** | flower biomes | the shimmering **glitter** colorway |
+| **Moonstone** | deep deepslate, glows faintly | moonstone pendant (night vision at night), **pearl** colorway, night light |
+| **Neon Quartz** | the Nether, glows | neon signs, cyber visor, **neon** colorway |
+| **Rose quartz geodes** | underground, like amethyst | budding rose quartz grows crystals in four stages |
 
 ---
 
 ![Meme Mobs](docs/images/header_mobs.png)
 
-## 👾 Meme Mobs
+## Meme Mobs
 
 Drip matters in a fight: the better you look, the less they hurt.
 
-- 🐞 **Bugs** swarm at night · ☕ **Caffeinated Zombies** shake with energy and hold a can · 🐈‍⬛ **Hissy Cats** pounce from the dark forest
-- 📝 **Fashion Critic** — a rare mini-boss that reviews your outfit mid-fight. Bad drip: you're slowed. Great drip — or dark shades — leaves it speechless. Drops the exclusive wolf ears
-- 🎉 **Pink Creeper** — bursts into confetti and hearts, never breaks blocks
+- **Bugs** swarm at night ·  **Caffeinated Zombies** shake with energy and hold a can · ⬛ **Hissy Cats** pounce from the dark forest
+- **Fashion Critic** — a rare mini-boss that reviews your outfit mid-fight. Bad drip: you're slowed. Great drip — or dark shades — leaves it speechless. Drops the exclusive wolf ears
+- **Pink Creeper** — bursts into confetti and hearts, never breaks blocks
 
 ---
 
 ![Servers & Addons](docs/images/header_server.png)
 
-## 🛠️ Servers & Addons
+## Servers & Addons
 
 **Game rules** — change them in game with `/gamerule`:
 
@@ -174,7 +174,7 @@ Drip matters in a fight: the better you look, the less they hurt.
 
 ![Installation](docs/images/header_install.png)
 
-## 📦 Installation
+## Installation
 
 | | Fabric | NeoForge |
 |---|---|---|
@@ -190,7 +190,7 @@ Drip matters in a fight: the better you look, the less they hurt.
 
 ---
 
-## 🧑‍💻 Development
+## Development
 
 ```bash
 ./gradlew build                          # all modules + JUnit + server GameTests (Fabric and NeoForge)
@@ -204,18 +204,18 @@ Architectury multi-loader: `api` / `common` / `fabric` / `neoforge` / `example-a
 
 ---
 
-## 🙏 Credits & Notes
+## Credits & Notes
 
 - **Author:** eliasnvx
 - Screenshots are real in-game renders; banners, headers and the pixel font are drawn by `tools/docs/make_readme_images.py`. The mod icon and some item icons started as AI drafts (OpenAI image models) and were picked and cleaned up by hand; every other texture, model and page image is procedural or hand-made.
 - SFW, no third-party brands or characters, no flashing effects. Pride content appears only as optional colorways and badges.
 
-## 📜 License
+## License
 
 [MIT](LICENSE) © eliasnvx
 
 <div align="center">
 
-**Made with 💕 for everyone who likes to dress up**
+**Made with love for everyone who likes to dress up**
 
 </div>
