@@ -7,6 +7,10 @@
         "type": "femboymod:colorway",
         "default": 15897022,
         "stripe": 0
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
       }
     ]
   }

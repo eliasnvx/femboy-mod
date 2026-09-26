@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": "minecraft:string",
+    "G": "minecraft:glass_pane",
+    "D": "minecraft:pink_dye"
+  },
+  "pattern": [
+    "S S",
+    "GDG"
+  ],
+  "result": {
+    "id": "femboymod:heart_glasses"
+  }
+}

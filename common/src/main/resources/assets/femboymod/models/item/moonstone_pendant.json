@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/moonstone_pendant",
+    "layer1": "femboymod:item/moonstone_pendant_detail"
+  }
+}

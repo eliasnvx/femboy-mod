@@ -19,6 +19,7 @@ public final class BuiltinConditions {
         registry.register(id("cold_biome"), ColdBiome.CODEC);
         registry.register(id("crouching"), Crouching.CODEC);
         registry.register(id("sprinting"), Sprinting.CODEC);
+        registry.register(id("night"), Night.CODEC);
     }
 
     private static Identifier id(String path) {
@@ -40,6 +41,22 @@ public final class BuiltinConditions {
             Level level = player.level();
             BlockPos pos = player.blockPosition();
             return level.getBiome(pos).value().coldEnoughToSnow(pos, level.getSeaLevel());
+        }
+    }
+
+    /** Dark outside in the wearer's dimension (night in the overworld). */
+    public enum Night implements CosmeticCondition {
+        INSTANCE;
+        public static final MapCodec<Night> CODEC = MapCodec.unit(INSTANCE);
+
+        @Override
+        public MapCodec<Night> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean test(Player player) {
+            return player.level().isDarkOutside();
         }
     }
 

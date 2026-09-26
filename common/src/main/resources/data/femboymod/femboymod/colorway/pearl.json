@@ -1,0 +1,11 @@
+{
+  "stripes": [
+    "#FFFFFF",
+    "#EAE0FF",
+    "#DDF2FF",
+    "#FFE6F2"
+  ],
+  "shimmer": {
+    "period_ticks": 160
+  }
+}

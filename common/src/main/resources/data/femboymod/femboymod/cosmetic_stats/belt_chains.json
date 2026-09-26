@@ -1,0 +1,14 @@
+{
+  "drip": 10,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:step_sound",
+        "sound": "minecraft:block.chain.step",
+        "distance": 2.5,
+        "volume": 0.5,
+        "pitch": 1.2
+      }
+    }
+  ]
+}

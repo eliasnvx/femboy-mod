@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_glitter",
+  "ingredients": [
+    "femboymod:oversized_hoodie",
+    "femboymod:glitter",
+    "femboymod:glitter"
+  ],
+  "result": {
+    "id": "femboymod:oversized_hoodie",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFD1EC",
+        "pattern": "femboymod:glitter"
+      }
+    }
+  }
+}

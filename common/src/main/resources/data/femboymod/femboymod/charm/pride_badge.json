@@ -1,0 +1,12 @@
+{
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:movement_speed",
+        "amount": 0.02,
+        "operation": "add_multiplied_base"
+      }
+    }
+  ]
+}

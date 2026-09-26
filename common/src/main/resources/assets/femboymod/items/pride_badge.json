@@ -1,0 +1,37 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/pride_badge",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 15897022,
+        "stripe": 0
+      },
+      {
+        "type": "femboymod:colorway",
+        "default": 15897022,
+        "stripe": 1
+      },
+      {
+        "type": "femboymod:colorway",
+        "default": 15897022,
+        "stripe": 2
+      },
+      {
+        "type": "femboymod:colorway",
+        "default": 15897022,
+        "stripe": 3
+      },
+      {
+        "type": "femboymod:colorway",
+        "default": 15897022,
+        "stripe": 4
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      }
+    ]
+  }
+}

@@ -30,6 +30,9 @@ public final class FirstPersonSleeves {
     /** Same defaults as the striped_mittens renderer (pink with white stripes). */
     private static final int MITTEN_COLOR = 0xF5A9B8;
     private static final int MITTEN_STRIPE_COLOR = 0xFFFFFF;
+    /** Same defaults as the arm_warmers and nail_polish renderers. */
+    private static final int WARMER_COLOR = 0xC8A2E8;
+    private static final int NAIL_COLOR = 0xF291BE;
     private static final RenderType TYPE = RenderTypes.entityCutout(
             Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/knit.png"));
 
@@ -56,18 +59,31 @@ public final class FirstPersonSleeves {
         ItemStack top = worn.get(FemboySlots.OUTFIT_TOP);
         if (top.is(FemboyTags.HOODIES) && !worn.isHidden(FemboySlots.OUTFIT_TOP)) {
             Colorway colorway = Colorways.effective(top).orElse(null);
-            int main = colorway == null ? DEFAULT_COLOR : colorway.stripeColor(0);
+            int main = colorway == null ? DEFAULT_COLOR : colorway.stripeColor(0, ColorwayClock.ticks());
             part(root, side + "_sleeve", arm, pose, collector, light, main);
             part(root, side + "_cuff", arm, pose, collector, light, BuiltinCosmeticRenderers.shade(main, CUFF_SHADE));
         }
         ItemStack hands = worn.get(FemboySlots.HANDS);
         if (hands.is(FemboyItems.STRIPED_MITTENS.get()) && !worn.isHidden(FemboySlots.HANDS)) {
             Colorway colorway = Colorways.effective(hands).orElse(null);
-            int main = colorway == null ? MITTEN_COLOR : colorway.stripeColor(0);
-            int stripe = colorway == null ? MITTEN_STRIPE_COLOR : colorway.stripeColor(1);
+            int main = colorway == null ? MITTEN_COLOR : colorway.stripeColor(0, ColorwayClock.ticks());
+            int stripe = colorway == null ? MITTEN_STRIPE_COLOR : colorway.stripeColor(1, ColorwayClock.ticks());
             part(mittens, side + "_mitten", arm, pose, collector, light, main);
             part(mittens, side + "_mitten_stripes", arm, pose, collector, light, stripe);
             part(mittens, side + "_mitten_cuff", arm, pose, collector, light, BuiltinCosmeticRenderers.shade(main, CUFF_SHADE));
+        }
+        if (hands.is(FemboyItems.ARM_WARMERS.get()) && !worn.isHidden(FemboySlots.HANDS)) {
+            Colorway colorway = Colorways.effective(hands).orElse(null);
+            int main = colorway == null ? WARMER_COLOR : colorway.stripeColor(0, ColorwayClock.ticks());
+            int stripe = colorway == null ? MITTEN_STRIPE_COLOR : colorway.stripeColor(1, ColorwayClock.ticks());
+            part(mittens, side + "_warmer", arm, pose, collector, light, main);
+            part(mittens, side + "_warmer_stripes", arm, pose, collector, light, stripe);
+            part(mittens, side + "_warmer_cuff", arm, pose, collector, light, BuiltinCosmeticRenderers.shade(main, CUFF_SHADE));
+        }
+        if (hands.is(FemboyItems.NAIL_POLISH.get()) && !worn.isHidden(FemboySlots.HANDS)) {
+            Colorway colorway = Colorways.effective(hands).orElse(null);
+            part(mittens, side + "_nails", arm, pose, collector, light,
+                    colorway == null ? NAIL_COLOR : colorway.stripeColor(0, ColorwayClock.ticks()));
         }
     }
 

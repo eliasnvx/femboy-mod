@@ -1,0 +1,12 @@
+{
+  "drip": 10,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:glow_friends",
+        "radius": 24,
+        "teammates_only": true
+      }
+    }
+  ]
+}

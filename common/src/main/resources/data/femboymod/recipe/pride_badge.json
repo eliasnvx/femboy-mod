@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:gold_nugget",
+    "minecraft:string",
+    "minecraft:white_wool"
+  ],
+  "result": {
+    "id": "femboymod:pride_badge",
+    "count": 2
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_nugget",
+    "N": "femboymod:neon_quartz",
+    "G": "minecraft:tinted_glass"
+  },
+  "pattern": [
+    "INI",
+    "GGG"
+  ],
+  "result": {
+    "id": "femboymod:cyber_visor"
+  }
+}

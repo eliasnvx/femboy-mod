@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:glass_bottle",
+    "minecraft:pink_dye",
+    "minecraft:honeycomb"
+  ],
+  "result": {
+    "id": "femboymod:nail_polish"
+  }
+}

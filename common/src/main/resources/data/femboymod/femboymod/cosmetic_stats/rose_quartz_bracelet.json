@@ -1,0 +1,13 @@
+{
+  "drip": 10,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:block_break_speed",
+        "amount": 0.1,
+        "operation": "add_multiplied_base"
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "drip": 12,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:glow_hostiles",
+        "radius": 12
+      }
+    }
+  ]
+}

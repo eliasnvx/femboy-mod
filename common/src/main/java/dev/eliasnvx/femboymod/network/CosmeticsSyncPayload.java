@@ -1,5 +1,7 @@
 package dev.eliasnvx.femboymod.network;
 
+import dev.eliasnvx.femboymod.world.FemboyGameRules;
+import dev.eliasnvx.femboymod.cosmetic.ArmorHiding;
 import dev.architectury.networking.NetworkManager;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
@@ -18,7 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 /** S2C: full cosmetic state of one player. Sent on change, on tracking start and on join/respawn. */
-public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics) implements CustomPacketPayload {
+public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, boolean armorHidingAllowed) implements CustomPacketPayload {
 
     public static final Type<CosmeticsSyncPayload> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetics_sync"));
@@ -26,6 +28,7 @@ public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics) im
     public static final StreamCodec<RegistryFriendlyByteBuf, CosmeticsSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, CosmeticsSyncPayload::entityId,
             CosmeticInventory.STREAM_CODEC, CosmeticsSyncPayload::cosmetics,
+            ByteBufCodecs.BOOL, CosmeticsSyncPayload::armorHidingAllowed,
             CosmeticsSyncPayload::new);
 
     @Override
@@ -34,12 +37,14 @@ public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics) im
     }
 
     public static CosmeticsSyncPayload of(Player player) {
-        return new CosmeticsSyncPayload(player.getId(), CosmeticsManager.get(player));
+        boolean allowed = !(player.level() instanceof ServerLevel level) || level.getGameRules().get(FemboyGameRules.ALLOW_HIDDEN_ARMOR.get());
+        return new CosmeticsSyncPayload(player.getId(), CosmeticsManager.get(player), allowed);
     }
 
     /** Receiver (client side). Uses only common classes, so it is safe to register everywhere. */
     public static void handle(CosmeticsSyncPayload payload, NetworkManager.PacketContext context) {
         context.queue(() -> {
+            ArmorHiding.setAllowedOnClient(payload.armorHidingAllowed());
             Entity entity = context.getPlayer().level().getEntity(payload.entityId());
             if (entity instanceof Player player) {
                 PlatformHelper.setCosmetics(player, payload.cosmetics());

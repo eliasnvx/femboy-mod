@@ -1,5 +1,7 @@
 package dev.eliasnvx.femboymod.drip;
 
+import dev.eliasnvx.femboymod.world.FemboyGameRules;
+import net.minecraft.server.level.ServerLevel;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.colorway.Colors;
@@ -49,7 +51,7 @@ public final class WornEvaluator {
         public static final Evaluation EMPTY = new Evaluation(DripLevel.NONE, Set.of(), List.of());
     }
 
-    private record Cached(CosmeticInventory inventory, RegistryAccess registries, Evaluation evaluation) {
+    private record Cached(CosmeticInventory inventory, RegistryAccess registries, boolean setsAllowed, Evaluation evaluation) {
     }
 
     private static final Map<Player, Cached> CACHE = new WeakHashMap<>();
@@ -65,16 +67,19 @@ public final class WornEvaluator {
     public static synchronized Evaluation evaluate(Player player) {
         CosmeticInventory inventory = CosmeticsManager.get(player);
         RegistryAccess registries = player.level().registryAccess();
+        // Server: the femboymod:set_bonuses game rule can switch sets off per world (clients follow the server's effects)
+        boolean setsAllowed = FemboyConfig.common().setBonusesEnabled() && !(player.level() instanceof ServerLevel serverLevel
+                && !serverLevel.getGameRules().get(FemboyGameRules.SET_BONUSES.get()));
         Cached cached = CACHE.get(player);
-        if (cached != null && cached.inventory() == inventory && cached.registries() == registries) {
+        if (cached != null && cached.inventory() == inventory && cached.registries() == registries && cached.setsAllowed() == setsAllowed) {
             return cached.evaluation();
         }
-        Evaluation evaluation = inventory.isEmpty() ? Evaluation.EMPTY : compute(inventory, registries);
-        CACHE.put(player, new Cached(inventory, registries, evaluation));
+        Evaluation evaluation = inventory.isEmpty() ? Evaluation.EMPTY : compute(inventory, registries, setsAllowed);
+        CACHE.put(player, new Cached(inventory, registries, setsAllowed, evaluation));
         return evaluation;
     }
 
-    private static Evaluation compute(CosmeticInventory inventory, RegistryAccess registries) {
+    private static Evaluation compute(CosmeticInventory inventory, RegistryAccess registries, boolean setsAllowed) {
         Optional<Registry<CosmeticStats>> statsRegistry = registries.lookup(CosmeticStats.REGISTRY_KEY);
         DripRules rules = registries.lookup(DripRules.REGISTRY_KEY)
                 .flatMap(registry -> registry.getOptional(DripRules.DEFAULT))
@@ -92,7 +97,7 @@ public final class WornEvaluator {
 
         Set<Identifier> activeSets = new TreeSet<>();
         List<Map.Entry<ResourceKey<SetBonus>, SetBonus>> completed = new ArrayList<>();
-        registries.lookup(SetBonus.REGISTRY_KEY).filter(sets -> FemboyConfig.common().setBonusesEnabled()).ifPresent(sets -> {
+        registries.lookup(SetBonus.REGISTRY_KEY).filter(sets -> setsAllowed).ifPresent(sets -> {
             for (Map.Entry<ResourceKey<SetBonus>, SetBonus> entry : sets.entrySet()) {
                 if (isComplete(entry.getValue(), inventory.all().values())) {
                     activeSets.add(entry.getKey().identifier());

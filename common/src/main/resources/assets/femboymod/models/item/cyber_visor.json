@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/cyber_visor",
+    "layer1": "femboymod:item/cyber_visor_detail"
+  }
+}
