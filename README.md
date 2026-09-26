@@ -197,7 +197,6 @@ Drip matters in a fight: the better you look, the less they hurt.
 ./gradlew :fabric:runClient              # dev client (Fabric)
 ./gradlew :neoforge:runClient            # dev client (NeoForge)
 ./gradlew :fabric:runClientGameTest      # client screenshot tests
-FEMBOYMOD_DOCS_SHOTS=1 ./gradlew :fabric:runClientGameTest && python3 tools/docs/make_readme_images.py   # README images
 ```
 
 Architectury multi-loader: `api` / `common` / `fabric` / `neoforge` / `example-addon`, Java 25, Mojang mappings. Changes: [`CHANGELOG.md`](CHANGELOG.md).
@@ -207,7 +206,7 @@ Architectury multi-loader: `api` / `common` / `fabric` / `neoforge` / `example-a
 ## Credits & Notes
 
 - **Author:** eliasnvx
-- Screenshots are real in-game renders; banners, headers and the pixel font are drawn by `tools/docs/make_readme_images.py`. The mod icon and some item icons started as AI drafts (OpenAI image models) and were picked and cleaned up by hand; every other texture, model and page image is procedural or hand-made.
+- Screenshots are real in-game renders. The mod icon and some item icons started as AI drafts and were picked and cleaned up by hand; everything else is procedural or hand-made.
 - SFW, no third-party brands or characters, no flashing effects. Pride content appears only as optional colorways and badges.
 
 ## License
