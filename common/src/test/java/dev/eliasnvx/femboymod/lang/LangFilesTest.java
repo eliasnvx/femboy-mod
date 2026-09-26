@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LangFilesTest {
 
     @ParameterizedTest
-    @ValueSource(strings = {"ru_ru", "es_es"})
+    @ValueSource(strings = {"ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn"})
     void sameKeysAsEnglish(String lang) throws IOException {
         JsonObject english = read("en_us");
         JsonObject other = read(lang);
@@ -28,7 +28,26 @@ class LangFilesTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"en_us", "ru_ru", "es_es"})
+    @ValueSource(strings = {"ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn"})
+    void samePlaceholdersAsEnglish(String lang) throws IOException {
+        JsonObject english = read("en_us");
+        JsonObject other = read(lang);
+        Set<String> broken = new TreeSet<>();
+        english.entrySet().forEach(entry -> {
+            String translated = other.has(entry.getKey()) ? other.get(entry.getKey()).getAsString() : "";
+            if (count(entry.getValue().getAsString(), "%s") != count(translated, "%s")) {
+                broken.add(entry.getKey());
+            }
+        });
+        assertTrue(broken.isEmpty(), lang + " has a different number of %s in: " + broken);
+    }
+
+    private static int count(String text, String token) {
+        return text.split(java.util.regex.Pattern.quote(token), -1).length - 1;
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"en_us", "ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn"})
     void noEmptyValues(String lang) throws IOException {
         JsonObject json = read(lang);
         Set<String> empty = new TreeSet<>();
