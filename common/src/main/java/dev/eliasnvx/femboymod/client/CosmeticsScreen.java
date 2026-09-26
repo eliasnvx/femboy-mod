@@ -1,5 +1,18 @@
 package dev.eliasnvx.femboymod.client;
 
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.client.renderer.RenderPipelines;
+import java.util.List;
+import java.util.ArrayList;
+import dev.eliasnvx.femboymod.network.CycleArmorVisibilityPayload;
+import dev.eliasnvx.femboymod.cosmetic.ArmorHiding;
+import dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticsCatalog;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
+import dev.eliasnvx.femboymod.api.profile.PlayerProfile;
+import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
+import dev.eliasnvx.femboymod.api.FemboyApi;
 import dev.architectury.networking.NetworkManager;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.client.gui.FemboyGui;
@@ -36,11 +49,20 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
     private static final int LINE = 10;
     private static final int BAR_HEIGHT = 6;
 
-    private static final int PRESETS_W = 58;
+    private static final int PRESETS_W = 4 * FemboyGui.SLOT + 6;
     private static final int PRESETS_GAP = 2;
     private static final int PRESET_BUTTON_H = 16;
-    private static final int PRESET_APPLY_W = 32;
+    private static final int PRESET_APPLY_W = PRESETS_W - 8 - 2 - 16;
     private static final int PRESET_SAVE_W = 16;
+    /** Style Points, collection and the coupon button under the presets. */
+    private static final int STATS_GAP = 4;
+    /** Armor toggles under the coupon button: one slot per armor piece. */
+    private static final int ARMOR_ROW_GAP = 4;
+    private static final int STATS_H = 2 * LINE + PRESET_BUTTON_H + ARMOR_ROW_GAP + FemboyGui.SLOT + 6;
+    private static final String[] ARMOR_SPRITES = {"container/slot/helmet", "container/slot/chestplate",
+            "container/slot/leggings", "container/slot/boots"};
+    private static final int ARMOR_SHOWN_TEXT = 0xFFFFFFFF;
+    private static final int COUPON_W = PRESET_APPLY_W + 2 + PRESET_SAVE_W;
 
     public CosmeticsScreen(CosmeticsMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, CosmeticsMenu.WIDTH, menu.height());
@@ -65,6 +87,69 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
                     .tooltip(Tooltip.create(Component.translatable("gui.femboymod.wardrobe.save.tooltip")))
                     .build());
         }
+        int couponY = topPos + presetsBottom() + STATS_GAP + 2 * LINE;
+        int cost = FemboyConfig.common().stylePoints().couponCost();
+        addRenderableWidget(Button.builder(Component.translatable("gui.femboymod.outfit.coupon"), b -> click(CosmeticsMenu.REDEEM_BUTTON))
+                .bounds(x, couponY, COUPON_W, PRESET_BUTTON_H)
+                .tooltip(Tooltip.create(Component.translatable("gui.femboymod.outfit.coupon.tooltip", cost)))
+                .build());
+    }
+
+    /** Top-left of the armor toggle for {@code index} (0 head .. 3 feet), relative to the screen origin. */
+    private int armorX(int index) {
+        return imageWidth + PRESETS_GAP + 3 + index * FemboyGui.SLOT;
+    }
+
+    private static int armorY() {
+        return presetsBottom() + STATS_GAP + 2 * LINE + PRESET_BUTTON_H + ARMOR_ROW_GAP;
+    }
+
+    private int hoveredArmor(double mouseX, double mouseY) {
+        double y = mouseY - topPos - armorY();
+        if (y < 0 || y >= FemboyGui.SLOT) {
+            return -1;
+        }
+        for (int i = 0; i < ArmorHiding.ARMOR_SLOTS.size(); i++) {
+            double x = mouseX - leftPos - armorX(i);
+            if (x >= 0 && x < FemboyGui.SLOT) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /** Worn armor (or the empty silhouette) with the chosen visibility: crossed eye = hidden, open eye = shown, A = auto. */
+    private void extractArmorToggles(GuiGraphicsExtractor g, Player player, int mouseX, int mouseY) {
+        var inventory = CosmeticsManager.get(player);
+        int hovered = hoveredArmor(mouseX, mouseY);
+        for (int i = 0; i < ArmorHiding.ARMOR_SLOTS.size(); i++) {
+            EquipmentSlot armorSlot = ArmorHiding.ARMOR_SLOTS.get(i);
+            int x = armorX(i);
+            int y = armorY();
+            FemboyGui.slotFrame(g, x, y);
+            ItemStack worn = player.getItemBySlot(armorSlot);
+            if (worn.isEmpty()) {
+                g.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace(ARMOR_SPRITES[i]), x + 1, y + 1, 16, 16);
+            } else {
+                g.item(worn, x + 1, y + 1);
+            }
+            ArmorVisibility choice = inventory.armorVisibility(armorSlot);
+            if (ArmorHiding.isHidden(inventory, armorSlot, ArmorHiding.allowedOnClient())) {
+                FemboyGui.hiddenShade(g, x, y);
+            }
+            switch (choice) {
+                case HIDE -> FemboyGui.eye(g, x, y, true);
+                case SHOW -> FemboyGui.eye(g, x, y, false);
+                case AUTO -> g.text(font, "A", x + FemboyGui.EYE_X, y + 1, ARMOR_SHOWN_TEXT, true);
+            }
+            if (i == hovered) {
+                g.fill(x + 1, y + 1, x + FemboyGui.SLOT - 1, y + FemboyGui.SLOT - 1, 0x80FFFFFF);
+            }
+        }
+    }
+
+    private static int presetsBottom() {
+        return CosmeticsMenu.TOP + WardrobePresets.COUNT * (PRESET_BUTTON_H + 2) + 4;
     }
 
     private void click(int buttonId) {
@@ -78,8 +163,8 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         FemboyGui.panel(g, leftPos, topPos, imageWidth, imageHeight);
-        int presetsH = CosmeticsMenu.TOP + WardrobePresets.COUNT * (PRESET_BUTTON_H + 2) + 4;
-        FemboyGui.panel(g, leftPos + imageWidth + PRESETS_GAP, topPos, PRESETS_W, presetsH);
+        FemboyGui.panel(g, leftPos + imageWidth + PRESETS_GAP, topPos, PRESETS_W, presetsBottom());
+        FemboyGui.panel(g, leftPos + imageWidth + PRESETS_GAP, topPos + presetsBottom() + STATS_GAP - 4, PRESETS_W, STATS_H + 4);
         int dollX = leftPos + CosmeticsMenu.DOLL_X;
         int top = topPos + CosmeticsMenu.TOP;
         FemboyGui.inset(g, dollX, top, CosmeticsMenu.DOLL_W, CosmeticsMenu.SIDE_H, DOLL_BACKGROUND);
@@ -99,6 +184,17 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
         g.text(font, Component.translatable("gui.femboymod.wardrobe.presets"), imageWidth + PRESETS_GAP + 5, titleLabelY, FemboyGui.TEXT, false);
+        Player viewer = Minecraft.getInstance().player;
+        if (viewer != null) {
+            PlayerProfile profile = FemboyApi.get().getProfile(viewer);
+            int statsX = imageWidth + PRESETS_GAP + 5;
+            int statsY = presetsBottom() + STATS_GAP;
+            g.text(font, Component.translatable("gui.femboymod.outfit.style_points", profile.get(FemboyProfileFields.STYLE_POINTS)),
+                    statsX, statsY, FemboyGui.DRIP, false);
+            g.text(font, Component.translatable("gui.femboymod.outfit.collection", profile.get(FemboyProfileFields.COLLECTION).size(),
+                    CosmeticsCatalog.size()), statsX, statsY + LINE, FemboyGui.SET, false);
+            extractArmorToggles(g, viewer, mouseX, mouseY);
+        }
         extractHiddenState(g, mouseX, mouseY);
         Player player = Minecraft.getInstance().player;
         if (player == null) {
@@ -156,6 +252,11 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        int armor = hoveredArmor(event.x(), event.y());
+        if (armor >= 0) {
+            NetworkManager.sendToServer(new CycleArmorVisibilityPayload(ArmorHiding.ARMOR_SLOTS.get(armor)));
+            return true;
+        }
         Player player = Minecraft.getInstance().player;
         if (player != null) {
             for (Slot slot : menu.slots) {
@@ -171,6 +272,24 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
 
     @Override
     protected void extractTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        int armor = hoveredArmor(mouseX, mouseY);
+        Player viewer = Minecraft.getInstance().player;
+        if (armor >= 0 && viewer != null) {
+            EquipmentSlot armorSlot = ArmorHiding.ARMOR_SLOTS.get(armor);
+            var inventory = CosmeticsManager.get(viewer);
+            String state = inventory.armorVisibility(armorSlot).getSerializedName();
+            List<Component> lines = new ArrayList<>();
+            lines.add(Component.translatable("gui.femboymod.armor." + armorSlot.getName()));
+            lines.add(Component.translatable("gui.femboymod.armor.state." + state,
+                    Component.translatable(ArmorHiding.isHidden(inventory, armorSlot, ArmorHiding.allowedOnClient())
+                            ? "gui.femboymod.armor.hidden" : "gui.femboymod.armor.shown")));
+            if (!ArmorHiding.allowedOnClient()) {
+                lines.add(Component.translatable("gui.femboymod.armor.forbidden"));
+            }
+            lines.add(Component.translatable("gui.femboymod.armor.click"));
+            g.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
+            return;
+        }
         if (hoveredSlot instanceof CosmeticSlot eyeSlot && eyeSlot.hasItem()
                 && FemboyGui.onEye(mouseX - leftPos, mouseY - topPos, eyeSlot.x - 1, eyeSlot.y - 1)) {
             Player player = Minecraft.getInstance().player;

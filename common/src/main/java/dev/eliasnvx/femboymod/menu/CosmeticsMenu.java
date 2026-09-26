@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.menu;
 
+import dev.eliasnvx.femboymod.profile.StyleCoupons;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.registry.FemboyMenus;
@@ -47,10 +48,12 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
     private static final List<Identifier> LEFT = List.of(FemboySlots.HEAD_ACCESSORY, FemboySlots.FACE, FemboySlots.NECK,
             FemboySlots.OUTFIT_TOP, FemboySlots.HANDS);
     private static final List<Identifier> RIGHT = List.of(FemboySlots.BACK, FemboySlots.TAIL, FemboySlots.OUTFIT_BOTTOM,
-            FemboySlots.LEGS_OVERLAY);
+            FemboySlots.WAIST, FemboySlots.LEGS_OVERLAY);
 
     public static final int APPLY_BUTTON = 0;
     public static final int SAVE_BUTTON = WardrobePresets.COUNT;
+    /** Trade Style Points for one Style Coupon. */
+    public static final int REDEEM_BUTTON = 2 * WardrobePresets.COUNT;
     /** Presets applied from the outfit screen look only in the player's inventory. */
     private static final Container NO_WARDROBE = new SimpleContainer(0);
 
@@ -144,6 +147,10 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
     /** Buttons 0..4 put on preset N (items come from the inventory), 5..9 save the current outfit as preset N. */
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (player instanceof ServerPlayer serverPlayer && id == REDEEM_BUTTON) {
+            StyleCoupons.redeem(serverPlayer);
+            return true;
+        }
         if (player instanceof ServerPlayer serverPlayer && id >= 0 && id < 2 * WardrobePresets.COUNT) {
             if (id < SAVE_BUTTON) {
                 Outfits.apply(serverPlayer, NO_WARDROBE, id - APPLY_BUTTON);
