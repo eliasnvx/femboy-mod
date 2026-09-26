@@ -14,5 +14,6 @@ Format: Keep a Changelog. SemVer for the API is independent of the mod version.
 - Datapack registries `CosmeticStats` (`cosmetic_stats`), `SetBonus` (`set_bonus`), `DripRules` (`drip_rules`), `CharmStats` (`charm`)
 - Events `DripLevelChangedEvent`, `SetBonusEvent`, `BackpackOpenEvent`, `CharmsChangedEvent`, `ChatTransformEvent`, `PinkCreeperBlastEvent`
 - Client: `CosmeticRenderer` (+ `Factory`), `CosmeticRenderContext`, `CosmeticMotion`, `ChatTransformer`; registries `cosmeticRenderers()`, `chatTransformers()`
+- `CosmeticsView#isHidden(slot)`: worn but hidden by the wearer; renderers must skip it
 - Combat: `DripDamage` data pack registry (`drip_damage`): mob damage to players scaled by Drip tier; effect type `femboymod:damage_bonus`
 - `ColorwayPattern` chevron (`Chevron`), `Colorway#colorAt`

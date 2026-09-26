@@ -3,6 +3,11 @@ package dev.eliasnvx.femboymod.menu;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.registry.FemboyMenus;
+import dev.eliasnvx.femboymod.wardrobe.Outfits;
+import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -43,6 +48,11 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
             FemboySlots.OUTFIT_TOP, FemboySlots.HANDS);
     private static final List<Identifier> RIGHT = List.of(FemboySlots.BACK, FemboySlots.TAIL, FemboySlots.OUTFIT_BOTTOM,
             FemboySlots.LEGS_OVERLAY);
+
+    public static final int APPLY_BUTTON = 0;
+    public static final int SAVE_BUTTON = WardrobePresets.COUNT;
+    /** Presets applied from the outfit screen look only in the player's inventory. */
+    private static final Container NO_WARDROBE = new SimpleContainer(0);
 
     private final CosmeticsContainer cosmetics;
     private final int cosmeticSlotCount;
@@ -129,6 +139,20 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
             slot.setChanged();
         }
         return original;
+    }
+
+    /** Buttons 0..4 put on preset N (items come from the inventory), 5..9 save the current outfit as preset N. */
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (player instanceof ServerPlayer serverPlayer && id >= 0 && id < 2 * WardrobePresets.COUNT) {
+            if (id < SAVE_BUTTON) {
+                Outfits.apply(serverPlayer, NO_WARDROBE, id - APPLY_BUTTON);
+            } else {
+                Outfits.save(serverPlayer, id - SAVE_BUTTON);
+            }
+            broadcastChanges();
+        }
+        return true;
     }
 
     @Override

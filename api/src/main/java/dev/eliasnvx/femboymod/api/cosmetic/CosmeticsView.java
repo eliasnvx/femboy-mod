@@ -36,4 +36,15 @@ public interface CosmeticsView {
     default boolean isEmpty() {
         return all().isEmpty();
     }
+
+    /**
+     * Whether the wearer hid this slot: the item stays worn (effects, Drip, set bonuses still count) but
+     * renderers must not draw it. Built-in renderers already skip hidden slots.
+     *
+     * @param slot the slot id
+     * @return {@code true} if hidden
+     */
+    default boolean isHidden(Identifier slot) {
+        return false;
+    }
 }

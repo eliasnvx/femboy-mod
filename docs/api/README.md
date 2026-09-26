@@ -184,6 +184,7 @@ public void submit(CosmeticRenderContext ctx) {
     pose.popPose();
 }
 ```
+- Skip slots the wearer hid: `api.common().getCosmetics(player).isHidden(slot)` (built-in renderers do this already; custom renderers get only visible items).
 - The factory runs once per resource reload. `submit` runs every frame for every player who wears the item, so don't allocate in it.
 - `ctx.stack()` is the worn item: read the colorway with `api.common().getColorway(stack)`.
 - `ctx.state()` is the player's `AvatarRenderState`.

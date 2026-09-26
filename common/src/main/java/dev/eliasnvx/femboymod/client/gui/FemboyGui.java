@@ -60,8 +60,45 @@ public final class FemboyGui {
         g.fill(x + 1, y + 1, x + w - 1, y + h - 1, fill);
     }
 
-    /** Worn item or the slot's empty silhouette, plus a hover highlight. */
-    public static void cosmeticSlot(GuiGraphicsExtractor g, Font font, Identifier slot, ItemStack stack, int x, int y, boolean hovered) {
+    /** Eye toggle in a slot's top-right corner (frame origin x, y). */
+    public static final int EYE_X = 11;
+    public static final int EYE_Y = 1;
+    public static final int EYE_W = 6;
+    public static final int EYE_H = 5;
+    private static final int EYE_BACK = 0xE0303030;
+    private static final int EYE_WHITE = 0xFFF2F2F2;
+    private static final int EYE_PUPIL = 0xFF202020;
+    private static final int EYE_CROSS = 0xFFE05A7A;
+    private static final int HIDDEN_SHADE = 0x90202028;
+
+    public static boolean onEye(double mouseX, double mouseY, int x, int y) {
+        return mouseX >= x + EYE_X && mouseX < x + EYE_X + EYE_W && mouseY >= y + EYE_Y && mouseY < y + EYE_Y + EYE_H;
+    }
+
+    /** Open eye (visible) or a crossed one (hidden). */
+    public static void eye(GuiGraphicsExtractor g, int x, int y, boolean hidden) {
+        int ex = x + EYE_X;
+        int ey = y + EYE_Y;
+        g.fill(ex, ey, ex + EYE_W, ey + EYE_H, EYE_BACK);
+        if (hidden) {
+            g.fill(ex + 1, ey + 2, ex + EYE_W - 1, ey + 3, EYE_WHITE);
+            for (int i = 0; i < EYE_H; i++) {
+                g.fill(ex + i + 1, ey + i, ex + i + 2, ey + i + 1, EYE_CROSS);
+            }
+        } else {
+            g.fill(ex + 1, ey + 1, ex + EYE_W - 1, ey + EYE_H - 1, EYE_WHITE);
+            g.fill(ex + 2, ey + 1, ex + 4, ey + EYE_H - 1, EYE_PUPIL);
+        }
+    }
+
+    /** Darkens a hidden item inside its slot. */
+    public static void hiddenShade(GuiGraphicsExtractor g, int x, int y) {
+        g.fill(x + 1, y + 1, x + SLOT - 1, y + SLOT - 1, HIDDEN_SHADE);
+    }
+
+    /** Worn item or the slot's empty silhouette, plus a hover highlight and the eye toggle. */
+    public static void cosmeticSlot(GuiGraphicsExtractor g, Font font, Identifier slot, ItemStack stack, int x, int y, boolean hovered,
+                                    boolean hidden) {
         slotFrame(g, x, y);
         if (!stack.isEmpty()) {
             g.item(stack, x + 1, y + 1);
@@ -70,8 +107,14 @@ public final class FemboyGui {
             CosmeticsManager.slotType(slot).emptySlotIcon()
                     .ifPresent(icon -> g.blitSprite(RenderPipelines.GUI_TEXTURED, icon, x + 1, y + 1, 16, 16));
         }
+        if (hidden && !stack.isEmpty()) {
+            hiddenShade(g, x, y);
+        }
         if (hovered) {
             g.fill(x + 1, y + 1, x + SLOT - 1, y + SLOT - 1, HOVER);
+        }
+        if (hidden || hovered && !stack.isEmpty()) {
+            eye(g, x, y, hidden);
         }
     }
 

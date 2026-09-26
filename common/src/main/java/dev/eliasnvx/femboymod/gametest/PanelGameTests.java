@@ -1,9 +1,13 @@
 package dev.eliasnvx.femboymod.gametest;
 
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.menu.CosmeticPanelActions;
+import dev.eliasnvx.femboymod.menu.CosmeticsMenu;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -13,6 +17,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
@@ -22,7 +27,8 @@ public final class PanelGameTests {
 
     public static final List<CosmeticGameTests.Entry> ALL = List.of(
             new CosmeticGameTests.Entry("panel_equip_unequip_swap", PanelGameTests::equipUnequipSwap),
-            new CosmeticGameTests.Entry("panel_rejects_and_quick_move", PanelGameTests::rejectsAndQuickMove));
+            new CosmeticGameTests.Entry("panel_rejects_and_quick_move", PanelGameTests::rejectsAndQuickMove),
+            new CosmeticGameTests.Entry("shift_click_equips_hide_and_presets", PanelGameTests::shiftClickHideAndPresets));
 
     private PanelGameTests() {
     }
@@ -74,6 +80,35 @@ public final class PanelGameTests {
             player.inventoryMenu.setCarried(socks(0xFFFFFF));
             helper.assertFalse(CosmeticPanelActions.click(player, FemboySlots.LEGS_OVERLAY, false), "ignored while a chest is open");
             player.closeContainer();
+        });
+    }
+
+    /** Shift-click equips from the inventory; hiding survives a save; presets move items, never copy them. */
+    public static void shiftClickHideAndPresets(GameTestHelper helper) {
+        WearableGameTests.withPlayer(helper, player -> {
+            player.setGameMode(GameType.SURVIVAL);
+            player.getInventory().setItem(9, socks(0xF5A9B8));
+            player.inventoryMenu.quickMoveStack(player, 9);
+            helper.assertTrue(CosmeticsManager.get(player).get(FemboySlots.LEGS_OVERLAY).is(FemboyItems.PROGRAMMING_SOCKS.get()), "shift-click wears the socks");
+            helper.assertTrue(player.getInventory().getItem(9).isEmpty(), "and takes them out of the inventory");
+
+            CosmeticsManager.setHidden(player, FemboySlots.LEGS_OVERLAY, true);
+            CosmeticInventory saved = CosmeticInventory.CODEC.parse(JsonOps.INSTANCE,
+                    CosmeticInventory.CODEC.encodeStart(helper.getLevel().registryAccess().createSerializationContext(JsonOps.INSTANCE),
+                            CosmeticsManager.get(player)).getOrThrow()).getOrThrow();
+            helper.assertTrue(saved.isHidden(FemboySlots.LEGS_OVERLAY), "hidden flag survives a save");
+            helper.assertFalse(CosmeticInventory.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString("{}")).getOrThrow()
+                    .isHidden(FemboySlots.LEGS_OVERLAY), "old saves (plain slot map) still load");
+            helper.assertFalse(CosmeticPanelActions.creativeSet(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get())),
+                    "the creative packet does nothing in survival");
+
+            CosmeticsMenu menu = new CosmeticsMenu(0, player.getInventory());
+            menu.clickMenuButton(player, CosmeticsMenu.SAVE_BUTTON);          // preset 1 = the socks
+            CosmeticPanelActions.click(player, FemboySlots.LEGS_OVERLAY, true); // take them off into the inventory
+            helper.assertTrue(CosmeticsManager.get(player).get(FemboySlots.LEGS_OVERLAY).isEmpty(), "socks taken off");
+            menu.clickMenuButton(player, CosmeticsMenu.APPLY_BUTTON);          // put preset 1 back on
+            helper.assertTrue(CosmeticsManager.get(player).get(FemboySlots.LEGS_OVERLAY).is(FemboyItems.PROGRAMMING_SOCKS.get()), "preset puts the socks on");
+            helper.assertValueEqual(count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "moved from the inventory, not copied");
         });
     }
 
