@@ -58,4 +58,15 @@ public final class PlatformHelper {
     public static void setCaffeineLog(Player player, dev.eliasnvx.femboymod.energy.CaffeineLog log) {
         throw new AssertionError();
     }
+
+    /** Player profile (persistent, kept on death). Never null. */
+    @ExpectPlatform
+    public static dev.eliasnvx.femboymod.profile.ProfileData getProfile(Player player) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static void setProfile(Player player, dev.eliasnvx.femboymod.profile.ProfileData profile) {
+        throw new AssertionError();
+    }
 }

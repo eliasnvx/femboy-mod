@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 12
+  },
+  "gives": {
+    "id": "femboymod:style_coupon"
+  },
+  "max_uses": 4,
+  "xp": 5,
+  "reputation_discount": 0.0
+}

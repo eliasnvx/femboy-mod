@@ -6,7 +6,12 @@ import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticsView;
 import dev.eliasnvx.femboymod.api.event.FemboyEventBus;
+import dev.eliasnvx.femboymod.api.profile.PlayerProfile;
+import dev.eliasnvx.femboymod.api.profile.ProfileField;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
+import dev.eliasnvx.femboymod.profile.Profiles;
+import dev.eliasnvx.femboymod.profile.StylePoints;
+import net.minecraft.server.level.ServerPlayer;
 import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.api.drip.DripLevel;
 import dev.eliasnvx.femboymod.api.effect.CosmeticCondition;
@@ -41,6 +46,8 @@ public final class FemboyApiImpl implements FemboyApi {
             new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "cosmetic_effect_type"));
     private final SimpleApiRegistry<MapCodec<? extends CosmeticCondition>> conditionTypes =
             new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "cosmetic_condition_type"));
+    private final SimpleApiRegistry<ProfileField<?>> profileFields =
+            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "profile_field"));
 
     @Override
     public String apiVersion() {
@@ -105,7 +112,23 @@ public final class FemboyApiImpl implements FemboyApi {
                 .nonEmptyItemCopyStream().toList();
     }
 
+    @Override
+    public ApiRegistry<ProfileField<?>> profileFields() {
+        return profileFields;
+    }
+
+    @Override
+    public PlayerProfile getProfile(Player player) {
+        return Profiles.get(player);
+    }
+
+    @Override
+    public boolean addStylePoints(ServerPlayer player, int amount, Identifier reason) {
+        return StylePoints.add(player, amount, reason);
+    }
+
     void freezeRegistries() {
+        profileFields.freeze();
         cosmeticSlots.freeze();
         effectTypes.freeze();
         conditionTypes.freeze();
