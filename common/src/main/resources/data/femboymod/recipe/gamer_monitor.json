@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:black_stained_glass_pane",
+    "R": "minecraft:redstone",
+    "Q": "femboymod:rose_quartz"
+  },
+  "pattern": [
+    "IGI",
+    "IRI",
+    " Q "
+  ],
+  "result": {
+    "id": "femboymod:gamer_monitor"
+  }
+}

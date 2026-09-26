@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": "minecraft:black_stained_glass_pane",
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:crafting_table",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "IGI",
+    "ICI",
+    "IRI"
+  ],
+  "result": {
+    "id": "femboymod:terminal"
+  }
+}

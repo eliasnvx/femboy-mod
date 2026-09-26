@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": "minecraft:glass_pane",
+    "Q": "femboymod:rose_quartz",
+    "D": "minecraft:glowstone_dust"
+  },
+  "pattern": [
+    "GGG",
+    "QDQ"
+  ],
+  "result": {
+    "id": "femboymod:led_strip",
+    "count": 6
+  }
+}

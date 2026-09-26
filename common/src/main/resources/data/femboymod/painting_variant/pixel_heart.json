@@ -1,0 +1,13 @@
+{
+  "asset_id": "femboymod:pixel_heart",
+  "author": {
+    "color": "gray",
+    "translate": "painting.femboymod.pixel_heart.author"
+  },
+  "height": 1,
+  "title": {
+    "color": "light_purple",
+    "translate": "painting.femboymod.pixel_heart.title"
+  },
+  "width": 1
+}

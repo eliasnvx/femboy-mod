@@ -1,0 +1,13 @@
+{
+  "asset_id": "femboymod:pastel_horizon",
+  "author": {
+    "color": "gray",
+    "translate": "painting.femboymod.pastel_horizon.author"
+  },
+  "height": 2,
+  "title": {
+    "color": "light_purple",
+    "translate": "painting.femboymod.pastel_horizon.title"
+  },
+  "width": 2
+}

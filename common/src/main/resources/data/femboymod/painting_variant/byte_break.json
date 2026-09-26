@@ -1,0 +1,13 @@
+{
+  "asset_id": "femboymod:byte_break",
+  "author": {
+    "color": "gray",
+    "translate": "painting.femboymod.byte_break.author"
+  },
+  "height": 2,
+  "title": {
+    "color": "light_purple",
+    "translate": "painting.femboymod.byte_break.title"
+  },
+  "width": 1
+}

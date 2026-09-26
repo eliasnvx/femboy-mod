@@ -1,0 +1,13 @@
+{
+  "asset_id": "femboymod:stay_warm",
+  "author": {
+    "color": "gray",
+    "translate": "painting.femboymod.stay_warm.author"
+  },
+  "height": 2,
+  "title": {
+    "color": "light_purple",
+    "translate": "painting.femboymod.stay_warm.title"
+  },
+  "width": 1
+}
