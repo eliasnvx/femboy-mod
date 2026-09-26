@@ -68,6 +68,7 @@ public final class CosmeticGameTests {
         all.addAll(BackpackGameTests.ALL);
         all.addAll(WorldGameTests.ALL);
         all.addAll(MobGameTests.ALL);
+        all.addAll(PanelGameTests.ALL);
         return all;
     }
 

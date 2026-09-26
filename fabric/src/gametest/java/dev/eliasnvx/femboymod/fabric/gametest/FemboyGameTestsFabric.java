@@ -3,6 +3,7 @@ package dev.eliasnvx.femboymod.fabric.gametest;
 import dev.eliasnvx.femboymod.gametest.BackpackGameTests;
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
 import dev.eliasnvx.femboymod.gametest.MobGameTests;
+import dev.eliasnvx.femboymod.gametest.PanelGameTests;
 import dev.eliasnvx.femboymod.gametest.WorldGameTests;
 import dev.eliasnvx.femboymod.gametest.WearableGameTests;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -82,6 +83,16 @@ public final class FemboyGameTestsFabric {
     @GameTest
     public void fashionCriticJudgesDrip(GameTestHelper helper) {
         MobGameTests.fashionCriticJudgesDrip(helper);
+    }
+
+    @GameTest
+    public void panelEquipUnequipSwap(GameTestHelper helper) {
+        PanelGameTests.equipUnequipSwap(helper);
+    }
+
+    @GameTest
+    public void panelRejectsAndQuickMove(GameTestHelper helper) {
+        PanelGameTests.rejectsAndQuickMove(helper);
     }
 
     @GameTest
@@ -186,7 +197,7 @@ public final class FemboyGameTestsFabric {
 
     @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 34, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 36, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

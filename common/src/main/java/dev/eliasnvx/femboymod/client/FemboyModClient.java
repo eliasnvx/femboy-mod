@@ -16,6 +16,7 @@ import dev.eliasnvx.femboymod.client.chat.UwuChat;
 import dev.eliasnvx.femboymod.block.FemboyBlocks;
 import dev.eliasnvx.femboymod.client.render.ClothingRackRenderer;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
+import dev.eliasnvx.femboymod.client.gui.CosmeticsPanel;
 import dev.eliasnvx.femboymod.client.render.entity.BugRenderer;
 import dev.eliasnvx.femboymod.client.render.entity.CaffeinatedZombieRenderer;
 import dev.eliasnvx.femboymod.client.render.entity.FashionCriticRenderer;
@@ -57,12 +58,6 @@ public final class FemboyModClient {
     public static final KeyMapping OPEN_BACKPACK = new KeyMapping(
             "key.femboymod.backpack", InputConstants.Type.KEYBOARD, InputConstants.KEY_B, KeyMapping.Category.INVENTORY);
 
-    private static final int INVENTORY_WIDTH = 176;
-    private static final int INVENTORY_HEIGHT = 166;
-    private static final int BUTTON_X = 126;
-    private static final int BUTTON_Y = 61;
-    private static final int BUTTON_WIDTH = 20;
-    private static final int BUTTON_HEIGHT = 18;
 
     private FemboyModClient() {
     }
@@ -90,14 +85,8 @@ public final class FemboyModClient {
         });
 
         ClientGuiEvent.INIT_POST.register((screen, access) -> {
-            if (screen instanceof InventoryScreen) {
-                int left = (screen.width - INVENTORY_WIDTH) / 2;
-                int top = (screen.height - INVENTORY_HEIGHT) / 2;
-                access.addRenderableWidget(Button.builder(Component.translatable("gui.femboymod.cosmetics_button"),
-                                button -> requestCosmeticsScreen())
-                        .bounds(left + BUTTON_X, top + BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT)
-                        .tooltip(Tooltip.create(Component.translatable("gui.femboymod.cosmetics_button.tooltip")))
-                        .build());
+            if (screen instanceof InventoryScreen inventory) {
+                access.addRenderableWidget(new CosmeticsPanel(inventory, FemboyModClient::requestCosmeticsScreen));
             }
         });
 
