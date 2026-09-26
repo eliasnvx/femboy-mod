@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 4
+  },
+  "gives": {
+    "id": "femboymod:pride_badge"
+  },
+  "max_uses": 4,
+  "xp": 5,
+  "reputation_discount": 0.0
+}

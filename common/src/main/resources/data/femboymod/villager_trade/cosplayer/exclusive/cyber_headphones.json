@@ -1,0 +1,18 @@
+{
+  "wants": {
+    "id": "femboymod:style_coupon",
+    "count": 4
+  },
+  "gives": {
+    "id": "femboymod:cat_ear_headphones",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFFFFF",
+        "pattern": "femboymod:cyber_pastel"
+      }
+    }
+  },
+  "max_uses": 1,
+  "xp": 25,
+  "reputation_discount": 0.0
+}

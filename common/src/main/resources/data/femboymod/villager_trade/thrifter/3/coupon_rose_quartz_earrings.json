@@ -1,0 +1,18 @@
+{
+  "wants": {
+    "id": "femboymod:style_coupon",
+    "count": 3
+  },
+  "gives": {
+    "id": "femboymod:rose_quartz_earrings",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFD1EC",
+        "pattern": "femboymod:glitter"
+      }
+    }
+  },
+  "max_uses": 2,
+  "xp": 15,
+  "reputation_discount": 0.05
+}

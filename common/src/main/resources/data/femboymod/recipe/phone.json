@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:glass_pane",
+    "R": "minecraft:redstone",
+    "D": "minecraft:pink_dye"
+  },
+  "pattern": [
+    "IDI",
+    "IGI",
+    "IRI"
+  ],
+  "result": {
+    "id": "femboymod:phone"
+  }
+}

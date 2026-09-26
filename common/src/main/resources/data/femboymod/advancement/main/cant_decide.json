@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "id": "femboymod:oversized_hoodie"
+    },
+    "title": {
+      "translate": "advancements.femboymod.cant_decide.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.cant_decide.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "outfit_changes",
+        "min": 10
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

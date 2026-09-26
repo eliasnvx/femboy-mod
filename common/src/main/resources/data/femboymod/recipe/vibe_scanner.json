@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "Q": "femboymod:rose_quartz",
+    "R": "minecraft:redstone",
+    "G": "minecraft:glowstone_dust",
+    "S": "minecraft:smooth_stone_slab"
+  },
+  "pattern": [
+    "IGI",
+    "IRI",
+    "QSQ"
+  ],
+  "result": {
+    "id": "femboymod:vibe_scanner"
+  }
+}
