@@ -150,7 +150,7 @@ No code needed: `data/<ns>/femboymod/colorway/<name>.json`, lang key `colorway.<
 - `base` / `secondary` are the item's dye colors.
 - An optional `"chevron"` block adds a Progress-style chevron (see `ColorwayPattern.Chevron` and `data/femboymod/femboymod/colorway/pride_progress.json`).
 - An optional `"shimmer": {"period_ticks": 120}` makes the stripe colors flow smoothly from stripe to stripe (see `data/femboymod/femboymod/colorway/glitter.json`, example: `candy_shimmer.json`). The period is at least 40 ticks, so a pattern can never flash. Custom renderers pass a time to `Colorway#stripeColor(index, ticks)` / `colorAt(u, v, ticks)`; 0 gives the resting colors (use it when the player turned RGB animations off).
-- Patterns only become colors on screen. Keep them free of text and slogans (SPEC §1.1).
+- Patterns only become colors on screen. Keep them free of text and slogans.
 
 ## Custom effect and condition types
 ```java
@@ -201,7 +201,7 @@ public void submit(CosmeticRenderContext ctx) {
 If your item has no explicit renderer, you can draw it without code. Put the files at
 `assets/<ns>/geckolib/models/cosmetic/<item path>.geo.json` and `assets/<ns>/textures/cosmetic/<item path>.png`
 (an optional `_dyeable.png` is multiplied by the colorway; an optional `geckolib/animations/cosmetic/<item path>.animation.json` plays a looping `idle`).
-Details and bone names: [docs/art/blockbench.md](../art/blockbench.md).
+Run `./gradlew :common:exportBlockbenchStarters` to get starting `.geo.json` files with the bone names the mod expects.
 
 ## Chat transformers
 ```java
@@ -286,5 +286,5 @@ Per-world switches for admins (`/gamerule femboymod:<name> <value>`); a feature 
 
 ## Rules
 - Never touch classes outside `dev.eliasnvx.femboymod.api`.
-- Content must be SFW and free of third-party brands (SPEC §1.1). Addons that break this are not listed or supported.
+- Content must be SFW and free of third-party brands. Addons that break this are not listed or supported.
 - Report API gaps as issues instead of using mixins into femboymod.

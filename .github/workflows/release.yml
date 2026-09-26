@@ -1,6 +1,6 @@
 name: release
 
-# Tag v<mod_version> (e.g. v1.0.0) after the release checklist (docs/release-checklist.md) is done.
+# Tag v<mod_version> (e.g. v1.0.0).
 on:
   push:
     tags: ["v*"]
