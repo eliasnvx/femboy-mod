@@ -71,6 +71,9 @@ new Item(new Item.Properties().setId(key).stacksTo(1)
 - Players wear it by right-clicking it or through the Cosmetics screen. The server checks everything, and `CosmeticEquipEvent` can cancel it.
 - Dyeable: add the item to `#femboymod:dyeable_cosmetics` and write a `crafting_dye` recipe (see `data/femboymod/recipe/*_dyed.json`). The colorway ends up in the `femboymod:colorway` component.
 
+## Armor under the outfit
+Vanilla armor would draw over cosmetics, so armor pieces a worn slot covers are hidden (visual only, the armor still protects). Give your slot type the armor it covers: `new CosmeticSlotType(order, icon, Set.of(EquipmentSlot.CHEST))`. Players can override each piece (`ArmorVisibility` AUTO / HIDE / SHOW, read with `CosmeticsView#armorVisibility`); servers can forbid hiding with the `femboymod:allow_hidden_armor` game rule.
+
 ## A cosmetic slot
 ```java
 api.cosmeticSlots().register(id("pin"), new CosmeticSlotType(1000)); // sort order; built-ins use multiples of 100
@@ -98,6 +101,9 @@ Built-in effect types:
 | `femboymod:step_sound` | `sound`, `distance` (blocks walked between sounds) |
 | `femboymod:follow_passive` | `radius`, `speed`, `interval`, `stop_distance`, `followers` (entity tag/list, default `#femboymod:cute_followers`), `max_followers` (3) |
 | `femboymod:glow_hostiles` | `radius` (client-side outline only) |
+| `femboymod:night` (condition) | true while it's dark outside in the wearer's dimension |
+| `femboymod:glow_friends` | `radius`, `teammates_only` (true: only your scoreboard team, or everyone if you have none); client-side outline |
+| `femboymod:muffle_sounds` | `sounds` (sound event ids), `volume` (0..1); client-side, for the wearer |
 | `femboymod:damage_bonus` | `targets` (entity id, list or tag), `multiplier`: the wearer hits those mobs harder |
 
 Built-in conditions (`"when"`): `femboymod:cold_biome`, `femboymod:crouching`, `femboymod:sprinting`.
@@ -143,6 +149,7 @@ No code needed: `data/<ns>/femboymod/colorway/<name>.json`, lang key `colorway.<
 ```
 - `base` / `secondary` are the item's dye colors.
 - An optional `"chevron"` block adds a Progress-style chevron (see `ColorwayPattern.Chevron` and `data/femboymod/femboymod/colorway/pride_progress.json`).
+- An optional `"shimmer": {"period_ticks": 120}` makes the stripe colors flow smoothly from stripe to stripe (see `data/femboymod/femboymod/colorway/glitter.json`, example: `candy_shimmer.json`). The period is at least 40 ticks, so a pattern can never flash. Custom renderers pass a time to `Colorway#stripeColor(index, ticks)` / `colorAt(u, v, ticks)`; 0 gives the resting colors (use it when the player turned RGB animations off).
 - Patterns only become colors on screen. Keep them free of text and slogans (SPEC §1.1).
 
 ## Custom effect and condition types
@@ -220,8 +227,52 @@ Subscribe with `api.events().addListener(EventClass.class, handler)`. You can pa
 | `CharmsChangedEvent` | server | no | a backpack's charms changed |
 | `ChatTransformEvent` | client | yes | after chat transformers ran, before signing (cancel = send the original) |
 | `PinkCreeperBlastEvent` | server | yes | a Pink Creeper is about to explode |
+| `StylePointsEvent` | server | yes | before Style Points change (amount can be changed: bonus, clan tax) |
+| `CollectionUnlockEvent` | server | no | a player wore a cosmetic item for the first time |
+| `CriticReviewEvent` | server | no | the Fashion Critic reviewed a player (tier, impressed) |
+| `SetupRatedEvent` | server | no | a Gamer Chair setup was rated (stars) |
+| `EnergyDrinkEvent` | server | no | a player drank Byte Energy |
+| `VibeCheckEvent` | server | no | a Vibe Check Scanner rated a player (score can be changed) |
 
 Handlers of cancellable events should only look and decide. Do the actual work in an event that fires after the change, such as `CosmeticChangedEvent`.
+
+## Player profile
+Every player has one persistent profile (kept on death) for statistics and addon data, so addons don't need their own storage.
+
+```java
+public static final ProfileField<String> CLAN = ProfileField.of(
+        Identifier.fromNamespaceAndPath("myclans", "clan"), Codec.STRING, "", true); // true = synced to the owner
+
+// in onInitialize
+api.profileFields().register(CLAN.id(), CLAN);
+
+// server side
+PlayerProfile profile = api.getProfile(player);
+profile.set(CLAN, "pink_squad");
+int wins = profile.update(MY_WINS, w -> w + 1);
+```
+
+- Values are stored with the field's codec; unset or broken values read as the default. Fields of a removed addon are kept.
+- Writes only on the server; synced fields reach the owner's client (for HUDs and screens).
+- Built-in fields: `FemboyProfileFields` (Style Points, lifetime points, best Drip, equips, collection, critic reviews, energy drinks, duck sessions, best setup rating).
+
+## Style Points
+The shared currency for style: earned for worn set bonuses, impressing the critic, new cosmetics in the collection and the rubber duck (amounts in the config, `style_points`). Players trade them for Style Coupons in the Outfit screen; the Thrifter accepts coupons.
+
+- `api.addStylePoints(player, amount, reason)`: positive earns, negative spends; returns false if refused.
+- `StylePointsEvent` lets you change the amount or cancel. `FemboyProfileFields.STYLE_POINTS_EARNED` never decreases: use it for seasonal rankings.
+- Earning stops when the world's `femboymod:style_points` game rule is off.
+
+## Game rules
+Per-world switches for admins (`/gamerule femboymod:<name> <value>`); a feature runs only if the config allows it too.
+
+| Rule | Default | Effect |
+|---|---|---|
+| `femboymod:style_points` | true | players earn Style Points |
+| `femboymod:set_bonuses` | true | set bonuses apply |
+| `femboymod:keep_cosmetics` | false | worn cosmetics stay on death |
+| `femboymod:allow_hidden_armor` | true | players may hide armor under their outfit (visual only); off = armor always drawn |
+| `femboymod:drip_pvp_percent` | 0 | PvP: % more damage per Drip tier above the victim (less when below); 0 = off |
 
 ## Queries
 | Method | Returns |
@@ -231,6 +282,7 @@ Handlers of cancellable events should only look and decide. Do the actual work i
 | `getDripLevel(player)` | `DripLevel(level, tier)` |
 | `getActiveSetBonuses(player)` | ids of active set bonuses |
 | `getCharms(backpack)` | charms in a backpack stack |
+| `getProfile(player)` | the player's `PlayerProfile` |
 
 ## Rules
 - Never touch classes outside `dev.eliasnvx.femboymod.api`.
