@@ -30,7 +30,8 @@ public final class ExampleAddonGameTests {
             new Entry("effect_types_registered", ExampleAddonGameTests::effectTypesRegistered),
             new Entry("friendship_set_bonus_loaded", ExampleAddonGameTests::friendshipSetBonusLoaded),
             new Entry("pin_is_charm", ExampleAddonGameTests::pinIsCharm),
-            new Entry("drip_damage_rule_loaded", ExampleAddonGameTests::dripDamageRuleLoaded));
+            new Entry("drip_damage_rule_loaded", ExampleAddonGameTests::dripDamageRuleLoaded),
+            new Entry("profile_field_and_style_points", ExampleAddonGameTests::profileFieldAndStylePoints));
 
     private ExampleAddonGameTests() {
     }
@@ -55,6 +56,12 @@ public final class ExampleAddonGameTests {
                 .getValue(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
                         Identifier.fromNamespaceAndPath(ExampleAddon.MOD_ID, "candy")));
         helper.assertTrue(candy != null && candy.stripes().size() == 4, "candy pattern loaded from the addon's data pack");
+        ColorwayPattern shimmer = helper.getLevel().registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY)
+                .getValue(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
+                        Identifier.fromNamespaceAndPath(ExampleAddon.MOD_ID, "candy_shimmer")));
+        helper.assertTrue(shimmer != null && shimmer.shimmer().isPresent()
+                && shimmer.stripeColor(0, 40.0F, 0xFFFFFF, 0xFFFFFF) != shimmer.stripeColor(0, 0.0F, 0xFFFFFF, 0xFFFFFF),
+                "candy_shimmer flows over time");
         helper.succeed();
     }
 
@@ -62,6 +69,25 @@ public final class ExampleAddonGameTests {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         try {
             helper.assertTrue(FemboyApi.get().getCosmetics(player).isEmpty(), "fresh player wears nothing");
+            helper.succeed();
+        } finally {
+            player.level().getServer().getPlayerList().remove(player);
+        }
+    }
+
+    public static void profileFieldAndStylePoints(GameTestHelper helper) {
+        helper.assertTrue(FemboyApi.get().profileFields().get(ExampleAddon.FRIENDSHIP_POINTS.id()).isPresent(), "addon field registered");
+        helper.assertValueEqual(ExampleAddon.withPinBonus(5, true), 6, "pin bonus on earnings");
+        helper.assertValueEqual(ExampleAddon.withPinBonus(-25, true), -25, "no bonus on spending");
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        try {
+            var profile = FemboyApi.get().getProfile(player);
+            profile.update(ExampleAddon.FRIENDSHIP_POINTS, points -> points + 3);
+            helper.assertValueEqual(profile.get(ExampleAddon.FRIENDSHIP_POINTS), 3, "addon field stored");
+            helper.assertTrue(FemboyApi.get().addStylePoints(player, 5, Identifier.fromNamespaceAndPath(ExampleAddon.MOD_ID, "test")),
+                    "addon gives Style Points");
+            helper.assertValueEqual(profile.get(dev.eliasnvx.femboymod.api.profile.FemboyProfileFields.STYLE_POINTS), 5,
+                    "no pin, no bonus");
             helper.succeed();
         } finally {
             player.level().getServer().getPlayerList().remove(player);

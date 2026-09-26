@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.api.colorway;
 
+import org.jetbrains.annotations.ApiStatus;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -84,7 +85,47 @@ public record Colorway(int baseColor, Optional<Holder<ColorwayPattern>> pattern,
      * @return {@code 0xRRGGBB}
      */
     public int colorAt(float u, float v) {
-        return pattern.map(p -> p.value().colorAt(u, v, baseColor, secondaryColor.orElse(DEFAULT_SECONDARY))).orElse(baseColor);
+        return colorAt(u, v, 0.0F);
+    }
+
+    /**
+     * Returns one stripe's color at a point in time: patterns with a {@code shimmer} flow smoothly between
+     * their stripe colors. Does not allocate.
+     *
+     * @param index stripe index; wraps around the stripe count
+     * @param ticks animation time in ticks (0 gives the resting colors)
+     * @return {@code 0xRRGGBB}
+     */
+    @ApiStatus.AvailableSince("0.1.0")
+    public int stripeColor(int index, float ticks) {
+        if (pattern.isEmpty()) {
+            return baseColor;
+        }
+        return pattern.get().value().stripeColor(index, ticks, baseColor, secondaryColor.orElse(DEFAULT_SECONDARY));
+    }
+
+    /**
+     * {@link #colorAt(float, float)} at a point in time (see {@link #stripeColor(int, float)}).
+     *
+     * @param u     0 (left) .. 1 (right)
+     * @param v     0 (top) .. 1 (bottom)
+     * @param ticks animation time in ticks
+     * @return {@code 0xRRGGBB}
+     */
+    @ApiStatus.AvailableSince("0.1.0")
+    public int colorAt(float u, float v, float ticks) {
+        if (pattern.isEmpty()) {
+            return baseColor;
+        }
+        return pattern.get().value().colorAt(u, v, ticks, baseColor, secondaryColor.orElse(DEFAULT_SECONDARY));
+    }
+
+    /**
+     * @return whether the colors change over time (the pattern has a {@code shimmer})
+     */
+    @ApiStatus.AvailableSince("0.1.0")
+    public boolean hasShimmer() {
+        return pattern.isPresent() && pattern.get().value().shimmer().isPresent();
     }
 
     /**

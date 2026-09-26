@@ -47,4 +47,16 @@ public interface CosmeticsView {
     default boolean isHidden(Identifier slot) {
         return false;
     }
+
+    /**
+     * Returns the wearer's choice for an armor piece. The effective look also depends on the slots worn and the
+     * server's game rule.
+     *
+     * @param armorSlot {@code HEAD}, {@code CHEST}, {@code LEGS} or {@code FEET}
+     * @return the chosen visibility; {@link ArmorVisibility#AUTO} unless the wearer changed it
+     */
+    @org.jetbrains.annotations.ApiStatus.AvailableSince("0.1.0")
+    default ArmorVisibility armorVisibility(net.minecraft.world.entity.EquipmentSlot armorSlot) {
+        return ArmorVisibility.AUTO;
+    }
 }

@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.api.colorway;
 
+import org.jetbrains.annotations.ApiStatus;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.eliasnvx.femboymod.api.FemboyApi;
@@ -29,10 +30,18 @@ import java.util.Optional;
  * {@code colors} go from the left edge toward the arrow tip; {@code band_width} is each band's width as a
  * fraction of the surface width.
  *
+ * <p>Optionally the stripe colors {@code shimmer}: they flow smoothly from stripe to stripe, each stripe
+ * passing through every color once per {@code period_ticks}. The period has a floor
+ * ({@link Shimmer#MIN_PERIOD_TICKS}) so a pattern can never strobe:
+ * <pre>{@code
+ * "shimmer": { "period_ticks": 120 }
+ * }</pre>
+ *
  * @param stripes stripes from top to bottom; never empty
  * @param chevron optional chevron drawn over the stripes
+ * @param shimmer optional smooth color flow along the stripes
  */
-public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron) {
+public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron, Optional<Shimmer> shimmer) {
 
     /** Registry key of the {@code femboymod:colorway} data pack registry. */
     public static final ResourceKey<Registry<ColorwayPattern>> REGISTRY_KEY =
@@ -41,7 +50,8 @@ public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron) {
     /** Codec for the JSON file format. */
     public static final Codec<ColorwayPattern> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Stripe.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("stripes").forGetter(ColorwayPattern::stripes),
-            Chevron.CODEC.optionalFieldOf("chevron").forGetter(ColorwayPattern::chevron)
+            Chevron.CODEC.optionalFieldOf("chevron").forGetter(ColorwayPattern::chevron),
+            Shimmer.CODEC.optionalFieldOf("shimmer").forGetter(ColorwayPattern::shimmer)
     ).apply(instance, ColorwayPattern::new));
 
     /**
@@ -58,12 +68,54 @@ public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron) {
     }
 
     /**
+     * Creates a pattern without shimmer.
+     *
+     * @param stripes stripes from top to bottom
+     * @param chevron optional chevron drawn over the stripes
+     */
+    public ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron) {
+        this(stripes, chevron, Optional.empty());
+    }
+
+    /**
      * Creates a stripes-only pattern.
      *
      * @param stripes stripes from top to bottom
      */
     public ColorwayPattern(List<Stripe> stripes) {
-        this(stripes, Optional.empty());
+        this(stripes, Optional.empty(), Optional.empty());
+    }
+
+    /**
+     * Returns one stripe's color at a point in time. Without a shimmer this is the plain stripe color.
+     * Does not allocate.
+     *
+     * @param index          stripe index; wraps around the stripe count
+     * @param ticks          animation time in ticks (any monotonic clock; 0 gives the resting colors)
+     * @param baseColor      item base color
+     * @param secondaryColor item secondary color
+     * @return {@code 0xRRGGBB}
+     */
+    @ApiStatus.AvailableSince("0.1.0")
+    public int stripeColor(int index, float ticks, int baseColor, int secondaryColor) {
+        int count = stripes.size();
+        if (shimmer.isEmpty() || count == 1) {
+            return stripes.get(Math.floorMod(index, count)).resolve(baseColor, secondaryColor);
+        }
+        float cycle = (ticks % shimmer.get().periodTicks()) / shimmer.get().periodTicks();
+        float position = index + cycle * count;
+        int from = (int) Math.floor(position);
+        float t = position - from;
+        t = t * t * (3.0F - 2.0F * t); // smoothstep: no sudden color changes
+        return lerpRgb(stripes.get(Math.floorMod(from, count)).resolve(baseColor, secondaryColor),
+                stripes.get(Math.floorMod(from + 1, count)).resolve(baseColor, secondaryColor), t);
+    }
+
+    private static int lerpRgb(int from, int to, float t) {
+        int r = Math.round(((from >> 16) & 0xFF) + (((to >> 16) & 0xFF) - ((from >> 16) & 0xFF)) * t);
+        int g = Math.round(((from >> 8) & 0xFF) + (((to >> 8) & 0xFF) - ((from >> 8) & 0xFF)) * t);
+        int b = Math.round((from & 0xFF) + ((to & 0xFF) - (from & 0xFF)) * t);
+        return (r << 16) | (g << 8) | b;
     }
 
     /**
@@ -76,6 +128,22 @@ public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron) {
      * @return {@code 0xRRGGBB}
      */
     public int colorAt(float u, float v, int baseColor, int secondaryColor) {
+        return colorAt(u, v, 0.0F, baseColor, secondaryColor);
+    }
+
+    /**
+     * Returns the color at a point of a 2D surface at a point in time (shimmer applies to the stripes, not the
+     * chevron). Does not allocate.
+     *
+     * @param u              0 (left edge) .. 1 (right edge)
+     * @param v              0 (top) .. 1 (bottom)
+     * @param ticks          animation time in ticks
+     * @param baseColor      item base color
+     * @param secondaryColor item secondary color
+     * @return {@code 0xRRGGBB}
+     */
+    @ApiStatus.AvailableSince("0.1.0")
+    public int colorAt(float u, float v, float ticks, int baseColor, int secondaryColor) {
         if (chevron.isPresent()) {
             int band = chevron.get().bandAt(u, v);
             if (band >= 0) {
@@ -83,7 +151,33 @@ public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron) {
             }
         }
         int index = Math.min(stripes.size() - 1, Math.max(0, (int) (v * stripes.size())));
-        return stripes.get(index).resolve(baseColor, secondaryColor);
+        return stripeColor(index, ticks, baseColor, secondaryColor);
+    }
+
+    /**
+     * A smooth color flow along the stripes.
+     *
+     * @param periodTicks ticks for one full cycle; at least {@link #MIN_PERIOD_TICKS}
+     */
+    @ApiStatus.AvailableSince("0.1.0")
+    public record Shimmer(int periodTicks) {
+
+        /** Shortest allowed cycle (2 seconds), so a shimmer stays a slow flow and never flashes. */
+        public static final int MIN_PERIOD_TICKS = 40;
+        /** Longest allowed cycle (2 minutes). */
+        public static final int MAX_PERIOD_TICKS = 2400;
+
+        /** JSON codec. */
+        public static final Codec<Shimmer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.intRange(MIN_PERIOD_TICKS, MAX_PERIOD_TICKS).fieldOf("period_ticks").forGetter(Shimmer::periodTicks)
+        ).apply(instance, Shimmer::new));
+
+        /** Validates the period. */
+        public Shimmer {
+            if (periodTicks < MIN_PERIOD_TICKS || periodTicks > MAX_PERIOD_TICKS) {
+                throw new IllegalArgumentException("period_ticks out of range: " + periodTicks);
+            }
+        }
     }
 
     /**

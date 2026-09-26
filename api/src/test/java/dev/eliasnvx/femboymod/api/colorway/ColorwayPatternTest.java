@@ -61,4 +61,32 @@ class ColorwayPatternTest {
     void chevronIsOptional() {
         assertTrue(parse("{\"stripes\":[\"base\"]}").chevron().isEmpty());
     }
+
+    @Test
+    void shimmerFlowsSmoothlyAndLoops() {
+        ColorwayPattern glitter = parse("{\"stripes\":[\"#FF0000\",\"#0000FF\"],\"shimmer\":{\"period_ticks\":100}}");
+        assertEquals(0xFF0000, glitter.stripeColor(0, 0.0F, 0, 0), "resting color at t=0");
+        assertEquals(0x0000FF, glitter.stripeColor(0, 50.0F, 0, 0), "half a period: moved one stripe on (2 stripes)");
+        assertEquals(0xFF0000, glitter.stripeColor(0, 100.0F, 0, 0), "full period loops back");
+        int previous = glitter.stripeColor(0, 0.0F, 0, 0);
+        for (int tick = 1; tick <= 200; tick++) {
+            int color = glitter.stripeColor(0, tick * 0.5F, 0, 0);
+            int step = Math.abs(((color >> 16) & 0xFF) - ((previous >> 16) & 0xFF)) + Math.abs((color & 0xFF) - (previous & 0xFF));
+            assertTrue(step <= 40, "no sudden jump at half-tick " + tick + ": " + step);
+            previous = color;
+        }
+    }
+
+    @Test
+    void withoutShimmerTimeIsIgnored() {
+        ColorwayPattern plain = parse("{\"stripes\":[\"#FF0000\",\"#0000FF\"]}");
+        assertTrue(plain.shimmer().isEmpty());
+        assertEquals(0x0000FF, plain.stripeColor(1, 1234.0F, 0, 0));
+    }
+
+    @Test
+    void shimmerCannotStrobe() {
+        assertTrue(ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(
+                "{\"stripes\":[\"#FF0000\"],\"shimmer\":{\"period_ticks\":" + (ColorwayPattern.Shimmer.MIN_PERIOD_TICKS - 1) + "}}")).isError());
+    }
 }
