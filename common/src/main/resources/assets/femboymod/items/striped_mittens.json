@@ -1,0 +1,18 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/striped_mittens",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 16099768,
+        "stripe": 0
+      },
+      {
+        "type": "femboymod:colorway",
+        "default": 16777215,
+        "stripe": 1
+      }
+    ]
+  }
+}

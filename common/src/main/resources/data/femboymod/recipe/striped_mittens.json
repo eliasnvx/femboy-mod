@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:string",
+    "minecraft:string",
+    "minecraft:pink_wool",
+    "minecraft:white_wool"
+  ],
+  "result": {
+    "id": "femboymod:striped_mittens"
+  }
+}

@@ -59,6 +59,11 @@ public final class BlockbenchStarterExport {
         TARGETS.put("fishnet", new Target("fishnet_tights", 0x2A2A2A, 0xFF8FB8));
         TARGETS.put("skirt", new Target("pleated_skirt", 0x3A3A48, 0xF4F1EE));
         TARGETS.put("hoodie", new Target("oversized_hoodie", 0xC8A2E8, 0xF4F1EE));
+        TARGETS.put("mittens", new Target("striped_mittens", 0xF5A9B8, 0xFF8FB8));
+        TARGETS.put("fox_ears", new Target("fox_ears", 0xE8863A, 0xFFF6F8));
+        TARGETS.put("bunny_ears", new Target("bunny_ears", 0xFFF6F8, 0xF6A9C2));
+        TARGETS.put("bear_ears", new Target("bear_ears", 0x8B5A3C, 0xD4AC82));
+        TARGETS.put("wolf_ears", new Target("wolf_ears", 0x8E8E98, 0xFFF6F8));
         TARGETS.put("cat_ear_hoodie", new Target("cat_ear_hoodie", 0xC8A2E8, 0xF4F1EE));
         TARGETS.put("choker", new Target("uwu_choker", 0x2A2A33, 0xFFF6F8));
         TARGETS.put("backpack", new Target("backpack", 0xD9C9A3, 0x62B14F));

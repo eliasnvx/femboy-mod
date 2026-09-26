@@ -58,6 +58,12 @@ public final class CosmeticModels {
     /** Sits above the hoodie (0.42) so the choker stays visible over clothing. */
     private static final CubeDeformation CHOKER_INFLATE = new CubeDeformation(0.52F);
 
+    /** Mittens cover the arm from this y (0 = shoulder) to the knuckles, above hoodie sleeves (0.38/0.46). */
+    private static final float MITTEN_TOP = 5.0F;
+    private static final float MITTEN_BOTTOM = 11.2F;
+    private static final float MITTEN_INFLATE = 0.5F;
+    private static final CubeDeformation MITTEN_CUFF_INFLATE = new CubeDeformation(0.58F);
+
     /** Socks cover the leg from this y (0 = hip) down to the foot. */
     public static final int SOCK_TOP = 2;
 
@@ -70,6 +76,7 @@ public final class CosmeticModels {
     public static final ModelLayerLocation SOCKS = layer("socks");
     public static final ModelLayerLocation FISHNET = layer("fishnet");
     public static final ModelLayerLocation SKIRT = layer("skirt");
+    public static final ModelLayerLocation MITTENS = layer("mittens");
     public static final ModelLayerLocation HOODIE = layer("hoodie");
     /** Same hoodie with the hood up and cat ears on it. */
     public static final ModelLayerLocation CAT_EAR_HOODIE = layer("cat_ear_hoodie");
@@ -113,6 +120,7 @@ public final class CosmeticModels {
         layers.put(SOCKS, () -> legwear(SOCK_INFLATE, true));
         layers.put(FISHNET, () -> legwear(FISHNET_INFLATE, false));
         layers.put(SKIRT, CosmeticModels::skirt);
+        layers.put(MITTENS, CosmeticModels::mittens);
         layers.put(HOODIE, () -> hoodie(false));
         layers.put(CAT_EAR_HOODIE, () -> hoodie(true));
         layers.put(CHOKER, CosmeticModels::choker);
@@ -282,6 +290,22 @@ public final class CosmeticModels {
     }
 
     // ------------------------------------------------------------------ socks / tights
+
+    /** Striped fingerless mittens / arm warmers from mid forearm to the knuckles; worn over sleeves. */
+    private static LayerDefinition mittens() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        for (String arm : new String[]{"right_arm", "left_arm"}) {
+            float x0 = arm.equals("right_arm") ? -3.0F : -1.0F;
+            Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild(arm), "mitten", PartPose.ZERO))
+                    .bandRange(MITTEN_TOP, MITTEN_BOTTOM);
+            b.bandedBox(x0, MITTEN_TOP, -2.0F, 4, MITTEN_BOTTOM - MITTEN_TOP, 4, MITTEN_INFLATE);
+            b.box(ACCENT, x0, MITTEN_TOP - 1.0F, -2.0F, 4, 1.2F, 4, MITTEN_CUFF_INFLATE);   // ribbed cuff
+            float outer = arm.equals("right_arm") ? x0 - 0.62F : x0 + 4.22F;
+            b.box(DETAIL, outer, MITTEN_BOTTOM - 1.6F, -0.5F, 0.4F, 1.0F, 1.0F);             // little heart on the back of the hand
+            b.build();
+        }
+        return layerOf(mesh);
+    }
 
     private static LayerDefinition legwear(float inflate, boolean withBow) {
         MeshDefinition mesh = emptyPlayerMesh();

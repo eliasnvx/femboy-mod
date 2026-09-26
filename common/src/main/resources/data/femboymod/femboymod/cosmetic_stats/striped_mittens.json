@@ -1,0 +1,16 @@
+{
+  "drip": 12,
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:attribute",
+        "attribute": "minecraft:attack_speed",
+        "amount": 0.1,
+        "operation": "add_multiplied_base"
+      },
+      "when": {
+        "type": "femboymod:cold_biome"
+      }
+    }
+  ]
+}
