@@ -14,6 +14,7 @@ import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import dev.eliasnvx.femboymod.energy.CaffeineLog;
+import dev.eliasnvx.femboymod.profile.ProfileData;
 import dev.eliasnvx.femboymod.energy.CaffeineRules;
 import dev.eliasnvx.femboymod.energy.EnergyDrink;
 import net.minecraft.world.entity.player.Player;
@@ -48,6 +49,8 @@ public final class PlatformHelperImpl {
 
     private static final Supplier<AttachmentType<WardrobePresets>> PRESETS = ATTACHMENTS.register("wardrobe_presets",
             () -> AttachmentType.builder(() -> WardrobePresets.EMPTY).serialize(WardrobePresets.CODEC.fieldOf("presets")).copyOnDeath().build());
+    private static final Supplier<AttachmentType<ProfileData>> PROFILE = ATTACHMENTS.register("profile",
+            () -> AttachmentType.builder(() -> ProfileData.EMPTY).serialize(ProfileData.CODEC.fieldOf("values")).copyOnDeath().build());
     private static final DeferredRegister<PoiType> POIS = DeferredRegister.create(Registries.POINT_OF_INTEREST_TYPE, FemboyMod.MOD_ID);
 
     private PlatformHelperImpl() {
@@ -63,6 +66,7 @@ public final class PlatformHelperImpl {
             event.dataPackRegistry(SetBonus.REGISTRY_KEY, SetBonus.CODEC, SetBonus.CODEC);
             event.dataPackRegistry(DripRules.REGISTRY_KEY, DripRules.CODEC, DripRules.CODEC);
             event.dataPackRegistry(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
+            event.dataPackRegistry(dev.eliasnvx.femboymod.food.BubbleTeaFlavor.REGISTRY_KEY, dev.eliasnvx.femboymod.food.BubbleTeaFlavor.CODEC);
             event.dataPackRegistry(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
             event.dataPackRegistry(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
             event.dataPackRegistry(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
@@ -110,6 +114,14 @@ public final class PlatformHelperImpl {
             FemboyMod.LOGGER.error("Failed to instantiate femboymod addon {} from mod {}", className, modId, e);
             return null;
         }
+    }
+
+    public static ProfileData getProfile(Player player) {
+        return player.getData(PROFILE);
+    }
+
+    public static void setProfile(Player player, ProfileData profile) {
+        player.setData(PROFILE, profile);
     }
 
     public static CaffeineLog getCaffeineLog(Player player) {

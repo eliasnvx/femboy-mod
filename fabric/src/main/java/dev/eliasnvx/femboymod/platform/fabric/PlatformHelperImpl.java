@@ -11,6 +11,7 @@ import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.block.FemboyBlocks;
 import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import dev.eliasnvx.femboymod.energy.CaffeineLog;
+import dev.eliasnvx.femboymod.profile.ProfileData;
 import dev.eliasnvx.femboymod.energy.CaffeineRules;
 import dev.eliasnvx.femboymod.energy.EnergyDrink;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -41,6 +42,10 @@ public final class PlatformHelperImpl {
             Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "wardrobe_presets"),
             builder -> builder.initializer(() -> WardrobePresets.EMPTY).persistent(WardrobePresets.CODEC).copyOnDeath());
 
+    private static final AttachmentType<ProfileData> PROFILE = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "profile"),
+            builder -> builder.initializer(() -> ProfileData.EMPTY).persistent(ProfileData.CODEC).copyOnDeath());
+
     private PlatformHelperImpl() {
     }
 
@@ -51,6 +56,7 @@ public final class PlatformHelperImpl {
         DynamicRegistries.registerSynced(SetBonus.REGISTRY_KEY, SetBonus.CODEC);
         DynamicRegistries.registerSynced(DripRules.REGISTRY_KEY, DripRules.CODEC);
         DynamicRegistries.register(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
+        DynamicRegistries.register(dev.eliasnvx.femboymod.food.BubbleTeaFlavor.REGISTRY_KEY, dev.eliasnvx.femboymod.food.BubbleTeaFlavor.CODEC);
         DynamicRegistries.register(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
         DynamicRegistries.register(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
         DynamicRegistries.registerSynced(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
@@ -76,6 +82,14 @@ public final class PlatformHelperImpl {
 
     public static void setCosmetics(Player player, CosmeticInventory cosmetics) {
         player.setAttached(COSMETICS, cosmetics);
+    }
+
+    public static ProfileData getProfile(Player player) {
+        return player.getAttachedOrElse(PROFILE, ProfileData.EMPTY);
+    }
+
+    public static void setProfile(Player player, ProfileData profile) {
+        player.setAttached(PROFILE, profile);
     }
 
     public static CaffeineLog getCaffeineLog(Player player) {
