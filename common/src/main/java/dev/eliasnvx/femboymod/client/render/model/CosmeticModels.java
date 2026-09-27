@@ -1,8 +1,11 @@
 package dev.eliasnvx.femboymod.client.render.model;
 
-import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ItemStack;
+import dev.eliasnvx.femboymod.cosmetic.ArmorHiding;
 import dev.architectury.registry.client.level.entity.EntityModelLayerRegistry;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.FemboyClientApi;
@@ -15,8 +18,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -33,9 +35,10 @@ import static dev.eliasnvx.femboymod.client.render.model.Groups.METAL;
 
 /**
  * Detailed placeholder cosmetic geometry, built in code (voxel-extruded pixel masks + color groups).
- * Each model is a {@link PlayerModel} with a cleared mesh plus parts under head/body/legs/arms, so vanilla
- * posing moves them; procedural animation happens in {@code setupAnim} (runs at flush time with the right
- * player's state). Units are model pixels. Blockbench/GeckoLib models ({@code femboymod:geo}) can replace
+ * Each model is a {@link HumanoidModel} with an empty humanoid skeleton plus parts under head/body/legs/arms.
+ * Before drawing, the wearer's posed model is copied onto it ({@link GroupModel#pose}) and procedural animation
+ * runs for that wearer (rendering is immediate on 1.21.1, so shared model instances are posed right before each
+ * draw). Units are model pixels. Blockbench/GeckoLib models ({@code femboymod:geo}) can replace
  * any of these per item later.
  */
 public final class CosmeticModels {
@@ -66,6 +69,12 @@ public final class CosmeticModels {
     private static final float MITTEN_BOTTOM = 11.2F;
     private static final float MITTEN_INFLATE = 0.5F;
     private static final CubeDeformation MITTEN_CUFF_INFLATE = new CubeDeformation(0.58F);
+
+    /** Rest pivots of the vanilla humanoid skeleton (HumanoidModel#createMesh). */
+    private static final float ARM_X = 5.0F;
+    private static final float ARM_Y = 2.0F;
+    private static final float LEG_X = 1.9F;
+    private static final float LEG_Y = 12.0F;
 
     /** Socks cover the leg from this y (0 = hip) down to the foot. */
     public static final int SOCK_TOP = 2;
@@ -174,9 +183,17 @@ public final class CosmeticModels {
         return layers;
     }
 
+    /** Humanoid skeleton parts without cubes; same names and rest poses as the player model (wide arms). */
     private static MeshDefinition emptyPlayerMesh() {
-        MeshDefinition mesh = PlayerModel.createMesh(CubeDeformation.NONE, false);
-        mesh.getRoot().clearRecursively();
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        root.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.ZERO);
+        root.addOrReplaceChild("hat", CubeListBuilder.create(), PartPose.ZERO);
+        root.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.ZERO);
+        root.addOrReplaceChild("right_arm", CubeListBuilder.create(), PartPose.offset(-ARM_X, ARM_Y, 0.0F));
+        root.addOrReplaceChild("left_arm", CubeListBuilder.create(), PartPose.offset(ARM_X, ARM_Y, 0.0F));
+        root.addOrReplaceChild("right_leg", CubeListBuilder.create(), PartPose.offset(-LEG_X, LEG_Y, 0.0F));
+        root.addOrReplaceChild("left_leg", CubeListBuilder.create(), PartPose.offset(LEG_X, LEG_Y, 0.0F));
         return mesh;
     }
 
@@ -906,24 +923,43 @@ public final class CosmeticModels {
 
     // ================================================================== models
 
-    static CosmeticMotion motion(AvatarRenderState state) {
-        return FemboyClientApi.get().motion(state);
+    static CosmeticMotion motion(LivingEntity entity) {
+        return FemboyClientApi.get().motion(entity);
     }
 
     /** Base: shows one color group of the layer. */
-    public static class GroupModel extends PlayerModel {
+    public static class GroupModel extends HumanoidModel<LivingEntity> {
         public GroupModel(ModelPart root, Groups group, int band) {
-            super(root, false);
+            super(root);
             Groups.show(root, group, band);
+        }
+
+        /**
+         * Copies the wearer's already posed model onto this one, then runs this model's procedural animation.
+         * Call right before drawing; does not allocate.
+         *
+         * @param parent      the wearer's model, posed for this frame
+         * @param entity      the wearer
+         * @param partialTick the frame's partial tick
+         */
+        @SuppressWarnings("unchecked")
+        public final void pose(HumanoidModel<?> parent, LivingEntity entity, float partialTick) {
+            ((HumanoidModel<LivingEntity>) parent).copyPropertiesTo(this);
+            animate(entity, partialTick);
+        }
+
+        /** Procedural animation after the skeleton is copied; body parts already follow the wearer. */
+        protected void animate(LivingEntity entity, float partialTick) {
         }
     }
 
-    /** Ears flick independently now and then; phase differs per player. */
     /** Ears with idle twitches and a walk bounce; the shape gives base tilt and twitch strength. */
     public static final class EarsModel extends GroupModel {
         private static final float TWITCH_SPEED = 0.35F;
         private static final float TWITCH_SHARPNESS = 12.0F;
         private static final float WALK_BOUNCE = 0.08F;
+        /** Same frequency factor vanilla uses for limb swing. */
+        private static final float WALK_FREQUENCY = 0.6662F;
         /** Helmet shell top is 1 px above the head (armor inflate 1.0); ears sit just on top of it. */
         private static final float HELMET_LIFT = 0.8F;
         private final ModelPart leftEar;
@@ -944,13 +980,14 @@ public final class CosmeticModels {
         }
 
         @Override
-        public void setupAnim(AvatarRenderState state) {
-            super.setupAnim(state);
-            CosmeticMotion motion = motion(state);
-            float t = state.ageInTicks * TWITCH_SPEED / Mth.PI + motion.phase();
+        protected void animate(LivingEntity entity, float partialTick) {
+            CosmeticMotion motion = motion(entity);
+            float ageInTicks = entity.tickCount + partialTick;
+            float t = ageInTicks * TWITCH_SPEED / Mth.PI + motion.phase();
             float left = (float) Math.pow(Math.max(Mth.sin(t), 0.0F), TWITCH_SHARPNESS) * shape.twitch();
             float right = (float) Math.pow(Math.max(Mth.sin(t * 0.83F + 1.7F), 0.0F), TWITCH_SHARPNESS) * shape.twitch();
-            float bounce = Mth.sin(state.walkAnimationPos * 0.6662F * 2) * WALK_BOUNCE * motion.walkAmount();
+            float walkPos = entity.walkAnimation.position(partialTick);
+            float bounce = Mth.sin(walkPos * WALK_FREQUENCY * 2) * WALK_BOUNCE * motion.walkAmount();
             // "left_ear" sits at -x: tilt it outward (negative zRot); twitches flick further outward.
             leftEar.zRot = -shape.tilt() - left - bounce;
             rightEar.zRot = shape.tilt() + shape.extraRightTilt() + right + bounce;
@@ -958,21 +995,27 @@ public final class CosmeticModels {
             rightEar.xRot = -right * 0.5F;
             // A visible helmet (the wearer chose "show", or the server forbids hiding armor): ears poke out on top
             // of it and the headband, which would be inside the helmet, is not drawn.
-            boolean helmet = wearsHelmet(state);
+            boolean helmet = wearsHelmet(entity);
             float lift = helmet ? HELMET_LIFT : 0.0F;
-            leftEar.y = leftEar.getInitialPose().y() - lift;
-            rightEar.y = rightEar.getInitialPose().y() - lift;
+            leftEar.y = leftEar.getInitialPose().y - lift;
+            rightEar.y = rightEar.getInitialPose().y - lift;
             headband.visible = !helmet;
         }
 
-        /** Head armor drawn by the armor layer (not a carved pumpkin or skull, which use their own shapes). */
-        static boolean wearsHelmet(AvatarRenderState state) {
-            if (state.headEquipment.isEmpty()) {
+        /**
+         * Head armor drawn by the armor layer (not a carved pumpkin or skull, which use their own shapes), and not
+         * hidden under the outfit ({@link ArmorHiding}).
+         */
+        static boolean wearsHelmet(LivingEntity entity) {
+            ItemStack head = entity.getItemBySlot(EquipmentSlot.HEAD);
+            if (!(head.getItem() instanceof ArmorItem armor) || armor.getEquipmentSlot() != EquipmentSlot.HEAD) {
                 return false;
             }
-            Equippable equippable = state.headEquipment.get(DataComponents.EQUIPPABLE);
-            return equippable != null && equippable.slot() == EquipmentSlot.HEAD && equippable.assetId().isPresent();
+            return !(entity instanceof Player player) || (ArmorHiding.cachedMask(player) & HEAD_HIDDEN_BIT) == 0;
         }
+
+        /** Bit of {@link EquipmentSlot#HEAD} in {@link ArmorHiding#cachedMask}. */
+        private static final int HEAD_HIDDEN_BIT = 1 << ArmorHiding.ARMOR_SLOTS.indexOf(EquipmentSlot.HEAD);
     }
 
     /** Tail droops down-back, waves along its length, swings out when turning (SPEC §4.5). */
@@ -1005,14 +1048,14 @@ public final class CosmeticModels {
         }
 
         @Override
-        public void setupAnim(AvatarRenderState state) {
-            super.setupAnim(state);
-            CosmeticMotion motion = motion(state);
+        protected void animate(LivingEntity entity, float partialTick) {
+            CosmeticMotion motion = motion(entity);
+            float ageInTicks = entity.tickCount + partialTick;
             float amplitude = IDLE_SWAY * dev.eliasnvx.femboymod.client.render.CosmeticRenderData.idleScale() + WALK_SWAY * motion.walkAmount();
             for (int i = 0; i < TAIL_SEGMENTS; i++) {
                 ModelPart segment = segments[i];
                 segment.xRot = i == 0 ? DROOP + WALK_LIFT * motion.walkAmount() : CURL;
-                float wave = Mth.sin(state.ageInTicks * SWAY_SPEED + motion.phase() - i * SEGMENT_PHASE);
+                float wave = Mth.sin(ageInTicks * SWAY_SPEED + motion.phase() - i * SEGMENT_PHASE);
                 segment.yRot = wave * amplitude + motion.turnSway() / TAIL_SEGMENTS;
             }
         }
@@ -1056,8 +1099,7 @@ public final class CosmeticModels {
         }
 
         @Override
-        public void setupAnim(AvatarRenderState state) {
-            super.setupAnim(state);
+        protected void animate(LivingEntity entity, float partialTick) {
             float half = (FRONT_PLEATS - 1) / 2.0F;
             for (int i = 0; i < FRONT_PLEATS; i++) {
                 // strips on the left half follow the left leg, right half the right leg
@@ -1065,7 +1107,7 @@ public final class CosmeticModels {
                 float outer = 1.0F + OUTER_EXTRA * Math.abs(i - half) / half;
                 front[i].xRot = (-REST_FLARE + Math.min(0.0F, leg) * LEG_FOLLOW) * outer;
                 back[i].xRot = (REST_FLARE + Math.max(0.0F, leg) * LEG_FOLLOW) * outer;
-                if (state.isCrouching) {
+                if (crouching) {
                     back[i].xRot += REST_FLARE * 3;
                 }
             }
@@ -1088,10 +1130,9 @@ public final class CosmeticModels {
         }
 
         @Override
-        public void setupAnim(AvatarRenderState state) {
-            super.setupAnim(state);
-            leftCuff.visible = state.isCrouching;
-            rightCuff.visible = state.isCrouching;
+        protected void animate(LivingEntity entity, float partialTick) {
+            leftCuff.visible = crouching;
+            rightCuff.visible = crouching;
         }
     }
 }

@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "minecraft:dried_kelp",
-    "minecraft:wheat",
-    "minecraft:wheat"
+    {
+      "item": "minecraft:dried_kelp"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:wheat"
+    }
   ],
   "result": {
     "id": "femboymod:onigiri"

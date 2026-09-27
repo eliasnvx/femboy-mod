@@ -14,7 +14,8 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Util;
+import net.minecraft.util.FastColor;
+import net.minecraft.Util;
 
 /**
  * Photo Mode (SPEC v1.1): the Phone flips the camera to a selfie, hides the HUD for a moment, grabs the frame and
@@ -51,11 +52,9 @@ public final class PhotoMode {
             return;
         }
         previousCamera = minecraft.options.getCameraType();
-        hudWasHidden = minecraft.gui.hud.isHidden();
+        hudWasHidden = minecraft.options.hideGui;
         minecraft.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
-        if (!hudWasHidden) {
-            minecraft.gui.hud.toggle();
-        }
+        minecraft.options.hideGui = true;
         countdown = SETTLE_TICKS;
     }
 
@@ -66,10 +65,10 @@ public final class PhotoMode {
         if (countdown-- > 0) {
             return;
         }
-        Screenshot.takeScreenshot(minecraft.gameRenderer.mainRenderTarget(), image -> save(minecraft, image));
+        save(minecraft, Screenshot.takeScreenshot(minecraft.getMainRenderTarget()));
         minecraft.options.setCameraType(previousCamera);
-        if (!hudWasHidden && minecraft.gui.hud.isHidden()) {
-            minecraft.gui.hud.toggle();
+        if (!hudWasHidden) {
+            minecraft.options.hideGui = false;
         }
         if (minecraft.player != null) {
             minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F, 1.6F);
@@ -86,13 +85,17 @@ public final class PhotoMode {
                 dir.mkdirs();
                 image.writeToFile(file);
                 Component name = Component.literal(file.getName()).withStyle(ChatFormatting.UNDERLINE)
-                        .withStyle(style -> style.withClickEvent(new ClickEvent.OpenFile(file.getAbsoluteFile())));
-                minecraft.execute(() -> minecraft.showDebugChat(Component.translatable("message.femboymod.selfie", name)));
+                        .withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
+                minecraft.execute(() -> minecraft.gui.getChat().addMessage(Component.translatable("message.femboymod.selfie", name)));
             } catch (Exception e) {
                 FemboyMod.LOGGER.warn("Couldn't save selfie", e);
             }
         });
     }
+
+    /** 1.21.1 NativeImage pixels are ABGR; the constants above are ARGB. */
+    private static final int PAPER_ABGR = FastColor.ABGR32.fromArgb32(PAPER_COLOR);
+    private static final int PAPER_EDGE_ABGR = FastColor.ABGR32.fromArgb32(PAPER_EDGE_COLOR);
 
     /** A new image: the centre square of the shot on cream paper, watermark centred on the wide bottom margin. */
     static NativeImage print(Minecraft minecraft, NativeImage shot) {
@@ -104,20 +107,20 @@ public final class PhotoMode {
         int width = side + 2 * margin;
         int height = side + margin + bottom;
         NativeImage print = new NativeImage(width, height, false);
-        print.fillRect(0, 0, width, height, PAPER_COLOR);
+        print.fillRect(0, 0, width, height, PAPER_ABGR);
         for (int y = 0; y < side; y++) {
             for (int x = 0; x < side; x++) {
-                print.setPixel(margin + x, margin + y, shot.getPixel(srcX + x, srcY + y));
+                print.setPixelRGBA(margin + x, margin + y, shot.getPixelRGBA(srcX + x, srcY + y));
             }
         }
         // a hairline around the photo and the paper edge, like a real print
         for (int x = 0; x < width; x++) {
-            print.setPixel(x, 0, PAPER_EDGE_COLOR);
-            print.setPixel(x, height - 1, PAPER_EDGE_COLOR);
+            print.setPixelRGBA(x, 0, PAPER_EDGE_ABGR);
+            print.setPixelRGBA(x, height - 1, PAPER_EDGE_ABGR);
         }
         for (int y = 0; y < height; y++) {
-            print.setPixel(0, y, PAPER_EDGE_COLOR);
-            print.setPixel(width - 1, y, PAPER_EDGE_COLOR);
+            print.setPixelRGBA(0, y, PAPER_EDGE_ABGR);
+            print.setPixelRGBA(width - 1, y, PAPER_EDGE_ABGR);
         }
         try (InputStream in = minecraft.getResourceManager().open(WATERMARK); NativeImage mark = NativeImage.read(in)) {
             int scale = Math.max(1, Math.round(bottom * WATERMARK_HEIGHT / mark.getHeight()));
@@ -125,10 +128,10 @@ public final class PhotoMode {
             int y0 = side + margin + (bottom - mark.getHeight() * scale) / 2;
             for (int y = 0; y < mark.getHeight() * scale; y++) {
                 for (int x = 0; x < mark.getWidth() * scale; x++) {
-                    int argb = mark.getPixel(x / scale, y / scale);
+                    int abgr = mark.getPixelRGBA(x / scale, y / scale);
                     // the white outline would vanish on paper: draw only the pink letters and heart
-                    if ((argb >>> 24) > 0 && (argb & 0xFFFFFF) != 0xFFFFFF && x0 + x >= 0 && x0 + x < width) {
-                        print.setPixel(x0 + x, y0 + y, argb);
+                    if ((abgr >>> 24) > 0 && (abgr & 0xFFFFFF) != 0xFFFFFF && x0 + x >= 0 && x0 + x < width) {
+                        print.setPixelRGBA(x0 + x, y0 + y, abgr);
                     }
                 }
             }

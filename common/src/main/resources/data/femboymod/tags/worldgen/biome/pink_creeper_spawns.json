@@ -4,6 +4,9 @@
     "minecraft:cherry_grove",
     "minecraft:meadow",
     "minecraft:sunflower_plains",
-    "minecraft:dappled_forest"
+    {
+      "id": "minecraft:dappled_forest",
+      "required": false
+    }
   ]
 }

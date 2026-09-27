@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "minecraft:yellow_wool",
-    "minecraft:yellow_wool",
-    "minecraft:orange_dye",
-    "minecraft:string"
+    {
+      "item": "minecraft:yellow_wool"
+    },
+    {
+      "item": "minecraft:yellow_wool"
+    },
+    {
+      "item": "minecraft:orange_dye"
+    },
+    {
+      "item": "minecraft:string"
+    }
   ],
   "result": {
     "id": "femboymod:rubber_duck"

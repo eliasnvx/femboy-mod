@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:belt_chains",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:belt_chains"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:belt_chains",

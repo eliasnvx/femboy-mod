@@ -6,45 +6,42 @@ import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import dev.eliasnvx.femboymod.entity.Cosplayer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 
 /** Wandering Cosplayer: player model in a pastel costume (texture in skin layout) with the mod's cat ears on top. */
-public final class CosplayerRenderer extends HumanoidMobRenderer<Cosplayer, HumanoidRenderState, HumanoidModel<HumanoidRenderState>> {
+public final class CosplayerRenderer extends HumanoidMobRenderer<Cosplayer, HumanoidModel<Cosplayer>> {
 
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosplayer.png");
     private static final ResourceLocation FUR = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fur.png");
-    private static final int EAR_COLOR = 0xFFB6DA;
+    private static final int EAR_COLOR = FastColor.ARGB32.opaque(0xFFB6DA);
     private static final float SHADOW = 0.5F;
 
     public CosplayerRenderer(EntityRendererProvider.Context context) {
         super(context, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER)), SHADOW);
-        HumanoidModel<HumanoidRenderState> ears = new HumanoidModel<>(context.bakeLayer(CosmeticModels.CAT_EARS));
-        RenderType earType = RenderTypes.entityCutout(FUR);
+        HumanoidModel<Cosplayer> ears = new HumanoidModel<>(context.bakeLayer(CosmeticModels.CAT_EARS));
+        RenderType earType = RenderType.entityCutout(FUR);
         addLayer(new RenderLayer<>(this) {
             @Override
-            public void submit(PoseStack pose, SubmitNodeCollector collector, int light, HumanoidRenderState state, float yRot, float xRot) {
-                collector.submitModel(ears, state, pose, earType, light, OverlayTexture.NO_OVERLAY, ARGB.opaque(EAR_COLOR), null,
-                        state.outlineColor);
+            public void render(PoseStack pose, MultiBufferSource buffers, int light, Cosplayer cosplayer, float walkPos,
+                               float walkSpeed, float partialTick, float ageInTicks, float headYaw, float headPitch) {
+                if (cosplayer.isInvisible()) {
+                    return;
+                }
+                getParentModel().copyPropertiesTo(ears);
+                ears.renderToBuffer(pose, buffers.getBuffer(earType), light, OverlayTexture.NO_OVERLAY, EAR_COLOR);
             }
         });
     }
 
     @Override
-    public HumanoidRenderState createRenderState() {
-        return new HumanoidRenderState();
-    }
-
-    @Override
-    public ResourceLocation getTextureLocation(HumanoidRenderState state) {
+    public ResourceLocation getTextureLocation(Cosplayer cosplayer) {
         return TEXTURE;
     }
 }

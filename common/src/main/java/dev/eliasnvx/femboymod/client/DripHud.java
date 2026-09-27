@@ -7,7 +7,7 @@ import java.util.List;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -65,7 +65,7 @@ public final class DripHud {
     private DripHud() {
     }
 
-    public static void render(GuiGraphicsExtractor g, DeltaTracker delta) {
+    public static void render(GuiGraphics g, DeltaTracker delta) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
         if (!FemboyConfig.client().dripHud() || player == null || minecraft.getDebugOverlay().showDebugScreen()) {
@@ -94,7 +94,7 @@ public final class DripHud {
         level = newLevel;
         tier = newTier;
         sets = newSets;
-        DripRules rules = player.level().registryAccess().lookup(DripRules.REGISTRY_KEY)
+        DripRules rules = player.level().registryAccess().registry(DripRules.REGISTRY_KEY)
                 .flatMap(registry -> registry.getOptional(DripRules.DEFAULT)).orElse(DripRules.FALLBACK);
         int max = Math.max(1, rules.maxLevel());
         target = Mth.clamp(level / (float) max, 0.0F, 1.0F);
@@ -128,7 +128,7 @@ public final class DripHud {
                 "Tier " + tier);
     }
 
-    private static void draw(GuiGraphicsExtractor g, Font font) {
+    private static void draw(GuiGraphics g, Font font) {
         int x = MARGIN;
         int y = MARGIN;
         boolean hasSet = sets.size() > 0;
@@ -138,20 +138,20 @@ public final class DripHud {
         int cx = x + PAD;
         int cy = y + PAD;
         heart(g, cx, cy);
-        g.text(font, levelText, cx + HEART_W, cy, LEVEL, true);
+        g.drawString(font, levelText, cx + HEART_W, cy, LEVEL, true);
         int tierColor = TIER_COLORS[Math.min(tier, TIER_COLORS.length - 1)];
-        g.text(font, tierName, x + width - PAD - font.width(tierName), cy, tierColor, true);
+        g.drawString(font, tierName, x + width - PAD - font.width(tierName), cy, tierColor, true);
         cy += LINE + 1;
 
         bar(g, cx, cy, width - PAD * 2);
         cy += BAR_H + 2;
         if (hasSet) {
-            g.text(font, setLine, cx, cy, SET, true);
+            g.drawString(font, setLine, cx, cy, SET, true);
         }
     }
 
     /** Translucent card with a pink border and cut corners. */
-    private static void frame(GuiGraphicsExtractor g, int x, int y, int w, int h) {
+    private static void frame(GuiGraphics g, int x, int y, int w, int h) {
         g.fill(x + 1, y + 1, x + w - 1, y + h - 1, BACKGROUND);
         g.fill(x + 2, y, x + w - 2, y + 1, BORDER);
         g.fill(x + 2, y + h - 1, x + w - 2, y + h, BORDER);
@@ -165,7 +165,7 @@ public final class DripHud {
     }
 
     /** A 7x6 pixel heart. */
-    private static void heart(GuiGraphicsExtractor g, int x, int y) {
+    private static void heart(GuiGraphics g, int x, int y) {
         g.fill(x + 1, y + 1, x + 3, y + 2, BORDER);
         g.fill(x + 4, y + 1, x + 6, y + 2, BORDER);
         g.fill(x, y + 2, x + 7, y + 4, BORDER);
@@ -176,7 +176,7 @@ public final class DripHud {
     }
 
     /** Whole-range bar with a notch at every tier threshold and a slow highlight drifting over the filled part. */
-    private static void bar(GuiGraphicsExtractor g, int x, int y, int w) {
+    private static void bar(GuiGraphics g, int x, int y, int w) {
         g.fill(x, y, x + w, y + BAR_H, BAR_BACK);
         int inner = w - 2;
         int filled = Math.round(inner * shown);

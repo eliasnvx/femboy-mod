@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:programming_socks",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:programming_socks"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:programming_socks",

@@ -5,7 +5,6 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.eliasnvx.femboymod.backpack.BackpackMenu;
-import dev.eliasnvx.femboymod.backpack.BackpackMenuData;
 import dev.eliasnvx.femboymod.menu.CosmeticsMenu;
 import dev.eliasnvx.femboymod.wardrobe.WardrobeMenu;
 import net.minecraft.core.registries.Registries;
@@ -20,7 +19,7 @@ public final class FemboyMenus {
             REGISTER.register("cosmetics", () -> new MenuType<>(CosmeticsMenu::new, FeatureFlags.VANILLA_SET));
 
     public static final RegistrySupplier<MenuType<BackpackMenu>> BACKPACK = REGISTER.register("backpack",
-            () -> MenuRegistry.ofExtended(BackpackMenu::new, BackpackMenuData.STREAM_CODEC));
+            () -> MenuRegistry.ofExtended(BackpackMenu::new));
 
     public static final RegistrySupplier<MenuType<WardrobeMenu>> WARDROBE =
             REGISTER.register("wardrobe", () -> new MenuType<>(WardrobeMenu::new, FeatureFlags.VANILLA_SET));

@@ -6,7 +6,7 @@ import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.registry.client.gui.MenuScreenRegistry;
+import dev.architectury.registry.menu.MenuRegistry;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
@@ -54,26 +54,26 @@ import java.util.List;
 public final class FemboyModClient {
 
     public static final KeyMapping OPEN_COSMETICS = new KeyMapping(
-            "key.femboymod.cosmetics", InputConstants.Type.KEYBOARD, InputConstants.UNKNOWN.getValue(),
-            KeyMapping.Category.INVENTORY);
+            "key.femboymod.cosmetics", InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(),
+            KeyMapping.CATEGORY_INVENTORY);
 
     /** Inventory screen is 176x166; the button sits right of the recipe book button. */
     public static final KeyMapping OPEN_BACKPACK = new KeyMapping(
-            "key.femboymod.backpack", InputConstants.Type.KEYBOARD, InputConstants.KEY_B, KeyMapping.Category.INVENTORY);
+            "key.femboymod.backpack", InputConstants.Type.KEYSYM, InputConstants.KEY_B, KeyMapping.CATEGORY_INVENTORY);
 
 
     /** Emote wheel (SPEC v1.2). */
     public static final KeyMapping EMOTES = new KeyMapping(
-            "key.femboymod.emotes", InputConstants.Type.KEYBOARD, InputConstants.KEY_G, KeyMapping.Category.MULTIPLAYER);
+            "key.femboymod.emotes", InputConstants.Type.KEYSYM, InputConstants.KEY_G, KeyMapping.CATEGORY_MULTIPLAYER);
 
     private FemboyModClient() {
     }
 
     public static void init() {
-        FemboyMenus.COSMETICS.listen(type -> MenuScreenRegistry.registerScreenFactory(type, CosmeticsScreen::new));
+        FemboyMenus.COSMETICS.listen(type -> MenuRegistry.registerScreenFactory(type, CosmeticsScreen::new));
 
-        FemboyMenus.BACKPACK.listen(type -> MenuScreenRegistry.registerScreenFactory(type, BackpackScreen::new));
-        FemboyMenus.WARDROBE.listen(type -> MenuScreenRegistry.registerScreenFactory(type, WardrobeScreen::new));
+        FemboyMenus.BACKPACK.listen(type -> MenuRegistry.registerScreenFactory(type, BackpackScreen::new));
+        FemboyMenus.WARDROBE.listen(type -> MenuRegistry.registerScreenFactory(type, WardrobeScreen::new));
         FemboyBlocks.CLOTHING_RACK_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, ClothingRackRenderer::new));
         ClientTickEvent.CLIENT_POST.register(NyaSound::tick);
         KeyMappingRegistry.register(OPEN_COSMETICS);
@@ -82,20 +82,20 @@ public final class FemboyModClient {
         ClientTickEvent.CLIENT_POST.register(EmoteClient::tick);
         ClientTickEvent.CLIENT_POST.register(minecraft -> {
             while (EMOTES.consumeClick()) {
-                if (minecraft.gui.screen() == null && minecraft.player != null) {
-                    minecraft.gui.setScreen(new EmoteScreen());
+                if (minecraft.screen == null && minecraft.player != null) {
+                    minecraft.setScreen(new EmoteScreen());
                 }
             }
         });
         KeyMappingRegistry.register(OPEN_BACKPACK);
         ClientTickEvent.CLIENT_POST.register(minecraft -> {
             while (OPEN_COSMETICS.consumeClick()) {
-                if (minecraft.player != null && minecraft.gui.screen() == null) {
+                if (minecraft.player != null && minecraft.screen == null) {
                     requestCosmeticsScreen();
                 }
             }
             while (OPEN_BACKPACK.consumeClick()) {
-                if (minecraft.player != null && minecraft.gui.screen() == null) {
+                if (minecraft.player != null && minecraft.screen == null) {
                     NetworkManager.sendToServer(OpenBackpackPayload.INSTANCE);
                 }
             }
@@ -108,6 +108,7 @@ public final class FemboyModClient {
         });
 
         ClientTooltipEvent.ITEM.register(FemboyModClient::appendTooltip);
+        ItemTints.register();
         ClientGuiEvent.RENDER_HUD.register(DripHud::render);
 
         FemboyConfig.loadClient();
@@ -157,7 +158,7 @@ public final class FemboyModClient {
         if (colorway != null) {
             Component name = colorway.pattern()
                     .flatMap(holder -> holder.unwrapKey())
-                    .map(key -> (Component) Component.translatable(key.identifier().toLanguageKey("colorway")))
+                    .map(key -> (Component) Component.translatable(key.location().toLanguageKey("colorway")))
                     .orElseGet(() -> Component.translatable("colorway.femboymod.solid"));
             lines.add(Component.translatable("tooltip.femboymod.colorway", name).withStyle(ChatFormatting.GRAY));
         }
@@ -168,7 +169,7 @@ public final class FemboyModClient {
         if (level == null) {
             return 0;
         }
-        return level.registryAccess().lookup(CosmeticStats.REGISTRY_KEY)
+        return level.registryAccess().registry(CosmeticStats.REGISTRY_KEY)
                 .flatMap(registry -> registry.getOptional(CosmeticStats.keyOf(stack.getItem())))
                 .map(CosmeticStats::drip).orElse(0);
     }

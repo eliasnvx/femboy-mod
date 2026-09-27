@@ -7,16 +7,14 @@ import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
 import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import dev.eliasnvx.femboymod.client.render.model.Groups;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor.ARGB32;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ElytraItem;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -158,7 +156,7 @@ public final class BuiltinCosmeticRenderers {
             BackpackCharmsRenderer charms = new BackpackCharmsRenderer(models.bakeLayer(CosmeticModels.BACKPACK_CHARMS));
             return ctx -> {
                 // Elytra occupy the back (SPEC §4.5): hide the backpack while wearing a glider.
-                if (ctx.state().chestEquipment.has(DataComponents.GLIDER)) {
+                if (ctx.entity().getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof ElytraItem) {
                     return;
                 }
                 bag.submit(ctx);
@@ -167,19 +165,20 @@ public final class BuiltinCosmeticRenderers {
         });
     }
 
-    static void submit(CosmeticRenderContext ctx, Model<AvatarRenderState> model, RenderType type, int rgb) {
-        ctx.collector().submitModel(model, ctx.state(), ctx.poseStack(), type, ctx.light(), ctx.overlay(),
-                ARGB.opaque(rgb), null, ctx.state().outlineColor);
+    /** Poses the model for the wearer and draws it right away with one tint. */
+    static void submit(CosmeticRenderContext ctx, CosmeticModels.GroupModel model, RenderType type, int rgb) {
+        model.pose(ctx.parentModel(), ctx.entity(), ctx.partialTick());
+        model.renderToBuffer(ctx.poseStack(), ctx.bufferSource().getBuffer(type), ctx.light(), ctx.overlay(), ARGB32.opaque(rgb));
     }
 
     /** Mixes a color toward white ({@code amount > 0}) or black ({@code amount < 0}). */
     static int shade(int rgb, float amount) {
         int target = amount >= 0 ? 0xFFFFFF : 0x000000;
         float t = Math.abs(amount);
-        int r = (int) (ARGB.red(rgb) + (ARGB.red(target) - ARGB.red(rgb)) * t);
-        int g = (int) (ARGB.green(rgb) + (ARGB.green(target) - ARGB.green(rgb)) * t);
-        int b = (int) (ARGB.blue(rgb) + (ARGB.blue(target) - ARGB.blue(rgb)) * t);
-        return ARGB.color(r, g, b) & 0xFFFFFF;
+        int r = (int) (ARGB32.red(rgb) + (ARGB32.red(target) - ARGB32.red(rgb)) * t);
+        int g = (int) (ARGB32.green(rgb) + (ARGB32.green(target) - ARGB32.green(rgb)) * t);
+        int b = (int) (ARGB32.blue(rgb) + (ARGB32.blue(target) - ARGB32.blue(rgb)) * t);
+        return ARGB32.color(0, r, g, b) & 0xFFFFFF;
     }
 
     /** Fixed colors of the non-tinted groups. */
@@ -199,10 +198,10 @@ public final class BuiltinCosmeticRenderers {
      */
     static final class GroupedRenderer implements CosmeticRenderer {
         private static final int REPEAT_MAX_STRIPES = 3;
-        private final Map<Groups, Model<AvatarRenderState>> groupModels = new EnumMap<>(Groups.class);
-        private final Model<AvatarRenderState> mainAll;
-        private final Model<AvatarRenderState> mainNoBands;
-        private final Model<AvatarRenderState>[] bands;
+        private final Map<Groups, CosmeticModels.GroupModel> groupModels = new EnumMap<>(Groups.class);
+        private final CosmeticModels.GroupModel mainAll;
+        private final CosmeticModels.GroupModel mainNoBands;
+        private final CosmeticModels.GroupModel[] bands;
         private final RenderType type;
         private final int defaultMain;
         private final float accentShade;
@@ -211,7 +210,6 @@ public final class BuiltinCosmeticRenderers {
         private ChevronPanel chevronPanel;
         private java.util.function.IntSupplier dynamicDetail;
 
-        @SuppressWarnings("unchecked")
         GroupedRenderer(EntityModelSet set, ModelLayerLocation layer, Groups.GroupModelFactory.Factory factory,
                         ResourceLocation texture, int defaultMain, float accentShade, int detailColor) {
             for (Groups group : new Groups[]{Groups.ACCENT, Groups.DETAIL, Groups.DARK, Groups.METAL}) {
@@ -219,11 +217,11 @@ public final class BuiltinCosmeticRenderers {
             }
             this.mainAll = factory.create(set.bakeLayer(layer), Groups.MAIN, Groups.ALL_BANDS);
             this.mainNoBands = factory.create(set.bakeLayer(layer), Groups.MAIN, Groups.NO_BANDS);
-            this.bands = new Model[Groups.BANDS];
+            this.bands = new CosmeticModels.GroupModel[Groups.BANDS];
             for (int i = 0; i < bands.length; i++) {
                 bands[i] = factory.create(set.bakeLayer(layer), Groups.MAIN, i);
             }
-            this.type = RenderTypes.entityCutout(texture);
+            this.type = RenderType.entityCutout(texture);
             this.defaultMain = defaultMain;
             this.accentShade = accentShade;
             this.detailColor = detailColor;
@@ -260,7 +258,7 @@ public final class BuiltinCosmeticRenderers {
                     BuiltinCosmeticRenderers.submit(ctx, bands[band], type, bandColor(colorway, stripes, band));
                 }
             }
-            for (Map.Entry<Groups, Model<AvatarRenderState>> entry : groupModels.entrySet()) {
+            for (Map.Entry<Groups, CosmeticModels.GroupModel> entry : groupModels.entrySet()) {
                 Groups group = entry.getKey();
                 int detail = dynamicDetail != null ? dynamicDetail.getAsInt() : detailColor;
                 int rgb = group == Groups.ACCENT ? shade(main, accentShade) : fixedColor(group, detail);

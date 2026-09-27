@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,16 +28,23 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NeonSignBlock extends HorizontalDirectionalBlock {
 
+    public static final MapCodec<NeonSignBlock> CODEC = simpleCodec(NeonSignBlock::new);
+
     public static final int DESIGNS = 3;
     public static final IntegerProperty DESIGN = IntegerProperty.create("design", 0, DESIGNS - 1);
     public static final int LIGHT = 10;
     /** Plate at the back of the block, the picture facing north (toward the player who placed it). */
     private static final VoxelShape NORTH_SHAPE = Block.box(1.0, 2.0, 14.0, 15.0, 14.0, 16.0);
-    private final Map<Direction, VoxelShape> shapes = Shapes.rotateHorizontal(NORTH_SHAPE);
+    private final Map<Direction, VoxelShape> shapes = BlockShapes.rotateHorizontal(NORTH_SHAPE);
 
     public NeonSignBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(DESIGN, 0));
+    }
+
+    @Override
+    protected MapCodec<NeonSignBlock> codec() {
+        return CODEC;
     }
 
     @Override

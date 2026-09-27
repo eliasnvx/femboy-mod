@@ -8,6 +8,7 @@ import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyMenus;
 import dev.eliasnvx.femboymod.registry.FemboyTags;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +17,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -49,6 +50,11 @@ public final class BackpackMenu extends AbstractContainerMenu {
     private final ComponentContainer bag;
     private final ComponentContainer charms;
     private ItemStack backpack;
+
+    /** Client side: Architectury 13 extended menus hand the extra data over as a raw buffer. */
+    public BackpackMenu(int containerId, Inventory inventory, FriendlyByteBuf buf) {
+        this(containerId, inventory, BackpackMenuData.STREAM_CODEC.decode(buf));
+    }
 
     public BackpackMenu(int containerId, Inventory inventory, BackpackMenuData data) {
         super(FemboyMenus.BACKPACK.get(), containerId);
@@ -95,14 +101,14 @@ public final class BackpackMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotIndex, int button, ContainerInput input, Player p) {
+    public void clicked(int slotIndex, int button, ClickType input, Player p) {
         if (!stillValid(p)) {
             return;
         }
         if (slotIndex >= 0 && slotIndex < slots.size() && slots.get(slotIndex) instanceof LockableSlot slot && slot.isLocked()) {
             return; // the open backpack itself: no pickup / throw / quick move / swap onto it
         }
-        if (input == ContainerInput.SWAP && button == lockedInventorySlot) {
+        if (input == ClickType.SWAP && button == lockedInventorySlot) {
             return; // number key (or offhand) swap of the open backpack into a slot
         }
         super.clicked(slotIndex, button, input, p);

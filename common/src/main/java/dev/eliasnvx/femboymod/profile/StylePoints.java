@@ -32,7 +32,7 @@ public final class StylePoints {
         if (amount == 0) {
             return false;
         }
-        if (amount > 0 && !((ServerLevel) player.level()).getGameRules().get(FemboyGameRules.STYLE_POINTS.get())) {
+        if (amount > 0 && !((ServerLevel) player.level()).getGameRules().getBoolean(FemboyGameRules.STYLE_POINTS)) {
             return false;
         }
         StylePointsEvent event = new StylePointsEvent(player, reason, amount);
@@ -49,7 +49,7 @@ public final class StylePoints {
         profile.set(FemboyProfileFields.STYLE_POINTS, balance + change);
         if (change > 0) {
             profile.update(FemboyProfileFields.STYLE_POINTS_EARNED, total -> total + change);
-            player.sendOverlayMessage(Component.translatable("message.femboymod.style_points", change));
+            player.displayClientMessage(Component.translatable("message.femboymod.style_points", change), true);
         }
         return true;
     }

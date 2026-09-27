@@ -3,8 +3,12 @@
   "category": "equipment",
   "group": "femboymod_pearl",
   "ingredients": [
-    "femboymod:cyber_visor",
-    "femboymod:moonstone"
+    {
+      "item": "femboymod:cyber_visor"
+    },
+    {
+      "item": "femboymod:moonstone"
+    }
   ],
   "result": {
     "id": "femboymod:cyber_visor",

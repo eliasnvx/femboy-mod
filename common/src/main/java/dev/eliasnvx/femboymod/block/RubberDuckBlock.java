@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.block;
 
+import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
 import dev.eliasnvx.femboymod.api.profile.PlayerProfile;
@@ -31,15 +32,23 @@ public class RubberDuckBlock extends PlushBlock {
     public static final int LINES = 10;
     private static final String LINE_KEY = "message.femboymod.duck.";
 
+    private final MapCodec<RubberDuckBlock> codec;
+
     public RubberDuckBlock(Properties properties, VoxelShape northShape) {
         super(properties, northShape);
+        this.codec = simpleCodec(props -> new RubberDuckBlock(props, northShape));
+    }
+
+    @Override
+    protected MapCodec<RubberDuckBlock> codec() {
+        return codec;
     }
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         InteractionResult squeak = super.useWithoutItem(state, level, pos, player, hit);
         if (player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.sendOverlayMessage(Component.translatable(LINE_KEY + level.getRandom().nextInt(LINES)));
+            serverPlayer.displayClientMessage(Component.translatable(LINE_KEY + level.getRandom().nextInt(LINES)), true);
             debug(serverPlayer);
         }
         return squeak;
@@ -57,7 +66,7 @@ public class RubberDuckBlock extends PlushBlock {
         profile.set(ProfileHooks.DUCK_LAST_INSIGHT, now);
         profile.update(FemboyProfileFields.DUCK_SESSIONS, sessions -> sessions + 1);
         StylePoints.earn(player, FemboyConfig.common().stylePoints().rubberDuck(), StylePoints.RUBBER_DUCK);
-        player.addEffect(new MobEffectInstance(FemboyEffects.INSIGHT.asHolder(), config.insightDuration()));
+        player.addEffect(new MobEffectInstance(FemboyEffects.holder(FemboyEffects.INSIGHT), config.insightDuration()));
         player.giveExperiencePoints(config.duckExperience());
         FemboyTriggers.fire(player, FemboyTriggers.DUCK_DEBUGGING);
         return true;

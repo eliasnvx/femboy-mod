@@ -41,13 +41,13 @@ public final class DripCombat {
         float result = amount;
         if (victim instanceof ServerPlayer player && !(attacker instanceof Player)) {
             int tier = FemboyMod.api().getDripLevel(player).tier();
-            for (DripDamage rule : level.registryAccess().lookupOrThrow(DripDamage.REGISTRY_KEY)) {
+            for (DripDamage rule : level.registryAccess().registryOrThrow(DripDamage.REGISTRY_KEY)) {
                 if (rule.attackers().contains(attacker.getType().builtInRegistryHolder())) {
                     result *= rule.multiplierFor(tier);
                 }
             }
         }
-        int pvpPercent = level.getGameRules().get(FemboyGameRules.DRIP_PVP_PERCENT.get());
+        int pvpPercent = FemboyGameRules.dripPvpPercent(level.getGameRules());
         if (pvpPercent > 0 && attacker instanceof ServerPlayer attackerPlayer && victim instanceof ServerPlayer victimPlayer) {
             result *= pvpMultiplier(FemboyMod.api().getDripLevel(attackerPlayer).tier(), FemboyMod.api().getDripLevel(victimPlayer).tier(), pvpPercent);
         }

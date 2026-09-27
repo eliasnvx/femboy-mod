@@ -5,10 +5,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.entity.Entity;
 
 /**
@@ -56,9 +55,12 @@ public final class EmoteClient {
         });
     }
 
-    /** Called at the end of {@code PlayerModel#setupAnim}. Does not allocate. */
-    public static void pose(PlayerModel model, AvatarRenderState state) {
-        Active active = ACTIVE.isEmpty() ? null : ACTIVE.get(state.id);
+    /**
+     * Called at the end of {@code PlayerModel#setupAnim} with the id of the entity being posed (1.21.1 has no
+     * render states, so the mixin passes the entity's id). Does not allocate.
+     */
+    public static void pose(HumanoidModel<?> model, int entityId) {
+        Active active = ACTIVE.isEmpty() ? null : ACTIVE.get(entityId);
         if (active == null) {
             return;
         }

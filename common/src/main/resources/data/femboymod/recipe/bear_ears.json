@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shapeless",
   "category": "equipment",
   "ingredients": [
-    "minecraft:brown_wool",
-    "minecraft:honeycomb",
-    "femboymod:glitch_shard",
-    "minecraft:string"
+    {
+      "item": "minecraft:brown_wool"
+    },
+    {
+      "item": "minecraft:honeycomb"
+    },
+    {
+      "item": "femboymod:glitch_shard"
+    },
+    {
+      "item": "minecraft:string"
+    }
   ],
   "result": {
     "id": "femboymod:bear_ears"

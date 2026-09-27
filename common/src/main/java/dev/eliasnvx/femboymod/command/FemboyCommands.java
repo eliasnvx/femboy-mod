@@ -33,7 +33,7 @@ public final class FemboyCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {
         dispatcher.register(Commands.literal(FemboyMod.MOD_ID)
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("colorway")
                         .then(Commands.literal("clear").executes(FemboyCommands::clear))
                         .then(Commands.literal("solid")

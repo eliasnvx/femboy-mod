@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "S": "minecraft:string",
-    "G": "minecraft:glass_pane",
-    "D": "minecraft:pink_dye"
+    "S": {
+      "item": "minecraft:string"
+    },
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "D": {
+      "item": "minecraft:pink_dye"
+    }
   },
   "pattern": [
     "S S",

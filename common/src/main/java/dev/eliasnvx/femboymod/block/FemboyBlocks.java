@@ -7,15 +7,15 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
-import net.minecraft.world.entity.npc.villager.VillagerProfession;
-import net.minecraft.world.item.trading.TradeSet;
+import dev.architectury.registry.level.entity.trade.TradeRegistry;
+import dev.eliasnvx.femboymod.world.trade.TradeSets;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DropExperienceBlock;
@@ -26,7 +26,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.Set;
+import java.util.Arrays;
+import net.minecraft.world.entity.npc.VillagerTrades;
 import java.util.function.Function;
 
 /** Blocks of SPEC §5.6 and the Thrifter profession (§5.5). */
@@ -67,7 +68,7 @@ public final class FemboyBlocks {
     // Rose quartz geodes: budding blocks grow buds into clusters, like amethyst
     public static final RegistrySupplier<Block> BUDDING_ROSE_QUARTZ = block("budding_rose_quartz", BuddingRoseQuartzBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).randomTicks().strength(1.5F).sound(SoundType.AMETHYST)
-                    .requiresCorrectToolForDrops().pushReaction(PushReaction.POPPED));
+                    .requiresCorrectToolForDrops().pushReaction(PushReaction.DESTROY)); // 26.3: POPPED
     public static final RegistrySupplier<Block> ROSE_QUARTZ_CLUSTER = cluster("rose_quartz_cluster", 7.0F, 3.0F, SoundType.AMETHYST_CLUSTER, 5);
     public static final RegistrySupplier<Block> LARGE_ROSE_QUARTZ_BUD = cluster("large_rose_quartz_bud", 5.0F, 3.0F, SoundType.LARGE_AMETHYST_BUD, 4);
     public static final RegistrySupplier<Block> MEDIUM_ROSE_QUARTZ_BUD = cluster("medium_rose_quartz_bud", 4.0F, 3.0F, SoundType.MEDIUM_AMETHYST_BUD, 2);
@@ -104,27 +105,26 @@ public final class FemboyBlocks {
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(2.0F).sound(SoundType.METAL).noOcclusion()
                     .lightLevel(state -> dev.eliasnvx.femboymod.vibe.VibeScannerBlock.LIGHT));
     public static final RegistrySupplier<Block> LED_STRIP = block("led_strip", LedStripBlock::new,
-            BlockBehaviour.Properties.of().strength(0.3F).sound(SoundType.GLASS).noOcclusion().noCollision()
+            BlockBehaviour.Properties.of().strength(0.3F).sound(SoundType.GLASS).noOcclusion().noCollission()
                     .lightLevel(state -> LedStripBlock.LIGHT));
 
     public static final RegistrySupplier<BlockEntityType<ClothingRackBlockEntity>> CLOTHING_RACK_ENTITY = BLOCK_ENTITIES.register(
-            "clothing_rack", () -> new BlockEntityType<>(ClothingRackBlockEntity::new, Set.of(CLOTHING_RACK.get())));
+            "clothing_rack", () -> BlockEntityType.Builder.of(ClothingRackBlockEntity::new, CLOTHING_RACK.get()).build(null));
     public static final RegistrySupplier<BlockEntityType<WardrobeBlockEntity>> WARDROBE_ENTITY = BLOCK_ENTITIES.register(
-            "wardrobe", () -> new BlockEntityType<>(WardrobeBlockEntity::new, Set.of(WARDROBE.get())));
+            "wardrobe", () -> BlockEntityType.Builder.of(WardrobeBlockEntity::new, WARDROBE.get()).build(null));
 
     /** The clothing rack is the Thrifter's job site (POI registered per loader, see PlatformHelper#registerPoi). */
     public static final ResourceKey<PoiType> THRIFTER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, id("thrifter"));
     private static final int MAX_LEVEL = 5;
+    /** Vanilla villagers draw two listings per level (Villager#updateTrades), see {@link TradeSets#listing}. */
+    private static final int LISTINGS_PER_LEVEL = 2;
+    private static final String THRIFTER_NAME = "thrifter";
 
-    public static final RegistrySupplier<VillagerProfession> THRIFTER = PROFESSIONS.register("thrifter", () -> {
-        Int2ObjectMap.Entry<ResourceKey<TradeSet>>[] levels = new Int2ObjectMap.Entry[MAX_LEVEL];
-        for (int level = 1; level <= MAX_LEVEL; level++) {
-            levels[level - 1] = Int2ObjectMap.entry(level, ResourceKey.create(Registries.TRADE_SET, id("thrifter/level_" + level)));
-        }
-        return new VillagerProfession(Component.translatable("entity.femboymod.villager.thrifter"),
-                poi -> poi.is(THRIFTER_POI), poi -> poi.is(THRIFTER_POI),
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.VILLAGER_WORK_LEATHERWORKER, Int2ObjectMap.ofEntries(levels));
-    });
+    // 1.21.1 professions carry no display name and no trade sets: the name comes from the lang key
+    // entity.minecraft.villager[.femboymod].thrifter, trades from trade_set/thrifter/level_<n> via TradeSets.
+    public static final RegistrySupplier<VillagerProfession> THRIFTER = PROFESSIONS.register(THRIFTER_NAME, () ->
+            new VillagerProfession(THRIFTER_NAME, poi -> poi.is(THRIFTER_POI), poi -> poi.is(THRIFTER_POI),
+                    ImmutableSet.of(), ImmutableSet.of(), SoundEvents.VILLAGER_WORK_LEATHERWORKER));
 
     private FemboyBlocks() {
     }
@@ -134,7 +134,7 @@ public final class FemboyBlocks {
     }
 
     private static RegistrySupplier<Block> block(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties props) {
-        RegistrySupplier<Block> block = BLOCKS.register(name, () -> factory.apply(props.setId(ResourceKey.create(Registries.BLOCK, id(name)))));
+        RegistrySupplier<Block> block = BLOCKS.register(name, () -> factory.apply(props));
         FemboyItems.blockItem(name, block);
         return block;
     }
@@ -143,7 +143,7 @@ public final class FemboyBlocks {
     private static RegistrySupplier<Block> cluster(String name, float height, float inset, SoundType sound, int light) {
         return block(name, props -> new AmethystClusterBlock(height, inset, props),
                 BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).forceSolidOn().noOcclusion().sound(sound).strength(1.5F)
-                        .lightLevel(state -> light).pushReaction(PushReaction.POPPED));
+                        .lightLevel(state -> light).pushReaction(PushReaction.DESTROY)); // 26.3: POPPED
     }
 
     /** Shapes match tools/plush/make_plushies.py (face pointing north). */
@@ -156,5 +156,12 @@ public final class FemboyBlocks {
     public static void init() {
         BLOCK_ENTITIES.register();
         PROFESSIONS.register();
+        THRIFTER.listen(profession -> {
+            for (int level = 1; level <= MAX_LEVEL; level++) {
+                VillagerTrades.ItemListing[] listings = new VillagerTrades.ItemListing[LISTINGS_PER_LEVEL];
+                Arrays.fill(listings, TradeSets.listing(id(THRIFTER_NAME + "/level_" + level)));
+                TradeRegistry.registerVillagerTrade(profession, level, listings);
+            }
+        });
     }
 }

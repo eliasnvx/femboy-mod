@@ -1,8 +1,12 @@
 {
-  "type": "minecraft:crafting_transmute",
+  "type": "femboymod:crafting_transmute",
   "category": "equipment",
-  "input": "femboymod:oversized_hoodie",
-  "material": "femboymod:cat_ears",
+  "input": {
+    "item": "femboymod:oversized_hoodie"
+  },
+  "material": {
+    "item": "femboymod:cat_ears"
+  },
   "result": {
     "id": "femboymod:cat_ear_hoodie"
   }

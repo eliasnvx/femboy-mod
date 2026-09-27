@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:dark_shades",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:dark_shades"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:dark_shades",

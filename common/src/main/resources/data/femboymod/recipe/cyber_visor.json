@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "I": "minecraft:iron_nugget",
-    "N": "femboymod:neon_quartz",
-    "G": "minecraft:tinted_glass"
+    "I": {
+      "item": "minecraft:iron_nugget"
+    },
+    "N": {
+      "item": "femboymod:neon_quartz"
+    },
+    "G": {
+      "item": "minecraft:tinted_glass"
+    }
   },
   "pattern": [
     "INI",

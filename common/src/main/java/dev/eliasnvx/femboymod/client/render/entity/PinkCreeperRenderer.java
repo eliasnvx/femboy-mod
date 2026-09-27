@@ -3,7 +3,7 @@ package dev.eliasnvx.femboymod.client.render.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.architectury.registry.client.level.entity.EntityModelLayerRegistry;
 import dev.eliasnvx.femboymod.FemboyMod;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.model.CreeperModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,17 +11,16 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.model.monster.creeper.CreeperModel;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.CreeperRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.state.CreeperRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.entity.monster.Creeper;
 
 /** Pink Creeper: vanilla creeper model with our own pink texture and a bow on the head (SPEC §5.4). */
 public final class PinkCreeperRenderer extends CreeperRenderer {
@@ -35,7 +34,7 @@ public final class PinkCreeperRenderer extends CreeperRenderer {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CreeperRenderState state) {
+    public ResourceLocation getTextureLocation(Creeper creeper) {
         return TEXTURE;
     }
 
@@ -54,24 +53,28 @@ public final class PinkCreeperRenderer extends CreeperRenderer {
         return LayerDefinition.create(mesh, 16, 16);
     }
 
-    private static final class BowLayer extends RenderLayer<CreeperRenderState, CreeperModel> {
+    private static final class BowLayer extends RenderLayer<Creeper, CreeperModel<Creeper>> {
         private static final ResourceLocation BOW_TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png");
-        private static final int BOW_COLOR = 0xFF4FA3;
+        private static final int BOW_COLOR = FastColor.ARGB32.opaque(0xFF4FA3);
         private final ModelPart bow;
+        private final ModelPart head;
+        private final RenderType type = RenderType.entityCutout(BOW_TEXTURE);
 
-        BowLayer(RenderLayerParent<CreeperRenderState, CreeperModel> parent, ModelPart root) {
+        BowLayer(RenderLayerParent<Creeper, CreeperModel<Creeper>> parent, ModelPart root) {
             super(parent);
             this.bow = root;
+            this.head = parent.getModel().root().getChild("head");
         }
 
         @Override
-        public void submit(PoseStack pose, SubmitNodeCollector collector, int light, CreeperRenderState state, float yRot, float xRot) {
-            if (state.isInvisible) {
+        public void render(PoseStack pose, MultiBufferSource buffers, int light, Creeper creeper, float walkPos, float walkSpeed,
+                           float partialTick, float ageInTicks, float headYaw, float headPitch) {
+            if (creeper.isInvisible()) {
                 return;
             }
             pose.pushPose();
-            getParentModel().root().getChild("head").translateAndRotate(pose);
-            collector.submitModelPart(bow, pose, RenderTypes.entityCutout(BOW_TEXTURE), light, OverlayTexture.NO_OVERLAY, null, ARGB.opaque(BOW_COLOR));
+            head.translateAndRotate(pose);
+            bow.render(pose, buffers.getBuffer(type), light, OverlayTexture.NO_OVERLAY, BOW_COLOR);
             pose.popPose();
         }
     }

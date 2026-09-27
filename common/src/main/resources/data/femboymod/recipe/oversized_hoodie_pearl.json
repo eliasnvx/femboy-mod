@@ -3,8 +3,12 @@
   "category": "equipment",
   "group": "femboymod_pearl",
   "ingredients": [
-    "femboymod:oversized_hoodie",
-    "femboymod:moonstone"
+    {
+      "item": "femboymod:oversized_hoodie"
+    },
+    {
+      "item": "femboymod:moonstone"
+    }
   ],
   "result": {
     "id": "femboymod:oversized_hoodie",

@@ -15,11 +15,10 @@ import net.minecraft.core.registries.Registries;
 import dev.eliasnvx.femboymod.energy.EmptyCanBlock;
 import dev.eliasnvx.femboymod.energy.EnergyDrinkItem;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.item.component.TypedEntityData;
-import net.minecraft.nbt.CompoundTag;
+import dev.architectury.core.item.ArchitecturySpawnEggItem;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Mob;
 import dev.eliasnvx.femboymod.entity.FemboyEntities;
-import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -27,11 +26,9 @@ import net.minecraft.world.level.material.PushReaction;
 import dev.eliasnvx.femboymod.backpack.BackpackItem;
 import dev.eliasnvx.femboymod.backpack.BackpackSpec;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.component.DamageResistant;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -93,10 +90,11 @@ public final class FemboyItems {
     // SPEC §5.2: Byte Energy (balance in data/femboymod/femboymod/energy_drink/*.json)
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(FemboyMod.MOD_ID, Registries.BLOCK);
     public static final RegistrySupplier<Block> EMPTY_ENERGY_CAN_BLOCK = BLOCKS.register("empty_energy_can", () -> new EmptyCanBlock(
-            BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "empty_energy_can")))
-                    .noOcclusion().strength(0.3F).sound(SoundType.METAL).pushReaction(PushReaction.POPPED)));
+            // DESTROY: a piston pops the can off and drops it (26.3: PushReaction.POPPED)
+            BlockBehaviour.Properties.of()
+                    .noOcclusion().strength(0.3F).sound(SoundType.METAL).pushReaction(PushReaction.DESTROY)));
     public static final RegistrySupplier<Item> EMPTY_ENERGY_CAN = register("empty_energy_can",
-            props -> new BlockItem(EMPTY_ENERGY_CAN_BLOCK.get(), props.useBlockDescriptionPrefix()));
+            props -> new BlockItem(EMPTY_ENERGY_CAN_BLOCK.get(), props));
     public static final RegistrySupplier<Item> BYTE_ENERGY_PINK = energyDrink("byte_energy_pink");
     public static final RegistrySupplier<Item> BYTE_ENERGY_BLUE = energyDrink("byte_energy_blue");
     public static final RegistrySupplier<Item> BYTE_ENERGY_PURPLE = energyDrink("byte_energy_purple");
@@ -107,13 +105,13 @@ public final class FemboyItems {
 
     // SPEC v1.1: food. Nutrition like comparable vanilla food; buffs are data-driven (bubble_tea_flavor)
     public static final RegistrySupplier<Item> BUBBLE_TEA = register("bubble_tea", props -> new BubbleTeaItem(props.stacksTo(FemboyItems.DRINK_STACK)
-            .food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.3F).alwaysEdible().build(), Consumables.defaultDrink().build())
-            .usingConvertsTo(Items.GLASS_BOTTLE)));
+            .food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.3F).alwaysEdible()
+                    .usingConvertsTo(Items.GLASS_BOTTLE).build())));
     public static final RegistrySupplier<Item> STRAWBERRY_MILK = register("strawberry_milk", props -> new StrawberryMilkItem(props.stacksTo(FemboyItems.DRINK_STACK)
-            .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.4F).alwaysEdible().build(), Consumables.defaultDrink().build())
-            .usingConvertsTo(Items.GLASS_BOTTLE)));
+            .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.4F).alwaysEdible()
+                    .usingConvertsTo(Items.GLASS_BOTTLE).build())));
     public static final RegistrySupplier<Item> MOCHI = register("mochi", props -> new Item(props
-            .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.5F).build(), Consumables.defaultFood().consumeSeconds(0.8F).build())));
+            .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.5F).fast().build()))); // fast = 0.8 s
     public static final RegistrySupplier<Item> ONIGIRI = register("onigiri", props -> new Item(props
             .food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.7F).build())));
 
@@ -127,16 +125,16 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> NEON_QUARTZ = register("neon_quartz", props -> new Item(props));
     /** Mined from rose quartz ore; jewelry, furniture and the rose quartz block. */
     public static final RegistrySupplier<Item> ROSE_QUARTZ = register("rose_quartz", props -> new Item(props));
-    public static final RegistrySupplier<Item> PINK_CREEPER_SPAWN_EGG = spawnEgg("pink_creeper_spawn_egg", FemboyEntities.PINK_CREEPER_KEY);
+    public static final RegistrySupplier<Item> PINK_CREEPER_SPAWN_EGG = spawnEgg("pink_creeper_spawn_egg", FemboyEntities.PINK_CREEPER);
 
     // Hostile meme mobs: drops and spawn eggs
     public static final RegistrySupplier<Item> GLITCH_SHARD = register("glitch_shard", props -> new Item(props));
-    public static final RegistrySupplier<Item> BUG_SPAWN_EGG = spawnEgg("bug_spawn_egg", FemboyEntities.BUG_KEY);
-    public static final RegistrySupplier<Item> CAFFEINATED_ZOMBIE_SPAWN_EGG = spawnEgg("caffeinated_zombie_spawn_egg", FemboyEntities.CAFFEINATED_ZOMBIE_KEY);
-    public static final RegistrySupplier<Item> HISSY_CAT_SPAWN_EGG = spawnEgg("hissy_cat_spawn_egg", FemboyEntities.HISSY_CAT_KEY);
-    public static final RegistrySupplier<Item> STRAY_CAT_SPAWN_EGG = spawnEgg("stray_cat_spawn_egg", FemboyEntities.STRAY_CAT_KEY);
-    public static final RegistrySupplier<Item> COSPLAYER_SPAWN_EGG = spawnEgg("cosplayer_spawn_egg", FemboyEntities.COSPLAYER_KEY);
-    public static final RegistrySupplier<Item> FASHION_CRITIC_SPAWN_EGG = spawnEgg("fashion_critic_spawn_egg", FemboyEntities.FASHION_CRITIC_KEY);
+    public static final RegistrySupplier<Item> BUG_SPAWN_EGG = spawnEgg("bug_spawn_egg", FemboyEntities.BUG);
+    public static final RegistrySupplier<Item> CAFFEINATED_ZOMBIE_SPAWN_EGG = spawnEgg("caffeinated_zombie_spawn_egg", FemboyEntities.CAFFEINATED_ZOMBIE);
+    public static final RegistrySupplier<Item> HISSY_CAT_SPAWN_EGG = spawnEgg("hissy_cat_spawn_egg", FemboyEntities.HISSY_CAT);
+    public static final RegistrySupplier<Item> STRAY_CAT_SPAWN_EGG = spawnEgg("stray_cat_spawn_egg", FemboyEntities.STRAY_CAT);
+    public static final RegistrySupplier<Item> COSPLAYER_SPAWN_EGG = spawnEgg("cosplayer_spawn_egg", FemboyEntities.COSPLAYER);
+    public static final RegistrySupplier<Item> FASHION_CRITIC_SPAWN_EGG = spawnEgg("fashion_critic_spawn_egg", FemboyEntities.FASHION_CRITIC);
 
     /** Hair clip shapes (SPEC §5.1: "10 forms"); all share the hair_clip renderer. */
     public static final List<String> HAIR_CLIP_SHAPES = List.of(
@@ -155,23 +153,24 @@ public final class FemboyItems {
     }
 
     private static final int DRINK_STACK = 16;
+    /**
+     * 1.21.1 spawn eggs tint their texture with two colors. Ours are drawn in full color (as in 26.3),
+     * so both tints are white, which leaves the texture unchanged.
+     */
+    private static final int NO_EGG_TINT = 0xFFFFFF;
 
     /** Block item for a block registered elsewhere (FemboyBlocks). */
     public static RegistrySupplier<Item> blockItem(String name, RegistrySupplier<Block> block) {
-        return register(name, props -> new BlockItem(block.get(), props.useBlockDescriptionPrefix()));
+        return register(name, props -> new BlockItem(block.get(), props));
     }
 
-    private static RegistrySupplier<Item> spawnEgg(String name, ResourceKey<EntityType<?>> entity) {
-        return register(name, props -> new SpawnEggItem(
-                // ENTITY_DATA resolved late: on NeoForge items may be built before entity types are registered
-                props.delayedComponent(DataComponents.ENTITY_DATA, context -> TypedEntityData.of(
-                        context.lookupOrThrow(Registries.ENTITY_TYPE).getOrThrow(entity).value(), new CompoundTag()))));
+    private static RegistrySupplier<Item> spawnEgg(String name, RegistrySupplier<? extends EntityType<? extends Mob>> entity) {
+        // Architectury resolves the entity type late: on NeoForge items may be built before entity types are registered
+        return register(name, props -> new ArchitecturySpawnEggItem(entity, NO_EGG_TINT, NO_EGG_TINT, props));
     }
 
     private static RegistrySupplier<Item> energyDrink(String name) {
-        return register(name, props -> new EnergyDrinkItem(props.stacksTo(DRINK_STACK)
-                .component(DataComponents.CONSUMABLE, Consumables.defaultDrink().build())
-                .usingConvertsTo(EMPTY_ENERGY_CAN.get())));
+        return register(name, props -> new EnergyDrinkItem(props.stacksTo(DRINK_STACK), EMPTY_ENERGY_CAN));
     }
 
     private static RegistrySupplier<Item> backpack(String name, int rows, boolean indestructible) {
@@ -182,9 +181,10 @@ public final class FemboyItems {
                     .component(DataComponents.CONTAINER, ItemContainerContents.EMPTY)
                     .component(FemboyComponents.CHARMS.get(), ItemContainerContents.EMPTY);
             if (indestructible) {
-                // Netherite: does not burn and survives lava, cactus and explosions as a dropped item
-                props.delayedComponent(DataComponents.DAMAGE_RESISTANT,
-                        context -> new DamageResistant(context.getOrThrow(FemboyTags.BACKPACK_IMMUNE_TO)));
+                // Netherite: does not burn and survives lava, cactus and explosions as a dropped item.
+                // 1.21.1 has no damage_resistant component: fire_resistant covers fire and lava,
+                // the rest of #femboymod:backpack_immune_to goes through isDamageResistant.
+                props.fireResistant();
             }
             return new BackpackItem(props);
         });
@@ -199,9 +199,16 @@ public final class FemboyItems {
     }
 
     private static RegistrySupplier<Item> register(String name, Function<Item.Properties, Item> factory) {
-        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
-        RegistrySupplier<Item> item = REGISTER.register(name, () -> factory.apply(new Item.Properties().setId(key)));
+        RegistrySupplier<Item> item = REGISTER.register(name, () -> factory.apply(new Item.Properties()));
         TAB_ORDER.add(item);
         return item;
+    }
+
+    /**
+     * Whether a dropped {@code stack} ignores {@code source}: stands in for 26.3's {@code damage_resistant}
+     * component on the netherite backpack (tag {@link FemboyTags#BACKPACK_IMMUNE_TO}).
+     */
+    public static boolean isDamageResistant(ItemStack stack, DamageSource source) {
+        return stack.is(NETHERITE_BACKPACK.get()) && source.is(FemboyTags.BACKPACK_IMMUNE_TO);
     }
 }

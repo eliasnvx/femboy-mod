@@ -1,17 +1,17 @@
 package dev.eliasnvx.femboymod.client.render.entity;
 
-import net.minecraft.client.model.EntityModel;
+import dev.eliasnvx.femboymod.entity.Bug;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 
 /** Bug: beetle shell, small head with antennae, six legs that scuttle while walking (texture 32x32). */
-public final class BugModel extends EntityModel<LivingEntityRenderState> {
+public final class BugModel extends HierarchicalModel<Bug> {
 
     private static final int TEXTURE_SIZE = 32;
     private static final int LEGS_PER_SIDE = 3;
@@ -21,13 +21,14 @@ public final class BugModel extends EntityModel<LivingEntityRenderState> {
     private static final float ANTENNA_WIGGLE = 0.12F;
     private static final float ANTENNA_SPEED = 0.25F;
 
+    private final ModelPart root;
     private final ModelPart[] rightLegs = new ModelPart[LEGS_PER_SIDE];
     private final ModelPart[] leftLegs = new ModelPart[LEGS_PER_SIDE];
     private final ModelPart leftAntenna;
     private final ModelPart rightAntenna;
 
     public BugModel(ModelPart root) {
-        super(root);
+        this.root = root;
         for (int i = 0; i < LEGS_PER_SIDE; i++) {
             rightLegs[i] = root.getChild("right_leg" + i);
             leftLegs[i] = root.getChild("left_leg" + i);
@@ -59,17 +60,21 @@ public final class BugModel extends EntityModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(LivingEntityRenderState state) {
-        super.setupAnim(state);
-        float walk = state.walkAnimationPos * LEG_SPEED;
-        float amount = Math.min(1.0F, state.walkAnimationSpeed) * LEG_SWING;
+    public ModelPart root() {
+        return root;
+    }
+
+    @Override
+    public void setupAnim(Bug bug, float walkPos, float walkSpeed, float ageInTicks, float headYaw, float headPitch) {
+        float walk = walkPos * LEG_SPEED;
+        float amount = Math.min(1.0F, walkSpeed) * LEG_SWING;
         for (int i = 0; i < LEGS_PER_SIDE; i++) {
             // alternating tripod gait: legs 0 and 2 of one side move with leg 1 of the other
             float phase = (i % 2 == 0 ? 0.0F : Mth.PI);
             rightLegs[i].yRot = Mth.sin(walk + phase) * amount;
             leftLegs[i].yRot = Mth.sin(walk + phase + Mth.PI) * amount;
         }
-        float wiggle = Mth.sin(state.ageInTicks * ANTENNA_SPEED) * ANTENNA_WIGGLE;
+        float wiggle = Mth.sin(ageInTicks * ANTENNA_SPEED) * ANTENNA_WIGGLE;
         leftAntenna.zRot = 0.35F + wiggle;
         rightAntenna.zRot = -0.35F - wiggle;
     }

@@ -16,10 +16,12 @@
     "placed": {
       "trigger": "minecraft:placed_block",
       "conditions": {
-        "location": {
-          "type": "minecraft:match_block",
-          "blocks": "femboymod:terminal"
-        }
+        "location": [
+          {
+            "condition": "minecraft:block_state_property",
+            "block": "femboymod:terminal"
+          }
+        ]
       }
     }
   },

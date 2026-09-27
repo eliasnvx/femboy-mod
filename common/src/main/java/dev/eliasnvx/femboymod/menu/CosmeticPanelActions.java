@@ -4,7 +4,6 @@ import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -110,7 +109,7 @@ public final class CosmeticPanelActions {
             if (carried.isEmpty()) {
                 menu.setCarried(worn); // swap
             } else {
-                player.getInventory().placeItemBackInInventory(worn, Prediction.SERVER_ONLY); // stackable addon item: rest stays carried
+                player.getInventory().placeItemBackInInventory(worn); // stackable addon item: rest stays carried
             }
         } else if (carried.isEmpty()) {
             menu.setCarried(ItemStack.EMPTY);

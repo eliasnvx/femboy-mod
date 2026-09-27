@@ -37,7 +37,7 @@ public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, bo
     }
 
     public static CosmeticsSyncPayload of(Player player) {
-        boolean allowed = !(player.level() instanceof ServerLevel level) || level.getGameRules().get(FemboyGameRules.ALLOW_HIDDEN_ARMOR.get());
+        boolean allowed = !(player.level() instanceof ServerLevel level) || level.getGameRules().getBoolean(FemboyGameRules.ALLOW_HIDDEN_ARMOR);
         return new CosmeticsSyncPayload(player.getId(), CosmeticsManager.get(player), allowed);
     }
 
@@ -67,8 +67,13 @@ public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, bo
     public static void sendToTrackingAndSelf(ServerPlayer player) {
         Packet<? super ClientGamePacketListener> packet = (Packet<? super ClientGamePacketListener>)
                 NetworkManager.toPacket(NetworkManager.s2c(), of(player), player.registryAccess());
-        ((ServerLevel) player.level()).getChunkSource()
-                .sendToTrackingPlayersFiltered(player, packet, CosmeticsSyncPayload::canReceive);
+        // 1.21.1 has no filtered tracking broadcast; players in view of the chunk (the self included) are a superset
+        // of the trackers, and the receiver ignores entity ids it does not know.
+        for (ServerPlayer watcher : ((ServerLevel) player.level()).getChunkSource().chunkMap.getPlayers(player.chunkPosition(), false)) {
+            if (watcher != player && canReceive(watcher)) {
+                watcher.connection.send(packet);
+            }
+        }
         if (canReceive(player)) {
             player.connection.send(packet);
         }

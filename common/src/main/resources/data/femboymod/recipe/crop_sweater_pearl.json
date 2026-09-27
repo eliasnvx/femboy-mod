@@ -3,8 +3,12 @@
   "category": "equipment",
   "group": "femboymod_pearl",
   "ingredients": [
-    "femboymod:crop_sweater",
-    "femboymod:moonstone"
+    {
+      "item": "femboymod:crop_sweater"
+    },
+    {
+      "item": "femboymod:moonstone"
+    }
   ],
   "result": {
     "id": "femboymod:crop_sweater",

@@ -3,7 +3,9 @@ package dev.eliasnvx.femboymod.cosmetic;
 import dev.eliasnvx.femboymod.world.FemboyGameRules;
 import dev.eliasnvx.femboymod.profile.ProfileHooks;
 import dev.eliasnvx.femboymod.network.ProfileSyncPayload;
+import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
+import net.minecraft.world.entity.Entity;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -18,7 +20,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.GameRules;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 
 /** Game hooks for cosmetic slots: sync, right-click equip, death drops. */
@@ -34,7 +36,7 @@ public final class CosmeticsEvents {
             CosmeticsSyncPayload.sendToTrackingAndSelf(player);
             ProfileSyncPayload.sendAll(player);
         });
-        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, reason) -> {
+        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, removalReason) -> {
             CosmeticEffectsManager.forget(player);
             CosmeticsSyncPayload.sendToTrackingAndSelf(player);
             ProfileSyncPayload.sendAll(player);
@@ -49,18 +51,14 @@ public final class CosmeticsEvents {
         // allow_hidden_armor changed with /gamerule: resend everyone's outfit so clients redraw the armor
         TickEvent.SERVER_POST.register(dev.eliasnvx.femboymod.entity.CosplayerSpawner::tick);
         TickEvent.SERVER_POST.register(server -> {
-            boolean allowed = server.overworld().getGameRules().get(FemboyGameRules.ALLOW_HIDDEN_ARMOR.get());
+            boolean allowed = server.overworld().getGameRules().getBoolean(FemboyGameRules.ALLOW_HIDDEN_ARMOR);
             if (allowed != lastArmorRule) {
                 lastArmorRule = allowed;
                 server.getPlayerList().getPlayers().forEach(CosmeticsSyncPayload::sendToTrackingAndSelf);
             }
         });
         PlayerEvent.CHANGE_DIMENSION.register((player, from, to) -> CosmeticsSyncPayload.sendToTrackingAndSelf(player));
-        EntityEvent.START_TRACKING.register((entity, watcher) -> {
-            if (entity instanceof Player tracked) {
-                CosmeticsSyncPayload.sendTo(watcher, tracked);
-            }
-        });
+        // Start tracking: Architectury 13 has no event for it, each loader calls onStartTracking
 
         EntityEvent.LIVING_DEATH.register((entity, source) -> {
             if (entity instanceof ServerPlayer player) {
@@ -70,17 +68,26 @@ public final class CosmeticsEvents {
             return EventResult.pass();
         });
 
-        InteractionEvent.USE_ITEM.register((level, player, hand) -> equipFromHand(player, hand, false));
+        InteractionEvent.RIGHT_CLICK_ITEM.register((player, hand) -> equipFromHand(player, hand, false).interruptsFurtherEvaluation()
+                ? CompoundEventResult.interruptTrue(player.getItemInHand(hand))
+                : CompoundEventResult.pass());
+    }
+
+    /** {@code watcher} starts seeing {@code entity}: send the outfit if it is a player. Called by the loader entrypoints. */
+    public static void onStartTracking(Entity entity, ServerPlayer watcher) {
+        if (entity instanceof Player tracked) {
+            CosmeticsSyncPayload.sendTo(watcher, tracked);
+        }
     }
 
     public static void dropOnDeath(ServerPlayer player) {
         ServerLevel level = (ServerLevel) player.level();
-        if (level.getGameRules().get(GameRules.KEEP_INVENTORY) || level.getGameRules().get(FemboyGameRules.KEEP_COSMETICS.get())
+        if (level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) || level.getGameRules().getBoolean(FemboyGameRules.KEEP_COSMETICS)
                 || FemboyConfig.common().keepCosmeticsOnDeath()) {
             return; // the attachment is copyOnDeath, so cosmetics carry over to the respawned player
         }
         for (ItemStack stack : CosmeticsManager.clear(player)) {
-            player.spawnAtLocation(level, stack);
+            player.spawnAtLocation(stack);
         }
     }
 
@@ -109,10 +116,10 @@ public final class CosmeticsEvents {
                 if (held.isEmpty()) {
                     player.setItemInHand(hand, worn);
                 } else if (!player.getInventory().add(worn)) {
-                    player.spawnAtLocation((ServerLevel) player.level(), worn);
+                    player.spawnAtLocation(worn);
                 }
             }
         }
-        return EventResult.fromMinecraft(InteractionResult.SUCCESS);
+        return EventResult.interruptTrue(); // SUCCESS
     }
 }

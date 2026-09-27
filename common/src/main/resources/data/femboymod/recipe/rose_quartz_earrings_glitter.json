@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:rose_quartz_earrings",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:rose_quartz_earrings"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:rose_quartz_earrings",

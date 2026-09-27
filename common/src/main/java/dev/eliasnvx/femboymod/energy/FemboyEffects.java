@@ -3,7 +3,9 @@ package dev.eliasnvx.femboymod.energy;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -37,6 +39,14 @@ public final class FemboyEffects {
     private FemboyEffects() {
     }
 
+    /**
+     * The registry's own holder for one of our effects. Effect maps on entities are keyed by holder identity,
+     * so never pass the {@link RegistrySupplier} itself as a {@code Holder<MobEffect>}.
+     */
+    public static Holder<MobEffect> holder(RegistrySupplier<MobEffect> effect) {
+        return BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect.get());
+    }
+
     /** Tracks an energy drink's buff; on its very last tick the crash hits (SPEC §5.2). */
     static final class Caffeinated extends MobEffect {
         Caffeinated() {
@@ -49,8 +59,10 @@ public final class FemboyEffects {
         }
 
         @Override
-        public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
-            EnergyDrinks.crash(level, entity);
+        public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+            if (entity.level() instanceof ServerLevel level) {
+                EnergyDrinks.crash(level, entity);
+            }
             return true;
         }
     }

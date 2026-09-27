@@ -51,7 +51,7 @@ public enum Groups {
      * {@code band} selects banded geometry: {@link #ALL_BANDS}, {@link #NO_BANDS} or one band index.
      */
     public static void show(ModelPart root, Groups visible, int band) {
-        for (ModelPart part : root.getAllParts()) {
+        root.getAllParts().forEach(part -> {
             for (Groups group : values()) {
                 if (group != BANDED && part.hasChild(group.holderName())) {
                     part.getChild(group.holderName()).visible = group == visible && (group != MAIN || band < 0);
@@ -62,7 +62,7 @@ public enum Groups {
                     part.getChild(bandHolderName(i)).visible = visible == MAIN && (band == ALL_BANDS || band == i);
                 }
             }
-        }
+        });
     }
 
     /** Factory for models without custom animation. */

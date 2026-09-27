@@ -125,6 +125,9 @@
           ],
           "texture": "#light"
         }
+      },
+      "neoforge_data": {
+        "block_light": 15
       }
     }
   ]

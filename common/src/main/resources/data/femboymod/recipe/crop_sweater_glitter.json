@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:crop_sweater",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:crop_sweater"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:crop_sweater",

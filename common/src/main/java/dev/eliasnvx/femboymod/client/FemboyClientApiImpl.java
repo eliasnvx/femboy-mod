@@ -7,10 +7,9 @@ import dev.eliasnvx.femboymod.api.client.CosmeticMotion;
 import dev.eliasnvx.femboymod.api.client.CosmeticRenderer;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
 import dev.eliasnvx.femboymod.client.render.CosmeticRenderData;
-import dev.eliasnvx.femboymod.client.render.CosmeticRenderStateAccess;
 import dev.eliasnvx.femboymod.registry.SimpleApiRegistry;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 
 final class FemboyClientApiImpl implements FemboyClientApi {
 
@@ -36,9 +35,8 @@ final class FemboyClientApiImpl implements FemboyClientApi {
     }
 
     @Override
-    public CosmeticMotion motion(AvatarRenderState state) {
-        CosmeticRenderData data = ((CosmeticRenderStateAccess) state).femboymod$getCosmetics();
-        return data == null ? CosmeticRenderData.STILL : data;
+    public CosmeticMotion motion(LivingEntity entity) {
+        return CosmeticRenderData.motion(entity);
     }
 
     void freeze() {

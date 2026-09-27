@@ -20,16 +20,16 @@ public final class EnergyDrinks {
     }
 
     public static void onDrink(ServerLevel level, LivingEntity drinker, ItemStack can) {
-        EnergyDrink drink = level.registryAccess().lookup(EnergyDrink.REGISTRY_KEY)
+        EnergyDrink drink = level.registryAccess().registry(EnergyDrink.REGISTRY_KEY)
                 .flatMap(r -> r.getOptional(EnergyDrink.keyOf(can.getItem()))).orElse(null);
         if (drink == null) {
             return;
         }
         drink.effects().forEach(buff -> drinker.addEffect(buff.instance()));
         int duration = drink.longestDuration();
-        MobEffectInstance current = drinker.getEffect(FemboyEffects.CAFFEINATED.asHolder());
+        MobEffectInstance current = drinker.getEffect(FemboyEffects.holder(FemboyEffects.CAFFEINATED));
         if (current == null || current.getDuration() < duration) {
-            drinker.addEffect(new MobEffectInstance(FemboyEffects.CAFFEINATED.asHolder(), duration, 0, false, false, true));
+            drinker.addEffect(new MobEffectInstance(FemboyEffects.holder(FemboyEffects.CAFFEINATED), duration, 0, false, false, true));
         }
 
         if (drinker instanceof Player player) {
@@ -55,7 +55,7 @@ public final class EnergyDrinks {
     }
 
     private static CaffeineRules rules(ServerLevel level) {
-        return level.registryAccess().lookup(CaffeineRules.REGISTRY_KEY)
+        return level.registryAccess().registry(CaffeineRules.REGISTRY_KEY)
                 .flatMap(r -> r.getOptional(CaffeineRules.DEFAULT)).orElse(CaffeineRules.FALLBACK);
     }
 }

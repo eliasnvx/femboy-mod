@@ -16,13 +16,15 @@
     "critic": {
       "trigger": "minecraft:player_killed_entity",
       "conditions": {
-        "entity": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:entity_type": "femboymod:fashion_critic"
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "femboymod:fashion_critic"
+            }
           }
-        }
+        ]
       }
     }
   },

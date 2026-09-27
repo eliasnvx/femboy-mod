@@ -153,7 +153,10 @@
           "cullface": "east"
         }
       },
-      "light_emission": 8
+      "light_emission": 8,
+      "neoforge_data": {
+        "block_light": 8
+      }
     }
   ]
 }

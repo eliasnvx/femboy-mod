@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:oversized_hoodie",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:oversized_hoodie"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:oversized_hoodie",

@@ -3,7 +3,7 @@
     {
       "effect": {
         "type": "femboymod:attribute",
-        "attribute": "minecraft:safe_fall_distance",
+        "attribute": "minecraft:generic.safe_fall_distance",
         "amount": 2.0,
         "operation": "add_value"
       }

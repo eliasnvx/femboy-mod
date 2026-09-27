@@ -4,11 +4,10 @@ import dev.eliasnvx.femboymod.drip.WornEvaluator;
 import dev.eliasnvx.femboymod.wardrobe.WardrobeMenu;
 import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -32,7 +31,9 @@ public final class WardrobeScreen extends AbstractContainerScreen<WardrobeMenu> 
     private static final int DRIP_COLOR = 0xFFB0407A;
 
     public WardrobeScreen(WardrobeMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, WIDTH, 114 + WardrobeMenu.ROWS * 18);
+        super(menu, inventory, title);
+        this.imageWidth = WIDTH;
+        this.imageHeight = 114 + WardrobeMenu.ROWS * 18;
         this.inventoryLabelY = this.imageHeight - 94;
     }
 
@@ -63,11 +64,16 @@ public final class WardrobeScreen extends AbstractContainerScreen<WardrobeMenu> 
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    @Override
+    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         int top = WardrobeMenu.ROWS * 18 + HEADER_HEIGHT;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, leftPos, topPos, 0.0F, 0.0F, imageWidth, top, TEXTURE_SIZE, TEXTURE_SIZE);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, leftPos, topPos + top, 0.0F, INVENTORY_PART_V,
+        graphics.blit(BACKGROUND, leftPos, topPos, 0.0F, 0.0F, imageWidth, top, TEXTURE_SIZE, TEXTURE_SIZE);
+        graphics.blit(BACKGROUND, leftPos, topPos + top, 0.0F, INVENTORY_PART_V,
                 imageWidth, INVENTORY_PART_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
         int x0 = leftPos - PANEL_WIDTH - PANEL_GAP;
         int y0 = topPos;
@@ -77,14 +83,14 @@ public final class WardrobeScreen extends AbstractContainerScreen<WardrobeMenu> 
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        super.extractLabels(graphics, mouseX, mouseY);
-        graphics.text(font, Component.translatable("gui.femboymod.wardrobe.presets"), -PANEL_WIDTH - PANEL_GAP + 4, 6, 0xFF404040, false);
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        super.renderLabels(graphics, mouseX, mouseY);
+        graphics.drawString(font, Component.translatable("gui.femboymod.wardrobe.presets"), -PANEL_WIDTH - PANEL_GAP + 4, 6, 0xFF404040, false);
         var player = Minecraft.getInstance().player;
         if (player != null) {
             var drip = WornEvaluator.evaluate(player).drip();
             Component text = Component.translatable("hud.femboymod.drip", drip.level(), drip.tier());
-            graphics.text(font, text, imageWidth - 8 - font.width(text), titleLabelY, DRIP_COLOR, false);
+            graphics.drawString(font, text, imageWidth - 8 - font.width(text), titleLabelY, DRIP_COLOR, false);
         }
     }
 }

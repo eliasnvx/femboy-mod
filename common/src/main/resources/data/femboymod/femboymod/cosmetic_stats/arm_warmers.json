@@ -4,7 +4,7 @@
     {
       "effect": {
         "type": "femboymod:attribute",
-        "attribute": "minecraft:attack_speed",
+        "attribute": "minecraft:generic.attack_speed",
         "amount": 0.15,
         "operation": "add_multiplied_base"
       },

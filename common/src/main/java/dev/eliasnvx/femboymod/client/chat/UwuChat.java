@@ -10,7 +10,9 @@ import dev.eliasnvx.femboymod.registry.FemboyItems;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.FileToIdConverter;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -44,15 +46,19 @@ public final class UwuChat implements ChatTransformer {
     }
 
     /** Loads {@code assets/<ns>/femboymod/chat_transform/<language>.json}; later packs override earlier ones. */
-    public static final class Loader extends SimpleJsonResourceReloadListener<UwuRules> {
+    public static final class Loader extends SimpleJsonResourceReloadListener {
+        private static final Gson GSON = new Gson();
+
         public Loader() {
-            super(UwuRules.CODEC, FileToIdConverter.json("femboymod/chat_transform"));
+            super(GSON, "femboymod/chat_transform");
         }
 
         @Override
-        protected void apply(Map<ResourceLocation, UwuRules> loaded, ResourceManager manager, ProfilerFiller profiler) {
+        protected void apply(Map<ResourceLocation, JsonElement> loaded, ResourceManager manager, ProfilerFiller profiler) {
             Map<String, UwuRules> byLanguage = new HashMap<>();
-            loaded.forEach((id, value) -> byLanguage.put(id.getPath(), value));
+            loaded.forEach((id, json) -> UwuRules.CODEC.parse(JsonOps.INSTANCE, json)
+                    .resultOrPartial(error -> FemboyMod.LOGGER.warn("Bad UwU chat rules {}: {}", id, error))
+                    .ifPresent(value -> byLanguage.put(id.getPath(), value)));
             rules = Map.copyOf(byLanguage);
             FemboyMod.LOGGER.debug("Loaded UwU chat rules for {}", byLanguage.keySet());
         }

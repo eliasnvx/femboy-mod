@@ -8,9 +8,9 @@
           "type": "minecraft:item",
           "name": "femboymod:glitter",
           "weight": 30,
-          "modifier": [
+          "functions": [
             {
-              "type": "minecraft:set_count",
+              "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
@@ -23,9 +23,9 @@
           "type": "minecraft:item",
           "name": "minecraft:string",
           "weight": 20,
-          "modifier": [
+          "functions": [
             {
-              "type": "minecraft:set_count",
+              "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
@@ -48,9 +48,9 @@
           "type": "minecraft:item",
           "name": "minecraft:pink_petals",
           "weight": 10,
-          "modifier": [
+          "functions": [
             {
-              "type": "minecraft:set_count",
+              "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
@@ -71,7 +71,7 @@
         },
         {
           "type": "minecraft:tag",
-          "items": "#femboymod:hair_clips",
+          "name": "femboymod:hair_clips",
           "expand": true,
           "weight": 5
         }

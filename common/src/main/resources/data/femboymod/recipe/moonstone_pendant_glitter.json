@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:moonstone_pendant",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:moonstone_pendant"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:moonstone_pendant",

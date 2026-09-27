@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,14 +24,21 @@ import org.jetbrains.annotations.Nullable;
 /** Mechanical keyboard with a mouse (SPEC v1.1): right-click to clack the keys. */
 public class GamerKeyboardBlock extends HorizontalDirectionalBlock {
 
+    public static final MapCodec<GamerKeyboardBlock> CODEC = simpleCodec(GamerKeyboardBlock::new);
+
     private static final float MIN_PITCH = 1.5F;
     private static final float PITCH_RANGE = 0.5F;
     private static final VoxelShape NORTH_SHAPE = Block.box(1.0, 0.0, 5.0, 15.0, 2.0, 11.0);
-    private final Map<Direction, VoxelShape> shapes = Shapes.rotateHorizontal(NORTH_SHAPE);
+    private final Map<Direction, VoxelShape> shapes = BlockShapes.rotateHorizontal(NORTH_SHAPE);
 
     public GamerKeyboardBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<GamerKeyboardBlock> codec() {
+        return CODEC;
     }
 
     @Override

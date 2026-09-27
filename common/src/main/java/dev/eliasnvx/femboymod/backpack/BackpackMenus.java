@@ -1,15 +1,14 @@
 package dev.eliasnvx.femboymod.backpack;
 
-import dev.architectury.registry.menu.ExtendedMenuDataProvider;
+import dev.architectury.registry.menu.ExtendedMenuProvider;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.api.event.cosmetic.BackpackOpenEvent;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
@@ -41,7 +40,7 @@ public final class BackpackMenus {
     }
 
     public static void openFromHand(ServerPlayer player, InteractionHand hand) {
-        int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : OFFHAND_SLOT;
+        int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : OFFHAND_SLOT;
         open(player, new BackpackMenuData(false, slot, 0));
     }
 
@@ -55,15 +54,10 @@ public final class BackpackMenus {
             return;
         }
         BackpackMenuData data = new BackpackMenuData(where.worn(), where.slot(), spec.rows());
-        MenuRegistry.openExtendedMenu(player, new ExtendedMenuDataProvider<BackpackMenuData>() {
+        MenuRegistry.openExtendedMenu(player, new ExtendedMenuProvider() {
             @Override
-            public BackpackMenuData getExtraData(ServerPlayer p) {
-                return data;
-            }
-
-            @Override
-            public StreamCodec<? super RegistryFriendlyByteBuf, BackpackMenuData> getExtraDataCodec() {
-                return BackpackMenuData.STREAM_CODEC;
+            public void saveExtraData(FriendlyByteBuf buf) {
+                BackpackMenuData.STREAM_CODEC.encode(buf, data);
             }
 
             @Override

@@ -2,7 +2,7 @@ package dev.eliasnvx.femboymod.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -23,9 +23,16 @@ public class WardrobeBlock extends BaseEntityBlock {
 
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
+    public static final MapCodec<WardrobeBlock> CODEC = simpleCodec(WardrobeBlock::new);
+
     public WardrobeBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<WardrobeBlock> codec() {
+        return CODEC;
     }
 
     @Override
@@ -57,7 +64,8 @@ public class WardrobeBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        Containers.updateNeighboursAfterDestroy(state, level, pos);
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        Containers.dropContentsOnDestroy(state, newState, level, pos); // contents drop when broken
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 }

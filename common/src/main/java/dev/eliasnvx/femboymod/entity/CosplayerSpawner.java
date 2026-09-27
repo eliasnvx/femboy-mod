@@ -8,7 +8,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 /**
@@ -52,9 +51,9 @@ public final class CosplayerSpawner {
             if (!level.getBlockState(pos.below()).isSolid() || !level.isEmptyBlock(pos) || !level.isEmptyBlock(pos.above())) {
                 continue;
             }
-            Cosplayer cosplayer = FemboyEntities.COSPLAYER.get().create(level, EntitySpawnReason.EVENT);
+            Cosplayer cosplayer = FemboyEntities.COSPLAYER.get().create(level);
             if (cosplayer != null) {
-                cosplayer.snapTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
+                cosplayer.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
                 cosplayer.setDespawnDelay(stayTicks);
                 cosplayer.setWanderTarget(player.blockPosition());
                 level.addFreshEntity(cosplayer);

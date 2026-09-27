@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:cat_ear_headphones",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:cat_ear_headphones"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:cat_ear_headphones",

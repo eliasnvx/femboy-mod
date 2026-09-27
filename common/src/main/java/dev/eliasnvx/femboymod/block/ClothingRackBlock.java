@@ -2,7 +2,8 @@ package dev.eliasnvx.femboymod.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
@@ -30,11 +31,17 @@ import org.jetbrains.annotations.Nullable;
 public class ClothingRackBlock extends BaseEntityBlock {
 
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    private static final VoxelShape SHAPE = Block.column(14.0, 0.0, 16.0);
+    public static final MapCodec<ClothingRackBlock> CODEC = simpleCodec(ClothingRackBlock::new);
+    private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
     public ClothingRackBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<ClothingRackBlock> codec() {
+        return CODEC;
     }
 
     @Override
@@ -63,18 +70,18 @@ public class ClothingRackBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
-                                          InteractionHand hand, BlockHitResult hit) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+                                              InteractionHand hand, BlockHitResult hit) {
         if (stack.isEmpty() || !(level.getBlockEntity(pos) instanceof ClothingRackBlockEntity rack)) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             if (!rack.hang(player.getAbilities().instabuild ? stack.copy() : stack)) {
-                return InteractionResult.TRY_WITH_EMPTY_HAND;
+                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
             level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.BLOCKS, 1.0F, 1.2F);
         }
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -88,7 +95,7 @@ public class ClothingRackBlock extends BaseEntityBlock {
                 return InteractionResult.PASS;
             }
             if (!player.getInventory().add(taken)) {
-                player.drop(taken, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                player.drop(taken, false);
             }
             level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.BLOCKS, 1.0F, 0.9F);
         }
@@ -96,7 +103,8 @@ public class ClothingRackBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        Containers.updateNeighboursAfterDestroy(state, level, pos);
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        Containers.dropContentsOnDestroy(state, newState, level, pos); // hung items drop when the rack is broken
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 }

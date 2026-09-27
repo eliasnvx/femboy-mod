@@ -22,7 +22,7 @@ public record ProfileData(CompoundTag values) {
     /** A copy with the given values merged over this one (used by the client when a sync arrives). */
     public ProfileData merge(CompoundTag update) {
         CompoundTag copy = values.copy();
-        for (String key : update.keySet()) {
+        for (String key : update.getAllKeys()) {
             copy.put(key, update.get(key).copy());
         }
         return new ProfileData(copy);

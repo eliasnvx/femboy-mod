@@ -1,13 +1,5 @@
 {
   "asset_id": "femboymod:mochi_friends",
-  "author": {
-    "color": "gray",
-    "translate": "painting.femboymod.mochi_friends.author"
-  },
   "height": 1,
-  "title": {
-    "color": "light_purple",
-    "translate": "painting.femboymod.mochi_friends.title"
-  },
   "width": 1
 }

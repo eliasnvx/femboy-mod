@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.vibe;
 
+import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.event.profile.VibeCheckEvent;
 import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
@@ -32,6 +33,7 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
+import dev.eliasnvx.femboymod.block.BlockShapes;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -42,6 +44,8 @@ import org.jetbrains.annotations.Nullable;
  * and the collection; config {@code vibe_check}) onto the server leaderboard; sneak + right-click shows the board.
  */
 public class VibeScannerBlock extends HorizontalDirectionalBlock {
+
+    public static final MapCodec<VibeScannerBlock> CODEC = simpleCodec(VibeScannerBlock::new);
 
     /** Score thresholds of the verdict lines (lang {@code message.femboymod.vibe.<verdict>}). */
     public static final int LIGHT = 6;
@@ -60,12 +64,17 @@ public class VibeScannerBlock extends HorizontalDirectionalBlock {
     private static final VoxelShape NORTH_COLLISION = Shapes.or(
             Block.box(0.0, 0.0, 6.0, 2.0, 16.0, 10.0),
             Block.box(14.0, 0.0, 6.0, 16.0, 16.0, 10.0));
-    private final Map<Direction, VoxelShape> shapes = Shapes.rotateHorizontal(NORTH_SHAPE);
-    private final Map<Direction, VoxelShape> collisions = Shapes.rotateHorizontal(NORTH_COLLISION);
+    private final Map<Direction, VoxelShape> shapes = BlockShapes.rotateHorizontal(NORTH_SHAPE);
+    private final Map<Direction, VoxelShape> collisions = BlockShapes.rotateHorizontal(NORTH_COLLISION);
 
     public VibeScannerBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<VibeScannerBlock> codec() {
+        return CODEC;
     }
 
     @Override
@@ -121,9 +130,9 @@ public class VibeScannerBlock extends HorizontalDirectionalBlock {
         VibeCheckEvent event = FemboyMod.api().events().post(new VibeCheckEvent(player, baseScore(player)));
         int score = Mth.clamp(event.score(), 0, 100);
         int rank = VibeLeaderboard.get(player.level().getServer())
-                .record(player.getUUID(), player.getGameProfile().name(), score, config.leaderboardSize());
+                .record(player.getUUID(), player.getGameProfile().getName(), score, config.leaderboardSize());
         String verdict = score >= IMMACULATE ? "immaculate" : score >= CUTE ? "cute" : "needs_work";
-        player.sendOverlayMessage(Component.translatable("message.femboymod.vibe." + verdict, score));
+        player.displayClientMessage(Component.translatable("message.femboymod.vibe." + verdict, score), true);
         if (rank > 0) {
             player.sendSystemMessage(Component.translatable("message.femboymod.vibe.rank", score, rank).withStyle(ChatFormatting.LIGHT_PURPLE));
         }

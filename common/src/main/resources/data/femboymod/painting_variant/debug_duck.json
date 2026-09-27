@@ -1,13 +1,5 @@
 {
   "asset_id": "femboymod:debug_duck",
-  "author": {
-    "color": "gray",
-    "translate": "painting.femboymod.debug_duck.author"
-  },
   "height": 1,
-  "title": {
-    "color": "light_purple",
-    "translate": "painting.femboymod.debug_duck.title"
-  },
   "width": 1
 }

@@ -2,6 +2,7 @@ package dev.eliasnvx.femboymod;
 
 import dev.eliasnvx.femboymod.world.FemboyGameRules;
 import dev.eliasnvx.femboymod.world.FemboyWorldgen;
+import dev.eliasnvx.femboymod.world.trade.TradeSets;
 import dev.eliasnvx.femboymod.profile.ProfileHooks;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.eliasnvx.femboymod.addon.AddonLoader;
@@ -63,8 +64,9 @@ public final class FemboyMod {
         FemboyItems.REGISTER.register();
         FemboyMenus.REGISTER.register();
         FemboyBlocks.init();
+        TradeSets.init();
         FemboyWorldgen.init();
-        FemboyGameRules.REGISTER.register();
+        FemboyGameRules.init();
         PlatformHelper.registerPoi();
 
         FemboyNetwork.register();

@@ -4,7 +4,7 @@
     {
       "effect": {
         "type": "femboymod:attribute",
-        "attribute": "minecraft:knockback_resistance",
+        "attribute": "minecraft:generic.knockback_resistance",
         "amount": 0.15,
         "operation": "add_value"
       }

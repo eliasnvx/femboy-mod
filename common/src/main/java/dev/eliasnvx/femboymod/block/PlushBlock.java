@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.block;
 
+import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.registry.FemboySounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,14 +28,21 @@ import org.jetbrains.annotations.Nullable;
 public class PlushBlock extends HorizontalDirectionalBlock {
 
     private final Map<Direction, VoxelShape> shapes;
+    private final MapCodec<PlushBlock> codec;
     private static final float MIN_PITCH = 1.3F;
     private static final float PITCH_RANGE = 0.4F;
 
     /** @param northShape outline with the face pointing north (the model's orientation) */
     public PlushBlock(Properties properties, VoxelShape northShape) {
         super(properties);
-        this.shapes = Shapes.rotateHorizontal(northShape);
+        this.shapes = BlockShapes.rotateHorizontal(northShape);
+        this.codec = simpleCodec(props -> new PlushBlock(props, northShape));
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<? extends PlushBlock> codec() {
+        return codec;
     }
 
     @Override

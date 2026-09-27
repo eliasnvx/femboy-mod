@@ -36,10 +36,10 @@ public final class HeadphonesLight {
             return;
         }
         BlockPos center = minecraft.player.blockPosition();
-        ChunkPos chunk = ChunkPos.containing(center);
+        ChunkPos chunk = new ChunkPos(center);
         for (int dx = -RANGE_CHUNKS; dx <= RANGE_CHUNKS && !musicNearby; dx++) {
             for (int dz = -RANGE_CHUNKS; dz <= RANGE_CHUNKS && !musicNearby; dz++) {
-                for (BlockEntity entity : minecraft.level.getChunk(chunk.x() + dx, chunk.z() + dz).getBlockEntities().values()) {
+                for (BlockEntity entity : minecraft.level.getChunk(chunk.x + dx, chunk.z + dz).getBlockEntities().values()) {
                     if (entity instanceof JukeboxBlockEntity jukebox && jukebox.getSongPlayer().isPlaying()
                             && entity.getBlockPos().distSqr(center) <= RANGE_SQ) {
                         musicNearby = true;
