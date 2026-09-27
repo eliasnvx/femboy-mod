@@ -8,7 +8,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.CosmeticsView;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
@@ -23,12 +23,12 @@ import java.util.Set;
  * Only non-empty slots are kept. Slots of removed addons are preserved so nothing is lost
  * if the addon is reinstalled.
  */
-public record CosmeticInventory(Map<Identifier, ItemStack> items, Set<Identifier> hidden,
+public record CosmeticInventory(Map<ResourceLocation, ItemStack> items, Set<ResourceLocation> hidden,
                                 Map<EquipmentSlot, ArmorVisibility> armor) implements CosmeticsView {
 
     public static final CosmeticInventory EMPTY = new CosmeticInventory(Map.of());
 
-    private static final Codec<Map<Identifier, ItemStack>> ITEMS_CODEC = Codec.unboundedMap(Identifier.CODEC, ItemStack.CODEC);
+    private static final Codec<Map<ResourceLocation, ItemStack>> ITEMS_CODEC = Codec.unboundedMap(ResourceLocation.CODEC, ItemStack.CODEC);
 
     private static final Codec<Map<EquipmentSlot, ArmorVisibility>> ARMOR_CODEC = Codec.unboundedMap(EquipmentSlot.CODEC, ArmorVisibility.CODEC);
 
@@ -36,31 +36,31 @@ public record CosmeticInventory(Map<Identifier, ItemStack> items, Set<Identifier
     public static final Codec<CosmeticInventory> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(i -> i.group(
                     ITEMS_CODEC.fieldOf("items").forGetter(CosmeticInventory::items),
-                    Identifier.CODEC.listOf().xmap(Set::copyOf, List::copyOf).optionalFieldOf("hidden", Set.of())
+                    ResourceLocation.CODEC.listOf().xmap(Set::copyOf, List::copyOf).optionalFieldOf("hidden", Set.of())
                             .forGetter(CosmeticInventory::hidden),
                     ARMOR_CODEC.optionalFieldOf("armor", Map.of()).forGetter(CosmeticInventory::armor)
             ).apply(i, CosmeticInventory::new)),
             ITEMS_CODEC, CosmeticInventory::new);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CosmeticInventory> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.<RegistryFriendlyByteBuf, Identifier, ItemStack, Map<Identifier, ItemStack>>map(
-                    HashMap::new, Identifier.STREAM_CODEC, ItemStack.STREAM_CODEC), CosmeticInventory::items,
-            Identifier.STREAM_CODEC.apply(ByteBufCodecs.collection(HashSet::new)), inventory -> new HashSet<>(inventory.hidden()),
+            ByteBufCodecs.<RegistryFriendlyByteBuf, ResourceLocation, ItemStack, Map<ResourceLocation, ItemStack>>map(
+                    HashMap::new, ResourceLocation.STREAM_CODEC, ItemStack.STREAM_CODEC), CosmeticInventory::items,
+            ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.collection(HashSet::new)), inventory -> new HashSet<>(inventory.hidden()),
             ByteBufCodecs.<RegistryFriendlyByteBuf, EquipmentSlot, ArmorVisibility, Map<EquipmentSlot, ArmorVisibility>>map(
                     HashMap::new, EquipmentSlot.STREAM_CODEC.cast(), ByteBufCodecs.idMapper(i -> ArmorVisibility.values()[i], Enum::ordinal)),
             CosmeticInventory::armor,
             CosmeticInventory::new);
 
-    public CosmeticInventory(Map<Identifier, ItemStack> items) {
+    public CosmeticInventory(Map<ResourceLocation, ItemStack> items) {
         this(items, Set.of(), Map.of());
     }
 
-    public CosmeticInventory(Map<Identifier, ItemStack> items, Set<Identifier> hidden) {
+    public CosmeticInventory(Map<ResourceLocation, ItemStack> items, Set<ResourceLocation> hidden) {
         this(items, hidden, Map.of());
     }
 
     public CosmeticInventory {
-        Map<Identifier, ItemStack> copy = new LinkedHashMap<>();
+        Map<ResourceLocation, ItemStack> copy = new LinkedHashMap<>();
         items.forEach((slot, stack) -> {
             if (!stack.isEmpty()) {
                 copy.put(slot, stack);
@@ -89,8 +89,8 @@ public record CosmeticInventory(Map<Identifier, ItemStack> items, Set<Identifier
     }
 
     /** Hidden slots keep their item and effects but are not drawn. The flag stays when the slot is emptied. */
-    public CosmeticInventory withHidden(Identifier slot, boolean hide) {
-        Set<Identifier> next = new HashSet<>(hidden);
+    public CosmeticInventory withHidden(ResourceLocation slot, boolean hide) {
+        Set<ResourceLocation> next = new HashSet<>(hidden);
         if (hide) {
             next.add(slot);
         } else {
@@ -100,12 +100,12 @@ public record CosmeticInventory(Map<Identifier, ItemStack> items, Set<Identifier
     }
 
     @Override
-    public boolean isHidden(Identifier slot) {
+    public boolean isHidden(ResourceLocation slot) {
         return hidden.contains(slot);
     }
 
-    public CosmeticInventory with(Identifier slot, ItemStack stack) {
-        Map<Identifier, ItemStack> next = new LinkedHashMap<>(items);
+    public CosmeticInventory with(ResourceLocation slot, ItemStack stack) {
+        Map<ResourceLocation, ItemStack> next = new LinkedHashMap<>(items);
         if (stack.isEmpty()) {
             next.remove(slot);
         } else {
@@ -115,12 +115,12 @@ public record CosmeticInventory(Map<Identifier, ItemStack> items, Set<Identifier
     }
 
     @Override
-    public ItemStack get(Identifier slot) {
+    public ItemStack get(ResourceLocation slot) {
         return items.getOrDefault(slot, ItemStack.EMPTY);
     }
 
     @Override
-    public Map<Identifier, ItemStack> all() {
+    public Map<ResourceLocation, ItemStack> all() {
         return items;
     }
 }

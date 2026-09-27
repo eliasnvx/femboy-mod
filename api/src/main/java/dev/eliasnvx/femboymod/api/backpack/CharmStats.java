@@ -6,7 +6,7 @@ import dev.eliasnvx.femboymod.api.FemboyApi;
 import dev.eliasnvx.femboymod.api.effect.ConfiguredEffect;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 
@@ -24,7 +24,7 @@ public record CharmStats(List<ConfiguredEffect> effects) {
 
     /** Registry key of the {@code femboymod:charm} data pack registry. */
     public static final ResourceKey<Registry<CharmStats>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "charm"));
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "charm"));
 
     /** JSON codec. */
     public static final Codec<CharmStats> CODEC = RecordCodecBuilder.create(i -> i.group(

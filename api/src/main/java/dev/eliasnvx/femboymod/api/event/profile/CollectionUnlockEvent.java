@@ -1,7 +1,7 @@
 package dev.eliasnvx.femboymod.api.event.profile;
 
 import dev.eliasnvx.femboymod.api.event.FemboyEvent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -14,5 +14,5 @@ import org.jetbrains.annotations.ApiStatus;
  * @param collected collection size after the unlock
  */
 @ApiStatus.AvailableSince("0.1.0")
-public record CollectionUnlockEvent(ServerPlayer player, Identifier item, int collected) implements FemboyEvent {
+public record CollectionUnlockEvent(ServerPlayer player, ResourceLocation item, int collected) implements FemboyEvent {
 }

@@ -30,7 +30,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -129,7 +129,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
             FemboyGui.slotFrame(g, x, y);
             ItemStack worn = player.getItemBySlot(armorSlot);
             if (worn.isEmpty()) {
-                g.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace(ARMOR_SPRITES[i]), x + 1, y + 1, 16, 16);
+                g.blitSprite(RenderPipelines.GUI_TEXTURED, ResourceLocation.withDefaultNamespace(ARMOR_SPRITES[i]), x + 1, y + 1, 16, 16);
             } else {
                 g.item(worn, x + 1, y + 1);
             }
@@ -217,7 +217,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
         if (evaluation.activeSets().isEmpty()) {
             g.text(font, Component.translatable("gui.femboymod.wardrobe.no_sets"), x, y, FemboyGui.TEXT, false);
         }
-        for (Identifier set : evaluation.activeSets()) {
+        for (ResourceLocation set : evaluation.activeSets()) {
             if (y > CosmeticsMenu.TOP + CosmeticsMenu.SIDE_H - LINE) {
                 break;
             }

@@ -12,7 +12,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 
 /**
@@ -22,7 +22,7 @@ import net.minecraft.util.ARGB;
 public final class ExamplePinRenderer implements CosmeticRenderer {
 
     private static final ModelLayerLocation LAYER = new ModelLayerLocation(ExampleAddon.PIN_RENDERER, "main");
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(ExampleAddon.MOD_ID,
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID,
             "textures/item/friendship_pin.png");
     private static final int TEXTURE_SIZE = 16;
 

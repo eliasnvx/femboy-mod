@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,7 +39,7 @@ public class StrayCat extends Cat {
 
     public static final int COATS = 5;
     public static final ResourceKey<LootTable> GIFT = ResourceKey.create(Registries.LOOT_TABLE,
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "gameplay/stray_cat_gift"));
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "gameplay/stray_cat_gift"));
     /** Morning = the first in-game hour of a day. */
     private static final long MORNING_END = 1000;
     private static final EntityDataAccessor<Integer> COAT = SynchedEntityData.defineId(StrayCat.class, EntityDataSerializers.INT);

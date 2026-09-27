@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.eliasnvx.femboymod.api.FemboyApi;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron, O
 
     /** Registry key of the {@code femboymod:colorway} data pack registry. */
     public static final ResourceKey<Registry<ColorwayPattern>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "colorway"));
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "colorway"));
 
     /** Codec for the JSON file format. */
     public static final Codec<ColorwayPattern> CODEC = RecordCodecBuilder.create(instance -> instance.group(

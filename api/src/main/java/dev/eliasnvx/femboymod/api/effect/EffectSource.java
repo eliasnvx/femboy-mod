@@ -1,6 +1,6 @@
 package dev.eliasnvx.femboymod.api.effect;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Identifies one active application of a {@link CosmeticEffect}.
@@ -10,5 +10,5 @@ import net.minecraft.resources.Identifier;
  * @param scale strength multiplier (1.0 = as configured). Set bonuses with {@code scaling} grow
  *              with the wearer's Drip tier
  */
-public record EffectSource(Identifier id, double scale) {
+public record EffectSource(ResourceLocation id, double scale) {
 }

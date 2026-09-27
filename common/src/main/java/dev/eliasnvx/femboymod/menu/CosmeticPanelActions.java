@@ -2,7 +2,7 @@ package dev.eliasnvx.femboymod.menu;
 
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +25,7 @@ public final class CosmeticPanelActions {
      * @param quickMove shift-click: move the worn item into the player's inventory
      * @return whether anything changed
      */
-    public static boolean click(ServerPlayer player, Identifier slot, boolean quickMove) {
+    public static boolean click(ServerPlayer player, ResourceLocation slot, boolean quickMove) {
         AbstractContainerMenu menu = player.inventoryMenu;
         if (player.containerMenu != menu || !player.isAlive() || player.isSpectator()
                 || !CosmeticsManager.orderedSlots().contains(slot) || FemboyConfig.common().disabledSlots().contains(slot)) {
@@ -59,7 +59,7 @@ public final class CosmeticPanelActions {
      */
     public static boolean quickEquip(InventoryMenu menu, Player player, int index) {
         ItemStack stack = menu.getSlot(index).getItem();
-        Identifier slot = CosmeticsManager.slotOf(stack);
+        ResourceLocation slot = CosmeticsManager.slotOf(stack);
         if (slot == null || !CosmeticsManager.get(player).get(slot).isEmpty() || !CosmeticsManager.canEquip(player, slot, stack)) {
             return false;
         }
@@ -71,7 +71,7 @@ public final class CosmeticPanelActions {
     }
 
     /** Creative inventory panel: the cursor is client-side, so the item arrives in the packet (creative only). */
-    public static boolean creativeSet(ServerPlayer player, Identifier slot, ItemStack stack) {
+    public static boolean creativeSet(ServerPlayer player, ResourceLocation slot, ItemStack stack) {
         if (!player.hasInfiniteMaterials() || !CosmeticsManager.orderedSlots().contains(slot)) {
             return false;
         }
@@ -83,7 +83,7 @@ public final class CosmeticPanelActions {
         return true;
     }
 
-    private static boolean moveToInventory(ServerPlayer player, Identifier slot, ItemStack worn) {
+    private static boolean moveToInventory(ServerPlayer player, ResourceLocation slot, ItemStack worn) {
         if (worn.isEmpty()) {
             return false;
         }
@@ -99,7 +99,7 @@ public final class CosmeticPanelActions {
         return true;
     }
 
-    private static boolean equipCarried(ServerPlayer player, AbstractContainerMenu menu, Identifier slot, ItemStack worn,
+    private static boolean equipCarried(ServerPlayer player, AbstractContainerMenu menu, ResourceLocation slot, ItemStack worn,
                                         ItemStack carried) {
         if (!CosmeticsManager.canEquip(player, slot, carried)) {
             return false;

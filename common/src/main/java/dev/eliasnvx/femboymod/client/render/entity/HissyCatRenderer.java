@@ -10,13 +10,13 @@ import net.minecraft.client.renderer.entity.layers.EyesLayer;
 import net.minecraft.client.renderer.entity.state.CatRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /** Vanilla cat model with the vanilla all-black coat (referenced, not shipped) and glowing angry eyes. */
 public final class HissyCatRenderer extends MobRenderer<HissyCat, CatRenderState, AdultCatModel> {
 
-    private static final Identifier COAT = Identifier.withDefaultNamespace("textures/entity/cat/cat_all_black.png");
-    private static final Identifier EYES = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/hissy_cat_eyes.png");
+    private static final ResourceLocation COAT = ResourceLocation.withDefaultNamespace("textures/entity/cat/cat_all_black.png");
+    private static final ResourceLocation EYES = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/hissy_cat_eyes.png");
     private static final float SHADOW = 0.4F;
 
     public HissyCatRenderer(EntityRendererProvider.Context context) {
@@ -46,7 +46,7 @@ public final class HissyCatRenderer extends MobRenderer<HissyCat, CatRenderState
     }
 
     @Override
-    public Identifier getTextureLocation(CatRenderState state) {
+    public ResourceLocation getTextureLocation(CatRenderState state) {
         return COAT;
     }
 }

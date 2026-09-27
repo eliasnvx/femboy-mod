@@ -1,7 +1,7 @@
 package dev.eliasnvx.femboymod.api.event.profile;
 
 import dev.eliasnvx.femboymod.api.event.CancellableEvent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
 public final class StylePointsEvent implements CancellableEvent {
 
     private final ServerPlayer player;
-    private final Identifier reason;
+    private final ResourceLocation reason;
     private int amount;
     private boolean cancelled;
 
@@ -26,7 +26,7 @@ public final class StylePointsEvent implements CancellableEvent {
      * @param reason why the points change
      * @param amount positive to earn, negative to spend
      */
-    public StylePointsEvent(ServerPlayer player, Identifier reason, int amount) {
+    public StylePointsEvent(ServerPlayer player, ResourceLocation reason, int amount) {
         this.player = player;
         this.reason = reason;
         this.amount = amount;
@@ -38,7 +38,7 @@ public final class StylePointsEvent implements CancellableEvent {
     }
 
     /** @return why the points change */
-    public Identifier reason() {
+    public ResourceLocation reason() {
         return reason;
     }
 

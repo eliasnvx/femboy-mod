@@ -14,14 +14,14 @@ import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 
 /** Wandering Cosplayer: player model in a pastel costume (texture in skin layout) with the mod's cat ears on top. */
 public final class CosplayerRenderer extends HumanoidMobRenderer<Cosplayer, HumanoidRenderState, HumanoidModel<HumanoidRenderState>> {
 
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosplayer.png");
-    private static final Identifier FUR = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fur.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosplayer.png");
+    private static final ResourceLocation FUR = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fur.png");
     private static final int EAR_COLOR = 0xFFB6DA;
     private static final float SHADOW = 0.5F;
 
@@ -44,7 +44,7 @@ public final class CosplayerRenderer extends HumanoidMobRenderer<Cosplayer, Huma
     }
 
     @Override
-    public Identifier getTextureLocation(HumanoidRenderState state) {
+    public ResourceLocation getTextureLocation(HumanoidRenderState state) {
         return TEXTURE;
     }
 }

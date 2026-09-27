@@ -20,7 +20,7 @@ import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
@@ -55,10 +55,10 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
             ArmorSegment.LEFT_ARM, "armorLeftArm", ArmorSegment.RIGHT_ARM, "armorRightArm",
             ArmorSegment.LEFT_LEG, "armorLeftLeg", ArmorSegment.RIGHT_LEG, "armorRightLeg"));
 
-    private final Identifier model;
-    private final Identifier animation;
-    private final Identifier texture;
-    private final Identifier dyeableTexture;
+    private final ResourceLocation model;
+    private final ResourceLocation animation;
+    private final ResourceLocation texture;
+    private final ResourceLocation dyeableTexture;
     private final Animatable animatable = new Animatable();
     private final Renderer renderer;
     /** Reused per submission (no per-frame allocation). */
@@ -66,26 +66,26 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
     private final Vector3f scratch = new Vector3f();
     private final RenderPassInfo.BoneUpdater<GeoRenderState> followBody = this::followBody;
 
-    public GeoCosmeticRenderer(Identifier itemId) {
+    public GeoCosmeticRenderer(ResourceLocation itemId) {
         String base = "cosmetic/" + itemId.getPath();
-        this.model = Identifier.fromNamespaceAndPath(itemId.getNamespace(), base);
+        this.model = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), base);
         this.animation = model;
-        this.texture = Identifier.fromNamespaceAndPath(itemId.getNamespace(), "textures/" + base + ".png");
-        this.dyeableTexture = Identifier.fromNamespaceAndPath(itemId.getNamespace(), "textures/" + base + "_dyeable.png");
+        this.texture = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), "textures/" + base + ".png");
+        this.dyeableTexture = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), "textures/" + base + "_dyeable.png");
         this.renderer = new Renderer(new Model());
         FemboyMod.LOGGER.info("Using GeckoLib model {} for cosmetic {}", model, itemId);
     }
 
     /** Item id -> geo model id; filled once per item so the per-frame check doesn't allocate. */
-    private static final Map<Identifier, Identifier> MODEL_IDS = new HashMap<>();
+    private static final Map<ResourceLocation, ResourceLocation> MODEL_IDS = new HashMap<>();
 
     /**
      * Whether a geo model exists for the item (checked each frame; resource reloads can add/remove it).
      * Looks at the cache map directly: {@code getModel} logs an error for every miss.
      */
-    public static boolean hasModel(Identifier itemId) {
-        Identifier id = MODEL_IDS.computeIfAbsent(itemId,
-                item -> Identifier.fromNamespaceAndPath(item.getNamespace(), "cosmetic/" + item.getPath()));
+    public static boolean hasModel(ResourceLocation itemId) {
+        ResourceLocation id = MODEL_IDS.computeIfAbsent(itemId,
+                item -> ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "cosmetic/" + item.getPath()));
         return GeckoLibResources.getBakedModels().cache().containsKey(id);
     }
 
@@ -127,7 +127,7 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         int entityId;
         int color;
         int overlay;
-        Identifier texture;
+        ResourceLocation texture;
         @Nullable PlayerModel parent;
     }
 
@@ -150,17 +150,17 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
 
     private final class Model extends GeoModel<Animatable> {
         @Override
-        public Identifier getModelResource(GeoRenderState state) {
+        public ResourceLocation getModelResource(GeoRenderState state) {
             return model;
         }
 
         @Override
-        public Identifier getTextureResource(GeoRenderState state) {
+        public ResourceLocation getTextureResource(GeoRenderState state) {
             return related.texture;
         }
 
         @Override
-        public Identifier getAnimationResource(Animatable animatable) {
+        public ResourceLocation getAnimationResource(Animatable animatable) {
             return animation;
         }
     }

@@ -9,7 +9,7 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -26,7 +26,7 @@ import java.util.Optional;
 final class CreativeTabContents {
 
     private static final ResourceKey<ColorwayPattern> STRIPES = ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "stripes"));
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "stripes"));
     private static final int WHITE = 0xFFFFFF;
 
     /** A solid colorway, or two-color stripes (base + secondary) when {@code striped}. */

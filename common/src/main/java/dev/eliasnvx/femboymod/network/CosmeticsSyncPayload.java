@@ -13,7 +13,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -23,7 +23,7 @@ import net.minecraft.world.entity.player.Player;
 public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, boolean armorHidingAllowed) implements CustomPacketPayload {
 
     public static final Type<CosmeticsSyncPayload> TYPE =
-            new Type<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetics_sync"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetics_sync"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CosmeticsSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, CosmeticsSyncPayload::entityId,

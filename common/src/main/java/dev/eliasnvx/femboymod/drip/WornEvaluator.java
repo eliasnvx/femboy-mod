@@ -21,7 +21,7 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -47,7 +47,7 @@ public final class WornEvaluator {
     public record PlannedEffect(ConfiguredEffect configured, EffectSource source) {
     }
 
-    public record Evaluation(DripLevel drip, Set<Identifier> activeSets, List<PlannedEffect> effects) {
+    public record Evaluation(DripLevel drip, Set<ResourceLocation> activeSets, List<PlannedEffect> effects) {
         public static final Evaluation EMPTY = new Evaluation(DripLevel.NONE, Set.of(), List.of());
     }
 
@@ -95,7 +95,7 @@ public final class WornEvaluator {
             addCharmEffects(effects, stack, slot, registries);
         });
 
-        Set<Identifier> activeSets = new TreeSet<>();
+        Set<ResourceLocation> activeSets = new TreeSet<>();
         List<Map.Entry<ResourceKey<SetBonus>, SetBonus>> completed = new ArrayList<>();
         registries.lookup(SetBonus.REGISTRY_KEY).filter(sets -> setsAllowed).ifPresent(sets -> {
             for (Map.Entry<ResourceKey<SetBonus>, SetBonus> entry : sets.entrySet()) {
@@ -116,7 +116,7 @@ public final class WornEvaluator {
     }
 
     /** Charms hanging on a worn backpack (SPEC §5.3). */
-    private static void addCharmEffects(List<PlannedEffect> out, ItemStack stack, Identifier slot, RegistryAccess registries) {
+    private static void addCharmEffects(List<PlannedEffect> out, ItemStack stack, ResourceLocation slot, RegistryAccess registries) {
         if (!stack.has(FemboyComponents.BACKPACK.get())) {
             return;
         }
@@ -162,11 +162,11 @@ public final class WornEvaluator {
     private static void addEffects(List<PlannedEffect> out, List<ConfiguredEffect> effects, String prefix, double scale) {
         for (int i = 0; i < effects.size(); i++) {
             out.add(new PlannedEffect(effects.get(i),
-                    new EffectSource(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, prefix + "/" + i), scale)));
+                    new EffectSource(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, prefix + "/" + i), scale)));
         }
     }
 
-    private static String sourceId(String kind, Identifier id) {
+    private static String sourceId(String kind, ResourceLocation id) {
         return kind + "/" + id.getNamespace() + "/" + id.getPath();
     }
 }

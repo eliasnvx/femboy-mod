@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 
@@ -50,7 +50,7 @@ public final class DripHud {
     private static int lastTick = Integer.MIN_VALUE;
     private static int level = -1;
     private static int tier = -1;
-    private static List<Identifier> sets = List.of();
+    private static List<ResourceLocation> sets = List.of();
     private static float target;
     private static float shown;
     private static float glowTicks;
@@ -86,7 +86,7 @@ public final class DripHud {
         WornEvaluator.Evaluation evaluation = WornEvaluator.evaluate(player);
         int newLevel = evaluation.drip().level();
         int newTier = evaluation.drip().tier();
-        List<Identifier> newSets = evaluation.activeSets().stream().sorted().toList();
+        List<ResourceLocation> newSets = evaluation.activeSets().stream().sorted().toList();
         if (newLevel == level && newTier == tier && newSets.equals(sets)) {
             return;
         }

@@ -15,8 +15,8 @@ configurations {
 
 dependencies {
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
-    implementation "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
-    implementation "com.geckolib:geckolib-neoforge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+    modImplementation "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
+    modImplementation "software.bernie.geckolib:geckolib-neoforge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
     common(project(path: ":api")) { transitive false }
     common(project(path: ":common")) { transitive false }
@@ -36,23 +36,19 @@ loom {
     }
 }
 
-jar {
-    archiveClassifier = "raw"
-}
-
 shadowJar {
-    dependsOn jar
-    mainSpec.sourcePaths.clear()
-    from(zipTree(jar.archiveFile))
     configurations = [project.configurations.shadowBundle]
-    archiveClassifier = null
-    archiveVersion = "${project.version}+${rootProject.minecraft_version}-neoforge"
+    archiveClassifier = "dev-shadow"
     exclude "fabric.mod.json"
     exclude "architectury.common.json"
     from rootProject.file("LICENSE")
 }
 
-assemble.dependsOn shadowJar
+remapJar {
+    inputFile.set(shadowJar.archiveFile)
+    archiveClassifier = null
+    archiveVersion = "${project.version}+${rootProject.minecraft_version}-neoforge"
+}
 
 // `build` -> `check` -> GameTests on NeoForge too (Fabric wires runGameTest into build itself).
 tasks.named("check") { dependsOn "runGameTestServer" }

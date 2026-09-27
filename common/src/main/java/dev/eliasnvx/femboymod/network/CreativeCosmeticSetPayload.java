@@ -6,7 +6,7 @@ import dev.eliasnvx.femboymod.menu.CosmeticPanelActions;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -15,13 +15,13 @@ import net.minecraft.world.item.ItemStack;
  * cursor lives on the client, like vanilla's creative slot packet; creative players can create items anyway,
  * so the server only checks the game mode and that the item fits the slot.
  */
-public record CreativeCosmeticSetPayload(Identifier slot, ItemStack stack) implements CustomPacketPayload {
+public record CreativeCosmeticSetPayload(ResourceLocation slot, ItemStack stack) implements CustomPacketPayload {
 
     public static final Type<CreativeCosmeticSetPayload> TYPE =
-            new Type<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "creative_cosmetic_set"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "creative_cosmetic_set"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CreativeCosmeticSetPayload> STREAM_CODEC = StreamCodec.composite(
-            Identifier.STREAM_CODEC, CreativeCosmeticSetPayload::slot,
+            ResourceLocation.STREAM_CODEC, CreativeCosmeticSetPayload::slot,
             ItemStack.OPTIONAL_STREAM_CODEC, CreativeCosmeticSetPayload::stack,
             CreativeCosmeticSetPayload::new);
 

@@ -20,14 +20,14 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.CreeperRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 
 /** Pink Creeper: vanilla creeper model with our own pink texture and a bow on the head (SPEC §5.4). */
 public final class PinkCreeperRenderer extends CreeperRenderer {
 
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/pink_creeper.png");
-    public static final ModelLayerLocation BOW = new ModelLayerLocation(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "pink_creeper_bow"), "main");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/pink_creeper.png");
+    public static final ModelLayerLocation BOW = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "pink_creeper_bow"), "main");
 
     public PinkCreeperRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -35,7 +35,7 @@ public final class PinkCreeperRenderer extends CreeperRenderer {
     }
 
     @Override
-    public Identifier getTextureLocation(CreeperRenderState state) {
+    public ResourceLocation getTextureLocation(CreeperRenderState state) {
         return TEXTURE;
     }
 
@@ -55,7 +55,7 @@ public final class PinkCreeperRenderer extends CreeperRenderer {
     }
 
     private static final class BowLayer extends RenderLayer<CreeperRenderState, CreeperModel> {
-        private static final Identifier BOW_TEXTURE = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png");
+        private static final ResourceLocation BOW_TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png");
         private static final int BOW_COLOR = 0xFF4FA3;
         private final ModelPart bow;
 

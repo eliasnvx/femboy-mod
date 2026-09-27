@@ -26,7 +26,7 @@ import dev.eliasnvx.femboymod.client.render.entity.PinkCreeperRenderer;
 import dev.eliasnvx.femboymod.entity.FemboyEntities;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.ReloadListenerRegistry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
@@ -127,7 +127,7 @@ public final class FemboyModClient {
         BuiltinCosmeticRenderers.register(clientApi.cosmeticRenderers());
         clientApi.chatTransformers().register(UwuChat.ID, new UwuChat());
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new UwuChat.Loader(),
-                Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu_chat_rules"));
+                ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu_chat_rules"));
         ClientTickEvent.CLIENT_POST.register(GlowHostilesClient::tick);
         ClientTickEvent.CLIENT_POST.register(PhotoMode::tick);
         dev.eliasnvx.femboymod.item.PhoneItem.onClientUse = PhotoMode::start;

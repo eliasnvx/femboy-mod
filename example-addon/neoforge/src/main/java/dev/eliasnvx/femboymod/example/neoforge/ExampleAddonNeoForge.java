@@ -8,7 +8,7 @@ import net.minecraft.gametest.framework.FunctionGameTestInstance;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
@@ -42,8 +42,8 @@ public final class ExampleAddonNeoForge {
 
         modBus.addListener((RegisterGameTestsEvent event) -> {
             Holder<TestEnvironmentDefinition<?>> environment =
-                    event.registerEnvironment(Identifier.fromNamespaceAndPath(ExampleAddon.MOD_ID, "default"));
-            Identifier structure = Identifier.fromNamespaceAndPath(ExampleAddon.MOD_ID, "empty");
+                    event.registerEnvironment(ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "default"));
+            ResourceLocation structure = ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "empty");
             for (var holder : holders) {
                 event.registerTest(holder.getId(), new FunctionGameTestInstance(holder.getKey(),
                         new TestData<>(environment, structure, MAX_TICKS, 0, true)));

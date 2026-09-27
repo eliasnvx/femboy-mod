@@ -7,7 +7,7 @@ import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 
 /**
@@ -21,7 +21,7 @@ public final class ChevronPanel {
     private final ModelPart[] cells;
     private final RenderType type;
 
-    public ChevronPanel(ModelPart root, Identifier texture) {
+    public ChevronPanel(ModelPart root, ResourceLocation texture) {
         this.cells = new ModelPart[CosmeticModels.PANEL_COLUMNS * CosmeticModels.PANEL_ROWS];
         for (int i = 0; i < cells.length; i++) {
             cells[i] = root.getChild("cell" + i);

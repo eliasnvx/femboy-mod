@@ -7,8 +7,8 @@ import dev.eliasnvx.femboymod.api.effect.ConfiguredEffect;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.core.registries.codec.RegistryCodecs;
-import net.minecraft.resources.Identifier;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 
@@ -36,11 +36,11 @@ public record SetBonus(List<HolderSet<Item>> pieces, Optional<Integer> required,
 
     /** Registry key of the {@code femboymod:set_bonus} data pack registry. */
     public static final ResourceKey<Registry<SetBonus>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "set_bonus"));
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "set_bonus"));
 
     /** JSON codec. */
     public static final Codec<SetBonus> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            RegistryCodecs.holderSet(Registries.ITEM).listOf(1, Integer.MAX_VALUE).fieldOf("pieces").forGetter(SetBonus::pieces),
+            RegistryCodecs.homogeneousList(Registries.ITEM).listOf(1, Integer.MAX_VALUE).fieldOf("pieces").forGetter(SetBonus::pieces),
             Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("required").forGetter(SetBonus::required),
             Codec.doubleRange(0, 10).optionalFieldOf("scaling_per_tier", 0.0).forGetter(SetBonus::scalingPerTier),
             ConfiguredEffect.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(SetBonus::effects)

@@ -4,7 +4,7 @@ import dev.eliasnvx.femboymod.world.FemboyGameRules;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.combat.DripDamage;
 import dev.eliasnvx.femboymod.effect.BuiltinEffects.DamageBonusEffect;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public final class DripCombat {
 
     /** Player -> effect source id -> active bonus (added/removed by the effect's activate/deactivate). */
-    private static final Map<UUID, Map<Identifier, ActiveBonus>> BONUSES = new HashMap<>();
+    private static final Map<UUID, Map<ResourceLocation, ActiveBonus>> BONUSES = new HashMap<>();
 
     private record ActiveBonus(DamageBonusEffect effect, double scale) {
     }
@@ -52,7 +52,7 @@ public final class DripCombat {
             result *= pvpMultiplier(FemboyMod.api().getDripLevel(attackerPlayer).tier(), FemboyMod.api().getDripLevel(victimPlayer).tier(), pvpPercent);
         }
         if (attacker instanceof ServerPlayer player) {
-            Map<Identifier, ActiveBonus> bonuses = BONUSES.get(player.getUUID());
+            Map<ResourceLocation, ActiveBonus> bonuses = BONUSES.get(player.getUUID());
             if (bonuses != null) {
                 for (ActiveBonus bonus : bonuses.values()) {
                     if (bonus.effect().targets().contains(victim.getType().builtInRegistryHolder())) {
@@ -69,12 +69,12 @@ public final class DripCombat {
         return Math.max(0.0F, 1.0F + (attackerTier - victimTier) * percent / 100.0F);
     }
 
-    public static void addBonus(ServerPlayer player, Identifier source, DamageBonusEffect effect, double scale) {
+    public static void addBonus(ServerPlayer player, ResourceLocation source, DamageBonusEffect effect, double scale) {
         BONUSES.computeIfAbsent(player.getUUID(), id -> new LinkedHashMap<>()).put(source, new ActiveBonus(effect, scale));
     }
 
-    public static void removeBonus(ServerPlayer player, Identifier source) {
-        Map<Identifier, ActiveBonus> bonuses = BONUSES.get(player.getUUID());
+    public static void removeBonus(ServerPlayer player, ResourceLocation source) {
+        Map<ResourceLocation, ActiveBonus> bonuses = BONUSES.get(player.getUUID());
         if (bonuses != null) {
             bonuses.remove(source);
             if (bonuses.isEmpty()) {

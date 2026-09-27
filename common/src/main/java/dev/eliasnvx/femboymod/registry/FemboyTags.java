@@ -2,7 +2,7 @@ package dev.eliasnvx.femboymod.registry;
 
 import dev.eliasnvx.femboymod.FemboyMod;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
@@ -24,7 +24,7 @@ public final class FemboyTags {
     private FemboyTags() {
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
     }
 }

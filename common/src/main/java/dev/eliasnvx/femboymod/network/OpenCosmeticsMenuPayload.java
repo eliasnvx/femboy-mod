@@ -7,7 +7,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 
@@ -17,7 +17,7 @@ public record OpenCosmeticsMenuPayload() implements CustomPacketPayload {
     public static final OpenCosmeticsMenuPayload INSTANCE = new OpenCosmeticsMenuPayload();
 
     public static final Type<OpenCosmeticsMenuPayload> TYPE =
-            new Type<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "open_cosmetics"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "open_cosmetics"));
 
     public static final StreamCodec<ByteBuf, OpenCosmeticsMenuPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 

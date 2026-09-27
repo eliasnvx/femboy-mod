@@ -8,7 +8,7 @@ import net.minecraft.gametest.framework.FunctionGameTestInstance;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 final class FemboyGameTestsNeoForge {
 
     private static final int MAX_TICKS = 100;
-    private static final Identifier EMPTY_STRUCTURE = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "empty");
+    private static final ResourceLocation EMPTY_STRUCTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "empty");
 
     private FemboyGameTestsNeoForge() {
     }
@@ -41,7 +41,7 @@ final class FemboyGameTestsNeoForge {
 
         modBus.addListener((RegisterGameTestsEvent event) -> {
             Holder<TestEnvironmentDefinition<?>> environment =
-                    event.registerEnvironment(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "default"));
+                    event.registerEnvironment(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "default"));
             for (var holder : holders) {
                 event.registerTest(holder.getId(), new FunctionGameTestInstance(holder.getKey(),
                         new TestData<>(environment, EMPTY_STRUCTURE, MAX_TICKS, 0, true)));

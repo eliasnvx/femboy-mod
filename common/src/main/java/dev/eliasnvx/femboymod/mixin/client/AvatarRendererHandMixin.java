@@ -5,7 +5,7 @@ import dev.eliasnvx.femboymod.client.render.FirstPersonSleeves;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class AvatarRendererHandMixin {
 
     @Inject(method = "renderHand", at = @At("TAIL"))
-    private void femboymod$sleeve(PoseStack poseStack, SubmitNodeCollector collector, int light, Identifier skin,
+    private void femboymod$sleeve(PoseStack poseStack, SubmitNodeCollector collector, int light, ResourceLocation skin,
                                   ModelPart arm, boolean hasSleeve, CallbackInfo ci) {
         FirstPersonSleeves.submit(((AvatarRenderer<?>) (Object) this).getModel(), arm, poseStack, collector, light);
     }

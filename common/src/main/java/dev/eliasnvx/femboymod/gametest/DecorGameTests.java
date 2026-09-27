@@ -28,7 +28,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.decoration.painting.Painting;
 import net.minecraft.world.entity.decoration.painting.PaintingVariant;
@@ -155,7 +155,7 @@ public final class DecorGameTests {
 
     /** Every v1.1 garment goes into its slot and adds Drip; the new effect types are registered. */
     public static void v11ClothingSlotsAndStats(GameTestHelper helper) {
-        Map<Item, Identifier> slots = Map.of(
+        Map<Item, ResourceLocation> slots = Map.of(
                 FemboyItems.CAT_EAR_HEADPHONES.get(), FemboySlots.HEAD_ACCESSORY,
                 FemboyItems.HEART_GLASSES.get(), FemboySlots.FACE,
                 FemboyItems.ARM_WARMERS.get(), FemboySlots.HANDS,
@@ -330,7 +330,7 @@ public final class DecorGameTests {
         helper.succeed();
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath("femboymod", path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath("femboymod", path);
     }
 }

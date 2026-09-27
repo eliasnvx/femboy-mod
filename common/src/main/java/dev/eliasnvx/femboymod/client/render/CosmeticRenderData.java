@@ -11,7 +11,7 @@ import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -55,7 +55,7 @@ public final class CosmeticRenderData implements CosmeticMotion {
     private static final float SMOOTHING = 0.25F;
     private static final float GOLDEN_ANGLE = 2.39996F;
 
-    public record Worn(Identifier slot, ItemStack stack, Identifier itemId, Identifier renderer, @Nullable Colorway colorway) {
+    public record Worn(ResourceLocation slot, ItemStack stack, ResourceLocation itemId, ResourceLocation renderer, @Nullable Colorway colorway) {
     }
 
     private static final Map<Entity, CosmeticRenderData> CACHE = new WeakHashMap<>();
@@ -96,8 +96,8 @@ public final class CosmeticRenderData implements CosmeticMotion {
                 return; // worn but hidden by the wearer
             }
             Cosmetic cosmetic = stack.get(FemboyComponents.COSMETIC.get());
-            Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
-            Identifier renderer = cosmetic != null && cosmetic.renderer().isPresent() ? cosmetic.renderer().get() : itemId;
+            ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+            ResourceLocation renderer = cosmetic != null && cosmetic.renderer().isPresent() ? cosmetic.renderer().get() : itemId;
             list.add(new Worn(slot, stack, itemId, renderer, Colorways.effective(stack).orElse(null)));
         });
         this.worn = List.copyOf(list);

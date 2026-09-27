@@ -11,13 +11,13 @@ configurations {
 }
 
 dependencies {
-    implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    implementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
-    implementation "dev.architectury:architectury-fabric:${rootProject.architectury_api_version}"
-    implementation "com.geckolib:geckolib-fabric-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation "dev.architectury:architectury-fabric:${rootProject.architectury_api_version}"
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
     // femboymod itself, so `runClient` here starts the mod + the addon
-    implementation project(path: ":fabric")
+    implementation project(path: ":fabric", configuration: "namedElements")
     common(project(path: ":api")) { transitive false }
     common(project(path: ":common")) { transitive false }
     common(project(path: ":example-addon-common")) { transitive false }

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +23,7 @@ public final class GlowHostilesClient {
     private static double friendRadiusSq;
     private static boolean teammatesOnly;
     /** Sound id → volume factor; rebuilt only when the worn effects change. */
-    private static final Map<Identifier, Float> MUFFLED = new HashMap<>();
+    private static final Map<ResourceLocation, Float> MUFFLED = new HashMap<>();
     private static WornEvaluator.Evaluation lastEvaluation;
 
     private GlowHostilesClient() {
@@ -78,7 +78,7 @@ public final class GlowHostilesClient {
     }
 
     /** Volume factor for a sound the local player hears (1 = unchanged). */
-    public static float volumeFactor(Identifier sound) {
+    public static float volumeFactor(ResourceLocation sound) {
         Float factor = MUFFLED.isEmpty() ? null : MUFFLED.get(sound);
         return factor == null ? 1.0F : factor;
     }

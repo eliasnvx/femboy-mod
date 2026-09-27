@@ -6,17 +6,17 @@ import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 /** C2S: show/hide the item in one of your cosmetic slots (it stays worn). */
-public record ToggleCosmeticHiddenPayload(Identifier slot) implements CustomPacketPayload {
+public record ToggleCosmeticHiddenPayload(ResourceLocation slot) implements CustomPacketPayload {
 
     public static final Type<ToggleCosmeticHiddenPayload> TYPE =
-            new Type<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "toggle_cosmetic_hidden"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "toggle_cosmetic_hidden"));
 
     public static final StreamCodec<ByteBuf, ToggleCosmeticHiddenPayload> STREAM_CODEC =
-            Identifier.STREAM_CODEC.map(ToggleCosmeticHiddenPayload::new, ToggleCosmeticHiddenPayload::slot);
+            ResourceLocation.STREAM_CODEC.map(ToggleCosmeticHiddenPayload::new, ToggleCosmeticHiddenPayload::slot);
 
     @Override
     public Type<ToggleCosmeticHiddenPayload> type() {

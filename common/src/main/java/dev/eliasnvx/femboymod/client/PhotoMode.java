@@ -12,7 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Util;
 
@@ -32,7 +32,7 @@ public final class PhotoMode {
     private static final float BOTTOM_MARGIN = 0.26F;
     /** Watermark height as a share of the bottom margin. */
     private static final float WATERMARK_HEIGHT = 0.3F;
-    private static final Identifier WATERMARK = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/gui/photo_watermark.png");
+    private static final ResourceLocation WATERMARK = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/gui/photo_watermark.png");
 
     private static int countdown = -1;
     private static CameraType previousCamera;

@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.entity.layers.EyesLayer;
 import net.minecraft.client.renderer.entity.state.ZombieRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Own look on the vanilla zombie model: lime skin, pink hair and sweatband, sleepless eyes with glowing
@@ -16,8 +16,8 @@ import net.minecraft.resources.Identifier;
  */
 public final class CaffeinatedZombieRenderer extends ZombieRenderer {
 
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/caffeinated_zombie.png");
-    private static final Identifier EYES = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/caffeinated_zombie_eyes.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/caffeinated_zombie.png");
+    private static final ResourceLocation EYES = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/caffeinated_zombie_eyes.png");
 
     public CaffeinatedZombieRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -32,7 +32,7 @@ public final class CaffeinatedZombieRenderer extends ZombieRenderer {
     }
 
     @Override
-    public Identifier getTextureLocation(ZombieRenderState state) {
+    public ResourceLocation getTextureLocation(ZombieRenderState state) {
         return TEXTURE;
     }
 

@@ -7,7 +7,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 
@@ -48,7 +48,7 @@ public final class ArmorHiding {
 
     /** A worn, visible cosmetic whose slot covers this armor slot. */
     public static boolean coveredByOutfit(CosmeticInventory inventory, EquipmentSlot armorSlot) {
-        for (Map.Entry<Identifier, ItemStack> entry : inventory.all().entrySet()) {
+        for (Map.Entry<ResourceLocation, ItemStack> entry : inventory.all().entrySet()) {
             if (!inventory.isHidden(entry.getKey()) && CosmeticsManager.knownSlotType(entry.getKey()).map(CosmeticSlotType::coversArmor)
                     .map(covers -> covers.contains(armorSlot)).orElse(false)) {
                 return true;

@@ -15,7 +15,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.flag.FeatureFlags;
@@ -267,7 +267,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
                 CosmeticsManager.set(player, FemboySlots.HANDS, new ItemStack(FemboyItems.ROSE_QUARTZ_BRACELET.get()));
                 ItemStack socks = new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get());
                 server.registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY)
-                        .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "glitter")))
+                        .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "glitter")))
                         .ifPresent(glitter -> socks.set(FemboyComponents.COLORWAY.get(),
                                 new Colorway(0xFFD1EC, Optional.of(glitter), Optional.empty())));
                 CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, socks);
@@ -305,7 +305,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
                 ItemStack backpack = new ItemStack(FemboyItems.CANVAS_BACKPACK.get());
                 ItemStack badge = new ItemStack(FemboyItems.PRIDE_BADGE.get());
                 server.registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY)
-                        .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "pride_trans")))
+                        .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "pride_trans")))
                         .ifPresent(trans -> badge.set(FemboyComponents.COLORWAY.get(), new Colorway(0xFFFFFF, Optional.of(trans), Optional.empty())));
                 backpack.set(FemboyComponents.CHARMS.get(), ItemContainerContents.fromItems(List.of(badge)));
                 CosmeticsManager.set(player, FemboySlots.BACK, backpack);
@@ -429,7 +429,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
                 var patterns = server.registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY);
                 ItemStack pendant = new ItemStack(FemboyItems.MOONSTONE_PENDANT.get());
                 ItemStack visor = new ItemStack(FemboyItems.CYBER_VISOR.get());
-                patterns.get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "neon")))
+                patterns.get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "neon")))
                         .ifPresent(neon -> visor.set(FemboyComponents.COLORWAY.get(), new Colorway(0xFFFFFF, Optional.of(neon), Optional.empty())));
                 CosmeticsManager.set(player, FemboySlots.NECK, pendant);
                 CosmeticsManager.set(player, FemboySlots.FACE, visor);
@@ -526,7 +526,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
     private static ItemStack withPattern(ServerPlayer player, ItemStack stack, String pattern, int base, int secondary) {
         var patterns = player.level().registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY);
         stack.set(FemboyComponents.COLORWAY.get(), new Colorway(base, Optional.of(patterns.getOrThrow(
-                ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, pattern)))),
+                ResourceKey.create(ColorwayPattern.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, pattern)))),
                 Optional.of(secondary)));
         return stack;
     }
@@ -546,7 +546,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
         var patterns = player.level().registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY);
         ItemStack socks = new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get());
         socks.set(FemboyComponents.COLORWAY.get(), new Colorway(0xFFFFFF, Optional.of(patterns.getOrThrow(
-                ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "pride_trans")))),
+                ResourceKey.create(ColorwayPattern.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "pride_trans")))),
                 Optional.empty()));
         CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get()));
         CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get()));

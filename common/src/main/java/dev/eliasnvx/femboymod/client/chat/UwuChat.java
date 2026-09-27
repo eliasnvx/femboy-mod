@@ -11,7 +11,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -23,7 +23,7 @@ import java.util.Random;
 /** The UwU choker's chat transformer ({@code femboymod:uwu}): active while the choker is worn. */
 public final class UwuChat implements ChatTransformer {
 
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu");
     private static volatile Map<String, UwuRules> rules = Map.of();
 
     @Override
@@ -50,7 +50,7 @@ public final class UwuChat implements ChatTransformer {
         }
 
         @Override
-        protected void apply(Map<Identifier, UwuRules> loaded, ResourceManager manager, ProfilerFiller profiler) {
+        protected void apply(Map<ResourceLocation, UwuRules> loaded, ResourceManager manager, ProfilerFiller profiler) {
             Map<String, UwuRules> byLanguage = new HashMap<>();
             loaded.forEach((id, value) -> byLanguage.put(id.getPath(), value));
             rules = Map.copyOf(byLanguage);

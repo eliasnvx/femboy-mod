@@ -7,17 +7,17 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 /** C2S: a click on a cosmetic slot of the inventory panel; the server applies it to the real stacks. */
-public record CosmeticPanelClickPayload(Identifier slot, boolean quickMove) implements CustomPacketPayload {
+public record CosmeticPanelClickPayload(ResourceLocation slot, boolean quickMove) implements CustomPacketPayload {
 
     public static final Type<CosmeticPanelClickPayload> TYPE =
-            new Type<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetic_panel_click"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetic_panel_click"));
 
     public static final StreamCodec<ByteBuf, CosmeticPanelClickPayload> STREAM_CODEC = StreamCodec.composite(
-            Identifier.STREAM_CODEC, CosmeticPanelClickPayload::slot,
+            ResourceLocation.STREAM_CODEC, CosmeticPanelClickPayload::slot,
             ByteBufCodecs.BOOL, CosmeticPanelClickPayload::quickMove,
             CosmeticPanelClickPayload::new);
 

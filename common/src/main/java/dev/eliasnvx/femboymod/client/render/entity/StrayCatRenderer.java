@@ -4,7 +4,7 @@ import dev.eliasnvx.femboymod.entity.StrayCat;
 import net.minecraft.client.renderer.entity.CatRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.CatRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.animal.feline.Cat;
 
@@ -14,8 +14,8 @@ import net.minecraft.world.entity.animal.feline.Cat;
  */
 public final class StrayCatRenderer extends CatRenderer {
 
-    private static final Identifier WHITE = Identifier.withDefaultNamespace("textures/entity/cat/cat_white.png");
-    private static final Identifier WHITE_BABY = Identifier.withDefaultNamespace("textures/entity/cat/cat_white_baby.png");
+    private static final ResourceLocation WHITE = ResourceLocation.withDefaultNamespace("textures/entity/cat/cat_white.png");
+    private static final ResourceLocation WHITE_BABY = ResourceLocation.withDefaultNamespace("textures/entity/cat/cat_white_baby.png");
     /** Pink, lavender, mint, peach, sky. */
     private static final int[] COATS = {0xFFD1E6, 0xE3D1FF, 0xCFF5E2, 0xFFE0C8, 0xD1ECFF};
 

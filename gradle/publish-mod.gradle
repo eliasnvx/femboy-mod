@@ -14,7 +14,7 @@ def changelogText = providers.provider {
 }
 
 publishMods {
-    file = tasks.shadowJar.archiveFile
+    file = tasks.remapJar.archiveFile
     changelog = changelogText
     version = "${rootProject.mod_version}+${rootProject.minecraft_version}-${loader}"
     displayName = "${rootProject.mod_version} (${loader == "fabric" ? "Fabric" : "NeoForge"} ${rootProject.minecraft_version})"

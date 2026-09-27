@@ -24,7 +24,7 @@ import java.util.Set;
 import dev.eliasnvx.femboymod.event.FemboyEventBusImpl;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.SimpleApiRegistry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
@@ -41,13 +41,13 @@ public final class FemboyApiImpl implements FemboyApi {
     private final String apiVersion = readApiVersion();
     private final FemboyEventBusImpl events = new FemboyEventBusImpl(FemboyMod.LOGGER);
     private final SimpleApiRegistry<CosmeticSlotType> cosmeticSlots =
-            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "cosmetic_slot"));
+            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "cosmetic_slot"));
     private final SimpleApiRegistry<MapCodec<? extends CosmeticEffect>> effectTypes =
-            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "cosmetic_effect_type"));
+            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "cosmetic_effect_type"));
     private final SimpleApiRegistry<MapCodec<? extends CosmeticCondition>> conditionTypes =
-            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "cosmetic_condition_type"));
+            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "cosmetic_condition_type"));
     private final SimpleApiRegistry<ProfileField<?>> profileFields =
-            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(MOD_ID, "profile_field"));
+            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "profile_field"));
 
     @Override
     public String apiVersion() {
@@ -99,7 +99,7 @@ public final class FemboyApiImpl implements FemboyApi {
     }
 
     @Override
-    public Set<Identifier> getActiveSetBonuses(Player player) {
+    public Set<ResourceLocation> getActiveSetBonuses(Player player) {
         return WornEvaluator.evaluate(player).activeSets();
     }
 
@@ -123,7 +123,7 @@ public final class FemboyApiImpl implements FemboyApi {
     }
 
     @Override
-    public boolean addStylePoints(ServerPlayer player, int amount, Identifier reason) {
+    public boolean addStylePoints(ServerPlayer player, int amount, ResourceLocation reason) {
         return StylePoints.add(player, amount, reason);
     }
 

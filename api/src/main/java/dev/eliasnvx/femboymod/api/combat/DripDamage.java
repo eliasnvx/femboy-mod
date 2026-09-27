@@ -6,8 +6,8 @@ import dev.eliasnvx.femboymod.api.FemboyApi;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.core.registries.codec.RegistryCodecs;
-import net.minecraft.resources.Identifier;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.ApiStatus;
@@ -31,11 +31,11 @@ public record DripDamage(HolderSet<EntityType<?>> attackers, List<Float> multipl
 
     /** Registry key of the {@code femboymod:drip_damage} data pack registry. */
     public static final ResourceKey<Registry<DripDamage>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "drip_damage"));
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "drip_damage"));
 
     /** JSON codec. */
     public static final Codec<DripDamage> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            RegistryCodecs.holderSet(Registries.ENTITY_TYPE).fieldOf("attackers").forGetter(DripDamage::attackers),
+            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("attackers").forGetter(DripDamage::attackers),
             Codec.floatRange(0.0F, 10.0F).listOf(1, 32).fieldOf("multiplier_by_tier").forGetter(DripDamage::multiplierByTier)
     ).apply(instance, DripDamage::new));
 

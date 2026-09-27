@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,10 +26,10 @@ import java.util.Map;
 /** Draws everything a player wears (SPEC §4.5). Added to every player renderer on both loaders. */
 public final class CosmeticLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 
-    private final Map<Identifier, CosmeticRenderer> renderers = new HashMap<>();
+    private final Map<ResourceLocation, CosmeticRenderer> renderers = new HashMap<>();
     private final Context context = new Context();
     /** Geo renderers per item id, created on first use (Blockbench models override code models). */
-    private final Map<Identifier, GeoCosmeticRenderer> geoRenderers = new HashMap<>();
+    private final Map<ResourceLocation, GeoCosmeticRenderer> geoRenderers = new HashMap<>();
 
     public CosmeticLayer(RenderLayerParent<AvatarRenderState, PlayerModel> parent, EntityModelSet models) {
         super(parent);
@@ -52,7 +52,7 @@ public final class CosmeticLayer extends RenderLayer<AvatarRenderState, PlayerMo
         context.set(poseStack, collector, light, LivingEntityRenderer.getOverlayCoords(state, 0.0F), state, getParentModel(), data);
         for (int i = 0; i < worn.size(); i++) {
             CosmeticRenderData.Worn item = worn.get(i);
-            Identifier itemId = item.itemId();
+            ResourceLocation itemId = item.itemId();
             CosmeticRenderer renderer = GeoCosmeticRenderer.hasModel(itemId)
                     ? geoRenderers.computeIfAbsent(itemId, GeoCosmeticRenderer::new)
                     : renderers.get(item.renderer());
@@ -101,7 +101,7 @@ public final class CosmeticLayer extends RenderLayer<AvatarRenderState, PlayerMo
         @Override public AvatarRenderState state() { return state; }
         @Override public PlayerModel parentModel() { return parentModel; }
         @Override public ItemStack stack() { return worn.stack(); }
-        @Override public Identifier slot() { return worn.slot(); }
+        @Override public ResourceLocation slot() { return worn.slot(); }
         @Override public @Nullable Colorway colorway() { return worn.colorway(); }
         @Override public CosmeticMotion motion() { return motion; }
     }

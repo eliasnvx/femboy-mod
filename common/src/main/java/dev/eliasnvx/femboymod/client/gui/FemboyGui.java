@@ -5,7 +5,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 /** Vanilla-looking panels and slots drawn with fills, so layouts live in code, not in a texture. */
@@ -97,7 +97,7 @@ public final class FemboyGui {
     }
 
     /** Worn item or the slot's empty silhouette, plus a hover highlight and the eye toggle. */
-    public static void cosmeticSlot(GuiGraphicsExtractor g, Font font, Identifier slot, ItemStack stack, int x, int y, boolean hovered,
+    public static void cosmeticSlot(GuiGraphicsExtractor g, Font font, ResourceLocation slot, ItemStack stack, int x, int y, boolean hovered,
                                     boolean hidden) {
         slotFrame(g, x, y);
         if (!stack.isEmpty()) {
@@ -128,7 +128,7 @@ public final class FemboyGui {
         }
     }
 
-    public static Component slotName(Identifier slot) {
+    public static Component slotName(ResourceLocation slot) {
         return Component.translatable(dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType.translationKey(slot));
     }
 }

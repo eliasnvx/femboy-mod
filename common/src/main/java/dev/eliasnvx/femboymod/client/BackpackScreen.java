@@ -6,13 +6,13 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 /** Backpack screen: chest background with rows of nine plus a small charm panel on the right. */
 public final class BackpackScreen extends AbstractContainerScreen<BackpackMenu> {
 
-    private static final Identifier BACKGROUND = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private static final ResourceLocation BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
     private static final int TEXTURE_SIZE = 256;
     private static final int WIDTH = 176;
     private static final int BASE_HEIGHT = 114;

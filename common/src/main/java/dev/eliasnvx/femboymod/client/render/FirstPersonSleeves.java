@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 
@@ -34,7 +34,7 @@ public final class FirstPersonSleeves {
     private static final int WARMER_COLOR = 0xC8A2E8;
     private static final int NAIL_COLOR = 0xF291BE;
     private static final RenderType TYPE = RenderTypes.entityCutout(
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/knit.png"));
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/knit.png"));
 
     private static EntityModelSet bakedFrom;
     private static ModelPart root;

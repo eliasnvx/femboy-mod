@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 
 import java.util.EnumMap;
@@ -25,10 +25,10 @@ import java.util.Map;
 /** Renderers for the SPEC §5.1 items. Default colors match the item icons. */
 public final class BuiltinCosmeticRenderers {
 
-    private static final Identifier FUR = texture("fur");
-    private static final Identifier KNIT = texture("knit");
-    private static final Identifier FABRIC = texture("fabric");
-    private static final Identifier FISHNET = texture("fishnet");
+    private static final ResourceLocation FUR = texture("fur");
+    private static final ResourceLocation KNIT = texture("knit");
+    private static final ResourceLocation FABRIC = texture("fabric");
+    private static final ResourceLocation FISHNET = texture("fishnet");
 
     private static final int PINK = 0xF291BE;
     private static final int LAVENDER = 0xC8A2E8;
@@ -71,12 +71,12 @@ public final class BuiltinCosmeticRenderers {
     private BuiltinCosmeticRenderers() {
     }
 
-    private static Identifier texture(String name) {
-        return Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/" + name + ".png");
+    private static ResourceLocation texture(String name) {
+        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/" + name + ".png");
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
     }
 
     public static void register(ApiRegistry<CosmeticRenderer.Factory> registry) {
@@ -213,7 +213,7 @@ public final class BuiltinCosmeticRenderers {
 
         @SuppressWarnings("unchecked")
         GroupedRenderer(EntityModelSet set, ModelLayerLocation layer, Groups.GroupModelFactory.Factory factory,
-                        Identifier texture, int defaultMain, float accentShade, int detailColor) {
+                        ResourceLocation texture, int defaultMain, float accentShade, int detailColor) {
             for (Groups group : new Groups[]{Groups.ACCENT, Groups.DETAIL, Groups.DARK, Groups.METAL}) {
                 groupModels.put(group, factory.create(set.bakeLayer(layer), group, Groups.NO_BANDS));
             }

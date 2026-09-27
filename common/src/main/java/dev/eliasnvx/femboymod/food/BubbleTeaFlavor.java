@@ -6,7 +6,7 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.energy.EnergyDrink;
 import java.util.List;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 
 /**
@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceKey;
 public record BubbleTeaFlavor(int weight, List<EnergyDrink.Buff> effects) {
 
     public static final ResourceKey<Registry<BubbleTeaFlavor>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "bubble_tea_flavor"));
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "bubble_tea_flavor"));
 
     public static final Codec<BubbleTeaFlavor> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.intRange(1, 1000).optionalFieldOf("weight", 1).forGetter(BubbleTeaFlavor::weight),

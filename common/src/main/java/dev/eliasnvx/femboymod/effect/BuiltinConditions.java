@@ -5,7 +5,7 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.effect.CosmeticCondition;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -22,8 +22,8 @@ public final class BuiltinConditions {
         registry.register(id("night"), Night.CODEC);
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
     }
 
     /** Standing where it would snow (temperature below the snow line), e.g. taiga, mountains. */
