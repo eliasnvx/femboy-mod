@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.block;
 
+import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.entity.Seat;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
@@ -23,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 /** Gamer Chair (SPEC v1.1): right-click to sit; sitting slowly heals (config {@code furniture}). */
 public class GamerChairBlock extends HorizontalDirectionalBlock {
 
+    public static final MapCodec<GamerChairBlock> CODEC = simpleCodec(GamerChairBlock::new);
+
     /** Seat surface height; the model's cushion top is at 8 px. */
     private static final double SEAT_HEIGHT = 0.3;
     /** Base, seat and backrest with the back to the south (model faces north). */
@@ -30,11 +33,16 @@ public class GamerChairBlock extends HorizontalDirectionalBlock {
             Block.box(6.0, 0.0, 6.0, 10.0, 6.0, 10.0),
             Block.box(2.0, 6.0, 2.0, 14.0, 9.0, 14.0),
             Block.box(2.0, 9.0, 12.0, 14.0, 22.0, 15.0));
-    private final Map<Direction, VoxelShape> shapes = Shapes.rotateHorizontal(NORTH_SHAPE);
+    private final Map<Direction, VoxelShape> shapes = BlockShapes.rotateHorizontal(NORTH_SHAPE);
 
     public GamerChairBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<GamerChairBlock> codec() {
+        return CODEC;
     }
 
     @Override

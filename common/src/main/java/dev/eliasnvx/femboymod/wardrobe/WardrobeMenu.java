@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.wardrobe;
 
+import dev.eliasnvx.femboymod.menu.InventorySlots;
 import dev.eliasnvx.femboymod.registry.FemboyMenus;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -35,7 +36,7 @@ public final class WardrobeMenu extends AbstractContainerMenu {
                 addSlot(new Slot(wardrobe, col + row * 9, 8 + col * 18, 18 + row * 18));
             }
         }
-        addStandardInventorySlots(inventory, 8, 18 + ROWS * 18 + 13);
+        InventorySlots.addStandard(this::addSlot, inventory, 8, 18 + ROWS * 18 + 13);
     }
 
     @Override

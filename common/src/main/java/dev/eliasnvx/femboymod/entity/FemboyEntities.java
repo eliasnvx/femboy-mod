@@ -1,6 +1,6 @@
 package dev.eliasnvx.femboymod.entity;
 
-import net.minecraft.world.entity.animal.feline.Cat;
+import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.Animal;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
@@ -14,7 +14,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -30,53 +29,53 @@ public final class FemboyEntities {
 
     public static final ResourceKey<EntityType<?>> PINK_CREEPER_KEY =
             ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "pink_creeper"));
-    public static final RegistrySupplier<EntityType<PinkCreeper>> PINK_CREEPER = REGISTER.register(PINK_CREEPER_KEY.identifier(),
+    public static final RegistrySupplier<EntityType<PinkCreeper>> PINK_CREEPER = REGISTER.register(PINK_CREEPER_KEY.location(),
             () -> EntityType.Builder.of(PinkCreeper::new, MobCategory.MONSTER)
-                    .sized(0.6F, 1.7F).clientTrackingRange(8).notInPeaceful().build(PINK_CREEPER_KEY));
+                    .sized(0.6F, 1.7F).clientTrackingRange(8).build(PINK_CREEPER_KEY.location().toString()));
 
     public static final ResourceKey<EntityType<?>> BUG_KEY = key("bug");
-    public static final RegistrySupplier<EntityType<Bug>> BUG = REGISTER.register(BUG_KEY.identifier(),
+    public static final RegistrySupplier<EntityType<Bug>> BUG = REGISTER.register(BUG_KEY.location(),
             () -> EntityType.Builder.of(Bug::new, MobCategory.MONSTER)
-                    .sized(0.6F, 0.4F).clientTrackingRange(8).notInPeaceful().build(BUG_KEY));
+                    .sized(0.6F, 0.4F).clientTrackingRange(8).build(BUG_KEY.location().toString()));
     /** Where bugs swarm at night; data-driven. */
     public static final TagKey<Biome> BUG_SPAWNS = biomeTag("bug_spawns");
 
     public static final ResourceKey<EntityType<?>> CAFFEINATED_ZOMBIE_KEY = key("caffeinated_zombie");
-    public static final RegistrySupplier<EntityType<CaffeinatedZombie>> CAFFEINATED_ZOMBIE = REGISTER.register(CAFFEINATED_ZOMBIE_KEY.identifier(),
+    public static final RegistrySupplier<EntityType<CaffeinatedZombie>> CAFFEINATED_ZOMBIE = REGISTER.register(CAFFEINATED_ZOMBIE_KEY.location(),
             () -> EntityType.Builder.<CaffeinatedZombie>of(CaffeinatedZombie::new, MobCategory.MONSTER)
-                    .sized(0.6F, 1.95F).eyeHeight(1.74F).clientTrackingRange(8).notInPeaceful().build(CAFFEINATED_ZOMBIE_KEY));
+                    .sized(0.6F, 1.95F).eyeHeight(1.74F).clientTrackingRange(8).build(CAFFEINATED_ZOMBIE_KEY.location().toString()));
     public static final TagKey<Biome> CAFFEINATED_ZOMBIE_SPAWNS = biomeTag("caffeinated_zombie_spawns");
 
     public static final ResourceKey<EntityType<?>> HISSY_CAT_KEY = key("hissy_cat");
-    public static final RegistrySupplier<EntityType<HissyCat>> HISSY_CAT = REGISTER.register(HISSY_CAT_KEY.identifier(),
+    public static final RegistrySupplier<EntityType<HissyCat>> HISSY_CAT = REGISTER.register(HISSY_CAT_KEY.location(),
             () -> EntityType.Builder.of(HissyCat::new, MobCategory.MONSTER)
-                    .sized(0.6F, 0.7F).clientTrackingRange(8).notInPeaceful().build(HISSY_CAT_KEY));
+                    .sized(0.6F, 0.7F).clientTrackingRange(8).build(HISSY_CAT_KEY.location().toString()));
     public static final TagKey<Biome> HISSY_CAT_SPAWNS = biomeTag("hissy_cat_spawns");
 
     public static final ResourceKey<EntityType<?>> FASHION_CRITIC_KEY = key("fashion_critic");
-    public static final RegistrySupplier<EntityType<FashionCritic>> FASHION_CRITIC = REGISTER.register(FASHION_CRITIC_KEY.identifier(),
+    public static final RegistrySupplier<EntityType<FashionCritic>> FASHION_CRITIC = REGISTER.register(FASHION_CRITIC_KEY.location(),
             () -> EntityType.Builder.of(FashionCritic::new, MobCategory.MONSTER)
-                    .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).notInPeaceful().build(FASHION_CRITIC_KEY));
+                    .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).build(FASHION_CRITIC_KEY.location().toString()));
     public static final TagKey<Biome> FASHION_CRITIC_SPAWNS = biomeTag("fashion_critic_spawns");
 
-    /** Invisible seat for the Gamer Chair. Saved (26.3 refuses riding unsaved entities) but removes itself when empty. */
+    /** Invisible seat for the Gamer Chair. Saved (like on 26.3, which refuses riding unsaved entities) but removes itself when empty. */
     public static final ResourceKey<EntityType<?>> SEAT_KEY = key("seat");
-    public static final RegistrySupplier<EntityType<Seat>> SEAT = REGISTER.register(SEAT_KEY.identifier(),
+    public static final RegistrySupplier<EntityType<Seat>> SEAT = REGISTER.register(SEAT_KEY.location(),
             () -> EntityType.Builder.<Seat>of(Seat::new, MobCategory.MISC)
-                    .sized(0.25F, 0.25F).noSummon().noLootTable().clientTrackingRange(10).build(SEAT_KEY));
+                    .sized(0.25F, 0.25F).noSummon().clientTrackingRange(10).build(SEAT_KEY.location().toString()));
 
     /** Stray Cat (SPEC v1.2): a vanilla-style tameable cat with a pastel coat and mod gifts. */
     public static final ResourceKey<EntityType<?>> STRAY_CAT_KEY = key("stray_cat");
-    public static final RegistrySupplier<EntityType<StrayCat>> STRAY_CAT = REGISTER.register(STRAY_CAT_KEY.identifier(),
+    public static final RegistrySupplier<EntityType<StrayCat>> STRAY_CAT = REGISTER.register(STRAY_CAT_KEY.location(),
             () -> EntityType.Builder.<StrayCat>of(StrayCat::new, MobCategory.CREATURE)
-                    .sized(0.6F, 0.7F).eyeHeight(0.35F).passengerAttachments(0.5125F).clientTrackingRange(8).build(STRAY_CAT_KEY));
+                    .sized(0.6F, 0.7F).eyeHeight(0.35F).passengerAttachments(0.5125F).clientTrackingRange(8).build(STRAY_CAT_KEY.location().toString()));
     public static final TagKey<Biome> STRAY_CAT_SPAWNS = biomeTag("stray_cat_spawns");
 
     /** Wandering Cosplayer (SPEC v1.2): rare travelling trader with exclusive colorways (see CosplayerSpawner). */
     public static final ResourceKey<EntityType<?>> COSPLAYER_KEY = key("cosplayer");
-    public static final RegistrySupplier<EntityType<Cosplayer>> COSPLAYER = REGISTER.register(COSPLAYER_KEY.identifier(),
+    public static final RegistrySupplier<EntityType<Cosplayer>> COSPLAYER = REGISTER.register(COSPLAYER_KEY.location(),
             () -> EntityType.Builder.<Cosplayer>of(Cosplayer::new, MobCategory.CREATURE)
-                    .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).build(COSPLAYER_KEY));
+                    .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).build(COSPLAYER_KEY.location().toString()));
 
     /** Flowery biomes (flower forest, cherry grove, meadow, sunflower plains, dappled forest); data-driven. */
     public static final TagKey<Biome> PINK_CREEPER_SPAWNS =
@@ -101,7 +100,7 @@ public final class FemboyEntities {
         if (config.spawnWeight() > 0) {
             BiomeModifications.addProperties(ctx -> ctx.hasTag(biomes), (ctx, props) ->
                     props.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(type.get(),
-                            UniformInt.of(config.minGroup(), Math.max(config.minGroup(), config.maxGroup()))), config.spawnWeight()));
+                            config.spawnWeight(), config.minGroup(), Math.max(config.minGroup(), config.maxGroup()))));
         }
     }
 
@@ -124,7 +123,7 @@ public final class FemboyEntities {
         if (strayCats > 0) {
             BiomeModifications.addProperties(ctx -> ctx.hasTag(STRAY_CAT_SPAWNS), (ctx, props) ->
                     props.getSpawnProperties().addSpawn(MobCategory.CREATURE,
-                            new MobSpawnSettings.SpawnerData(STRAY_CAT.get(), UniformInt.of(1, 1)), strayCats));
+                            new MobSpawnSettings.SpawnerData(STRAY_CAT.get(), strayCats, 1, 1)));
         }
         EntityAttributeRegistry.register(PINK_CREEPER, Creeper::createAttributes);
         SpawnPlacementsRegistry.register(PINK_CREEPER, SpawnPlacementTypes.ON_GROUND,
@@ -133,8 +132,8 @@ public final class FemboyEntities {
         if (config.spawnWeight() > 0) {
             BiomeModifications.addProperties(ctx -> ctx.hasTag(PINK_CREEPER_SPAWNS), (ctx, props) ->
                     props.getSpawnProperties().addSpawn(MobCategory.MONSTER,
-                            new MobSpawnSettings.SpawnerData(PINK_CREEPER.get(), UniformInt.of(config.minGroup(),
-                                    Math.max(config.minGroup(), config.maxGroup()))), config.spawnWeight()));
+                            new MobSpawnSettings.SpawnerData(PINK_CREEPER.get(), config.spawnWeight(), config.minGroup(),
+                                    Math.max(config.minGroup(), config.maxGroup()))));
         }
     }
 }

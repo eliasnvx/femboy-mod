@@ -1,19 +1,19 @@
 package dev.eliasnvx.femboymod.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.eliasnvx.femboymod.api.client.CosmeticRenderContext;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor.ARGB32;
 
 /**
  * A grid of thin cells on a flat, body-attached surface (the hoodie chest) used to draw 2D pattern
- * parts such as the Progress chevron. Cells are static relative to the body, so they are submitted as
- * model parts under the body transform captured now (safe with deferred rendering). Only cells inside the
+ * parts such as the Progress chevron. Cells are static relative to the body, so they are drawn as
+ * model parts under the wearer's body transform. Only cells inside the
  * chevron are drawn; stripes underneath come from the banded model.
  */
 public final class ChevronPanel {
@@ -26,13 +26,13 @@ public final class ChevronPanel {
         for (int i = 0; i < cells.length; i++) {
             cells[i] = root.getChild("cell" + i);
         }
-        this.type = RenderTypes.entityCutout(texture);
+        this.type = RenderType.entityCutout(texture);
     }
 
     void submit(CosmeticRenderContext ctx, Colorway colorway) {
         PoseStack pose = ctx.poseStack();
+        VertexConsumer buffer = ctx.bufferSource().getBuffer(type);
         pose.pushPose();
-        ctx.parentModel().root().translateAndRotate(pose);
         ctx.parentModel().body.translateAndRotate(pose);
         for (int row = 0; row < CosmeticModels.PANEL_ROWS; row++) {
             float v = (row + 0.5F) / CosmeticModels.PANEL_ROWS;
@@ -42,8 +42,8 @@ public final class ChevronPanel {
                 if (colorway.pattern().orElseThrow().value().chevron().orElseThrow().bandAt(u, v) < 0) {
                     continue;
                 }
-                ctx.collector().submitModelPart(cells[row * CosmeticModels.PANEL_COLUMNS + col], pose, type,
-                        ctx.light(), ctx.overlay(), null, ARGB.opaque(colorway.colorAt(u, v)));
+                cells[row * CosmeticModels.PANEL_COLUMNS + col].render(pose, buffer, ctx.light(), ctx.overlay(),
+                        ARGB32.opaque(colorway.colorAt(u, v)));
             }
         }
         pose.popPose();

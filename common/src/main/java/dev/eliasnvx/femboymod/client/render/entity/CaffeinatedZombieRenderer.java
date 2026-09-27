@@ -1,14 +1,13 @@
 package dev.eliasnvx.femboymod.client.render.entity;
 
 import dev.eliasnvx.femboymod.FemboyMod;
-import net.minecraft.client.model.monster.zombie.ZombieModel;
+import net.minecraft.client.model.ZombieModel;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;
-import net.minecraft.client.renderer.entity.state.ZombieRenderState;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.monster.Zombie;
 
 /**
  * Own look on the vanilla zombie model: lime skin, pink hair and sweatband, sleepless eyes with glowing
@@ -21,8 +20,8 @@ public final class CaffeinatedZombieRenderer extends ZombieRenderer {
 
     public CaffeinatedZombieRenderer(EntityRendererProvider.Context context) {
         super(context);
-        addLayer(new EyesLayer<ZombieRenderState, ZombieModel<ZombieRenderState>>(this) {
-            private final RenderType type = RenderTypes.eyes(EYES);
+        addLayer(new EyesLayer<Zombie, ZombieModel<Zombie>>(this) {
+            private final RenderType type = RenderType.eyes(EYES);
 
             @Override
             public RenderType renderType() {
@@ -32,12 +31,12 @@ public final class CaffeinatedZombieRenderer extends ZombieRenderer {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(ZombieRenderState state) {
+    public ResourceLocation getTextureLocation(Zombie zombie) {
         return TEXTURE;
     }
 
     @Override
-    protected boolean isShaking(ZombieRenderState state) {
+    protected boolean isShaking(Zombie zombie) {
         return true; // jittery from caffeine; uses the vanilla conversion shake
     }
 }

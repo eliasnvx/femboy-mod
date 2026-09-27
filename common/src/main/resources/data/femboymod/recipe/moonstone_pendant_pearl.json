@@ -3,8 +3,12 @@
   "category": "equipment",
   "group": "femboymod_pearl",
   "ingredients": [
-    "femboymod:moonstone_pendant",
-    "femboymod:moonstone"
+    {
+      "item": "femboymod:moonstone_pendant"
+    },
+    {
+      "item": "femboymod:moonstone"
+    }
   ],
   "result": {
     "id": "femboymod:moonstone_pendant",

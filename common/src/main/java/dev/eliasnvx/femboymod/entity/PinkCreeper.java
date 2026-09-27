@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class PinkCreeper extends Creeper {
             double y = getY() + getBbHeight() * 0.6;
             double z = getZ();
             for (int color : CONFETTI) {
-                level.sendParticles(new DustParticleOptions(color, CONFETTI_SIZE), x, y, z, CONFETTI_PER_COLOR, SPREAD, SPREAD, SPREAD, 0.1);
+                level.sendParticles(new DustParticleOptions(Vec3.fromRGB24(color).toVector3f(), CONFETTI_SIZE), x, y, z, CONFETTI_PER_COLOR, SPREAD, SPREAD, SPREAD, 0.1);
             }
             level.sendParticles(ParticleTypes.HEART, x, y, z, HEARTS, SPREAD, SPREAD * 0.5, SPREAD, 0.1);
             level.sendParticles(ParticleTypes.FIREWORK, x, y, z, HEARTS, 0.3, 0.3, 0.3, 0.2);
@@ -59,11 +60,10 @@ public class PinkCreeper extends Creeper {
                 boolean isPlayer = target instanceof Player;
                 float damage = isPlayer ? event.playerDamage() : event.mobDamage();
                 if (damage > 0) {
-                    target.hurtServer(level, level.damageSources().explosion(this, this), damage);
+                    target.hurt(level.damageSources().explosion(this, this), damage);
                 }
-                target.knockback(event.knockback(), getX() - target.getX(), getZ() - target.getZ(),
-                        level.damageSources().mobAttack(this), 0.0F);
-                target.needsSync = true;
+                target.knockback(event.knockback(), getX() - target.getX(), getZ() - target.getZ());
+                target.hurtMarked = true;
                 if (target instanceof ServerPlayer player && player.isAlive()) {
                     FemboyTriggers.fire(player, FemboyTriggers.CONFETTI_SURVIVOR);
                 }

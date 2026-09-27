@@ -3,7 +3,7 @@ package dev.eliasnvx.femboymod.client;
 import dev.eliasnvx.femboymod.config.ClientConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.screens.Screen;
@@ -35,8 +35,9 @@ public final class ConfigScreen extends Screen {
         addToggle(x, y += ROW, "nya_sound", c.nyaSound(), v -> FemboyConfig.setClient(FemboyConfig.client().withNyaSound(v)));
         addToggle(x, y += ROW, "rgb_animations", c.rgbAnimations(), v -> FemboyConfig.setClient(FemboyConfig.client().withRgbAnimations(v)));
         addRenderableWidget(CycleButton.<ClientConfig.Physics>builder(
-                        p -> Component.translatable("config.femboymod.physics." + p.getSerializedName()), c.physics())
+                        p -> Component.translatable("config.femboymod.physics." + p.getSerializedName()))
                 .withValues(ClientConfig.Physics.values())
+                .withInitialValue(c.physics())
                 .create(x, y += ROW, WIDTH, 20, Component.translatable("config.femboymod.physics"),
                         (button, value) -> FemboyConfig.setClient(FemboyConfig.client().withPhysics(value))));
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, b -> onClose())
@@ -49,13 +50,13 @@ public final class ConfigScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        graphics.centeredText(font, title, width / 2, TOP / 2 - 4, 0xFFFFFFFF);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        graphics.drawCenteredString(font, title, width / 2, TOP / 2 - 4, 0xFFFFFFFF);
     }
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().gui.setScreen(parent);
+        Minecraft.getInstance().setScreen(parent);
     }
 }

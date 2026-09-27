@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:nail_polish",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:nail_polish"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:nail_polish",

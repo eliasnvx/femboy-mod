@@ -109,7 +109,7 @@ public final class FemboyApiImpl implements FemboyApi {
             return java.util.List.of();
         }
         return backpack.getOrDefault(FemboyComponents.CHARMS.get(), net.minecraft.world.item.component.ItemContainerContents.EMPTY)
-                .nonEmptyItemCopyStream().toList();
+                .nonEmptyStream().map(ItemStack::copy).toList();
     }
 
     @Override

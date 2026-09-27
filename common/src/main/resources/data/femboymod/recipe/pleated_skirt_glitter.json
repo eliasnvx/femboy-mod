@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:pleated_skirt",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:pleated_skirt"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:pleated_skirt",

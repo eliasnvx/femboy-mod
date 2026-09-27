@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "W": "minecraft:pink_wool",
-    "I": "minecraft:iron_ingot",
-    "N": "minecraft:note_block"
+    "W": {
+      "item": "minecraft:pink_wool"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "N": {
+      "item": "minecraft:note_block"
+    }
   },
   "pattern": [
     "W W",

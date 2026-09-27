@@ -56,7 +56,7 @@ public class HissyCat extends Monster {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.CAT_HISS_BABY.value();
+        return SoundEvents.CAT_HISS;
     }
 
     @Override

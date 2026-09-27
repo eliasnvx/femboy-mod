@@ -11,7 +11,6 @@ import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -55,7 +54,7 @@ public class FashionCritic extends Monster {
     private static final float VOICE_PITCH = 0.85F;
     private static final float REVIEW_PITCH = 0.8F;
 
-    private final ServerBossEvent bossBar = new ServerBossEvent(getUUID(), getDisplayName(),
+    private final ServerBossEvent bossBar = new ServerBossEvent(getDisplayName(),
             BossEvent.BossBarColor.PINK, BossEvent.BossBarOverlay.NOTCHED_6);
     private int reviewCooldown;
 
@@ -91,8 +90,8 @@ public class FashionCritic extends Monster {
     }
 
     @Override
-    protected void customServerAiStep(ServerLevel level) {
-        super.customServerAiStep(level);
+    protected void customServerAiStep() {
+        super.customServerAiStep();
         bossBar.setProgress(getHealth() / getMaxHealth());
         if (reviewCooldown > 0) {
             reviewCooldown--;
@@ -113,11 +112,11 @@ public class FashionCritic extends Monster {
         boolean impressed = tier >= config.impressedTier() || wearsApproved(player);
         String verdict = impressed ? "impressed" : "unimpressed";
         int line = random.nextInt(REVIEW_LINES);
-        player.sendOverlayMessage(Component.translatable("entity.femboymod.fashion_critic.review." + verdict + "." + line));
+        player.displayClientMessage(Component.translatable("entity.femboymod.fashion_critic.review." + verdict + "." + line), true);
         if (impressed) {
             addEffect(new MobEffectInstance(MobEffects.WEAKNESS, config.effectTicks()));
         } else {
-            player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, config.effectTicks(), config.slownessLevel()));
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, config.effectTicks(), config.slownessLevel()));
             player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, config.effectTicks()));
         }
         playSound(impressed ? SoundEvents.VILLAGER_YES : SoundEvents.VILLAGER_NO, 1.0F, REVIEW_PITCH);

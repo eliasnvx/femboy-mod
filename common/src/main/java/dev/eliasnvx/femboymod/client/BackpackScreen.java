@@ -2,9 +2,8 @@ package dev.eliasnvx.femboymod.client;
 
 import dev.eliasnvx.femboymod.backpack.BackpackMenu;
 import dev.eliasnvx.femboymod.backpack.BackpackSpec;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -30,17 +29,24 @@ public final class BackpackScreen extends AbstractContainerScreen<BackpackMenu> 
     private final int rows;
 
     public BackpackScreen(BackpackMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, WIDTH, BASE_HEIGHT + menu.rows() * BackpackMenu.SLOT_SIZE);
+        super(menu, inventory, title);
+        this.imageWidth = WIDTH;
+        this.imageHeight = BASE_HEIGHT + menu.rows() * BackpackMenu.SLOT_SIZE;
         this.rows = menu.rows();
         this.inventoryLabelY = this.imageHeight - INVENTORY_LABEL_OFFSET;
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    @Override
+    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         int top = rows * BackpackMenu.SLOT_SIZE + HEADER_HEIGHT;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, leftPos, topPos, 0.0F, 0.0F, imageWidth, top, TEXTURE_SIZE, TEXTURE_SIZE);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, leftPos, topPos + top, 0.0F, INVENTORY_PART_V,
+        graphics.blit(BACKGROUND, leftPos, topPos, 0.0F, 0.0F, imageWidth, top, TEXTURE_SIZE, TEXTURE_SIZE);
+        graphics.blit(BACKGROUND, leftPos, topPos + top, 0.0F, INVENTORY_PART_V,
                 imageWidth, INVENTORY_PART_HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
 
         // charm side panel
@@ -51,7 +57,7 @@ public final class BackpackScreen extends AbstractContainerScreen<BackpackMenu> 
         graphics.fill(x0 - 1, y0 - 1, x0 + w + 1, y0 + h + 1, PANEL_BORDER);
         graphics.fill(x0, y0, x0 + w, y0 + h, PANEL_COLOR);
         for (int i = 0; i < BackpackSpec.CHARM_SLOTS; i++) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, leftPos + BackpackMenu.CHARM_X - 1,
+            graphics.blit(BACKGROUND, leftPos + BackpackMenu.CHARM_X - 1,
                     topPos + BackpackMenu.TOP - 1 + i * BackpackMenu.SLOT_SIZE, SLOT_U, SLOT_V,
                     BackpackMenu.SLOT_SIZE, BackpackMenu.SLOT_SIZE, TEXTURE_SIZE, TEXTURE_SIZE);
         }
@@ -59,11 +65,11 @@ public final class BackpackScreen extends AbstractContainerScreen<BackpackMenu> 
 
     /** Empty charm slots explain themselves on hover (a label would not fit on the side panel). */
     @Override
-    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
         if (menu.getCarried().isEmpty() && hoveredSlot != null && !hoveredSlot.hasItem() && hoveredSlot.x == BackpackMenu.CHARM_X) {
-            graphics.setTooltipForNextFrame(font, Component.translatable("container.femboymod.charms"), mouseX, mouseY);
+            graphics.renderTooltip(font, Component.translatable("container.femboymod.charms"), mouseX, mouseY);
             return;
         }
-        super.extractTooltip(graphics, mouseX, mouseY);
+        super.renderTooltip(graphics, mouseX, mouseY);
     }
 }

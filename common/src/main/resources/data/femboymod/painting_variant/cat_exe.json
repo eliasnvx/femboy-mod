@@ -1,13 +1,5 @@
 {
   "asset_id": "femboymod:cat_exe",
-  "author": {
-    "color": "gray",
-    "translate": "painting.femboymod.cat_exe.author"
-  },
   "height": 2,
-  "title": {
-    "color": "light_purple",
-    "translate": "painting.femboymod.cat_exe.title"
-  },
   "width": 2
 }

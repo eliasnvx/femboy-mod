@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:striped_mittens",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:striped_mittens"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:striped_mittens",

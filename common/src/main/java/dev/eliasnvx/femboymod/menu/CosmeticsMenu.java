@@ -98,7 +98,7 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
         for (int i = 0; i < cosmeticSlotCount; i++) {
             addSlot(new CosmeticSlot(cosmetics, player, i, xs[i], ys[i]));
         }
-        addStandardInventorySlots(inventory, LEFT_X, inventoryTop());
+        InventorySlots.addStandard(this::addSlot, inventory, LEFT_X, inventoryTop());
     }
 
     public int inventoryTop() {

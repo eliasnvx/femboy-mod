@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_neon",
   "ingredients": [
-    "femboymod:belt_chains",
-    "femboymod:neon_quartz",
-    "femboymod:neon_quartz"
+    {
+      "item": "femboymod:belt_chains"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    }
   ],
   "result": {
     "id": "femboymod:belt_chains",

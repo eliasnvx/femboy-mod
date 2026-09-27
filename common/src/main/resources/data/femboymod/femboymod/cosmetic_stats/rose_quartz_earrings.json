@@ -4,7 +4,7 @@
     {
       "effect": {
         "type": "femboymod:attribute",
-        "attribute": "minecraft:luck",
+        "attribute": "minecraft:generic.luck",
         "amount": 1.0,
         "operation": "add_value"
       }

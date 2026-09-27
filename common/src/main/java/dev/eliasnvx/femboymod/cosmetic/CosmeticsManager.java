@@ -95,7 +95,7 @@ public final class CosmeticsManager {
                 FemboyMod.api().events().post(new CosmeticChangedEvent(player, slot, previous, stack));
                 if (!stack.isEmpty()) {
                     // Audible feedback; heard by the wearer and players nearby, like equipping armor.
-                    player.level().playSound(null, player, SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS,
+                    player.level().playSound(null, player, SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.PLAYERS,
                             EQUIP_SOUND_VOLUME, EQUIP_SOUND_PITCH);
                 }
             }

@@ -5,12 +5,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
-import net.minecraft.advancements.triggers.CriterionTrigger;
-import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
-import net.minecraft.core.Holder;
+import net.minecraft.advancements.CriterionTrigger;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.Optional;
 
@@ -64,10 +64,10 @@ public final class FemboyTriggers {
             trigger(player, instance -> instance.event().equals(event) && value >= instance.min());
         }
 
-        public record Instance(Optional<Holder<LootItemCondition>> player, String event, int min)
+        public record Instance(Optional<ContextAwarePredicate> player, String event, int min)
                 implements SimpleCriterionTrigger.SimpleInstance {
             public static final Codec<Instance> CODEC = RecordCodecBuilder.create(i -> i.group(
-                    LootItemCondition.CODEC.optionalFieldOf("player").forGetter(Instance::player),
+                    EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(Instance::player),
                     Codec.STRING.fieldOf("event").forGetter(Instance::event),
                     Codec.INT.optionalFieldOf("min", 1).forGetter(Instance::min)
             ).apply(i, Instance::new));

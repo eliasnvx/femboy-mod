@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_neon",
   "ingredients": [
-    "femboymod:cat_ear_headphones",
-    "femboymod:neon_quartz",
-    "femboymod:neon_quartz"
+    {
+      "item": "femboymod:cat_ear_headphones"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    }
   ],
   "result": {
     "id": "femboymod:cat_ear_headphones",

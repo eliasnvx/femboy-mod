@@ -3,10 +3,18 @@
   "category": "misc",
   "group": "femboymod_pride_badge",
   "ingredients": [
-    "femboymod:pride_badge",
-    "minecraft:pink_dye",
-    "minecraft:yellow_dye",
-    "minecraft:light_blue_dye"
+    {
+      "item": "femboymod:pride_badge"
+    },
+    {
+      "item": "minecraft:pink_dye"
+    },
+    {
+      "item": "minecraft:yellow_dye"
+    },
+    {
+      "item": "minecraft:light_blue_dye"
+    }
   ],
   "result": {
     "id": "femboymod:pride_badge",

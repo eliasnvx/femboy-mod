@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.block;
 
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class GamerMonitorBlock extends HorizontalDirectionalBlock {
 
+    public static final MapCodec<GamerMonitorBlock> CODEC = simpleCodec(GamerMonitorBlock::new);
+
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final int LIGHT = 7;
     private static final float ON_PITCH = 1.4F;
@@ -37,11 +40,16 @@ public class GamerMonitorBlock extends HorizontalDirectionalBlock {
             Block.box(5.0, 0.0, 7.0, 11.0, 1.0, 11.0),
             Block.box(7.0, 1.0, 8.0, 9.0, 4.0, 10.0),
             Block.box(1.0, 4.0, 7.0, 15.0, 14.0, 9.0));
-    private final Map<Direction, VoxelShape> shapes = Shapes.rotateHorizontal(NORTH_SHAPE);
+    private final Map<Direction, VoxelShape> shapes = BlockShapes.rotateHorizontal(NORTH_SHAPE);
 
     public GamerMonitorBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, true));
+    }
+
+    @Override
+    protected MapCodec<GamerMonitorBlock> codec() {
+        return CODEC;
     }
 
     @Override

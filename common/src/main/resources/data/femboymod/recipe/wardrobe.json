@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "P": "#minecraft:planks",
-    "C": "minecraft:chest",
-    "D": "minecraft:pink_dye"
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "D": {
+      "item": "minecraft:pink_dye"
+    }
   },
   "pattern": [
     "PPP",

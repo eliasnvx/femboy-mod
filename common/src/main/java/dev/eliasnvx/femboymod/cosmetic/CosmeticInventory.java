@@ -47,7 +47,7 @@ public record CosmeticInventory(Map<ResourceLocation, ItemStack> items, Set<Reso
                     HashMap::new, ResourceLocation.STREAM_CODEC, ItemStack.STREAM_CODEC), CosmeticInventory::items,
             ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.collection(HashSet::new)), inventory -> new HashSet<>(inventory.hidden()),
             ByteBufCodecs.<RegistryFriendlyByteBuf, EquipmentSlot, ArmorVisibility, Map<EquipmentSlot, ArmorVisibility>>map(
-                    HashMap::new, EquipmentSlot.STREAM_CODEC.cast(), ByteBufCodecs.idMapper(i -> ArmorVisibility.values()[i], Enum::ordinal)),
+                    HashMap::new, ByteBufCodecs.idMapper(i -> EquipmentSlot.values()[i], Enum::ordinal), ByteBufCodecs.idMapper(i -> ArmorVisibility.values()[i], Enum::ordinal)),
             CosmeticInventory::armor,
             CosmeticInventory::new);
 

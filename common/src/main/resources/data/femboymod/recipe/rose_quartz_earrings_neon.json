@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_neon",
   "ingredients": [
-    "femboymod:rose_quartz_earrings",
-    "femboymod:neon_quartz",
-    "femboymod:neon_quartz"
+    {
+      "item": "femboymod:rose_quartz_earrings"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    }
   ],
   "result": {
     "id": "femboymod:rose_quartz_earrings",

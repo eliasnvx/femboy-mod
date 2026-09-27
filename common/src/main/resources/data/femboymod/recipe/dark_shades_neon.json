@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_neon",
   "ingredients": [
-    "femboymod:dark_shades",
-    "femboymod:neon_quartz",
-    "femboymod:neon_quartz"
+    {
+      "item": "femboymod:dark_shades"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    }
   ],
   "result": {
     "id": "femboymod:dark_shades",

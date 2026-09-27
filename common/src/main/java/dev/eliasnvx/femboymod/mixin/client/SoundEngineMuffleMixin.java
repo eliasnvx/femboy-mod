@@ -17,7 +17,7 @@ public abstract class SoundEngineMuffleMixin {
 
     @Inject(method = "calculateVolume(Lnet/minecraft/client/resources/sounds/SoundInstance;)F", at = @At("RETURN"), cancellable = true)
     private void femboymod$muffle(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
-        float factor = GlowHostilesClient.volumeFactor(sound.getIdentifier());
+        float factor = GlowHostilesClient.volumeFactor(sound.getLocation());
         if (factor != 1.0F) {
             cir.setReturnValue(cir.getReturnValue() * factor);
         }

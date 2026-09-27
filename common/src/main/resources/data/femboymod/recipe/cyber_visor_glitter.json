@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:cyber_visor",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:cyber_visor"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:cyber_visor",

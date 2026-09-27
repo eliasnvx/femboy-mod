@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "minecraft:iron_nugget",
-    "minecraft:sugar",
-    "minecraft:cocoa_beans",
-    "minecraft:light_blue_dye"
+    {
+      "item": "minecraft:iron_nugget"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:cocoa_beans"
+    },
+    {
+      "item": "minecraft:light_blue_dye"
+    }
   ],
   "result": {
     "id": "femboymod:byte_energy_blue"

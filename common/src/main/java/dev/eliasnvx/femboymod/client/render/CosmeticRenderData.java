@@ -9,11 +9,11 @@ import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -24,9 +24,9 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Per-player render data, attached to the player's render state during extraction. One instance
- * per entity is reused across frames: the worn list is rebuilt only when the (immutable) cosmetic
- * inventory snapshot changes, and motion values are updated in place, so extraction does not allocate.
+ * Per-player render data, captured by the cosmetic layer each frame. One instance per entity is reused
+ * across frames: the worn list is rebuilt only when the (immutable) cosmetic inventory snapshot changes,
+ * and motion values are updated in place, so capturing does not allocate.
  */
 public final class CosmeticRenderData implements CosmeticMotion {
 
@@ -72,8 +72,8 @@ public final class CosmeticRenderData implements CosmeticMotion {
         this.phase = (entityId * GOLDEN_ANGLE) % Mth.TWO_PI;
     }
 
-    /** Called from the render state extraction mixin. Returns null if nothing is worn. */
-    public static @Nullable CosmeticRenderData capture(Entity entity, AvatarRenderState state) {
+    /** Called from the cosmetic layer once per frame per player. Returns null if nothing is worn. */
+    public static @Nullable CosmeticRenderData capture(LivingEntity entity, float partialTick) {
         if (!(entity instanceof Player player)) {
             return null;
         }
@@ -85,8 +85,17 @@ public final class CosmeticRenderData implements CosmeticMotion {
         if (data.source != inventory) {
             data.rebuild(inventory);
         }
-        data.updateMotion(state);
+        data.updateMotion(entity, partialTick);
         return data;
+    }
+
+    /**
+     * Motion of an entity for procedural animation (FemboyClientApi#motion). Neutral for entities that were
+     * never captured (nothing worn, or not a player).
+     */
+    public static CosmeticMotion motion(LivingEntity entity) {
+        CosmeticRenderData data = CACHE.get(entity);
+        return data == null ? STILL : data;
     }
 
     private void rebuild(CosmeticInventory inventory) {
@@ -104,23 +113,25 @@ public final class CosmeticRenderData implements CosmeticMotion {
         this.source = inventory;
     }
 
-    private void updateMotion(AvatarRenderState state) {
+    private void updateMotion(LivingEntity entity, float partialTick) {
+        float age = entity.tickCount + partialTick;
+        float bodyRot = Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
         if (Float.isNaN(lastAge)) {
-            lastAge = state.ageInTicks;
-            lastBodyRot = state.bodyRot;
+            lastAge = age;
+            lastBodyRot = bodyRot;
             return;
         }
-        float dt = state.ageInTicks - lastAge;
+        float dt = age - lastAge;
         if (dt <= 0) {
             return; // same frame (e.g. inventory preview) or paused
         }
-        float turnRate = Mth.wrapDegrees(state.bodyRot - lastBodyRot) / dt;
+        float turnRate = Mth.wrapDegrees(bodyRot - lastBodyRot) / dt;
         float targetSway = Mth.clamp(-turnRate * TURN_GAIN, -MAX_TURN_SWAY, MAX_TURN_SWAY);
         float alpha = 1.0F - (float) Math.exp(-dt * SMOOTHING);
         turnSway += (targetSway - turnSway) * alpha;
-        walkAmount += (Math.min(state.walkAnimationSpeed, 1.0F) - walkAmount) * alpha;
-        lastAge = state.ageInTicks;
-        lastBodyRot = state.bodyRot;
+        walkAmount += (Math.min(entity.walkAnimation.speed(partialTick), 1.0F) - walkAmount) * alpha;
+        lastAge = age;
+        lastBodyRot = bodyRot;
     }
 
     public List<Worn> worn() {

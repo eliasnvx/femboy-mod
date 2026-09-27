@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "minecraft:wheat",
-    "minecraft:sugar",
-    "minecraft:pink_petals"
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:pink_petals"
+    }
   ],
   "result": {
     "id": "femboymod:mochi",

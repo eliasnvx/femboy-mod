@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:heart_glasses",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:heart_glasses"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:heart_glasses",

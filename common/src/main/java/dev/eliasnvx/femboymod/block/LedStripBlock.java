@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.block;
 
+import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
@@ -28,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LedStripBlock extends DirectionalBlock {
 
+    public static final MapCodec<LedStripBlock> CODEC = simpleCodec(LedStripBlock::new);
+
     public static final int COLORS = 5;
     public static final int RAINBOW = COLORS - 1;
     public static final IntegerProperty COLOR = IntegerProperty.create("color", 0, RAINBOW);
@@ -46,6 +49,11 @@ public class LedStripBlock extends DirectionalBlock {
     public LedStripBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.UP).setValue(COLOR, 0));
+    }
+
+    @Override
+    protected MapCodec<LedStripBlock> codec() {
+        return CODEC;
     }
 
     @Override

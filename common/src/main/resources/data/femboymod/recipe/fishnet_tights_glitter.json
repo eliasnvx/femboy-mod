@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:fishnet_tights",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:fishnet_tights"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:fishnet_tights",

@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_neon",
   "ingredients": [
-    "femboymod:bunny_ears",
-    "femboymod:neon_quartz",
-    "femboymod:neon_quartz"
+    {
+      "item": "femboymod:bunny_ears"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    }
   ],
   "result": {
     "id": "femboymod:bunny_ears",

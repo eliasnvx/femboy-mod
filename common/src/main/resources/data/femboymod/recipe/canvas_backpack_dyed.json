@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:crafting_dye",
-  "dye": "#minecraft:dyes",
-  "group": "femboymod_dyed",
-  "result": {
-    "id": "femboymod:canvas_backpack"
-  },
-  "target": "femboymod:canvas_backpack"
-}

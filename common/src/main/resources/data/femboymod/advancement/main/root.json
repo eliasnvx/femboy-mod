@@ -9,7 +9,7 @@
     "description": {
       "translate": "advancements.femboymod.root.description"
     },
-    "background": "minecraft:block/pink_wool",
+    "background": "minecraft:textures/block/pink_wool.png",
     "show_toast": false,
     "announce_to_chat": false
   },

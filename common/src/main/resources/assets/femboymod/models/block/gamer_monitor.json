@@ -239,7 +239,10 @@
           "texture": "#screen"
         }
       },
-      "light_emission": 15
+      "light_emission": 15,
+      "neoforge_data": {
+        "block_light": 15
+      }
     }
   ],
   "display": {

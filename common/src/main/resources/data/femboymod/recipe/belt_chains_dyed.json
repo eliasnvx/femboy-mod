@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:crafting_dye",
-  "dye": "#minecraft:dyes",
-  "group": "femboymod_dyed",
-  "result": {
-    "id": "femboymod:belt_chains"
-  },
-  "target": "femboymod:belt_chains"
-}

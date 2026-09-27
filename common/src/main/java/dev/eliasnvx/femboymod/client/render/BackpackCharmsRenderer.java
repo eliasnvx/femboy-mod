@@ -1,24 +1,24 @@
 package dev.eliasnvx.femboymod.client.render;
 
-import dev.eliasnvx.femboymod.registry.FemboyItems;
-import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.eliasnvx.femboymod.FemboyMod;
-import dev.eliasnvx.femboymod.registry.FemboyComponents;
-import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.component.ItemContainerContents;
 import dev.eliasnvx.femboymod.api.client.CosmeticRenderContext;
+import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
+import dev.eliasnvx.femboymod.registry.FemboyComponents;
+import dev.eliasnvx.femboymod.registry.FemboyItems;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor.ARGB32;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 import java.util.Map;
 
-/** Charms dangling on the side of a worn backpack; static relative to the body, submitted as parts. */
+/** Charms dangling on the side of a worn backpack; static relative to the body, drawn as parts. */
 final class BackpackCharmsRenderer {
 
     private static final int CHAIN_COLOR = 0xD9D2C0;
@@ -30,7 +30,7 @@ final class BackpackCharmsRenderer {
     private final ModelPart[] charms = new ModelPart[CosmeticModels.CHARM_SLOTS];
     private final ModelPart[][] flags = new ModelPart[CosmeticModels.CHARM_SLOTS][CosmeticModels.FLAG_STRIPES];
     private static final int BADGE_DEFAULT = 0xF291BE;
-    private final RenderType type = RenderTypes.entityCutout(
+    private final RenderType type = RenderType.entityCutout(
             ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png"));
 
     BackpackCharmsRenderer(ModelPart root) {
@@ -45,31 +45,33 @@ final class BackpackCharmsRenderer {
 
     void submit(CosmeticRenderContext ctx) {
         ItemContainerContents worn = ctx.stack().getOrDefault(FemboyComponents.CHARMS.get(), ItemContainerContents.EMPTY);
-        if (worn.size() == 0) {
+        if (worn.equals(ItemContainerContents.EMPTY)) {
             return;
         }
         PoseStack pose = ctx.poseStack();
+        VertexConsumer buffer = ctx.bufferSource().getBuffer(type);
+        int light = ctx.light();
+        int overlay = ctx.overlay();
         pose.pushPose();
-        ctx.parentModel().root().translateAndRotate(pose);
         ctx.parentModel().body.translateAndRotate(pose);
         int i = 0;
-        for (ItemStackTemplate charm : worn.nonEmptyItems()) {
+        for (ItemStack charm : worn.nonEmptyItems()) {
             if (i >= chains.length) {
                 break;
             }
-            ctx.collector().submitModelPart(chains[i], pose, type, ctx.light(), ctx.overlay(), null, ARGB.opaque(CHAIN_COLOR));
-            if (charm.item().value() == FemboyItems.PRIDE_BADGE.get()) {
+            chains[i].render(pose, buffer, light, overlay, ARGB32.opaque(CHAIN_COLOR));
+            if (charm.is(FemboyItems.PRIDE_BADGE.get())) {
                 // the badge's flag: stripes spread over the pattern (a 3-stripe flag shows each stripe ~twice as tall)
                 Colorway colorway = charm.get(FemboyComponents.COLORWAY.get());
                 int count = colorway == null ? 1 : colorway.stripeCount();
                 for (int k = 0; k < CosmeticModels.FLAG_STRIPES; k++) {
                     int color = colorway == null ? BADGE_DEFAULT
                             : colorway.stripeColor(k * count / CosmeticModels.FLAG_STRIPES, ColorwayClock.ticks());
-                    ctx.collector().submitModelPart(flags[i][k], pose, type, ctx.light(), ctx.overlay(), null, ARGB.opaque(color));
+                    flags[i][k].render(pose, buffer, light, overlay, ARGB32.opaque(color));
                 }
             } else {
-                int color = CHARM_COLORS.getOrDefault(BuiltInRegistries.ITEM.getKey(charm.item().value()).getPath(), DEFAULT_CHARM);
-                ctx.collector().submitModelPart(charms[i], pose, type, ctx.light(), ctx.overlay(), null, ARGB.opaque(color));
+                int color = CHARM_COLORS.getOrDefault(BuiltInRegistries.ITEM.getKey(charm.getItem()).getPath(), DEFAULT_CHARM);
+                charms[i].render(pose, buffer, light, overlay, ARGB32.opaque(color));
             }
             i++;
         }

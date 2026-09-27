@@ -1,7 +1,7 @@
 package dev.eliasnvx.femboymod.client.render;
 
 import dev.eliasnvx.femboymod.config.FemboyConfig;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 
 /**
  * Animation time for shimmering colorways ({@code ColorwayPattern.Shimmer}). Returns 0 (resting colors) when the

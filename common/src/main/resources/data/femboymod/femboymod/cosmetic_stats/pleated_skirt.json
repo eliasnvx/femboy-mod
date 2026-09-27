@@ -4,7 +4,7 @@
     {
       "effect": {
         "type": "femboymod:attribute",
-        "attribute": "minecraft:movement_speed",
+        "attribute": "minecraft:generic.movement_speed",
         "amount": 0.05,
         "operation": "add_multiplied_base"
       }

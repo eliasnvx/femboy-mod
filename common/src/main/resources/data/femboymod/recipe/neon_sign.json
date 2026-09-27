@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "N": "femboymod:neon_quartz",
-    "B": "minecraft:black_stained_glass_pane",
-    "R": "minecraft:redstone"
+    "N": {
+      "item": "femboymod:neon_quartz"
+    },
+    "B": {
+      "item": "minecraft:black_stained_glass_pane"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
   },
   "pattern": [
     "NBN",

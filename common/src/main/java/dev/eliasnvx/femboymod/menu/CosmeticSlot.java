@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public final class CosmeticSlot extends Slot {
 
@@ -31,8 +32,11 @@ public final class CosmeticSlot extends Slot {
         return 1;
     }
 
-    @Override
-    public ResourceLocation getNoItemIcon() {
+    /**
+     * GUI sprite drawn while the slot is empty. On 1.21.1 {@link Slot#getNoItemIcon()} only takes sprites from
+     * block/item atlases, so the screens draw this GUI-atlas sprite themselves.
+     */
+    public @Nullable ResourceLocation emptySlotSprite() {
         return CosmeticsManager.slotType(slotId()).emptySlotIcon().orElse(null);
     }
 }

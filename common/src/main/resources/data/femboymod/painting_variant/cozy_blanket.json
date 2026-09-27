@@ -1,13 +1,5 @@
 {
   "asset_id": "femboymod:cozy_blanket",
-  "author": {
-    "color": "gray",
-    "translate": "painting.femboymod.cozy_blanket.author"
-  },
   "height": 2,
-  "title": {
-    "color": "light_purple",
-    "translate": "painting.femboymod.cozy_blanket.title"
-  },
   "width": 1
 }

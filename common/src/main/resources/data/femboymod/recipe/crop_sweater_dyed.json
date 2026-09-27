@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:crafting_dye",
-  "dye": "#minecraft:dyes",
-  "group": "femboymod_dyed",
-  "result": {
-    "id": "femboymod:crop_sweater"
-  },
-  "target": "femboymod:crop_sweater"
-}

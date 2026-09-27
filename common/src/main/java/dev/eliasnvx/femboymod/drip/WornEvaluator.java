@@ -69,7 +69,7 @@ public final class WornEvaluator {
         RegistryAccess registries = player.level().registryAccess();
         // Server: the femboymod:set_bonuses game rule can switch sets off per world (clients follow the server's effects)
         boolean setsAllowed = FemboyConfig.common().setBonusesEnabled() && !(player.level() instanceof ServerLevel serverLevel
-                && !serverLevel.getGameRules().get(FemboyGameRules.SET_BONUSES.get()));
+                && !serverLevel.getGameRules().getBoolean(FemboyGameRules.SET_BONUSES));
         Cached cached = CACHE.get(player);
         if (cached != null && cached.inventory() == inventory && cached.registries() == registries && cached.setsAllowed() == setsAllowed) {
             return cached.evaluation();
@@ -80,8 +80,8 @@ public final class WornEvaluator {
     }
 
     private static Evaluation compute(CosmeticInventory inventory, RegistryAccess registries, boolean setsAllowed) {
-        Optional<Registry<CosmeticStats>> statsRegistry = registries.lookup(CosmeticStats.REGISTRY_KEY);
-        DripRules rules = registries.lookup(DripRules.REGISTRY_KEY)
+        Optional<Registry<CosmeticStats>> statsRegistry = registries.registry(CosmeticStats.REGISTRY_KEY);
+        DripRules rules = registries.registry(DripRules.REGISTRY_KEY)
                 .flatMap(registry -> registry.getOptional(DripRules.DEFAULT))
                 .orElse(DripRules.FALLBACK);
 
@@ -97,10 +97,10 @@ public final class WornEvaluator {
 
         Set<ResourceLocation> activeSets = new TreeSet<>();
         List<Map.Entry<ResourceKey<SetBonus>, SetBonus>> completed = new ArrayList<>();
-        registries.lookup(SetBonus.REGISTRY_KEY).filter(sets -> setsAllowed).ifPresent(sets -> {
+        registries.registry(SetBonus.REGISTRY_KEY).filter(sets -> setsAllowed).ifPresent(sets -> {
             for (Map.Entry<ResourceKey<SetBonus>, SetBonus> entry : sets.entrySet()) {
                 if (isComplete(entry.getValue(), inventory.all().values())) {
-                    activeSets.add(entry.getKey().identifier());
+                    activeSets.add(entry.getKey().location());
                     completed.add(entry);
                 }
             }
@@ -110,7 +110,7 @@ public final class WornEvaluator {
         for (Map.Entry<ResourceKey<SetBonus>, SetBonus> entry : completed) {
             SetBonus set = entry.getValue();
             double scale = 1.0 + drip.tier() * set.scalingPerTier();
-            addEffects(effects, set.effects(), sourceId("set", entry.getKey().identifier()), scale);
+            addEffects(effects, set.effects(), sourceId("set", entry.getKey().location()), scale);
         }
         return new Evaluation(drip, Set.copyOf(activeSets), List.copyOf(effects));
     }
@@ -120,13 +120,13 @@ public final class WornEvaluator {
         if (!stack.has(FemboyComponents.BACKPACK.get())) {
             return;
         }
-        Optional<Registry<CharmStats>> charmRegistry = registries.lookup(CharmStats.REGISTRY_KEY);
+        Optional<Registry<CharmStats>> charmRegistry = registries.registry(CharmStats.REGISTRY_KEY);
         if (charmRegistry.isEmpty()) {
             return;
         }
         ItemContainerContents charms = stack.getOrDefault(FemboyComponents.CHARMS.get(), ItemContainerContents.EMPTY);
         int index = 0;
-        for (ItemStack charm : (Iterable<ItemStack>) charms.nonEmptyItemCopyStream()::iterator) {
+        for (ItemStack charm : charms.nonEmptyItemsCopy()) {
             CharmStats stats = charmRegistry.get().getOptional(CharmStats.keyOf(charm.getItem())).orElse(null);
             if (stats != null) {
                 addEffects(out, stats.effects(), sourceId("charm", slot) + "/" + index, 1.0);
@@ -139,7 +139,7 @@ public final class WornEvaluator {
         int matched = 0;
         for (HolderSet<Item> piece : set.pieces()) {
             for (ItemStack stack : worn) {
-                if (piece.contains(stack.typeHolder())) {
+                if (piece.contains(stack.getItemHolder())) {
                     matched++;
                     break;
                 }
@@ -155,7 +155,7 @@ public final class WornEvaluator {
             return Optional.empty();
         }
         Colorway colorway = effective.get();
-        String pattern = colorway.pattern().flatMap(h -> h.unwrapKey()).map(k -> k.identifier().toString()).orElse("solid");
+        String pattern = colorway.pattern().flatMap(h -> h.unwrapKey()).map(k -> k.location().toString()).orElse("solid");
         return Optional.of(pattern + "/" + Colors.toHex(colorway.baseColor()));
     }
 

@@ -10,7 +10,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /** Decorative empty energy can (a collectible; SPEC §5.2). */
 public class EmptyCanBlock extends Block {
 
-    private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 9.0);
+    private static final VoxelShape SHAPE = Block.box(5.0, 0.0, 5.0, 11.0, 9.0, 11.0);
 
     public EmptyCanBlock(Properties properties) {
         super(properties);

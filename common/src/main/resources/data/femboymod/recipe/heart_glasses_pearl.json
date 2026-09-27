@@ -3,8 +3,12 @@
   "category": "equipment",
   "group": "femboymod_pearl",
   "ingredients": [
-    "femboymod:heart_glasses",
-    "femboymod:moonstone"
+    {
+      "item": "femboymod:heart_glasses"
+    },
+    {
+      "item": "femboymod:moonstone"
+    }
   ],
   "result": {
     "id": "femboymod:heart_glasses",

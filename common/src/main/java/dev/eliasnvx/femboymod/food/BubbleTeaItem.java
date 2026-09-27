@@ -8,13 +8,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /** Bubble tea: every cup is a surprise flavor ({@link BubbleTeaFlavor}, data-driven) with its own buff. */
-public class BubbleTeaItem extends Item {
+public class BubbleTeaItem extends DrinkItem {
 
     public BubbleTeaItem(Properties properties) {
         super(properties);
@@ -27,8 +26,8 @@ public class BubbleTeaItem extends Item {
             if (flavor != null) {
                 flavor.value().effects().forEach(buff -> entity.addEffect(buff.instance()));
                 if (entity instanceof ServerPlayer player) {
-                    player.sendOverlayMessage(Component.translatable("message.femboymod.bubble_tea",
-                            Component.translatable(flavor.key().identifier().toLanguageKey("bubble_tea_flavor"))));
+                    player.displayClientMessage(Component.translatable("message.femboymod.bubble_tea",
+                            Component.translatable(flavor.key().location().toLanguageKey("bubble_tea_flavor"))), true);
                 }
             }
         }

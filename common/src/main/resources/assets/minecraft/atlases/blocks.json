@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "type": "directory",
+      "source": "gui/sprites/container/slot/cosmetic",
+      "prefix": "container/slot/cosmetic/"
+    }
+  ]
+}

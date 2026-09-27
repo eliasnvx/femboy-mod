@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:uwu_choker",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:uwu_choker"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:uwu_choker",

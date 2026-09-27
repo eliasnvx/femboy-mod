@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shapeless",
   "category": "equipment",
   "ingredients": [
-    "minecraft:string",
-    "minecraft:string",
-    "minecraft:purple_wool",
-    "minecraft:white_wool"
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "minecraft:purple_wool"
+    },
+    {
+      "item": "minecraft:white_wool"
+    }
   ],
   "result": {
     "id": "femboymod:arm_warmers"

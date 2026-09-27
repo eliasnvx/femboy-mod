@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "G": "minecraft:glass_pane",
-    "Q": "femboymod:rose_quartz",
-    "D": "minecraft:glowstone_dust"
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "Q": {
+      "item": "femboymod:rose_quartz"
+    },
+    "D": {
+      "item": "minecraft:glowstone_dust"
+    }
   },
   "pattern": [
     "GGG",

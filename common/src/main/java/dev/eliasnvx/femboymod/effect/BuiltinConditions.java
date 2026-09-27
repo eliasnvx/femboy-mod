@@ -40,7 +40,7 @@ public final class BuiltinConditions {
         public boolean test(Player player) {
             Level level = player.level();
             BlockPos pos = player.blockPosition();
-            return level.getBiome(pos).value().coldEnoughToSnow(pos, level.getSeaLevel());
+            return level.getBiome(pos).value().coldEnoughToSnow(pos);
         }
     }
 
@@ -56,7 +56,7 @@ public final class BuiltinConditions {
 
         @Override
         public boolean test(Player player) {
-            return player.level().isDarkOutside();
+            return player.level().isNight();
         }
     }
 

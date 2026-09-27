@@ -8,18 +8,16 @@ import dev.eliasnvx.femboymod.block.SetupRating;
 import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -46,7 +44,7 @@ public class Seat extends Entity {
         if (!level.getEntitiesOfClass(Seat.class, new AABB(pos)).isEmpty()) {
             return false;
         }
-        Seat seat = FemboyEntities.SEAT.get().create(level, EntitySpawnReason.TRIGGERED);
+        Seat seat = FemboyEntities.SEAT.get().create(level);
         if (seat == null) {
             return false;
         }
@@ -73,7 +71,7 @@ public class Seat extends Entity {
     private void rateSetup(ServerLevel level, ServerPlayer player, boolean announce) {
         int rating = SetupRating.evaluate(level, blockPosition(), FemboyConfig.common().furniture().setupRadius());
         if (announce || rating != setupRating) {
-            player.sendOverlayMessage(SetupRating.message(rating));
+            player.displayClientMessage(SetupRating.message(rating), true);
             FemboyTriggers.fire(player, FemboyTriggers.SETUP_RATING, rating);
             FemboyMod.api().getProfile(player).update(FemboyProfileFields.BEST_SETUP_RATING, best -> Math.max(best, rating));
             FemboyMod.api().events().post(new SetupRatedEvent(player, blockPosition(), rating, SetupRating.MAX));
@@ -126,15 +124,15 @@ public class Seat extends Entity {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(CompoundTag tag) {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag tag) {
     }
 }

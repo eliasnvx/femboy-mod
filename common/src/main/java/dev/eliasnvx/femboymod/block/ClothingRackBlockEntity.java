@@ -1,32 +1,23 @@
 package dev.eliasnvx.femboymod.block;
 
-import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.ListBackedContainer;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.TagValueOutput;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import org.slf4j.Logger;
 
 /** Clothing Rack: shows up to 3 hanging items (SPEC §5.6); Thrifter's job site. Contents drop when broken. */
-public class ClothingRackBlockEntity extends BlockEntity implements ListBackedContainer, ItemOwner {
+public class ClothingRackBlockEntity extends BlockEntity implements Container {
 
     public static final int SLOTS = 3;
-    private static final Logger LOGGER = LogUtils.getLogger();
     private final NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
 
     public ClothingRackBlockEntity(BlockPos pos, BlockState state) {
@@ -59,16 +50,16 @@ public class ClothingRackBlockEntity extends BlockEntity implements ListBackedCo
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         items.clear();
-        ContainerHelper.loadAllItems(input, items);
+        ContainerHelper.loadAllItems(tag, items, registries);
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
-        ContainerHelper.saveAllItems(output, items, true);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        ContainerHelper.saveAllItems(tag, items, true, registries);
     }
 
     @Override
@@ -78,11 +69,7 @@ public class ClothingRackBlockEntity extends BlockEntity implements ListBackedCo
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(problemPath(), LOGGER)) {
-            TagValueOutput output = TagValueOutput.createWithContext(reporter, registries);
-            ContainerHelper.saveAllItems(output, items, true);
-            return output.buildResult();
-        }
+        return ContainerHelper.saveAllItems(new CompoundTag(), items, true, registries);
     }
 
     @Override
@@ -93,9 +80,52 @@ public class ClothingRackBlockEntity extends BlockEntity implements ListBackedCo
         }
     }
 
-    @Override
     public NonNullList<ItemStack> getItems() {
         return items;
+    }
+
+    // Container over the item list (26.3: ListBackedContainer)
+
+    @Override
+    public int getContainerSize() {
+        return items.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return items.stream().allMatch(ItemStack::isEmpty);
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return items.get(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        ItemStack removed = ContainerHelper.removeItem(items, slot, amount);
+        if (!removed.isEmpty()) {
+            setChanged();
+        }
+        return removed;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        return ContainerHelper.takeItem(items, slot);
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        items.set(slot, stack);
+        stack.limitSize(getMaxStackSize(stack));
+        setChanged();
+    }
+
+    @Override
+    public void clearContent() {
+        items.clear();
+        setChanged();
     }
 
     @Override
@@ -108,17 +138,16 @@ public class ClothingRackBlockEntity extends BlockEntity implements ListBackedCo
         return Container.stillValidBlockEntity(this, player);
     }
 
-    @Override
+    // Placement info for the item renderer (26.3: ItemOwner)
+
     public Level level() {
         return level;
     }
 
-    @Override
     public Vec3 position() {
         return Vec3.atCenterOf(worldPosition);
     }
 
-    @Override
     public float getVisualRotationYInDegrees() {
         return getBlockState().getValue(ClothingRackBlock.FACING).getOpposite().toYRot();
     }

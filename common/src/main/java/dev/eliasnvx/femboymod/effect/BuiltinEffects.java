@@ -14,7 +14,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.core.registries.codec.RegistryCodecs;
+import net.minecraft.core.RegistryCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -58,7 +58,7 @@ public final class BuiltinEffects {
     public record DamageBonusEffect(HolderSet<EntityType<?>> targets, float multiplier) implements CosmeticEffect {
 
         public static final MapCodec<DamageBonusEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-                RegistryCodecs.holderSet(Registries.ENTITY_TYPE).fieldOf("targets").forGetter(DamageBonusEffect::targets),
+                RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("targets").forGetter(DamageBonusEffect::targets),
                 Codec.floatRange(0.0F, 10.0F).fieldOf("multiplier").forGetter(DamageBonusEffect::multiplier)
         ).apply(i, DamageBonusEffect::new));
 
@@ -220,7 +220,7 @@ public final class BuiltinEffects {
                 Codec.doubleRange(0.1, 3).optionalFieldOf("speed", 1.0).forGetter(FollowPassiveEffect::speed),
                 Codec.intRange(1, 200).optionalFieldOf("interval", 10).forGetter(FollowPassiveEffect::interval),
                 Codec.doubleRange(1, 16).optionalFieldOf("stop_distance", 2.5).forGetter(FollowPassiveEffect::stopDistance),
-                RegistryCodecs.holderSet(Registries.ENTITY_TYPE).optionalFieldOf("followers", NO_TAG).forGetter(FollowPassiveEffect::followers),
+                RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).optionalFieldOf("followers", NO_TAG).forGetter(FollowPassiveEffect::followers),
                 Codec.intRange(0, 16).optionalFieldOf("max_followers", 3).forGetter(FollowPassiveEffect::maxFollowers)
         ).apply(i, FollowPassiveEffect::new));
 

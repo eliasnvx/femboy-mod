@@ -3,9 +3,15 @@
   "category": "equipment",
   "group": "femboymod_glitter",
   "ingredients": [
-    "femboymod:arm_warmers",
-    "femboymod:glitter",
-    "femboymod:glitter"
+    {
+      "item": "femboymod:arm_warmers"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
   ],
   "result": {
     "id": "femboymod:arm_warmers",

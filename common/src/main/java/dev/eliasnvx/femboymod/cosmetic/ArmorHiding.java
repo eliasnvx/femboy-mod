@@ -6,7 +6,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -87,6 +87,6 @@ public final class ArmorHiding {
 
     /** Elytra and other gliders stay visible even with the chest piece hidden. */
     public static ItemStack visible(ItemStack worn, boolean hidden) {
-        return hidden && !worn.has(DataComponents.GLIDER) ? ItemStack.EMPTY : worn;
+        return hidden && !(worn.getItem() instanceof ElytraItem) ? ItemStack.EMPTY : worn;
     }
 }

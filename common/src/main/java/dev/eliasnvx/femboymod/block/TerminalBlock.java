@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.block;
 
+import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.profile.ProfileHooks;
@@ -35,17 +36,24 @@ import org.jetbrains.annotations.Nullable;
  */
 public class TerminalBlock extends HorizontalDirectionalBlock {
 
+    public static final MapCodec<TerminalBlock> CODEC = simpleCodec(TerminalBlock::new);
+
     /** Number of {@code message.femboymod.terminal.<n>} lines. */
     public static final int LINES = 6;
     private static final Component TITLE = Component.translatable("container.femboymod.terminal");
     private static final VoxelShape NORTH_SHAPE = Shapes.or(
             Block.box(2.0, 0.0, 3.0, 14.0, 11.0, 13.0),
             Block.box(1.0, 0.0, 0.5, 15.0, 1.5, 3.0));
-    private final Map<Direction, VoxelShape> shapes = Shapes.rotateHorizontal(NORTH_SHAPE);
+    private final Map<Direction, VoxelShape> shapes = BlockShapes.rotateHorizontal(NORTH_SHAPE);
 
     public TerminalBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<TerminalBlock> codec() {
+        return CODEC;
     }
 
     @Override

@@ -6,12 +6,16 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import com.mojang.logging.LogUtils;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import org.slf4j.Logger;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
 import java.util.UUID;
 
 /** Best Vibe Check per player, highest first (world save data, so offline players stay on the board). */
@@ -29,10 +33,14 @@ public final class VibeLeaderboard extends SavedData {
     public static final Codec<VibeLeaderboard> CODEC = Entry.CODEC.listOf()
             .xmap(VibeLeaderboard::new, board -> List.copyOf(board.entries));
 
+    /** File name under {@code data/} (1.21.1 saved data is named by a plain file name, not an id). */
+    public static final String FILE_NAME = FemboyMod.MOD_ID + "_vibe_leaderboard";
+    private static final String ENTRIES_KEY = "entries";
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     /** Vanilla requires a data fixer type; this simple list needs no fixes, command storage's fixer leaves it alone. */
-    public static final SavedDataType<VibeLeaderboard> TYPE = new SavedDataType<>(
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "vibe_leaderboard"), VibeLeaderboard::new, CODEC,
-            DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
+    public static final Factory<VibeLeaderboard> FACTORY = new Factory<>(
+            VibeLeaderboard::new, VibeLeaderboard::load, DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     private final List<Entry> entries = new ArrayList<>();
 
@@ -44,7 +52,25 @@ public final class VibeLeaderboard extends SavedData {
     }
 
     public static VibeLeaderboard get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
+        return server.overworld().getDataStorage().computeIfAbsent(FACTORY, FILE_NAME);
+    }
+
+    private static VibeLeaderboard load(CompoundTag tag, HolderLookup.Provider registries) {
+        Tag entries = tag.get(ENTRIES_KEY);
+        if (entries == null) {
+            return new VibeLeaderboard();
+        }
+        return CODEC.parse(NbtOps.INSTANCE, entries)
+                .resultOrPartial(error -> LOGGER.error("Invalid Vibe Check leaderboard: {}", error))
+                .orElseGet(VibeLeaderboard::new);
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        CODEC.encodeStart(NbtOps.INSTANCE, this)
+                .resultOrPartial(error -> LOGGER.error("Could not save the Vibe Check leaderboard: {}", error))
+                .ifPresent(entries -> tag.put(ENTRIES_KEY, entries));
+        return tag;
     }
 
     /** Records a scan; keeps the player's best and the top {@code size}. Returns the player's rank (1-based) or 0. */
