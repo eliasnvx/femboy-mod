@@ -8,7 +8,7 @@ import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public record ColorwayTintSource(int defaultColor, int stripe) implements ItemTintSource {
 
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "colorway");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "colorway");
 
     public static final MapCodec<ColorwayTintSource> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             ExtraCodecs.RGB_COLOR_CODEC.fieldOf("default").forGetter(ColorwayTintSource::defaultColor),

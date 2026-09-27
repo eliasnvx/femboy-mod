@@ -26,7 +26,7 @@ import java.util.List;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.gamerules.GameRule;
 
@@ -40,9 +40,9 @@ public final class ProfileGameTests {
             new CosmeticGameTests.Entry("game_rules_gate_features", ProfileGameTests::gameRulesGateFeatures),
             new CosmeticGameTests.Entry("armor_hides_under_outfit", ProfileGameTests::armorHidesUnderOutfit));
 
-    private static final Identifier TEST_REASON = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "gametest");
-    private static final Identifier BLOCKED_REASON = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "gametest_blocked");
-    private static final List<Identifier> UNLOCKS = new ArrayList<>();
+    private static final ResourceLocation TEST_REASON = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "gametest");
+    private static final ResourceLocation BLOCKED_REASON = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "gametest_blocked");
+    private static final List<ResourceLocation> UNLOCKS = new ArrayList<>();
     private static boolean listenersAdded;
 
     private ProfileGameTests() {
@@ -104,7 +104,7 @@ public final class ProfileGameTests {
         addListeners();
         WearableGameTests.withPlayer(helper, player -> {
             PlayerProfile profile = FemboyMod.api().getProfile(player);
-            Identifier ears = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "bear_ears");
+            ResourceLocation ears = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "bear_ears");
             int unlocksBefore = countUnlocks(ears);
             CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.BEAR_EARS.get()));
             int points = profile.get(FemboyProfileFields.STYLE_POINTS);
@@ -152,7 +152,7 @@ public final class ProfileGameTests {
         });
     }
 
-    private static int countUnlocks(Identifier item) {
+    private static int countUnlocks(ResourceLocation item) {
         synchronized (UNLOCKS) {
             return (int) UNLOCKS.stream().filter(item::equals).count();
         }

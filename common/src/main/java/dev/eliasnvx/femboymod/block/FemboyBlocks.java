@@ -10,7 +10,7 @@ import dev.eliasnvx.femboymod.registry.FemboyItems;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -129,8 +129,8 @@ public final class FemboyBlocks {
     private FemboyBlocks() {
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
     }
 
     private static RegistrySupplier<Block> block(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties props) {

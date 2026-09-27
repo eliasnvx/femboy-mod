@@ -15,7 +15,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -250,7 +250,7 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
         });
     }
 
-    private static void wear(ServerPlayer player, Identifier slot, ItemStack stack) {
+    private static void wear(ServerPlayer player, ResourceLocation slot, ItemStack stack) {
         CosmeticsManager.set(player, slot, stack);
     }
 
@@ -263,7 +263,7 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
     private static ItemStack patterned(MinecraftServer server, Item item, String pattern, int base) {
         ItemStack stack = new ItemStack(item);
         server.registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY)
-                .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, pattern)))
+                .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, pattern)))
                 .ifPresent(holder -> stack.set(FemboyComponents.COLORWAY.get(), new Colorway(base, Optional.of(holder), Optional.empty())));
         return stack;
     }

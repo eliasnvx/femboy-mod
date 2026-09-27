@@ -2,7 +2,7 @@ package dev.eliasnvx.femboymod.api.profile;
 
 import com.mojang.serialization.Codec;
 import java.util.Objects;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
  * addon was removed) are kept untouched, so re-adding the addon restores them.
  *
  * <p>Example: a clan addon could register
- * {@code ProfileField.of(Identifier.fromNamespaceAndPath("myclans", "clan"), Codec.STRING, "", true)}.
+ * {@code ProfileField.of(ResourceLocation.fromNamespaceAndPath("myclans", "clan"), Codec.STRING, "", true)}.
  *
  * @param id           unique id, also the storage key
  * @param codec        how the value is saved
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @param <T>          value type; must be immutable
  */
 @ApiStatus.AvailableSince("0.1.0")
-public record ProfileField<T>(Identifier id, Codec<T> codec, T defaultValue, boolean syncToOwner) {
+public record ProfileField<T>(ResourceLocation id, Codec<T> codec, T defaultValue, boolean syncToOwner) {
 
     /** Checks for nulls. */
     public ProfileField {
@@ -43,7 +43,7 @@ public record ProfileField<T>(Identifier id, Codec<T> codec, T defaultValue, boo
      * @param <T>          value type
      * @return the field (not registered yet)
      */
-    public static <T> ProfileField<T> of(Identifier id, Codec<T> codec, T defaultValue, boolean syncToOwner) {
+    public static <T> ProfileField<T> of(ResourceLocation id, Codec<T> codec, T defaultValue, boolean syncToOwner) {
         return new ProfileField<>(id, codec, defaultValue, syncToOwner);
     }
 }

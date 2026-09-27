@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.eliasnvx.femboymod.api.FemboyApi;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 
 import java.util.List;
@@ -26,11 +26,11 @@ public record DripRules(int harmonyBonus, int setBonus, int maxLevel, List<Integ
 
     /** Registry key of the {@code femboymod:drip_rules} data pack registry. */
     public static final ResourceKey<Registry<DripRules>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "drip_rules"));
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "drip_rules"));
 
     /** The entry that is used: {@code femboymod:default}. Data packs override it to rebalance. */
     public static final ResourceKey<DripRules> DEFAULT =
-            ResourceKey.create(REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "default"));
+            ResourceKey.create(REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "default"));
 
     /** Rules used when the data pack entry is missing: no bonuses, one tier. */
     public static final DripRules FALLBACK = new DripRules(0, 0, 100, List.of());

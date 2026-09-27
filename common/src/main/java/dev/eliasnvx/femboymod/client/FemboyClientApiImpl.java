@@ -10,15 +10,15 @@ import dev.eliasnvx.femboymod.client.render.CosmeticRenderData;
 import dev.eliasnvx.femboymod.client.render.CosmeticRenderStateAccess;
 import dev.eliasnvx.femboymod.registry.SimpleApiRegistry;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 final class FemboyClientApiImpl implements FemboyClientApi {
 
     private final SimpleApiRegistry<CosmeticRenderer.Factory> renderers =
-            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetic_renderer"));
+            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetic_renderer"));
 
     private final SimpleApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers =
-            new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "chat_transformer"));
+            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "chat_transformer"));
 
     @Override
     public ApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers() {

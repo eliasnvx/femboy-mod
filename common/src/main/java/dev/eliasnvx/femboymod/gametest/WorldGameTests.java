@@ -13,7 +13,7 @@ import dev.eliasnvx.femboymod.wardrobe.Outfits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.attribute.EnvironmentAttributes;
@@ -141,7 +141,7 @@ public final class WorldGameTests {
         var advancements = helper.getLevel().getServer().getAdvancements();
         for (String name : List.of("root", "programming_socks", "drip_max", "caffeine_overflow", "thrifted", "confetti_survivor", "full_femboy_mode",
                 "battlestation", "just_need_a_break", "cant_decide", "ready_to_deploy", "rubber_duck_debugging", "btw", "immaculate_vibes")) {
-            helper.assertTrue(advancements.get(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "main/" + name)) != null, "advancement " + name);
+            helper.assertTrue(advancements.get(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "main/" + name)) != null, "advancement " + name);
         }
         helper.succeed();
     }

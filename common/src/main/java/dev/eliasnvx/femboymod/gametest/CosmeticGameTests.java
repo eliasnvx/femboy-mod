@@ -19,7 +19,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -55,7 +55,7 @@ public final class CosmeticGameTests {
             new Entry("colorway_patterns_loaded", CosmeticGameTests::colorwayPatternsLoaded),
             new Entry("creative_tab_contains_items", CosmeticGameTests::creativeTabContainsItems));
 
-    private static final Identifier HEAD = FemboySlots.HEAD_ACCESSORY;
+    private static final ResourceLocation HEAD = FemboySlots.HEAD_ACCESSORY;
     private static final Vec3 TEST_AREA_CENTER = new Vec3(1.5, 1.0, 1.5);
 
     private CosmeticGameTests() {
@@ -175,7 +175,7 @@ public final class CosmeticGameTests {
     public static void colorwayPatternsLoaded(GameTestHelper helper) {
         Registry<ColorwayPattern> registry = helper.getLevel().registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY);
         Holder<ColorwayPattern> trans = registry.getOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
-                Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_trans")));
+                ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_trans")));
         helper.assertValueEqual(trans.value().stripes().size(), 5, "trans flag stripes");
         helper.assertTrue(registry.size() >= 12, "All built-in patterns should load, got " + registry.size());
         helper.succeed();
@@ -205,7 +205,7 @@ public final class CosmeticGameTests {
         ItemStack ears = new ItemStack(FemboyItems.CAT_EARS.get());
         ears.set(FemboyComponents.COLORWAY.get(), new Colorway(0xFFB6D9,
                 Optional.of(patterns.getOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
-                        Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_bi")))),
+                        ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_bi")))),
                 Optional.of(0x123456)));
         return CosmeticInventory.EMPTY.with(HEAD, ears)
                 .withArmor(net.minecraft.world.entity.EquipmentSlot.HEAD, dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility.SHOW)

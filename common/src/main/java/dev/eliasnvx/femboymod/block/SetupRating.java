@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.decoration.painting.Painting;
@@ -31,7 +31,7 @@ public final class SetupRating {
             kind("screen"), kind("input"), kind("lighting"), kind("comfort"), kind("debugging"));
     public static final String POSTER_KIND = "poster";
     public static final TagKey<PaintingVariant> POSTERS =
-            TagKey.create(Registries.PAINTING_VARIANT, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "posters"));
+            TagKey.create(Registries.PAINTING_VARIANT, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "posters"));
     /** Block kinds plus posters. */
     public static final int MAX = BLOCK_KINDS.size() + 1;
 
@@ -42,7 +42,7 @@ public final class SetupRating {
     }
 
     private static Kind kind(String name) {
-        return new Kind(name, TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "setup/" + name)));
+        return new Kind(name, TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "setup/" + name)));
     }
 
     /** Number of distinct setup kinds within {@code radius} blocks of {@code center} (0..{@link #MAX}). */

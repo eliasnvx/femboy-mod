@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 /** Fills the player profile from game events and hands out Style Points (config {@code style_points}). */
@@ -43,8 +43,8 @@ public final class ProfileHooks {
     private ProfileHooks() {
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
     }
 
     public static void registerFields(ApiRegistry<ProfileField<?>> registry) {
@@ -70,12 +70,12 @@ public final class ProfileHooks {
         });
     }
 
-    private static void onEquip(ServerPlayer player, Identifier item) {
+    private static void onEquip(ServerPlayer player, ResourceLocation item) {
         PlayerProfile profile = FemboyMod.api().getProfile(player);
         profile.update(FemboyProfileFields.EQUIPS, count -> count + 1);
-        Set<Identifier> collection = profile.get(FemboyProfileFields.COLLECTION);
+        Set<ResourceLocation> collection = profile.get(FemboyProfileFields.COLLECTION);
         if (!collection.contains(item)) {
-            Set<Identifier> updated = new HashSet<>(collection);
+            Set<ResourceLocation> updated = new HashSet<>(collection);
             updated.add(item);
             profile.set(FemboyProfileFields.COLLECTION, Set.copyOf(updated));
             FemboyMod.api().events().post(new CollectionUnlockEvent(player, item, updated.size()));

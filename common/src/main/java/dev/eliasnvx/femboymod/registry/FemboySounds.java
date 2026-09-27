@@ -4,7 +4,7 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 
 /**
@@ -26,7 +26,7 @@ public final class FemboySounds {
     }
 
     private static RegistrySupplier<SoundEvent> event(String name) {
-        Identifier id = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, name);
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name);
         return REGISTER.register(id, () -> SoundEvent.createVariableRangeEvent(id));
     }
 }

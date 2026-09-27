@@ -13,7 +13,7 @@ import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
 import dev.eliasnvx.femboymod.registry.FemboyTags;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -39,10 +39,10 @@ public final class WearableGameTests {
             new CosmeticGameTests.Entry("fox_ears_crafted_and_count_as_ears", WearableGameTests::foxEarsCraftedAndCountAsEars));
 
     private static final Vec3 TEST_AREA_CENTER = new Vec3(1.5, 1.0, 1.5);
-    private static final Identifier FULL_SET = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "full_femboy_mode");
+    private static final ResourceLocation FULL_SET = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "full_femboy_mode");
 
     /** Events seen by the recording listener; the listener is registered once (the bus has no removal). */
-    private static final List<Identifier> ACTIVATED_SETS = new ArrayList<>();
+    private static final List<ResourceLocation> ACTIVATED_SETS = new ArrayList<>();
     private static boolean listening;
 
     private WearableGameTests() {

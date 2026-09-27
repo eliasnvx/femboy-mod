@@ -7,7 +7,7 @@ import dev.eliasnvx.femboymod.api.FemboyApi;
 import dev.eliasnvx.femboymod.api.effect.CosmeticCondition;
 import dev.eliasnvx.femboymod.api.effect.CosmeticEffect;
 import dev.eliasnvx.femboymod.api.effect.EffectSource;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -17,8 +17,8 @@ import net.minecraft.world.entity.player.Player;
  */
 public final class ExampleEffects {
 
-    public static final Identifier XP_TRICKLE = Identifier.fromNamespaceAndPath(ExampleAddon.MOD_ID, "xp_trickle");
-    public static final Identifier DAYTIME = Identifier.fromNamespaceAndPath(ExampleAddon.MOD_ID, "daytime");
+    public static final ResourceLocation XP_TRICKLE = ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "xp_trickle");
+    public static final ResourceLocation DAYTIME = ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "daytime");
 
     private ExampleEffects() {
     }

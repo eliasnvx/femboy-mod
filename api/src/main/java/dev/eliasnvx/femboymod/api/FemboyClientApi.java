@@ -3,7 +3,7 @@ package dev.eliasnvx.femboymod.api;
 import dev.eliasnvx.femboymod.api.client.CosmeticMotion;
 import dev.eliasnvx.femboymod.api.client.CosmeticRenderer;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * Client-only part of the Femboy Mod API (renderers, chat transformers, client events).
@@ -46,11 +46,10 @@ public interface FemboyClientApi {
     ApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers();
 
     /**
-     * Returns motion values of the player behind a render state, for procedural animation in
-     * {@code setupAnim}.
+     * Returns motion values of an entity, for procedural animation in {@code setupAnim}.
      *
-     * @param state the player's render state
+     * @param entity the wearer
      * @return the motion values; neutral values if the player wears nothing
      */
-    CosmeticMotion motion(AvatarRenderState state);
+    CosmeticMotion motion(LivingEntity entity);
 }

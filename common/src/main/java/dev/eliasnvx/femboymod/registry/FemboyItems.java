@@ -30,7 +30,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.DamageResistant;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -93,7 +93,7 @@ public final class FemboyItems {
     // SPEC §5.2: Byte Energy (balance in data/femboymod/femboymod/energy_drink/*.json)
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(FemboyMod.MOD_ID, Registries.BLOCK);
     public static final RegistrySupplier<Block> EMPTY_ENERGY_CAN_BLOCK = BLOCKS.register("empty_energy_can", () -> new EmptyCanBlock(
-            BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "empty_energy_can")))
+            BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "empty_energy_can")))
                     .noOcclusion().strength(0.3F).sound(SoundType.METAL).pushReaction(PushReaction.POPPED)));
     public static final RegistrySupplier<Item> EMPTY_ENERGY_CAN = register("empty_energy_can",
             props -> new BlockItem(EMPTY_ENERGY_CAN_BLOCK.get(), props.useBlockDescriptionPrefix()));
@@ -143,7 +143,7 @@ public final class FemboyItems {
             "heart", "star", "bow", "flower", "moon", "cherry", "bunny", "fish", "lightning", "butterfly");
     public static final List<RegistrySupplier<Item>> HAIR_CLIPS = HAIR_CLIP_SHAPES.stream()
             .map(shape -> cosmetic("hair_clip_" + shape, new Cosmetic(FemboySlots.HEAD_ACCESSORY,
-                    Optional.of(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "hair_clip")))))
+                    Optional.of(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "hair_clip")))))
             .toList();
 
     public static final RegistrySupplier<CreativeModeTab> TAB = TABS.register("main", () -> CreativeTabRegistry.create(builder -> builder
@@ -190,7 +190,7 @@ public final class FemboyItems {
         });
     }
 
-    private static RegistrySupplier<Item> cosmetic(String name, Identifier slot) {
+    private static RegistrySupplier<Item> cosmetic(String name, ResourceLocation slot) {
         return cosmetic(name, new Cosmetic(slot));
     }
 
@@ -199,7 +199,7 @@ public final class FemboyItems {
     }
 
     private static RegistrySupplier<Item> register(String name, Function<Item.Properties, Item> factory) {
-        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
+        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
         RegistrySupplier<Item> item = REGISTER.register(name, () -> factory.apply(new Item.Properties().setId(key)));
         TAB_ORDER.add(item);
         return item;

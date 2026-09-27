@@ -1,7 +1,7 @@
 package dev.eliasnvx.femboymod.menu;
 
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +17,7 @@ public final class CosmeticSlot extends Slot {
         this.player = player;
     }
 
-    public Identifier slotId() {
+    public ResourceLocation slotId() {
         return cosmetics.slotId(getContainerSlot());
     }
 
@@ -32,7 +32,7 @@ public final class CosmeticSlot extends Slot {
     }
 
     @Override
-    public Identifier getNoItemIcon() {
+    public ResourceLocation getNoItemIcon() {
         return CosmeticsManager.slotType(slotId()).emptySlotIcon().orElse(null);
     }
 }

@@ -9,13 +9,13 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 /** S2C: synced profile fields of the receiving player (all of them on join, single changes afterwards). */
 public record ProfileSyncPayload(CompoundTag values) implements CustomPacketPayload {
 
-    public static final Type<ProfileSyncPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "profile_sync"));
+    public static final Type<ProfileSyncPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "profile_sync"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ProfileSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.COMPOUND_TAG, ProfileSyncPayload::values, ProfileSyncPayload::new);

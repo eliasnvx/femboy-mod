@@ -13,7 +13,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 
 import java.util.Map;
@@ -31,7 +31,7 @@ final class BackpackCharmsRenderer {
     private final ModelPart[][] flags = new ModelPart[CosmeticModels.CHARM_SLOTS][CosmeticModels.FLAG_STRIPES];
     private static final int BADGE_DEFAULT = 0xF291BE;
     private final RenderType type = RenderTypes.entityCutout(
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png"));
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png"));
 
     BackpackCharmsRenderer(ModelPart root) {
         for (int i = 0; i < CosmeticModels.CHARM_SLOTS; i++) {

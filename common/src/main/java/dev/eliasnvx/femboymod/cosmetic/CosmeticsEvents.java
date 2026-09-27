@@ -11,7 +11,7 @@ import dev.architectury.event.events.common.TickEvent;
 import dev.eliasnvx.femboymod.effect.CosmeticEffectsManager;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.network.CosmeticsSyncPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -97,7 +97,7 @@ public final class CosmeticsEvents {
         if (!force && held.has(FemboyComponents.BACKPACK.get())) {
             return EventResult.pass(); // backpacks open on right-click; BackpackItem handles sneak-equip
         }
-        Identifier slot = CosmeticsManager.slotOf(held);
+        ResourceLocation slot = CosmeticsManager.slotOf(held);
         if (slot == null || !CosmeticsManager.canEquip(player, slot, held)) {
             return EventResult.pass();
         }

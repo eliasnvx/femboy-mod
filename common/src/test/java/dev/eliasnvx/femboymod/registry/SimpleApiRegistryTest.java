@@ -2,7 +2,7 @@ package dev.eliasnvx.femboymod.registry;
 
 import com.mojang.serialization.JsonOps;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimpleApiRegistryTest {
 
-    private static final Identifier A = Identifier.fromNamespaceAndPath("test", "a");
+    private static final ResourceLocation A = ResourceLocation.fromNamespaceAndPath("test", "a");
 
-    private final SimpleApiRegistry<String> registry = new SimpleApiRegistry<>(Identifier.fromNamespaceAndPath("test", "reg"));
+    private final SimpleApiRegistry<String> registry = new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath("test", "reg"));
 
     @Test
     void registerAndLookup() {
@@ -28,7 +28,7 @@ class SimpleApiRegistryTest {
         assertThrows(IllegalArgumentException.class, () -> registry.register(A, "other"));
         registry.freeze();
         assertThrows(IllegalStateException.class,
-                () -> registry.register(Identifier.fromNamespaceAndPath("test", "b"), "late"));
+                () -> registry.register(ResourceLocation.fromNamespaceAndPath("test", "b"), "late"));
     }
 
     @Test

@@ -7,7 +7,7 @@ import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 public record CycleArmorVisibilityPayload(EquipmentSlot armorSlot) implements CustomPacketPayload {
 
     public static final Type<CycleArmorVisibilityPayload> TYPE =
-            new Type<>(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "cycle_armor_visibility"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cycle_armor_visibility"));
 
     public static final StreamCodec<ByteBuf, CycleArmorVisibilityPayload> STREAM_CODEC =
             EquipmentSlot.STREAM_CODEC.map(CycleArmorVisibilityPayload::new, CycleArmorVisibilityPayload::armorSlot);

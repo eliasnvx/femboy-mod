@@ -9,7 +9,7 @@ import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -45,9 +45,9 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
     public static final int INVENTORY_PART = 83;
 
     /** Slots shown in the left column (top to bottom); everything else goes right, then to the extra row. */
-    private static final List<Identifier> LEFT = List.of(FemboySlots.HEAD_ACCESSORY, FemboySlots.FACE, FemboySlots.NECK,
+    private static final List<ResourceLocation> LEFT = List.of(FemboySlots.HEAD_ACCESSORY, FemboySlots.FACE, FemboySlots.NECK,
             FemboySlots.OUTFIT_TOP, FemboySlots.HANDS);
-    private static final List<Identifier> RIGHT = List.of(FemboySlots.BACK, FemboySlots.TAIL, FemboySlots.OUTFIT_BOTTOM,
+    private static final List<ResourceLocation> RIGHT = List.of(FemboySlots.BACK, FemboySlots.TAIL, FemboySlots.OUTFIT_BOTTOM,
             FemboySlots.WAIST, FemboySlots.LEGS_OVERLAY);
 
     public static final int APPLY_BUTTON = 0;
@@ -71,7 +71,7 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
         List<Integer> right = new ArrayList<>();
         List<Integer> extra = new ArrayList<>();
         for (int i = 0; i < cosmeticSlotCount; i++) {
-            Identifier id = cosmetics.slotId(i);
+            ResourceLocation id = cosmetics.slotId(i);
             (LEFT.contains(id) ? left : RIGHT.contains(id) ? right : extra).add(i);
         }
         left.sort(Comparator.comparingInt(i -> LEFT.indexOf(cosmetics.slotId(i))));
@@ -129,7 +129,7 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
             }
         } else {
             // player inventory -> the matching empty cosmetic slot
-            Identifier target = CosmeticsManager.slotOf(stack);
+            ResourceLocation target = CosmeticsManager.slotOf(stack);
             int targetIndex = target == null ? -1 : CosmeticsManager.orderedSlots().indexOf(target);
             if (targetIndex < 0 || !moveItemStackTo(stack, targetIndex, targetIndex + 1, false)) {
                 return ItemStack.EMPTY;

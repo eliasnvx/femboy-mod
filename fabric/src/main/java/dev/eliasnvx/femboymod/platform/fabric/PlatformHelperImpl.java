@@ -19,7 +19,7 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -28,22 +28,22 @@ import java.util.List;
 public final class PlatformHelperImpl {
 
     private static final AttachmentType<CosmeticInventory> COSMETICS = AttachmentRegistry.create(
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetics"),
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetics"),
             builder -> builder
                     .initializer(() -> CosmeticInventory.EMPTY)
                     .persistent(CosmeticInventory.CODEC)
                     .copyOnDeath());
 
     private static final AttachmentType<CaffeineLog> CAFFEINE = AttachmentRegistry.create(
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "caffeine"),
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "caffeine"),
             builder -> builder.initializer(() -> CaffeineLog.EMPTY).persistent(CaffeineLog.CODEC));
 
     private static final AttachmentType<WardrobePresets> PRESETS = AttachmentRegistry.create(
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "wardrobe_presets"),
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "wardrobe_presets"),
             builder -> builder.initializer(() -> WardrobePresets.EMPTY).persistent(WardrobePresets.CODEC).copyOnDeath());
 
     private static final AttachmentType<ProfileData> PROFILE = AttachmentRegistry.create(
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "profile"),
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "profile"),
             builder -> builder.initializer(() -> ProfileData.EMPTY).persistent(ProfileData.CODEC).copyOnDeath());
 
     private PlatformHelperImpl() {

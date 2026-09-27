@@ -2,7 +2,7 @@ package dev.eliasnvx.femboymod.api.cosmetic;
 
 import net.minecraft.world.entity.EquipmentSlot;
 import java.util.Set;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -22,7 +22,7 @@ import java.util.Optional;
  * @param coversArmor   armor slots ({@code HEAD}, {@code CHEST}, {@code LEGS}, {@code FEET}) hidden by default while
  *                      this slot is worn
  */
-public record CosmeticSlotType(int sortOrder, Optional<Identifier> emptySlotIcon, Set<EquipmentSlot> coversArmor) {
+public record CosmeticSlotType(int sortOrder, Optional<ResourceLocation> emptySlotIcon, Set<EquipmentSlot> coversArmor) {
 
     /** Copies the armor set. */
     public CosmeticSlotType {
@@ -35,7 +35,7 @@ public record CosmeticSlotType(int sortOrder, Optional<Identifier> emptySlotIcon
      * @param sortOrder     position in the slots screen
      * @param emptySlotIcon GUI sprite shown while the slot is empty, if any
      */
-    public CosmeticSlotType(int sortOrder, Optional<Identifier> emptySlotIcon) {
+    public CosmeticSlotType(int sortOrder, Optional<ResourceLocation> emptySlotIcon) {
         this(sortOrder, emptySlotIcon, Set.of());
     }
 
@@ -54,7 +54,7 @@ public record CosmeticSlotType(int sortOrder, Optional<Identifier> emptySlotIcon
      * @param slotId the slot id
      * @return {@code cosmetic_slot.<namespace>.<path>}
      */
-    public static String translationKey(Identifier slotId) {
+    public static String translationKey(ResourceLocation slotId) {
         return slotId.toLanguageKey("cosmetic_slot");
     }
 }

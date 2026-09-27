@@ -7,12 +7,12 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public final class BugRenderer extends MobRenderer<Bug, LivingEntityRenderState, BugModel> {
 
-    public static final ModelLayerLocation LAYER = new ModelLayerLocation(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "bug"), "main");
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/bug.png");
+    public static final ModelLayerLocation LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "bug"), "main");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/bug.png");
     private static final float SHADOW = 0.3F;
 
     public BugRenderer(EntityRendererProvider.Context context) {
@@ -29,7 +29,7 @@ public final class BugRenderer extends MobRenderer<Bug, LivingEntityRenderState,
     }
 
     @Override
-    public Identifier getTextureLocation(LivingEntityRenderState state) {
+    public ResourceLocation getTextureLocation(LivingEntityRenderState state) {
         return TEXTURE;
     }
 }

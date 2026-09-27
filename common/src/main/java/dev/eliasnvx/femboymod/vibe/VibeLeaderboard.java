@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -31,7 +31,7 @@ public final class VibeLeaderboard extends SavedData {
 
     /** Vanilla requires a data fixer type; this simple list needs no fixes, command storage's fixer leaves it alone. */
     public static final SavedDataType<VibeLeaderboard> TYPE = new SavedDataType<>(
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "vibe_leaderboard"), VibeLeaderboard::new, CODEC,
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "vibe_leaderboard"), VibeLeaderboard::new, CODEC,
             DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     private final List<Entry> entries = new ArrayList<>();

@@ -2,7 +2,7 @@ package dev.eliasnvx.femboymod.entity;
 
 import dev.eliasnvx.femboymod.FemboyMod;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -26,7 +26,7 @@ public class Cosplayer extends WanderingTrader {
     }
 
     private static ResourceKey<TradeSet> tradeSet(String path) {
-        return ResourceKey.create(Registries.TRADE_SET, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, path));
+        return ResourceKey.create(Registries.TRADE_SET, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path));
     }
 
     @Override

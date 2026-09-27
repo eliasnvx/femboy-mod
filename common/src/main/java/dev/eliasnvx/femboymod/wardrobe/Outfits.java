@@ -2,7 +2,7 @@ package dev.eliasnvx.femboymod.wardrobe;
 
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.platform.PlatformHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +22,7 @@ public final class Outfits {
 
     /** Remembers what the player wears now as preset {@code index}. */
     public static void save(ServerPlayer player, int index) {
-        Map<Identifier, ItemStack> outfit = new HashMap<>();
+        Map<ResourceLocation, ItemStack> outfit = new HashMap<>();
         CosmeticsManager.get(player).all().forEach((slot, stack) -> outfit.put(slot, stack.copyWithCount(1)));
         PlatformHelper.setWardrobePresets(player, PlatformHelper.getWardrobePresets(player).with(index, outfit));
     }
@@ -35,12 +35,12 @@ public final class Outfits {
      * @return number of slots that changed
      */
     public static int apply(ServerPlayer player, Container wardrobe, int index) {
-        Map<Identifier, ItemStack> outfit = PlatformHelper.getWardrobePresets(player).get(index).orElse(null);
+        Map<ResourceLocation, ItemStack> outfit = PlatformHelper.getWardrobePresets(player).get(index).orElse(null);
         if (outfit == null) {
             return 0;
         }
         int changed = 0;
-        for (Identifier slot : CosmeticsManager.orderedSlots()) {
+        for (ResourceLocation slot : CosmeticsManager.orderedSlots()) {
             ItemStack wanted = outfit.getOrDefault(slot, ItemStack.EMPTY);
             ItemStack worn = CosmeticsManager.get(player).get(slot);
             if (ItemStack.isSameItemSameComponents(wanted, worn) || (wanted.isEmpty() && worn.isEmpty())) {

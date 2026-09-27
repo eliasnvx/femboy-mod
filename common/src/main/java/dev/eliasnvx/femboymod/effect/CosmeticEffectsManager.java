@@ -9,7 +9,7 @@ import dev.eliasnvx.femboymod.api.event.cosmetic.SetBonusEvent;
 import dev.eliasnvx.femboymod.drip.WornEvaluator;
 import dev.eliasnvx.femboymod.drip.WornEvaluator.Evaluation;
 import dev.eliasnvx.femboymod.drip.WornEvaluator.PlannedEffect;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public final class CosmeticEffectsManager {
 
     private static final class PlayerState {
         Evaluation evaluation = Evaluation.EMPTY;
-        final Map<Identifier, Running> running = new LinkedHashMap<>();
+        final Map<ResourceLocation, Running> running = new LinkedHashMap<>();
     }
 
     private static final Map<UUID, PlayerState> STATES = new HashMap<>();
@@ -73,11 +73,11 @@ public final class CosmeticEffectsManager {
 
     private static void apply(ServerPlayer player, PlayerState state, Evaluation next) {
         Evaluation previous = state.evaluation;
-        Map<Identifier, PlannedEffect> wanted = new LinkedHashMap<>();
+        Map<ResourceLocation, PlannedEffect> wanted = new LinkedHashMap<>();
         for (PlannedEffect planned : next.effects()) {
             wanted.put(planned.source().id(), planned);
         }
-        Iterator<Map.Entry<Identifier, Running>> it = state.running.entrySet().iterator();
+        Iterator<Map.Entry<ResourceLocation, Running>> it = state.running.entrySet().iterator();
         while (it.hasNext()) {
             Running running = it.next().getValue();
             PlannedEffect replacement = wanted.get(running.planned.source().id());
@@ -91,12 +91,12 @@ public final class CosmeticEffectsManager {
         wanted.forEach((id, planned) -> state.running.put(id, new Running(planned)));
         state.evaluation = next;
 
-        for (Identifier set : previous.activeSets()) {
+        for (ResourceLocation set : previous.activeSets()) {
             if (!next.activeSets().contains(set)) {
                 FemboyMod.api().events().post(new SetBonusEvent.Deactivate(player, set));
             }
         }
-        for (Identifier set : next.activeSets()) {
+        for (ResourceLocation set : next.activeSets()) {
             if (!previous.activeSets().contains(set)) {
                 FemboyMod.api().events().post(new SetBonusEvent.Activate(player, set));
             }
@@ -113,7 +113,7 @@ public final class CosmeticEffectsManager {
             return;
         }
         state.running.values().forEach(running -> deactivate(player, running));
-        for (Identifier set : state.evaluation.activeSets()) {
+        for (ResourceLocation set : state.evaluation.activeSets()) {
             FemboyMod.api().events().post(new SetBonusEvent.Deactivate(player, set));
         }
         if (!state.evaluation.drip().equals(DripLevel.NONE)) {
@@ -128,7 +128,7 @@ public final class CosmeticEffectsManager {
     }
 
     /** For tests: currently running (active or gated) effect source ids. */
-    public static Set<Identifier> runningSources(ServerPlayer player) {
+    public static Set<ResourceLocation> runningSources(ServerPlayer player) {
         PlayerState state = STATES.get(player.getUUID());
         return state == null ? Set.of() : Set.copyOf(state.running.keySet());
     }

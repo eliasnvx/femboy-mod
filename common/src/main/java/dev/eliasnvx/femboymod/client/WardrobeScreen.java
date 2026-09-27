@@ -10,13 +10,13 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 /** Wardrobe screen: storage + a side panel with 5 presets ("put on" / "save") and the Drip Level (SPEC §6.1). */
 public final class WardrobeScreen extends AbstractContainerScreen<WardrobeMenu> {
 
-    private static final Identifier BACKGROUND = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private static final ResourceLocation BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
     private static final int TEXTURE_SIZE = 256;
     private static final int WIDTH = 176;
     private static final int HEADER_HEIGHT = 17;

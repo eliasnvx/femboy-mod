@@ -28,11 +28,11 @@ configurations {
 
 dependencies {
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
-    implementation "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
-    implementation "com.geckolib:geckolib-neoforge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+    modImplementation "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
+    modImplementation "software.bernie.geckolib:geckolib-neoforge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
     // femboymod itself, so `runClient` here starts the mod + the addon
-    implementation(project(path: ":neoforge")) { transitive false }
+    implementation(project(path: ":neoforge", configuration: "namedElements")) { transitive false }
     // femboymod's common code is injected by the Architectury transformer only if listed here
     common(project(path: ":api")) { transitive false }
     common(project(path: ":common")) { transitive false }

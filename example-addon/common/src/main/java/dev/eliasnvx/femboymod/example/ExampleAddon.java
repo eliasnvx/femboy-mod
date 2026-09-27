@@ -19,7 +19,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticChangedEvent;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticUnequipEvent;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -46,15 +46,15 @@ public final class ExampleAddon implements FemboyAddon {
     public static final String MOD_ID = "femboymod_example";
     private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static final Identifier PIN_SLOT = id("pin");
+    public static final ResourceLocation PIN_SLOT = id("pin");
     /** Custom renderer id (client side: {@link ExamplePinRenderer}). */
-    public static final Identifier PIN_RENDERER = id("pin");
+    public static final ResourceLocation PIN_RENDERER = id("pin");
     /** Just after the built-in slots (which use multiples of 100). */
     private static final int PIN_SLOT_ORDER = 1000;
 
     /** femboymod's creative tab, referenced by key so the addon does not touch femboymod internals. */
     private static final ResourceKey<CreativeModeTab> FEMBOYMOD_TAB = ResourceKey.create(Registries.CREATIVE_MODE_TAB,
-            Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "main"));
+            ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "main"));
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(MOD_ID, Registries.ITEM);
 
@@ -122,7 +122,7 @@ public final class ExampleAddon implements FemboyAddon {
         LOGGER.info("femboymod example addon client initialized");
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 }

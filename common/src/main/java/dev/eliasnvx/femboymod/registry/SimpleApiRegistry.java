@@ -3,7 +3,7 @@ package dev.eliasnvx.femboymod.registry;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -14,27 +14,27 @@ import java.util.Set;
 
 public final class SimpleApiRegistry<T> implements ApiRegistry<T> {
 
-    private final Identifier id;
-    private final Map<Identifier, T> byId = new LinkedHashMap<>();
-    private final Map<T, Identifier> byEntry = new IdentityHashMap<>();
+    private final ResourceLocation id;
+    private final Map<ResourceLocation, T> byId = new LinkedHashMap<>();
+    private final Map<T, ResourceLocation> byEntry = new IdentityHashMap<>();
     private final Codec<T> codec;
     private volatile boolean frozen;
 
-    public SimpleApiRegistry(Identifier id) {
+    public SimpleApiRegistry(ResourceLocation id) {
         this.id = id;
-        this.codec = Identifier.CODEC.comapFlatMap(
+        this.codec = ResourceLocation.CODEC.comapFlatMap(
                 key -> get(key).map(DataResult::success)
                         .orElseGet(() -> DataResult.error(() -> "Unknown " + this.id + " entry: " + key)),
                 entry -> getId(entry).orElseThrow(() -> new IllegalStateException("Unregistered " + this.id + " entry: " + entry)));
     }
 
     @Override
-    public Identifier id() {
+    public ResourceLocation id() {
         return id;
     }
 
     @Override
-    public synchronized <V extends T> V register(Identifier key, V entry) {
+    public synchronized <V extends T> V register(ResourceLocation key, V entry) {
         if (frozen) {
             throw new IllegalStateException("Registry " + id + " is frozen; register during FemboyAddon#onInitialize");
         }
@@ -50,17 +50,17 @@ public final class SimpleApiRegistry<T> implements ApiRegistry<T> {
     }
 
     @Override
-    public Optional<T> get(Identifier key) {
+    public Optional<T> get(ResourceLocation key) {
         return Optional.ofNullable(byId.get(key));
     }
 
     @Override
-    public Optional<Identifier> getId(T entry) {
+    public Optional<ResourceLocation> getId(T entry) {
         return Optional.ofNullable(byEntry.get(entry));
     }
 
     @Override
-    public Set<Identifier> ids() {
+    public Set<ResourceLocation> ids() {
         return Collections.unmodifiableSet(byId.keySet());
     }
 

@@ -1,7 +1,7 @@
 package dev.eliasnvx.femboymod.menu;
 
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,14 +15,14 @@ import java.util.List;
 public final class CosmeticsContainer implements Container {
 
     private final Player player;
-    private final List<Identifier> slots;
+    private final List<ResourceLocation> slots;
 
     public CosmeticsContainer(Player player) {
         this.player = player;
         this.slots = CosmeticsManager.orderedSlots();
     }
 
-    public Identifier slotId(int index) {
+    public ResourceLocation slotId(int index) {
         return slots.get(index);
     }
 
@@ -82,7 +82,7 @@ public final class CosmeticsContainer implements Container {
 
     @Override
     public void clearContent() {
-        for (Identifier slot : slots) {
+        for (ResourceLocation slot : slots) {
             CosmeticsManager.set(player, slot, ItemStack.EMPTY);
         }
     }

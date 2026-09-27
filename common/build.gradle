@@ -7,10 +7,10 @@ dependencies {
     compileOnly "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
     api project(":api")
-    implementation "dev.architectury:architectury:${rootProject.architectury_api_version}"
-    implementation "com.geckolib:geckolib-common-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+    modImplementation "dev.architectury:architectury:${rootProject.architectury_api_version}"
+    modImplementation "software.bernie.geckolib:geckolib-common-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
     // Soft dependency (SPEC §9): only compat.jei touches it; never loaded without JEI
-    compileOnly "mezz.jei:jei-${rootProject.minecraft_version}-common-api:${rootProject.jei_version}"
+    modCompileOnly "mezz.jei:jei-${rootProject.minecraft_version}-common-api:${rootProject.jei_version}"
 }
 
 // The Architectury transformer reads :api classes; make sure the api jar is complete first (parallel builds).

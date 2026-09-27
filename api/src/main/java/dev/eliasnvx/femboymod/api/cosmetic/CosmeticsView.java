@@ -1,6 +1,6 @@
 package dev.eliasnvx.femboymod.api.cosmetic;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;
@@ -19,14 +19,14 @@ public interface CosmeticsView {
      * @param slot the slot id
      * @return the stack, or {@link ItemStack#EMPTY}
      */
-    ItemStack get(Identifier slot);
+    ItemStack get(ResourceLocation slot);
 
     /**
      * Returns all non-empty slots.
      *
      * @return an unmodifiable map of slot id to stack
      */
-    Map<Identifier, ItemStack> all();
+    Map<ResourceLocation, ItemStack> all();
 
     /**
      * Returns whether nothing is worn.
@@ -44,7 +44,7 @@ public interface CosmeticsView {
      * @param slot the slot id
      * @return {@code true} if hidden
      */
-    default boolean isHidden(Identifier slot) {
+    default boolean isHidden(ResourceLocation slot) {
         return false;
     }
 

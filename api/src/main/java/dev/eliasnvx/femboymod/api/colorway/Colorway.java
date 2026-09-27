@@ -4,7 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.codec.RegistryFixedCodec;
+import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -38,9 +38,9 @@ public record Colorway(int baseColor, Optional<Holder<ColorwayPattern>> pattern,
 
     /** Network codec; requires the colorway registry to be synced (it is). */
     public static final StreamCodec<RegistryFriendlyByteBuf, Colorway> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.RGB_COLOR, Colorway::baseColor,
+            ByteBufCodecs.INT, Colorway::baseColor,
             ByteBufCodecs.optional(ByteBufCodecs.holderRegistry(ColorwayPattern.REGISTRY_KEY)), Colorway::pattern,
-            ByteBufCodecs.optional(ByteBufCodecs.RGB_COLOR), Colorway::secondaryColor,
+            ByteBufCodecs.optional(ByteBufCodecs.INT), Colorway::secondaryColor,
             Colorway::new);
 
     /**

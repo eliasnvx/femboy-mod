@@ -11,7 +11,7 @@ import dev.eliasnvx.femboymod.network.CosmeticsSyncPayload;
 import dev.eliasnvx.femboymod.platform.PlatformHelper;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.SimpleApiRegistry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -29,7 +29,7 @@ public final class CosmeticsManager {
     private static final float EQUIP_SOUND_PITCH = 1.0F;
 
     private static SimpleApiRegistry<CosmeticSlotType> slotRegistry;
-    private static List<Identifier> orderedSlots = List.of();
+    private static List<ResourceLocation> orderedSlots = List.of();
 
     private CosmeticsManager() {
     }
@@ -38,22 +38,22 @@ public final class CosmeticsManager {
     public static void bake(SimpleApiRegistry<CosmeticSlotType> registry) {
         slotRegistry = registry;
         orderedSlots = registry.ids().stream()
-                .sorted(Comparator.<Identifier>comparingInt(id -> registry.get(id).orElseThrow().sortOrder())
-                        .thenComparing(Identifier::toString))
+                .sorted(Comparator.<ResourceLocation>comparingInt(id -> registry.get(id).orElseThrow().sortOrder())
+                        .thenComparing(ResourceLocation::toString))
                 .toList();
     }
 
     /** Slot ids in screen order. Identical on client and server. */
-    public static List<Identifier> orderedSlots() {
+    public static List<ResourceLocation> orderedSlots() {
         return orderedSlots;
     }
 
     /** The slot type, or empty for slots of removed addons (their items are kept but unknown). */
-    public static java.util.Optional<CosmeticSlotType> knownSlotType(Identifier id) {
+    public static java.util.Optional<CosmeticSlotType> knownSlotType(ResourceLocation id) {
         return slotRegistry.get(id);
     }
 
-    public static CosmeticSlotType slotType(Identifier id) {
+    public static CosmeticSlotType slotType(ResourceLocation id) {
         return slotRegistry.get(id).orElseThrow(() -> new IllegalArgumentException("Unknown cosmetic slot " + id));
     }
 
@@ -62,7 +62,7 @@ public final class CosmeticsManager {
     }
 
     /** The slot an item is worn in, or null if the item is not a cosmetic or its slot is unknown. */
-    public static Identifier slotOf(ItemStack stack) {
+    public static ResourceLocation slotOf(ItemStack stack) {
         Cosmetic cosmetic = stack.get(FemboyComponents.COSMETIC.get());
         if (cosmetic == null || slotRegistry.get(cosmetic.slot()).isEmpty()) {
             return null;
@@ -71,7 +71,7 @@ public final class CosmeticsManager {
     }
 
     /** Side-effect free check used by slots (both sides) and right-click equip. */
-    public static boolean canEquip(LivingEntity entity, Identifier slot, ItemStack stack) {
+    public static boolean canEquip(LivingEntity entity, ResourceLocation slot, ItemStack stack) {
         if (stack.isEmpty() || !slot.equals(slotOf(stack)) || FemboyConfig.common().disabledSlots().contains(slot)) {
             return false;
         }
@@ -82,7 +82,7 @@ public final class CosmeticsManager {
      * Puts {@code stack} into the slot (ownership passes to the slot; pass a copy if you keep it).
      * On the server this posts events and syncs to the player and everyone tracking them.
      */
-    public static void set(Player player, Identifier slot, ItemStack stack) {
+    public static void set(Player player, ResourceLocation slot, ItemStack stack) {
         CosmeticInventory before = PlatformHelper.getCosmetics(player);
         ItemStack previous = before.get(slot);
         PlatformHelper.setCosmetics(player, before.with(slot, stack));
@@ -112,14 +112,14 @@ public final class CosmeticsManager {
         CosmeticsSyncPayload.sendToTrackingAndSelf(player);
     }
 
-    public static void setHidden(ServerPlayer player, Identifier slot, boolean hidden) {
+    public static void setHidden(ServerPlayer player, ResourceLocation slot, boolean hidden) {
         PlatformHelper.setCosmetics(player, PlatformHelper.getCosmetics(player).withHidden(slot, hidden));
         CosmeticsSyncPayload.sendToTrackingAndSelf(player);
     }
 
     public static List<ItemStack> clear(ServerPlayer player) {
         List<ItemStack> removed = List.copyOf(get(player).all().values());
-        for (Identifier slot : List.copyOf(get(player).all().keySet())) {
+        for (ResourceLocation slot : List.copyOf(get(player).all().keySet())) {
             set(player, slot, ItemStack.EMPTY);
         }
         return removed;

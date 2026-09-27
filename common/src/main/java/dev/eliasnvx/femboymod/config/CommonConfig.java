@@ -2,7 +2,7 @@ package dev.eliasnvx.femboymod.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * Server/common options ({@code config/femboymod-common.json}, SPEC §10). Balance of items, sets, drip
  * and drinks lives in data packs; this file holds switches, the Pink Creeper numbers and hostile mob spawning/stats.
  */
-public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabledSlots, boolean setBonusesEnabled,
+public record CommonConfig(boolean keepCosmeticsOnDeath, List<ResourceLocation> disabledSlots, boolean setBonusesEnabled,
                            PinkCreeper pinkCreeper, Mobs mobs, Furniture furniture, StylePoints stylePoints, VibeCheck vibeCheck, Friends friends) {
 
     public static final CommonConfig DEFAULTS = new CommonConfig(false, List.of(), true, PinkCreeper.DEFAULTS, Mobs.DEFAULTS,
@@ -18,7 +18,7 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
 
     public static final Codec<CommonConfig> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.BOOL.fieldOf("keep_cosmetics_on_death").orElse(DEFAULTS.keepCosmeticsOnDeath).forGetter(CommonConfig::keepCosmeticsOnDeath),
-            Identifier.CODEC.listOf().fieldOf("disabled_slots").orElse(DEFAULTS.disabledSlots).forGetter(CommonConfig::disabledSlots),
+            ResourceLocation.CODEC.listOf().fieldOf("disabled_slots").orElse(DEFAULTS.disabledSlots).forGetter(CommonConfig::disabledSlots),
             Codec.BOOL.fieldOf("set_bonuses_enabled").orElse(DEFAULTS.setBonusesEnabled).forGetter(CommonConfig::setBonusesEnabled),
             PinkCreeper.CODEC.fieldOf("pink_creeper").orElse(PinkCreeper.DEFAULTS).forGetter(CommonConfig::pinkCreeper),
             Mobs.CODEC.fieldOf("mobs").orElse(Mobs.DEFAULTS).forGetter(CommonConfig::mobs),

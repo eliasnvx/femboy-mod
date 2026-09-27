@@ -7,7 +7,7 @@ import dev.eliasnvx.femboymod.api.drip.DripLevel;
 import dev.eliasnvx.femboymod.api.effect.CosmeticCondition;
 import dev.eliasnvx.femboymod.api.effect.CosmeticEffect;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import java.util.Set;
 import dev.eliasnvx.femboymod.api.event.FemboyEventBus;
@@ -122,7 +122,7 @@ public interface FemboyApi {
      * @param player the player
      * @return an immutable set of set bonus ids
      */
-    Set<Identifier> getActiveSetBonuses(Player player);
+    Set<ResourceLocation> getActiveSetBonuses(Player player);
 
     /**
      * Returns the charms hanging on a backpack (SPEC §8.4).
@@ -162,5 +162,5 @@ public interface FemboyApi {
      * @return whether the balance changed (false if cancelled, zero, earning is off, or the player can't afford it)
      */
     @org.jetbrains.annotations.ApiStatus.AvailableSince("0.1.0")
-    boolean addStylePoints(net.minecraft.server.level.ServerPlayer player, int amount, Identifier reason);
+    boolean addStylePoints(net.minecraft.server.level.ServerPlayer player, int amount, ResourceLocation reason);
 }

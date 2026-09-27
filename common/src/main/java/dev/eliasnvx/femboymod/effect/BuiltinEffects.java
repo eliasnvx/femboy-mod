@@ -15,7 +15,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.codec.RegistryCodecs;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -78,8 +78,8 @@ public final class BuiltinEffects {
         }
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
     }
 
     /** Transient attribute modifier; amount is multiplied by the source scale. Id = source id. */
@@ -290,10 +290,10 @@ public final class BuiltinEffects {
     }
 
     /** Client-side only: the listed sounds play at {@code volume} (0..1) for the wearer. */
-    public record MuffleSoundsEffect(java.util.List<Identifier> sounds, float volume) implements CosmeticEffect {
+    public record MuffleSoundsEffect(java.util.List<ResourceLocation> sounds, float volume) implements CosmeticEffect {
 
         public static final MapCodec<MuffleSoundsEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-                Identifier.CODEC.listOf().fieldOf("sounds").forGetter(MuffleSoundsEffect::sounds),
+                ResourceLocation.CODEC.listOf().fieldOf("sounds").forGetter(MuffleSoundsEffect::sounds),
                 Codec.floatRange(0, 1).fieldOf("volume").forGetter(MuffleSoundsEffect::volume)
         ).apply(i, MuffleSoundsEffect::new));
 

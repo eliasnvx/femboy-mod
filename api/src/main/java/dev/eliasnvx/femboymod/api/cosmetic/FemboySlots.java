@@ -1,37 +1,37 @@
 package dev.eliasnvx.femboymod.api.cosmetic;
 
 import dev.eliasnvx.femboymod.api.FemboyApi;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /** Ids of the built-in cosmetic slots (SPEC §4.3). */
 public final class FemboySlots {
 
     /** Ears, hair clips, headphones. */
-    public static final Identifier HEAD_ACCESSORY = id("head_accessory");
+    public static final ResourceLocation HEAD_ACCESSORY = id("head_accessory");
     /** Glasses, earrings. */
-    public static final Identifier FACE = id("face");
+    public static final ResourceLocation FACE = id("face");
     /** Chokers. */
-    public static final Identifier NECK = id("neck");
+    public static final ResourceLocation NECK = id("neck");
     /** Backpacks. */
-    public static final Identifier BACK = id("back");
+    public static final ResourceLocation BACK = id("back");
     /** Tails. */
-    public static final Identifier TAIL = id("tail");
+    public static final ResourceLocation TAIL = id("tail");
     /** Socks and tights. */
-    public static final Identifier LEGS_OVERLAY = id("legs_overlay");
+    public static final ResourceLocation LEGS_OVERLAY = id("legs_overlay");
     /** Hoodies and sweaters. */
-    public static final Identifier OUTFIT_TOP = id("outfit_top");
+    public static final ResourceLocation OUTFIT_TOP = id("outfit_top");
     /** Skirts. */
-    public static final Identifier OUTFIT_BOTTOM = id("outfit_bottom");
+    public static final ResourceLocation OUTFIT_BOTTOM = id("outfit_bottom");
     /** Arm warmers, nail polish. */
-    public static final Identifier HANDS = id("hands");
+    public static final ResourceLocation HANDS = id("hands");
     /** Belts and belt chains, worn over skirts and tops. */
     @org.jetbrains.annotations.ApiStatus.AvailableSince("0.1.0")
-    public static final Identifier WAIST = id("waist");
+    public static final ResourceLocation WAIST = id("waist");
 
     private FemboySlots() {
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, path);
     }
 }

@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import dev.eliasnvx.femboymod.api.FemboyApi;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
 /** Profile fields of Femboy Mod itself. Read them freely; write Style Points only through the API methods. */
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
 public final class FemboyProfileFields {
 
     /** Codec for a set of ids, saved as a sorted list. */
-    public static final Codec<Set<Identifier>> ID_SET_CODEC = Identifier.CODEC.listOf()
+    public static final Codec<Set<ResourceLocation>> ID_SET_CODEC = ResourceLocation.CODEC.listOf()
             .xmap(list -> Set.copyOf(new HashSet<>(list)), set -> set.stream().sorted().toList());
 
     /** Style Points the player can spend (synced). */
@@ -25,7 +25,7 @@ public final class FemboyProfileFields {
     /** Cosmetics put on, in total. */
     public static final ProfileField<Integer> EQUIPS = field("equips", Codec.INT, 0, false);
     /** Ids of every cosmetic item the player has worn at least once (synced). */
-    public static final ProfileField<Set<Identifier>> COLLECTION = field("collection", ID_SET_CODEC, Set.of(), true);
+    public static final ProfileField<Set<ResourceLocation>> COLLECTION = field("collection", ID_SET_CODEC, Set.of(), true);
     /** Fashion Critic reviews received. */
     public static final ProfileField<Integer> CRITIC_REVIEWS = field("critic_reviews", Codec.INT, 0, false);
     /** Fashion Critic reviews passed (the critic was impressed). */
@@ -45,6 +45,6 @@ public final class FemboyProfileFields {
     }
 
     private static <T> ProfileField<T> field(String name, Codec<T> codec, T defaultValue, boolean synced) {
-        return ProfileField.of(Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, name), codec, defaultValue, synced);
+        return ProfileField.of(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, name), codec, defaultValue, synced);
     }
 }

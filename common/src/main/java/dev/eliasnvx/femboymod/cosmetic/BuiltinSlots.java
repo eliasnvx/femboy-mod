@@ -5,7 +5,7 @@ import java.util.Set;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -21,8 +21,8 @@ public final class BuiltinSlots {
      * Built-in slots show a silhouette when empty: sprite {@code femboymod:container/slot/cosmetic/<slot>}.
      * {@code covers}: armor hidden by default while the slot is worn (the armor would draw over the item).
      */
-    private static CosmeticSlotType slot(int order, Identifier id, EquipmentSlot... covers) {
-        return new CosmeticSlotType(order, Optional.of(Identifier.fromNamespaceAndPath(id.getNamespace(),
+    private static CosmeticSlotType slot(int order, ResourceLocation id, EquipmentSlot... covers) {
+        return new CosmeticSlotType(order, Optional.of(ResourceLocation.fromNamespaceAndPath(id.getNamespace(),
                 "container/slot/cosmetic/" + id.getPath())), Set.of(covers));
     }
 

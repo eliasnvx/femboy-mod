@@ -6,7 +6,7 @@ import dev.eliasnvx.femboymod.api.FemboyApi;
 import dev.eliasnvx.femboymod.api.effect.ConfiguredEffect;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 
@@ -30,7 +30,7 @@ public record CosmeticStats(int drip, List<ConfiguredEffect> effects) {
 
     /** Registry key of the {@code femboymod:cosmetic_stats} data pack registry. */
     public static final ResourceKey<Registry<CosmeticStats>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(FemboyApi.MOD_ID, "cosmetic_stats"));
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "cosmetic_stats"));
 
     /** Stats of items without an entry. */
     public static final CosmeticStats NONE = new CosmeticStats(0, List.of());

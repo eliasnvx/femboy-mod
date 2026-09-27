@@ -6,7 +6,7 @@ architectury {
 dependencies {
     compileOnly "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     implementation project(":api")
-    implementation "dev.architectury:architectury:${rootProject.architectury_api_version}"
+    modImplementation "dev.architectury:architectury:${rootProject.architectury_api_version}"
 }
 
 tasks.withType(PublishToMavenRepository).configureEach { enabled = false }

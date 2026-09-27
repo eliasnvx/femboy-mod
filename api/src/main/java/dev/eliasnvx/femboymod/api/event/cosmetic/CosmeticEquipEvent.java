@@ -1,7 +1,7 @@
 package dev.eliasnvx.femboymod.api.event.cosmetic;
 
 import dev.eliasnvx.femboymod.api.event.CancellableEvent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 public final class CosmeticEquipEvent implements CancellableEvent {
 
     private final LivingEntity entity;
-    private final Identifier slot;
+    private final ResourceLocation slot;
     private final ItemStack stack;
     private boolean cancelled;
 
@@ -25,7 +25,7 @@ public final class CosmeticEquipEvent implements CancellableEvent {
      * @param slot   the target slot id
      * @param stack  the item (do not modify)
      */
-    public CosmeticEquipEvent(LivingEntity entity, Identifier slot, ItemStack stack) {
+    public CosmeticEquipEvent(LivingEntity entity, ResourceLocation slot, ItemStack stack) {
         this.entity = entity;
         this.slot = slot;
         this.stack = stack;
@@ -37,7 +37,7 @@ public final class CosmeticEquipEvent implements CancellableEvent {
     }
 
     /** @return the target slot id */
-    public Identifier slot() {
+    public ResourceLocation slot() {
         return slot;
     }
 

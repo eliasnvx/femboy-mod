@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -20,18 +20,18 @@ import java.util.Optional;
  * @param renderer id of the renderer used to draw the item on the body; empty means the
  *                 renderer registered under the item's own id (client, Phase 2)
  */
-public record Cosmetic(Identifier slot, Optional<Identifier> renderer) {
+public record Cosmetic(ResourceLocation slot, Optional<ResourceLocation> renderer) {
 
     /** Persistent codec. */
     public static final Codec<Cosmetic> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Identifier.CODEC.fieldOf("slot").forGetter(Cosmetic::slot),
-            Identifier.CODEC.optionalFieldOf("renderer").forGetter(Cosmetic::renderer)
+            ResourceLocation.CODEC.fieldOf("slot").forGetter(Cosmetic::slot),
+            ResourceLocation.CODEC.optionalFieldOf("renderer").forGetter(Cosmetic::renderer)
     ).apply(instance, Cosmetic::new));
 
     /** Network codec. */
     public static final StreamCodec<ByteBuf, Cosmetic> STREAM_CODEC = StreamCodec.composite(
-            Identifier.STREAM_CODEC, Cosmetic::slot,
-            ByteBufCodecs.optional(Identifier.STREAM_CODEC), Cosmetic::renderer,
+            ResourceLocation.STREAM_CODEC, Cosmetic::slot,
+            ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), Cosmetic::renderer,
             Cosmetic::new);
 
     /**
@@ -39,7 +39,7 @@ public record Cosmetic(Identifier slot, Optional<Identifier> renderer) {
      *
      * @param slot slot id
      */
-    public Cosmetic(Identifier slot) {
+    public Cosmetic(ResourceLocation slot) {
         this(slot, Optional.empty());
     }
 }

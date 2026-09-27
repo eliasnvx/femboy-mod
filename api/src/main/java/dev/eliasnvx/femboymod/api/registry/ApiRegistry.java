@@ -1,7 +1,7 @@
 package dev.eliasnvx.femboymod.api.registry;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 import java.util.Set;
@@ -22,7 +22,7 @@ public interface ApiRegistry<T> {
      *
      * @return the registry id
      */
-    Identifier id();
+    ResourceLocation id();
 
     /**
      * Registers an entry.
@@ -34,7 +34,7 @@ public interface ApiRegistry<T> {
      * @throws IllegalStateException    if the registry is frozen
      * @throws IllegalArgumentException if {@code id} or {@code entry} is already registered
      */
-    <V extends T> V register(Identifier id, V entry);
+    <V extends T> V register(ResourceLocation id, V entry);
 
     /**
      * Looks up an entry by id.
@@ -42,7 +42,7 @@ public interface ApiRegistry<T> {
      * @param id the id
      * @return the entry, or empty if not registered
      */
-    Optional<T> get(Identifier id);
+    Optional<T> get(ResourceLocation id);
 
     /**
      * Returns the id of a registered entry.
@@ -50,14 +50,14 @@ public interface ApiRegistry<T> {
      * @param entry the entry
      * @return the id, or empty if the entry is not registered
      */
-    Optional<Identifier> getId(T entry);
+    Optional<ResourceLocation> getId(T entry);
 
     /**
      * Returns all registered ids in registration order.
      *
      * @return an immutable view of the ids
      */
-    Set<Identifier> ids();
+    Set<ResourceLocation> ids();
 
     /**
      * Returns a codec that (de)serializes entries by their id.

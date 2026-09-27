@@ -9,7 +9,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -25,12 +25,12 @@ import java.util.function.Predicate;
 @JeiPlugin
 public final class FemboyJeiPlugin implements IModPlugin {
 
-    private static final Identifier UID = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "jei_plugin");
+    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "jei_plugin");
     private static final TagKey<Item> DYEABLE = TagKey.create(Registries.ITEM,
-            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "dyeable_cosmetics"));
+            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "dyeable_cosmetics"));
 
     @Override
-    public Identifier getPluginUid() {
+    public ResourceLocation getPluginUid() {
         return UID;
     }
 

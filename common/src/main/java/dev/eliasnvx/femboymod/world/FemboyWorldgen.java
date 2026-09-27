@@ -3,7 +3,7 @@ package dev.eliasnvx.femboymod.world;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.eliasnvx.femboymod.FemboyMod;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
@@ -49,10 +49,10 @@ public final class FemboyWorldgen {
     }
 
     private static TagKey<Biome> biomeTag(String name) {
-        return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
+        return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
     }
 
     private static ResourceKey<PlacedFeature> placed(String name) {
-        return ResourceKey.create(Registries.PLACED_FEATURE, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
+        return ResourceKey.create(Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
     }
 }

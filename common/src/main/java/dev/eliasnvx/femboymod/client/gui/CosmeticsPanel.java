@@ -14,7 +14,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -42,7 +42,7 @@ public final class CosmeticsPanel extends AbstractWidget {
         layout();
     }
 
-    private static List<Identifier> slots() {
+    private static List<ResourceLocation> slots() {
         return CosmeticsManager.orderedSlots();
     }
 
@@ -99,7 +99,7 @@ public final class CosmeticsPanel extends AbstractWidget {
         var worn = CosmeticsManager.get(player);
         int hovered = slotAt(mouseX, mouseY);
         for (int i = 0; i < slots().size(); i++) {
-            Identifier slot = slots().get(i);
+            ResourceLocation slot = slots().get(i);
             FemboyGui.cosmeticSlot(g, font, slot, worn.get(slot), slotX(i), slotY(i), i == hovered, worn.isHidden(slot));
         }
 
@@ -136,7 +136,7 @@ public final class CosmeticsPanel extends AbstractWidget {
             return;
         }
         if (index >= 0 && player != null) {
-            Identifier slot = slots().get(index);
+            ResourceLocation slot = slots().get(index);
             if (player.hasInfiniteMaterials() && !event.hasShiftDown()) {
                 // creative: the cursor is client-side; swap it with the worn item and tell the server
                 ItemStack carried = screen.getMenu().getCarried();

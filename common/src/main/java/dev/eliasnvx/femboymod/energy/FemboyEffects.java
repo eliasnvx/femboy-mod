@@ -5,7 +5,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -27,11 +27,11 @@ public final class FemboyEffects {
 
     public static final RegistrySupplier<MobEffect> CAFFEINATED = REGISTER.register("caffeinated", Caffeinated::new);
     public static final RegistrySupplier<MobEffect> JITTER = REGISTER.register("jitter", () -> new Jitter()
-            .addAttributeModifier(Attributes.ATTACK_SPEED, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "effect.jitter"),
+            .addAttributeModifier(Attributes.ATTACK_SPEED, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "effect.jitter"),
                     JITTER_ATTACK_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 
     public static final RegistrySupplier<MobEffect> INSIGHT = REGISTER.register("insight", () -> new Insight()
-            .addAttributeModifier(Attributes.BLOCK_BREAK_SPEED, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "effect.insight"),
+            .addAttributeModifier(Attributes.BLOCK_BREAK_SPEED, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "effect.insight"),
                     INSIGHT_BREAK_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
 
     private FemboyEffects() {
