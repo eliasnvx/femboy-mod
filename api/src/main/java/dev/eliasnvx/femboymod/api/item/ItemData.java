@@ -1,6 +1,7 @@
 package dev.eliasnvx.femboymod.api.item;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -47,7 +48,16 @@ public interface ItemData<T> {
     void set(ItemStack stack, T value);
 
     /**
-     * Removes the value from the stack.
+     * Sets the value every stack of {@code item} has until one is stored on it (1.21's default components).
+     * Stacks holding exactly the default keep no NBT, so fresh and default stacks stack together.
+     *
+     * @param item  the item
+     * @param value its default value
+     */
+    void setDefault(ItemLike item, T value);
+
+    /**
+     * Removes the stored value from the stack; it then reads as the item's default again, if it has one.
      *
      * @param stack the stack to change
      */

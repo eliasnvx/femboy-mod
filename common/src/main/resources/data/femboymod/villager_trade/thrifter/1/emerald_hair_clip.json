@@ -1,10 +1,11 @@
 {
   "wants": {
     "id": "minecraft:emerald",
-    "count": 2
+    "Count": 2
   },
   "gives": {
-    "id": "femboymod:hair_clip_heart"
+    "id": "femboymod:hair_clip_heart",
+    "Count": 1
   },
   "max_uses": 8,
   "xp": 1,

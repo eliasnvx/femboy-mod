@@ -1,5 +1,7 @@
 package dev.eliasnvx.femboymod.food;
 
+import java.util.function.Supplier;
+import net.minecraft.world.level.ItemLike;
 import dev.eliasnvx.femboymod.energy.FemboyEffects;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,8 +12,9 @@ import net.minecraft.world.level.Level;
 /** Strawberry milk: calms you down after too much Byte Energy (removes Jitter and the coming caffeine crash). */
 public class StrawberryMilkItem extends DrinkItem {
 
-    public StrawberryMilkItem(Properties properties) {
-        super(properties);
+    /** @param container left behind after drinking (1.21.1: the food's usingConvertsTo) */
+    public StrawberryMilkItem(Properties properties, Supplier<? extends ItemLike> container) {
+        super(properties, container);
     }
 
     @Override

@@ -65,6 +65,7 @@ public final class WardrobeScreen extends AbstractContainerScreen<WardrobeMenu> 
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        renderBackground(graphics); // 1.20.1: screens draw their own background
         super.render(graphics, mouseX, mouseY, partialTick);
         renderTooltip(graphics, mouseX, mouseY);
     }

@@ -36,10 +36,10 @@ public final class FemboyJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        info(registration, stack -> stack.has(FemboyComponents.COSMETIC.get()) && !stack.has(FemboyComponents.BACKPACK.get()),
+        info(registration, stack -> FemboyComponents.COSMETIC.has(stack) && !FemboyComponents.BACKPACK.has(stack),
                 "cosmetic");
         info(registration, stack -> stack.is(DYEABLE), "dyeable");
-        info(registration, stack -> stack.has(FemboyComponents.BACKPACK.get()), "backpack");
+        info(registration, stack -> FemboyComponents.BACKPACK.has(stack), "backpack");
         info(registration, stack -> stack.is(FemboyTags.CHARMS), "charm");
     }
 

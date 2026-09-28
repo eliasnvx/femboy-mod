@@ -29,7 +29,9 @@ public class HissyCat extends Monster {
     private static final float LOOK_DISTANCE = 10.0F;
     private static final float VOICE_PITCH = 0.8F;
     /** Cats land on their feet. */
-    private static final double CAT_SAFE_FALL = 6.0;
+    private static final float CAT_SAFE_FALL = 6.0F;
+    /** Fall distance without damage for every living entity on 1.20.1 ({@code LivingEntity#calculateFallDamage}). */
+    private static final float VANILLA_SAFE_FALL = 3.0F;
 
     public HissyCat(EntityType<? extends HissyCat> type, Level level) {
         super(type, level);
@@ -39,8 +41,19 @@ public class HissyCat extends Monster {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, config.health())
                 .add(Attributes.ATTACK_DAMAGE, config.attackDamage())
-                .add(Attributes.MOVEMENT_SPEED, config.speed())
-                .add(Attributes.SAFE_FALL_DISTANCE, CAT_SAFE_FALL);
+                .add(Attributes.MOVEMENT_SPEED, config.speed());
+    }
+
+    /** 1.20.1 has no safe-fall attribute: shift the fall distance by the extra safe blocks instead. */
+    @Override
+    protected int calculateFallDamage(float fallDistance, float multiplier) {
+        return super.calculateFallDamage(fallDistance - (CAT_SAFE_FALL - VANILLA_SAFE_FALL), multiplier);
+    }
+
+    /** Pathfinding may drop as far as it can land safely. */
+    @Override
+    public int getMaxFallDistance() {
+        return super.getMaxFallDistance() + (int) (CAT_SAFE_FALL - VANILLA_SAFE_FALL);
     }
 
     @Override

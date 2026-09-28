@@ -5,12 +5,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /** Right-click opens the backpack; sneak + right-click puts it on (back slot). SPEC §5.3. */
-public class BackpackItem extends Item {
+public class BackpackItem extends Item implements DyeableLeatherItem {
 
     public BackpackItem(Properties properties) {
         super(properties);

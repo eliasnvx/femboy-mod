@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_pearl",
+  "ingredients": [
+    {
+      "item": "femboymod:tail"
+    },
+    {
+      "item": "femboymod:moonstone"
+    }
+  ],
+  "result": {
+    "item": "femboymod:tail",
+    "nbt": {
+      "femboymod:colorway": {
+        "base_color": "#FFFFFF",
+        "pattern": "femboymod:pearl"
+      }
+    }
+  }
+}

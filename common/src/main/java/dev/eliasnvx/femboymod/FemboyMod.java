@@ -63,6 +63,7 @@ public final class FemboyMod {
         FemboyTriggers.REGISTER.register();
         FemboyEntities.init();
         FemboySounds.REGISTER.register();
+        dev.eliasnvx.femboymod.registry.FemboyPaintings.init();
         FemboyBlocks.CLOTHING_RACK.getId(); // class-init FemboyBlocks so its blocks and block items are queued first
         FemboyItems.BLOCKS.register();
         FemboyItems.TABS.register();

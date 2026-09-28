@@ -1,10 +1,11 @@
 {
   "wants": {
     "id": "minecraft:emerald",
-    "count": 14
+    "Count": 14
   },
   "gives": {
-    "id": "femboymod:canvas_backpack"
+    "id": "femboymod:canvas_backpack",
+    "Count": 1
   },
   "max_uses": 3,
   "xp": 15,

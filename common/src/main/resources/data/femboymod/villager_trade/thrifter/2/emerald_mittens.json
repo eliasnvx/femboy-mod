@@ -1,10 +1,11 @@
 {
   "wants": {
     "id": "minecraft:emerald",
-    "count": 7
+    "Count": 7
   },
   "gives": {
-    "id": "femboymod:striped_mittens"
+    "id": "femboymod:striped_mittens",
+    "Count": 1
   },
   "max_uses": 6,
   "xp": 5,

@@ -12,9 +12,8 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor.ARGB32;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
+import dev.eliasnvx.femboymod.item.ItemList;
 
 import java.util.Map;
 
@@ -44,8 +43,8 @@ final class BackpackCharmsRenderer {
     }
 
     void submit(CosmeticRenderContext ctx) {
-        ItemContainerContents worn = ctx.stack().getOrDefault(FemboyComponents.CHARMS.get(), ItemContainerContents.EMPTY);
-        if (worn.equals(ItemContainerContents.EMPTY)) {
+        ItemList worn = FemboyComponents.CHARMS.getOrDefault(ctx.stack(), ItemList.EMPTY);
+        if (worn.size() == 0) {
             return;
         }
         PoseStack pose = ctx.poseStack();
@@ -55,23 +54,24 @@ final class BackpackCharmsRenderer {
         pose.pushPose();
         ctx.parentModel().body.translateAndRotate(pose);
         int i = 0;
-        for (ItemStack charm : worn.nonEmptyItems()) {
-            if (i >= chains.length) {
-                break;
+        for (int slot = 0; slot < worn.size() && i < chains.length; slot++) {
+            ItemStack charm = worn.peek(slot); // read-only, no copy per frame
+            if (charm.isEmpty()) {
+                continue;
             }
-            chains[i].render(pose, buffer, light, overlay, ARGB32.opaque(CHAIN_COLOR));
+            ModelColors.render(chains[i], pose, buffer, light, overlay, ModelColors.opaque(CHAIN_COLOR));
             if (charm.is(FemboyItems.PRIDE_BADGE.get())) {
                 // the badge's flag: stripes spread over the pattern (a 3-stripe flag shows each stripe ~twice as tall)
-                Colorway colorway = charm.get(FemboyComponents.COLORWAY.get());
+                Colorway colorway = FemboyComponents.COLORWAY.get(charm);
                 int count = colorway == null ? 1 : colorway.stripeCount();
                 for (int k = 0; k < CosmeticModels.FLAG_STRIPES; k++) {
                     int color = colorway == null ? BADGE_DEFAULT
                             : colorway.stripeColor(k * count / CosmeticModels.FLAG_STRIPES, ColorwayClock.ticks());
-                    flags[i][k].render(pose, buffer, light, overlay, ARGB32.opaque(color));
+                    ModelColors.render(flags[i][k], pose, buffer, light, overlay, ModelColors.opaque(color));
                 }
             } else {
                 int color = CHARM_COLORS.getOrDefault(BuiltInRegistries.ITEM.getKey(charm.getItem()).getPath(), DEFAULT_CHARM);
-                charms[i].render(pose, buffer, light, overlay, ARGB32.opaque(color));
+                ModelColors.render(charms[i], pose, buffer, light, overlay, ModelColors.opaque(color));
             }
             i++;
         }

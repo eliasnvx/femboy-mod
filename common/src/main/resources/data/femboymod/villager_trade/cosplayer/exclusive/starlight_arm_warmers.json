@@ -1,11 +1,12 @@
 {
   "wants": {
     "id": "femboymod:style_coupon",
-    "count": 2
+    "Count": 2
   },
   "gives": {
     "id": "femboymod:arm_warmers",
-    "components": {
+    "Count": 1,
+    "tag": {
       "femboymod:colorway": {
         "base_color": "#FFFFFF",
         "pattern": "femboymod:starlight"

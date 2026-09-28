@@ -4,14 +4,14 @@ import dev.architectury.networking.NetworkManager;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.emote.Emote;
 import dev.eliasnvx.femboymod.emote.EmoteClientHooks;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Emotes: the player asks to play one (C2S); the server shows it to everyone tracking them and to themselves (S2C). */
 public final class EmotePayloads {
@@ -22,13 +22,21 @@ public final class EmotePayloads {
     }
 
     /** C2S: play this emote. */
-    public record Play(int emote) implements CustomPacketPayload {
-        public static final Type<Play> TYPE = new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "play_emote"));
-        public static final StreamCodec<ByteBuf, Play> STREAM_CODEC = ByteBufCodecs.VAR_INT.map(Play::new, Play::emote);
+    public record Play(int emote) implements FemboyPacket {
+        public static final ResourceLocation ID = new ResourceLocation(FemboyMod.MOD_ID, "play_emote");
 
         @Override
-        public Type<Play> type() {
-            return TYPE;
+        public ResourceLocation id() {
+            return ID;
+        }
+
+        @Override
+        public void write(FriendlyByteBuf buf) {
+            buf.writeVarInt(emote);
+        }
+
+        public static Play read(FriendlyByteBuf buf) {
+            return new Play(buf.readVarInt());
         }
 
         public static void handle(Play payload, NetworkManager.PacketContext context) {
@@ -41,14 +49,22 @@ public final class EmotePayloads {
     }
 
     /** S2C: an entity plays an emote. */
-    public record Show(int entityId, int emote) implements CustomPacketPayload {
-        public static final Type<Show> TYPE = new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "show_emote"));
-        public static final StreamCodec<ByteBuf, Show> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.VAR_INT, Show::entityId, ByteBufCodecs.VAR_INT, Show::emote, Show::new);
+    public record Show(int entityId, int emote) implements FemboyPacket {
+        public static final ResourceLocation ID = new ResourceLocation(FemboyMod.MOD_ID, "show_emote");
 
         @Override
-        public Type<Show> type() {
-            return TYPE;
+        public ResourceLocation id() {
+            return ID;
+        }
+
+        @Override
+        public void write(FriendlyByteBuf buf) {
+            buf.writeVarInt(entityId);
+            buf.writeVarInt(emote);
+        }
+
+        public static Show read(FriendlyByteBuf buf) {
+            return new Show(buf.readVarInt(), buf.readVarInt());
         }
 
         public static void handle(Show payload, NetworkManager.PacketContext context) {
@@ -58,11 +74,14 @@ public final class EmotePayloads {
 
     /** Server: broadcast the emote; heart hands also send up a few hearts. */
     public static void play(ServerPlayer player, Emote emote) {
-        Show show = new Show(player.getId(), emote.ordinal());
+        List<ServerPlayer> receivers = new ArrayList<>();
         for (ServerPlayer watcher : ((ServerLevel) player.level()).getChunkSource().chunkMap.getPlayers(player.chunkPosition(), false)) {
-            if (NetworkManager.canPlayerReceive(watcher, Show.TYPE)) {
-                NetworkManager.sendToPlayer(watcher, show);
+            if (FemboyNetwork.canReceive(watcher, Show.ID)) {
+                receivers.add(watcher);
             }
+        }
+        if (!receivers.isEmpty()) {
+            FemboyNetwork.sendToPlayers(receivers, new Show(player.getId(), emote.ordinal()));
         }
         if (emote == Emote.HEART_HANDS) {
             ((ServerLevel) player.level()).sendParticles(ParticleTypes.HEART, player.getX(), player.getY() + 2.4, player.getZ(),

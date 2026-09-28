@@ -63,7 +63,7 @@ public final class CosmeticsManager {
 
     /** The slot an item is worn in, or null if the item is not a cosmetic or its slot is unknown. */
     public static ResourceLocation slotOf(ItemStack stack) {
-        Cosmetic cosmetic = stack.get(FemboyComponents.COSMETIC.get());
+        Cosmetic cosmetic = FemboyComponents.COSMETIC.get(stack);
         if (cosmetic == null || slotRegistry.get(cosmetic.slot()).isEmpty()) {
             return null;
         }
@@ -95,7 +95,7 @@ public final class CosmeticsManager {
                 FemboyMod.api().events().post(new CosmeticChangedEvent(player, slot, previous, stack));
                 if (!stack.isEmpty()) {
                     // Audible feedback; heard by the wearer and players nearby, like equipping armor.
-                    player.level().playSound(null, player, SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.PLAYERS,
+                    player.level().playSound(null, player, SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS,
                             EQUIP_SOUND_VOLUME, EQUIP_SOUND_PITCH);
                 }
             }

@@ -2,9 +2,7 @@ package dev.eliasnvx.femboymod.backpack;
 
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,11 +14,16 @@ import net.minecraft.world.item.ItemStack;
  */
 public record BackpackMenuData(boolean worn, int slot, int rows) {
 
-    public static final StreamCodec<ByteBuf, BackpackMenuData> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.BOOL, BackpackMenuData::worn,
-            ByteBufCodecs.VAR_INT, BackpackMenuData::slot,
-            ByteBufCodecs.VAR_INT, BackpackMenuData::rows,
-            BackpackMenuData::new);
+    /** Extra data of the extended menu: worn flag, slot, rows. */
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBoolean(worn);
+        buf.writeVarInt(slot);
+        buf.writeVarInt(rows);
+    }
+
+    public static BackpackMenuData read(FriendlyByteBuf buf) {
+        return new BackpackMenuData(buf.readBoolean(), buf.readVarInt(), buf.readVarInt());
+    }
 
     public ItemStack resolve(Player player) {
         if (worn) {

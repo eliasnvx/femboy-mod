@@ -1,5 +1,7 @@
 package dev.eliasnvx.femboymod.food;
 
+import java.util.function.Supplier;
+import net.minecraft.world.level.ItemLike;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.Holder;
@@ -15,8 +17,9 @@ import org.jetbrains.annotations.Nullable;
 /** Bubble tea: every cup is a surprise flavor ({@link BubbleTeaFlavor}, data-driven) with its own buff. */
 public class BubbleTeaItem extends DrinkItem {
 
-    public BubbleTeaItem(Properties properties) {
-        super(properties);
+    /** @param container left behind after drinking (1.21.1: the food's usingConvertsTo) */
+    public BubbleTeaItem(Properties properties, Supplier<? extends ItemLike> container) {
+        super(properties, container);
     }
 
     @Override

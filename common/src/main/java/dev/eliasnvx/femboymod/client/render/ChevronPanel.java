@@ -8,7 +8,6 @@ import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor.ARGB32;
 
 /**
  * A grid of thin cells on a flat, body-attached surface (the hoodie chest) used to draw 2D pattern
@@ -42,8 +41,8 @@ public final class ChevronPanel {
                 if (colorway.pattern().orElseThrow().value().chevron().orElseThrow().bandAt(u, v) < 0) {
                     continue;
                 }
-                cells[row * CosmeticModels.PANEL_COLUMNS + col].render(pose, buffer, ctx.light(), ctx.overlay(),
-                        ARGB32.opaque(colorway.colorAt(u, v)));
+                ModelColors.render(cells[row * CosmeticModels.PANEL_COLUMNS + col], pose, buffer, ctx.light(), ctx.overlay(),
+                        ModelColors.opaque(colorway.colorAt(u, v)));
             }
         }
         pose.popPose();

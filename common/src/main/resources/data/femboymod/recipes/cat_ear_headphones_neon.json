@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_neon",
+  "ingredients": [
+    {
+      "item": "femboymod:cat_ear_headphones"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    },
+    {
+      "item": "femboymod:neon_quartz"
+    }
+  ],
+  "result": {
+    "item": "femboymod:cat_ear_headphones",
+    "nbt": {
+      "femboymod:colorway": {
+        "base_color": "#FFFFFF",
+        "pattern": "femboymod:neon"
+      }
+    }
+  }
+}

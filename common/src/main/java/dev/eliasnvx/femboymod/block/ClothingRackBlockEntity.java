@@ -1,7 +1,6 @@
 package dev.eliasnvx.femboymod.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -50,16 +49,16 @@ public class ClothingRackBlockEntity extends BlockEntity implements Container {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         items.clear();
-        ContainerHelper.loadAllItems(tag, items, registries);
+        ContainerHelper.loadAllItems(tag, items);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        ContainerHelper.saveAllItems(tag, items, true, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        ContainerHelper.saveAllItems(tag, items, true);
     }
 
     @Override
@@ -68,8 +67,8 @@ public class ClothingRackBlockEntity extends BlockEntity implements Container {
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        return ContainerHelper.saveAllItems(new CompoundTag(), items, true, registries);
+    public CompoundTag getUpdateTag() {
+        return ContainerHelper.saveAllItems(new CompoundTag(), items, true);
     }
 
     @Override
@@ -118,7 +117,9 @@ public class ClothingRackBlockEntity extends BlockEntity implements Container {
     @Override
     public void setItem(int slot, ItemStack stack) {
         items.set(slot, stack);
-        stack.limitSize(getMaxStackSize(stack));
+        if (stack.getCount() > getMaxStackSize()) {
+            stack.setCount(getMaxStackSize());
+        }
         setChanged();
     }
 

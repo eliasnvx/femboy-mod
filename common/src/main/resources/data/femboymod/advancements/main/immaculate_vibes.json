@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "item": "femboymod:vibe_scanner"
+    },
+    "title": {
+      "translate": "advancements.femboymod.immaculate_vibes.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.immaculate_vibes.description"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "vibe_check",
+        "min": 90
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

@@ -5,11 +5,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 
 /**
- * Light ring of the Cat-ear Headphones: soft pink, or a slow smooth rainbow while a jukebox plays near the local
+ * Light ring of the Cat-ear Headphones: soft pink, or a slow smooth rainbow while a jukebox holds a disc near the local
  * player (checked once a second; never flashes, off with the client's RGB option).
  */
 public final class HeadphonesLight {
@@ -40,7 +41,8 @@ public final class HeadphonesLight {
         for (int dx = -RANGE_CHUNKS; dx <= RANGE_CHUNKS && !musicNearby; dx++) {
             for (int dz = -RANGE_CHUNKS; dz <= RANGE_CHUNKS && !musicNearby; dz++) {
                 for (BlockEntity entity : minecraft.level.getChunk(chunk.x + dx, chunk.z + dz).getBlockEntities().values()) {
-                    if (entity instanceof JukeboxBlockEntity jukebox && jukebox.getSongPlayer().isPlaying()
+                    // 1.20.1 does not sync the jukebox's playing flag to clients; the HAS_RECORD block state is synced
+                    if (entity instanceof JukeboxBlockEntity && entity.getBlockState().getValue(JukeboxBlock.HAS_RECORD)
                             && entity.getBlockPos().distSqr(center) <= RANGE_SQ) {
                         musicNearby = true;
                         break;

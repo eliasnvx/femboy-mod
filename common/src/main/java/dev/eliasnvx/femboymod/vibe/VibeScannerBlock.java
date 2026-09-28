@@ -1,6 +1,5 @@
 package dev.eliasnvx.femboymod.vibe;
 
-import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.event.profile.VibeCheckEvent;
 import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
@@ -23,6 +22,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -45,7 +45,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class VibeScannerBlock extends HorizontalDirectionalBlock {
 
-    public static final MapCodec<VibeScannerBlock> CODEC = simpleCodec(VibeScannerBlock::new);
 
     /** Score thresholds of the verdict lines (lang {@code message.femboymod.vibe.<verdict>}). */
     public static final int LIGHT = 6;
@@ -73,11 +72,6 @@ public class VibeScannerBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected MapCodec<VibeScannerBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
@@ -88,17 +82,17 @@ public class VibeScannerBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return shapes.get(state.getValue(FACING));
     }
 
     @Override
-    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return collisions.get(state.getValue(FACING));
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (player instanceof ServerPlayer serverPlayer && level instanceof ServerLevel serverLevel) {
             if (player.isSecondaryUseActive()) {
                 showLeaderboard(serverPlayer);

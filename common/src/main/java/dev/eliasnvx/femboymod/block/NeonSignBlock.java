@@ -1,11 +1,11 @@
 package dev.eliasnvx.femboymod.block;
 
-import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NeonSignBlock extends HorizontalDirectionalBlock {
 
-    public static final MapCodec<NeonSignBlock> CODEC = simpleCodec(NeonSignBlock::new);
 
     public static final int DESIGNS = 3;
     public static final IntegerProperty DESIGN = IntegerProperty.create("design", 0, DESIGNS - 1);
@@ -43,11 +42,6 @@ public class NeonSignBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected MapCodec<NeonSignBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, DESIGN);
     }
@@ -58,15 +52,15 @@ public class NeonSignBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return shapes.get(state.getValue(FACING));
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
             level.setBlock(pos, state.setValue(DESIGN, (state.getValue(DESIGN) + 1) % DESIGNS), Block.UPDATE_ALL);
-            level.playSound(null, pos, SoundEvents.COPPER_BULB_TURN_ON, SoundSource.BLOCKS, 0.4F, 1.6F);
+            level.playSound(null, pos, SoundEvents.STONE_BUTTON_CLICK_ON, /* 1.20.1 has no copper bulb sound */ SoundSource.BLOCKS, 0.4F, 1.6F);
         }
         return InteractionResult.SUCCESS;
     }

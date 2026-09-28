@@ -3,6 +3,7 @@ package dev.eliasnvx.femboymod.client.render.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.architectury.registry.client.level.entity.EntityModelLayerRegistry;
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.client.render.ModelColors;
 import net.minecraft.client.model.CreeperModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -19,7 +20,6 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.monster.Creeper;
 
 /** Pink Creeper: vanilla creeper model with our own pink texture and a bow on the head (SPEC §5.4). */
@@ -55,7 +55,7 @@ public final class PinkCreeperRenderer extends CreeperRenderer {
 
     private static final class BowLayer extends RenderLayer<Creeper, CreeperModel<Creeper>> {
         private static final ResourceLocation BOW_TEXTURE = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png");
-        private static final int BOW_COLOR = FastColor.ARGB32.opaque(0xFF4FA3);
+        private static final int BOW_COLOR = ModelColors.opaque(0xFF4FA3);
         private final ModelPart bow;
         private final ModelPart head;
         private final RenderType type = RenderType.entityCutout(BOW_TEXTURE);
@@ -74,7 +74,7 @@ public final class PinkCreeperRenderer extends CreeperRenderer {
             }
             pose.pushPose();
             head.translateAndRotate(pose);
-            bow.render(pose, buffers.getBuffer(type), light, OverlayTexture.NO_OVERLAY, BOW_COLOR);
+            ModelColors.render(bow, pose, buffers.getBuffer(type), light, OverlayTexture.NO_OVERLAY, BOW_COLOR);
             pose.popPose();
         }
     }

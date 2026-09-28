@@ -56,8 +56,10 @@
     "layers": {},
     "outer_wall_distance": {
       "type": "minecraft:uniform",
-      "min_inclusive": 4,
-      "max_inclusive": 6
+      "value": {
+        "min_inclusive": 4,
+        "max_inclusive": 6
+      }
     },
     "use_alternate_layer0_chance": 0.083
   }

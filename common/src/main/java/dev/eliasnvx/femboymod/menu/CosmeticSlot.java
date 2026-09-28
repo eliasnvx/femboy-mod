@@ -33,8 +33,8 @@ public final class CosmeticSlot extends Slot {
     }
 
     /**
-     * GUI sprite drawn while the slot is empty. On 1.21.1 {@link Slot#getNoItemIcon()} only takes sprites from
-     * block/item atlases, so the screens draw this GUI-atlas sprite themselves.
+     * Icon drawn while the slot is empty. {@link Slot#getNoItemIcon()} only takes sprites from the block/item
+     * atlases, so the screens draw this icon themselves (1.20.1 has no GUI sprite atlas: they blit a texture file).
      */
     public @Nullable ResourceLocation emptySlotSprite() {
         return CosmeticsManager.slotType(slotId()).emptySlotIcon().orElse(null);

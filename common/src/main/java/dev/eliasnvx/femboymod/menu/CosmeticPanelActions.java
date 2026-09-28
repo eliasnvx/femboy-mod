@@ -71,7 +71,7 @@ public final class CosmeticPanelActions {
 
     /** Creative inventory panel: the cursor is client-side, so the item arrives in the packet (creative only). */
     public static boolean creativeSet(ServerPlayer player, ResourceLocation slot, ItemStack stack) {
-        if (!player.hasInfiniteMaterials() || !CosmeticsManager.orderedSlots().contains(slot)) {
+        if (!player.getAbilities().instabuild || !CosmeticsManager.orderedSlots().contains(slot)) {
             return false;
         }
         ItemStack single = stack.copyWithCount(Math.min(1, stack.getCount()));

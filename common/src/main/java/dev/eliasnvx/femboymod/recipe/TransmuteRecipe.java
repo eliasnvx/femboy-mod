@@ -1,25 +1,26 @@
 package dev.eliasnvx.femboymod.recipe;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
+import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 
 /**
- * {@code femboymod:crafting_transmute}: a backport of 26.3's {@code minecraft:crafting_transmute} (1.21.1 has none).
- * Shapeless: exactly one {@code input} plus one {@code material}. The result keeps every component of the input
- * (backpack contents, charms, colorway, dye, custom name), then the result's own component patch is applied on top.
+ * {@code femboymod:crafting_transmute}: a backport of 26.3's {@code minecraft:crafting_transmute} (1.20.1 has none).
+ * Shapeless: exactly one {@code input} plus one {@code material}. The result keeps the input's NBT, which is where
+ * 1.20.1 keeps what 26.3 has as components (backpack contents, charms, colorway, dye, custom name); the result's
+ * own NBT is merged on top.
  * The input and result counts behave like vanilla's default (one material, no count added to the result).
  */
 public final class TransmuteRecipe implements CraftingRecipe {
@@ -27,6 +28,7 @@ public final class TransmuteRecipe implements CraftingRecipe {
     /** One input and one material, like 26.3's default {@code material_count}. */
     private static final int INGREDIENT_COUNT = 2;
 
+    private final ResourceLocation id;
     private final String group;
     private final CraftingBookCategory category;
     private final Ingredient input;
@@ -34,7 +36,9 @@ public final class TransmuteRecipe implements CraftingRecipe {
     private final ItemStack result;
     private final NonNullList<Ingredient> ingredients;
 
-    public TransmuteRecipe(String group, CraftingBookCategory category, Ingredient input, Ingredient material, ItemStack result) {
+    public TransmuteRecipe(ResourceLocation id, String group, CraftingBookCategory category, Ingredient input, Ingredient material,
+                           ItemStack result) {
+        this.id = id;
         this.group = group;
         this.category = category;
         this.input = input;
@@ -44,8 +48,14 @@ public final class TransmuteRecipe implements CraftingRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInput craftingInput, Level level) {
-        if (craftingInput.ingredientCount() != INGREDIENT_COUNT) {
+    public boolean matches(CraftingContainer craftingInput, Level level) {
+        int ingredientCount = 0;
+        for (int slot = 0; slot < craftingInput.getContainerSize(); slot++) {
+            if (!craftingInput.getItem(slot).isEmpty()) {
+                ingredientCount++;
+            }
+        }
+        if (ingredientCount != INGREDIENT_COUNT) {
             return false;
         }
         ItemStack found = findInput(craftingInput);
@@ -53,7 +63,7 @@ public final class TransmuteRecipe implements CraftingRecipe {
             return false;
         }
         boolean hasMaterial = false;
-        for (int slot = 0; slot < craftingInput.size(); slot++) {
+        for (int slot = 0; slot < craftingInput.getContainerSize(); slot++) {
             ItemStack stack = craftingInput.getItem(slot);
             if (stack.isEmpty() || stack == found) {
                 continue;
@@ -64,18 +74,18 @@ public final class TransmuteRecipe implements CraftingRecipe {
             hasMaterial = true;
         }
         // 26.3 refuses a transmute that would give back the very same stack
-        return hasMaterial && !ItemStack.isSameItemSameComponents(found, transmute(found));
+        return hasMaterial && !ItemStack.isSameItemSameTags(found, transmute(found));
     }
 
     @Override
-    public ItemStack assemble(CraftingInput craftingInput, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingContainer craftingInput, RegistryAccess registries) {
         ItemStack found = findInput(craftingInput);
         return found.isEmpty() ? ItemStack.EMPTY : transmute(found);
     }
 
-    private ItemStack findInput(CraftingInput craftingInput) {
+    private ItemStack findInput(CraftingContainer craftingInput) {
         ItemStack found = ItemStack.EMPTY;
-        for (int slot = 0; slot < craftingInput.size(); slot++) {
+        for (int slot = 0; slot < craftingInput.getContainerSize(); slot++) {
             ItemStack stack = craftingInput.getItem(slot);
             if (!stack.isEmpty() && input.test(stack)) {
                 if (!found.isEmpty()) {
@@ -88,8 +98,15 @@ public final class TransmuteRecipe implements CraftingRecipe {
     }
 
     private ItemStack transmute(ItemStack from) {
-        ItemStack out = from.transmuteCopy(result.getItem(), result.getCount());
-        out.applyComponents(result.getComponentsPatch());
+        ItemStack out = new ItemStack(result.getItem(), result.getCount());
+        CompoundTag inputTag = from.getTag();
+        if (inputTag != null) {
+            out.setTag(inputTag.copy());
+        }
+        CompoundTag resultTag = result.getTag();
+        if (resultTag != null) {
+            out.getOrCreateTag().merge(resultTag.copy());
+        }
         return out;
     }
 
@@ -99,7 +116,7 @@ public final class TransmuteRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
+    public ItemStack getResultItem(RegistryAccess registries) {
         return result;
     }
 
@@ -119,37 +136,49 @@ public final class TransmuteRecipe implements CraftingRecipe {
     }
 
     @Override
+    public ResourceLocation getId() {
+        return id;
+    }
+
+    @Override
     public RecipeSerializer<?> getSerializer() {
         return FemboyRecipes.CRAFTING_TRANSMUTE.get();
     }
 
-    /** Same JSON shape as 26.3's {@code crafting_transmute}: category, group, input, material, result. */
+    /**
+     * Same JSON shape as 26.3's {@code crafting_transmute}: category, group, input, material, result. The result is
+     * read like a shaped recipe's ({@code item}, {@code count}, and {@code nbt}, see RecipeResultNbtMixin).
+     */
     public static final class Serializer implements RecipeSerializer<TransmuteRecipe> {
 
-        private static final MapCodec<TransmuteRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-                Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
-                CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(r -> r.category),
-                Ingredient.CODEC_NONEMPTY.fieldOf("input").forGetter(r -> r.input),
-                Ingredient.CODEC_NONEMPTY.fieldOf("material").forGetter(r -> r.material),
-                ItemStack.STRICT_CODEC.fieldOf("result").forGetter(r -> r.result)
-        ).apply(i, TransmuteRecipe::new));
-
-        private static final StreamCodec<RegistryFriendlyByteBuf, TransmuteRecipe> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.STRING_UTF8, r -> r.group,
-                CraftingBookCategory.STREAM_CODEC, r -> r.category,
-                Ingredient.CONTENTS_STREAM_CODEC, r -> r.input,
-                Ingredient.CONTENTS_STREAM_CODEC, r -> r.material,
-                ItemStack.STREAM_CODEC, r -> r.result,
-                TransmuteRecipe::new);
-
         @Override
-        public MapCodec<TransmuteRecipe> codec() {
-            return CODEC;
+        public TransmuteRecipe fromJson(ResourceLocation id, JsonObject json) {
+            String group = GsonHelper.getAsString(json, "group", "");
+            CraftingBookCategory category = CraftingBookCategory.CODEC
+                    .byName(GsonHelper.getAsString(json, "category", null), CraftingBookCategory.MISC);
+            Ingredient input = Ingredient.fromJson(GsonHelper.getNonNull(json, "input"), false);
+            Ingredient material = Ingredient.fromJson(GsonHelper.getNonNull(json, "material"), false);
+            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
+            return new TransmuteRecipe(id, group, category, input, material, result);
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, TransmuteRecipe> streamCodec() {
-            return STREAM_CODEC;
+        public TransmuteRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
+            String group = buf.readUtf();
+            CraftingBookCategory category = buf.readEnum(CraftingBookCategory.class);
+            Ingredient input = Ingredient.fromNetwork(buf);
+            Ingredient material = Ingredient.fromNetwork(buf);
+            ItemStack result = buf.readItem();
+            return new TransmuteRecipe(id, group, category, input, material, result);
+        }
+
+        @Override
+        public void toNetwork(FriendlyByteBuf buf, TransmuteRecipe recipe) {
+            buf.writeUtf(recipe.group);
+            buf.writeEnum(recipe.category);
+            recipe.input.toNetwork(buf);
+            recipe.material.toNetwork(buf);
+            buf.writeItem(recipe.result);
         }
     }
 }

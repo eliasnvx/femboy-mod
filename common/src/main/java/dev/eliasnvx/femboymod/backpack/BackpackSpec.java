@@ -13,9 +13,6 @@ public record BackpackSpec(int rows) {
             Codec.intRange(1, MAX_ROWS).fieldOf("rows").forGetter(BackpackSpec::rows)
     ).apply(i, BackpackSpec::new));
 
-    public static final StreamCodec<ByteBuf, BackpackSpec> STREAM_CODEC =
-            ByteBufCodecs.VAR_INT.map(BackpackSpec::new, BackpackSpec::rows);
-
     public int size() {
         return rows * 9;
     }

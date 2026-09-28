@@ -36,7 +36,7 @@ public final class CosmeticsEvents {
             CosmeticsSyncPayload.sendToTrackingAndSelf(player);
             ProfileSyncPayload.sendAll(player);
         });
-        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, removalReason) -> {
+        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd) -> {
             CosmeticEffectsManager.forget(player);
             CosmeticsSyncPayload.sendToTrackingAndSelf(player);
             ProfileSyncPayload.sendAll(player);
@@ -101,7 +101,7 @@ public final class CosmeticsEvents {
      */
     public static EventResult equipFromHand(Player player, InteractionHand hand, boolean force) {
         ItemStack held = player.getItemInHand(hand);
-        if (!force && held.has(FemboyComponents.BACKPACK.get())) {
+        if (!force && FemboyComponents.BACKPACK.has(held)) {
             return EventResult.pass(); // backpacks open on right-click; BackpackItem handles sneak-equip
         }
         ResourceLocation slot = CosmeticsManager.slotOf(held);

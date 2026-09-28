@@ -105,11 +105,11 @@ public final class FemboyApiImpl implements FemboyApi {
 
     @Override
     public java.util.List<ItemStack> getCharms(ItemStack backpack) {
-        if (!backpack.has(FemboyComponents.BACKPACK.get())) {
+        if (!FemboyComponents.BACKPACK.has(backpack)) {
             return java.util.List.of();
         }
-        return backpack.getOrDefault(FemboyComponents.CHARMS.get(), net.minecraft.world.item.component.ItemContainerContents.EMPTY)
-                .nonEmptyStream().map(ItemStack::copy).toList();
+        return FemboyComponents.CHARMS.getOrDefault(backpack, dev.eliasnvx.femboymod.item.ItemList.EMPTY)
+                .nonEmptyItems(); // already copies
     }
 
     @Override

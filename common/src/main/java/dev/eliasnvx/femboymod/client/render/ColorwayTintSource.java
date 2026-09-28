@@ -7,7 +7,6 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor.ARGB32;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -15,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
  * {@code {"type": "femboymod:colorway", "default": 16094654, "stripe": 1}}; {@code stripe} picks which
  * stripe of a pattern the layer shows (wraps), {@code default} is used for undyed items.
  *
- * <p>1.21.1 has no data-driven item tint sources: {@code client.ItemTints} reads these entries from
+ * <p>1.20.1 has no data-driven item tint sources: {@code client.ItemTints} reads these entries from
  * {@code assets/<ns>/items/*.json} and serves them through an {@code ItemColor}. This record is the shared
  * definition (id, codec, color math) for that and for addons.
  */
@@ -33,6 +32,6 @@ public record ColorwayTintSource(int defaultColor, int stripe) {
     /** @return the layer color (opaque ARGB): the colorway's stripe, or the default color while undyed */
     public int calculate(ItemStack stack) {
         Colorway colorway = Colorways.effective(stack).orElse(null);
-        return ARGB32.opaque(colorway == null ? defaultColor : colorway.stripeColor(stripe, ColorwayClock.ticks()));
+        return ModelColors.opaque(colorway == null ? defaultColor : colorway.stripeColor(stripe, ColorwayClock.ticks()));
     }
 }

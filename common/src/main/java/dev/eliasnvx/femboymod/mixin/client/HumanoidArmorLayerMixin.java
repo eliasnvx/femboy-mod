@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * Armor under the outfit: visual only, the armor still protects (ArmorHiding, game rule allow_hidden_armor).
  * The armor layer sees an empty slot for hidden pieces. Elytra are drawn by their own layer and stay visible.
  *
- * <p>{@code renderArmorPiece*} matches both the vanilla method (Fabric) and NeoForge's overload with the extra
- * animation arguments, which is the one that reads the slot there.
+ * <p>1.20.1 (Fabric and Forge 47): the slot is read in the private {@code renderArmorPiece}; the wildcard also
+ * covers a loader overload of it, should one read the slot instead.
  */
 @Mixin(HumanoidArmorLayer.class)
 public abstract class HumanoidArmorLayerMixin {

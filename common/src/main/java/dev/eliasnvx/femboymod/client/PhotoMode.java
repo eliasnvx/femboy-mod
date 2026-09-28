@@ -93,9 +93,15 @@ public final class PhotoMode {
         });
     }
 
-    /** 1.21.1 NativeImage pixels are ABGR; the constants above are ARGB. */
-    private static final int PAPER_ABGR = FastColor.ABGR32.fromArgb32(PAPER_COLOR);
-    private static final int PAPER_EDGE_ABGR = FastColor.ABGR32.fromArgb32(PAPER_EDGE_COLOR);
+    /** NativeImage pixels are ABGR; the constants above are ARGB. */
+    private static final int PAPER_ABGR = toAbgr(PAPER_COLOR);
+    private static final int PAPER_EDGE_ABGR = toAbgr(PAPER_EDGE_COLOR);
+
+    /** 1.20.1 has no {@code ABGR32.fromArgb32}. */
+    private static int toAbgr(int argb) {
+        return FastColor.ABGR32.color(FastColor.ARGB32.alpha(argb), FastColor.ARGB32.blue(argb),
+                FastColor.ARGB32.green(argb), FastColor.ARGB32.red(argb));
+    }
 
     /** A new image: the centre square of the shot on cream paper, watermark centred on the wide bottom margin. */
     static NativeImage print(Minecraft minecraft, NativeImage shot) {

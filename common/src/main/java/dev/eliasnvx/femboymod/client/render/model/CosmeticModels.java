@@ -37,7 +37,7 @@ import static dev.eliasnvx.femboymod.client.render.model.Groups.METAL;
  * Detailed placeholder cosmetic geometry, built in code (voxel-extruded pixel masks + color groups).
  * Each model is a {@link HumanoidModel} with an empty humanoid skeleton plus parts under head/body/legs/arms.
  * Before drawing, the wearer's posed model is copied onto it ({@link GroupModel#pose}) and procedural animation
- * runs for that wearer (rendering is immediate on 1.21.1, so shared model instances are posed right before each
+ * runs for that wearer (rendering is immediate on 1.20.1, so shared model instances are posed right before each
  * draw). Units are model pixels. Blockbench/GeckoLib models ({@code femboymod:geo}) can replace
  * any of these per item later.
  */

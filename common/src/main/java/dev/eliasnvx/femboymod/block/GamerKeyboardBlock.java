@@ -1,11 +1,11 @@
 package dev.eliasnvx.femboymod.block;
 
-import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -24,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 /** Mechanical keyboard with a mouse (SPEC v1.1): right-click to clack the keys. */
 public class GamerKeyboardBlock extends HorizontalDirectionalBlock {
 
-    public static final MapCodec<GamerKeyboardBlock> CODEC = simpleCodec(GamerKeyboardBlock::new);
 
     private static final float MIN_PITCH = 1.5F;
     private static final float PITCH_RANGE = 0.5F;
@@ -34,11 +33,6 @@ public class GamerKeyboardBlock extends HorizontalDirectionalBlock {
     public GamerKeyboardBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
-    }
-
-    @Override
-    protected MapCodec<GamerKeyboardBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -52,12 +46,12 @@ public class GamerKeyboardBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return shapes.get(state.getValue(FACING));
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
             float pitch = MIN_PITCH + level.getRandom().nextFloat() * PITCH_RANGE;
             level.playSound(null, pos, SoundEvents.BAMBOO_WOOD_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.6F, pitch);

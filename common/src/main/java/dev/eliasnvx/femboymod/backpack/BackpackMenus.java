@@ -27,7 +27,7 @@ public final class BackpackMenus {
     }
 
     public static @Nullable BackpackSpec spec(ItemStack stack) {
-        return stack.get(FemboyComponents.BACKPACK.get());
+        return FemboyComponents.BACKPACK.get(stack);
     }
 
     /** Key B: the worn backpack, or else one in the main hand. */
@@ -57,7 +57,7 @@ public final class BackpackMenus {
         MenuRegistry.openExtendedMenu(player, new ExtendedMenuProvider() {
             @Override
             public void saveExtraData(FriendlyByteBuf buf) {
-                BackpackMenuData.STREAM_CODEC.encode(buf, data);
+                data.write(buf);
             }
 
             @Override

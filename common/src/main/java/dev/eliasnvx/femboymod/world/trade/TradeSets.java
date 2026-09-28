@@ -32,7 +32,6 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
@@ -40,10 +39,11 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
- * Data-driven trades on Minecraft 1.21.1. 26.3 has them in vanilla; 1.21.1 does not, so this class reads the
+ * Data-driven trades on Minecraft 1.20.1. 26.3 has them in vanilla; 1.20.1 does not, so this class reads the
  * same files: {@code data/<ns>/villager_trade/**} (one trade each), {@code data/<ns>/tags/villager_trade/**}
  * (lists of trades) and {@code data/<ns>/trade_set/**} ({@code amount} + {@code trades}: a tag, an id or a list).
- * The {@code random_sequence} field is ignored: offers use the trader's own random.
+ * The {@code random_sequence} field is ignored: offers use the trader's own random. Items are 1.20.1 item stacks
+ * ({@code {"id", "Count", "tag"}}); a wanted item matches by item and count, like 26.3's item cost.
  */
 public final class TradeSets {
 
@@ -74,7 +74,7 @@ public final class TradeSets {
         if (set == null) {
             return 0;
         }
-        List<VillagerTrade> trades = resolve(set, trader.registryAccess());
+        List<VillagerTrade> trades = resolve(set, trader.level().registryAccess());
         int added = 0;
         while (added < set.amount()) {
             MerchantOffer offer = pickNew(trades, offers, random);
@@ -98,7 +98,7 @@ public final class TradeSets {
             if (set == null || !(trader instanceof Merchant merchant)) {
                 return null;
             }
-            List<VillagerTrade> trades = resolve(set, trader.registryAccess());
+            List<VillagerTrade> trades = resolve(set, trader.level().registryAccess());
             MerchantOffers offers = merchant.getOffers();
             long fromSet = offers.stream().filter(offer -> trades.stream().anyMatch(trade -> trade.sameAs(offer))).count();
             return fromSet >= set.amount() ? null : pickNew(trades, offers, random);
@@ -113,7 +113,7 @@ public final class TradeSets {
     }
 
     private static List<VillagerTrade> resolve(TradeSet set, RegistryAccess registries) {
-        RegistryOps<JsonElement> ops = registries.createSerializationContext(JsonOps.INSTANCE);
+        RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registries);
         List<VillagerTrade> trades = new ArrayList<>();
         for (ResourceLocation id : set.trades()) {
             JsonElement json = data.trades().get(id);
@@ -129,11 +129,11 @@ public final class TradeSets {
     }
 
     /** One trade, the same format as 26.3's {@code villager_trade} files. */
-    record VillagerTrade(ItemCost wants, Optional<ItemCost> additionalWants, ItemStack gives, int maxUses, int xp,
+    record VillagerTrade(ItemStack wants, Optional<ItemStack> additionalWants, ItemStack gives, int maxUses, int xp,
                          float reputationDiscount) {
         static final Codec<VillagerTrade> CODEC = RecordCodecBuilder.create(i -> i.group(
-                ItemCost.CODEC.fieldOf("wants").forGetter(VillagerTrade::wants),
-                ItemCost.CODEC.optionalFieldOf("additional_wants").forGetter(VillagerTrade::additionalWants),
+                ItemStack.CODEC.fieldOf("wants").forGetter(VillagerTrade::wants),
+                ItemStack.CODEC.optionalFieldOf("additional_wants").forGetter(VillagerTrade::additionalWants),
                 ItemStack.CODEC.fieldOf("gives").forGetter(VillagerTrade::gives),
                 ExtraCodecs.POSITIVE_INT.fieldOf("max_uses").forGetter(VillagerTrade::maxUses),
                 ExtraCodecs.NON_NEGATIVE_INT.fieldOf("xp").forGetter(VillagerTrade::xp),
@@ -141,12 +141,13 @@ public final class TradeSets {
         ).apply(i, VillagerTrade::new));
 
         MerchantOffer toOffer() {
-            return new MerchantOffer(wants, additionalWants, gives.copy(), maxUses, xp, reputationDiscount);
+            return new MerchantOffer(wants.copy(), additionalWants.map(ItemStack::copy).orElse(ItemStack.EMPTY), gives.copy(),
+                    maxUses, xp, reputationDiscount);
         }
 
         boolean sameAs(MerchantOffer offer) {
-            return ItemStack.isSameItemSameComponents(offer.getResult(), gives)
-                    && ItemStack.isSameItemSameComponents(offer.getBaseCostA(), wants.itemStack());
+            return ItemStack.isSameItemSameTags(offer.getResult(), gives)
+                    && ItemStack.isSameItem(offer.getBaseCostA(), wants);
         }
     }
 

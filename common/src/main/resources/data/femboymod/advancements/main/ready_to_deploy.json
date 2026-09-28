@@ -1,0 +1,30 @@
+{
+  "parent": "femboymod:main/programming_socks",
+  "display": {
+    "icon": {
+      "item": "femboymod:byte_energy_pink"
+    },
+    "title": {
+      "translate": "advancements.femboymod.ready_to_deploy.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.ready_to_deploy.description"
+    },
+    "frame": "task",
+    "hidden": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "ready_to_deploy",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

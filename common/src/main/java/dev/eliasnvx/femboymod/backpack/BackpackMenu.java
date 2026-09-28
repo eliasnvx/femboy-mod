@@ -3,14 +3,14 @@ package dev.eliasnvx.femboymod.backpack;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CharmsChangedEvent;
 import dev.eliasnvx.femboymod.drip.WornEvaluator;
+import dev.eliasnvx.femboymod.item.ItemList;
+import dev.eliasnvx.femboymod.item.NbtItemData;
 import dev.eliasnvx.femboymod.network.CosmeticsSyncPayload;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyMenus;
 import dev.eliasnvx.femboymod.registry.FemboyTags;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -20,14 +20,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
 
 import java.util.List;
 
 /**
  * Backpack menu (SPEC §5.3). Dupe safety (network-and-storage rules):
  * <ul>
- *     <li>single source of truth: every change is written straight into the backpack item's component;</li>
+ *     <li>single source of truth: every change is written straight into the backpack item's data (NBT);</li>
  *     <li>{@link #stillValid}: the exact backpack stack (identity) must still be where it was opened from;</li>
  *     <li>the backpack's own inventory slot is locked (no pickup, throw, number-key or offhand swap);</li>
  *     <li>no backpacks (or anything that cannot go into containers, e.g. shulker boxes) inside.</li>
@@ -51,9 +50,9 @@ public final class BackpackMenu extends AbstractContainerMenu {
     private final ComponentContainer charms;
     private ItemStack backpack;
 
-    /** Client side: Architectury 13 extended menus hand the extra data over as a raw buffer. */
+    /** Client side: Architectury 9 extended menus hand the extra data over as a raw buffer. */
     public BackpackMenu(int containerId, Inventory inventory, FriendlyByteBuf buf) {
-        this(containerId, inventory, BackpackMenuData.STREAM_CODEC.decode(buf));
+        this(containerId, inventory, BackpackMenuData.read(buf));
     }
 
     public BackpackMenu(int containerId, Inventory inventory, BackpackMenuData data) {
@@ -63,8 +62,8 @@ public final class BackpackMenu extends AbstractContainerMenu {
         this.backpack = data.resolve(player);
         this.bagSize = Math.max(1, data.rows()) * 9;
         this.lockedInventorySlot = data.worn() ? -1 : data.slot();
-        this.bag = new ComponentContainer(DataComponents.CONTAINER, bagSize, false);
-        this.charms = new ComponentContainer(FemboyComponents.CHARMS.get(), BackpackSpec.CHARM_SLOTS, true);
+        this.bag = new ComponentContainer(FemboyComponents.CONTENTS, bagSize, false);
+        this.charms = new ComponentContainer(FemboyComponents.CHARMS, BackpackSpec.CHARM_SLOTS, true);
 
         for (int i = 0; i < bagSize; i++) {
             addSlot(new BagSlot(bag, i, LEFT + (i % 9) * SLOT_SIZE, TOP + (i / 9) * SLOT_SIZE));
@@ -141,17 +140,17 @@ public final class BackpackMenu extends AbstractContainerMenu {
         return original;
     }
 
-    /** Container view over one ItemContainerContents component of the backpack. */
+    /** Container view over one item list stored on the backpack (contents or charms). */
     private final class ComponentContainer implements Container {
-        private final DataComponentType<ItemContainerContents> type;
+        private final NbtItemData<ItemList> type;
         private final NonNullList<ItemStack> items;
         private final boolean isCharms;
 
-        ComponentContainer(DataComponentType<ItemContainerContents> type, int size, boolean isCharms) {
+        ComponentContainer(NbtItemData<ItemList> type, int size, boolean isCharms) {
             this.type = type;
             this.items = NonNullList.withSize(size, ItemStack.EMPTY);
             this.isCharms = isCharms;
-            backpack.getOrDefault(type, ItemContainerContents.EMPTY).copyInto(items);
+            type.getOrDefault(backpack, ItemList.EMPTY).copyInto(items);
         }
 
         /** Writes the current slots into the backpack item immediately. */
@@ -159,7 +158,12 @@ public final class BackpackMenu extends AbstractContainerMenu {
             if (!stillValid(player)) {
                 return; // never write into a backpack that is gone (would duplicate its contents)
             }
-            backpack.set(type, ItemContainerContents.fromItems(items));
+            ItemList stored = ItemList.fromItems(items);
+            if (stored == ItemList.EMPTY) {
+                type.remove(backpack); // an emptied backpack matches a fresh one again
+            } else {
+                type.set(backpack, stored);
+            }
             if (isCharms && player instanceof ServerPlayer serverPlayer) {
                 FemboyMod.api().events().post(new CharmsChangedEvent(player, backpack, List.copyOf(items)));
                 if (data.worn()) {
@@ -237,7 +241,7 @@ public final class BackpackMenu extends AbstractContainerMenu {
 
     /** No backpacks (and nothing that refuses to go into container items, like shulker boxes). */
     public static boolean canStore(ItemStack stack) {
-        return stack.getItem().canFitInsideContainerItems() && !stack.has(FemboyComponents.BACKPACK.get());
+        return stack.getItem().canFitInsideContainerItems() && !FemboyComponents.BACKPACK.has(stack);
     }
 
     private static final class CharmSlot extends Slot {

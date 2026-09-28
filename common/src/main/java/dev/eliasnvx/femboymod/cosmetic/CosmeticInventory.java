@@ -2,12 +2,11 @@ package dev.eliasnvx.femboymod.cosmetic;
 
 import net.minecraft.world.entity.EquipmentSlot;
 import dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticsView;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -30,26 +29,29 @@ public record CosmeticInventory(Map<ResourceLocation, ItemStack> items, Set<Reso
 
     private static final Codec<Map<ResourceLocation, ItemStack>> ITEMS_CODEC = Codec.unboundedMap(ResourceLocation.CODEC, ItemStack.CODEC);
 
-    private static final Codec<Map<EquipmentSlot, ArmorVisibility>> ARMOR_CODEC = Codec.unboundedMap(EquipmentSlot.CODEC, ArmorVisibility.CODEC);
+    /** 1.20.1 EquipmentSlot has no codec: its serialized name ("head", "chest", ...), as on 1.21.1. */
+    private static final Codec<EquipmentSlot> EQUIPMENT_SLOT_CODEC = Codec.STRING.comapFlatMap(name -> {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot.getName().equals(name)) {
+                return DataResult.success(slot);
+            }
+        }
+        return DataResult.error(() -> "Unknown equipment slot: " + name);
+    }, EquipmentSlot::getName);
+
+    private static final Codec<Map<EquipmentSlot, ArmorVisibility>> ARMOR_CODEC = Codec.unboundedMap(EQUIPMENT_SLOT_CODEC, ArmorVisibility.CODEC);
 
     /** {"items": {...}, "hidden": [...], "armor": {...}}; worlds saved before hiding existed store the plain slot map. */
-    public static final Codec<CosmeticInventory> CODEC = Codec.withAlternative(
-            RecordCodecBuilder.create(i -> i.group(
-                    ITEMS_CODEC.fieldOf("items").forGetter(CosmeticInventory::items),
-                    ResourceLocation.CODEC.listOf().xmap(Set::copyOf, List::copyOf).optionalFieldOf("hidden", Set.of())
-                            .forGetter(CosmeticInventory::hidden),
-                    ARMOR_CODEC.optionalFieldOf("armor", Map.of()).forGetter(CosmeticInventory::armor)
-            ).apply(i, CosmeticInventory::new)),
-            ITEMS_CODEC, CosmeticInventory::new);
+    private static final Codec<CosmeticInventory> FULL_CODEC = RecordCodecBuilder.create(i -> i.group(
+            ITEMS_CODEC.fieldOf("items").forGetter(CosmeticInventory::items),
+            ResourceLocation.CODEC.listOf().xmap(Set::copyOf, List::copyOf).optionalFieldOf("hidden", Set.of())
+                    .forGetter(CosmeticInventory::hidden),
+            ARMOR_CODEC.optionalFieldOf("armor", Map.of()).forGetter(CosmeticInventory::armor)
+    ).apply(i, CosmeticInventory::new));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, CosmeticInventory> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.<RegistryFriendlyByteBuf, ResourceLocation, ItemStack, Map<ResourceLocation, ItemStack>>map(
-                    HashMap::new, ResourceLocation.STREAM_CODEC, ItemStack.STREAM_CODEC), CosmeticInventory::items,
-            ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.collection(HashSet::new)), inventory -> new HashSet<>(inventory.hidden()),
-            ByteBufCodecs.<RegistryFriendlyByteBuf, EquipmentSlot, ArmorVisibility, Map<EquipmentSlot, ArmorVisibility>>map(
-                    HashMap::new, ByteBufCodecs.idMapper(i -> EquipmentSlot.values()[i], Enum::ordinal), ByteBufCodecs.idMapper(i -> ArmorVisibility.values()[i], Enum::ordinal)),
-            CosmeticInventory::armor,
-            CosmeticInventory::new);
+    // DFU 6 has no Codec.withAlternative: either(full, legacy) and always write the full form
+    public static final Codec<CosmeticInventory> CODEC = Codec.either(FULL_CODEC, ITEMS_CODEC.xmap(CosmeticInventory::new, CosmeticInventory::items))
+            .xmap(either -> either.map(inventory -> inventory, inventory -> inventory), Either::left);
 
     public CosmeticInventory(Map<ResourceLocation, ItemStack> items) {
         this(items, Set.of(), Map.of());

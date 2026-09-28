@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "item": "femboymod:pleated_skirt"
+    },
+    "title": {
+      "translate": "advancements.femboymod.full_femboy_mode.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.full_femboy_mode.description"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "set_bonus:femboymod:full_femboy_mode",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

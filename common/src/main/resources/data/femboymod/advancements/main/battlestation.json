@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "item": "femboymod:gamer_monitor"
+    },
+    "title": {
+      "translate": "advancements.femboymod.battlestation.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.battlestation.description"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "setup_rating",
+        "min": 6
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

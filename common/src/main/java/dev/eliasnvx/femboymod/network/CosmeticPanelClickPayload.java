@@ -3,27 +3,28 @@ package dev.eliasnvx.femboymod.network;
 import dev.architectury.networking.NetworkManager;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.menu.CosmeticPanelActions;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 /** C2S: a click on a cosmetic slot of the inventory panel; the server applies it to the real stacks. */
-public record CosmeticPanelClickPayload(ResourceLocation slot, boolean quickMove) implements CustomPacketPayload {
+public record CosmeticPanelClickPayload(ResourceLocation slot, boolean quickMove) implements FemboyPacket {
 
-    public static final Type<CosmeticPanelClickPayload> TYPE =
-            new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "cosmetic_panel_click"));
-
-    public static final StreamCodec<ByteBuf, CosmeticPanelClickPayload> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC, CosmeticPanelClickPayload::slot,
-            ByteBufCodecs.BOOL, CosmeticPanelClickPayload::quickMove,
-            CosmeticPanelClickPayload::new);
+    public static final ResourceLocation ID = new ResourceLocation(FemboyMod.MOD_ID, "cosmetic_panel_click");
 
     @Override
-    public Type<CosmeticPanelClickPayload> type() {
-        return TYPE;
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeResourceLocation(slot);
+        buf.writeBoolean(quickMove);
+    }
+
+    public static CosmeticPanelClickPayload read(FriendlyByteBuf buf) {
+        return new CosmeticPanelClickPayload(buf.readResourceLocation(), buf.readBoolean());
     }
 
     public static void handle(CosmeticPanelClickPayload payload, NetworkManager.PacketContext context) {

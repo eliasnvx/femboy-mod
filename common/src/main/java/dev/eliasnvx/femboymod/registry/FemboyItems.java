@@ -25,8 +25,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.PushReaction;
 import dev.eliasnvx.femboymod.backpack.BackpackItem;
 import dev.eliasnvx.femboymod.backpack.BackpackSpec;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.component.ItemContainerContents;
+import dev.eliasnvx.femboymod.item.DyeableCosmeticItem;
+import dev.eliasnvx.femboymod.item.ItemList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -105,15 +105,13 @@ public final class FemboyItems {
 
     // SPEC v1.1: food. Nutrition like comparable vanilla food; buffs are data-driven (bubble_tea_flavor)
     public static final RegistrySupplier<Item> BUBBLE_TEA = register("bubble_tea", props -> new BubbleTeaItem(props.stacksTo(FemboyItems.DRINK_STACK)
-            .food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.3F).alwaysEdible()
-                    .usingConvertsTo(Items.GLASS_BOTTLE).build())));
+            .food(new FoodProperties.Builder().nutrition(4).saturationMod(0.3F).alwaysEat().build()), () -> Items.GLASS_BOTTLE));
     public static final RegistrySupplier<Item> STRAWBERRY_MILK = register("strawberry_milk", props -> new StrawberryMilkItem(props.stacksTo(FemboyItems.DRINK_STACK)
-            .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.4F).alwaysEdible()
-                    .usingConvertsTo(Items.GLASS_BOTTLE).build())));
+            .food(new FoodProperties.Builder().nutrition(3).saturationMod(0.4F).alwaysEat().build()), () -> Items.GLASS_BOTTLE));
     public static final RegistrySupplier<Item> MOCHI = register("mochi", props -> new Item(props
-            .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.5F).fast().build()))); // fast = 0.8 s
+            .food(new FoodProperties.Builder().nutrition(3).saturationMod(0.5F).fast().build()))); // fast = 0.8 s
     public static final RegistrySupplier<Item> ONIGIRI = register("onigiri", props -> new Item(props
-            .food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.7F).build())));
+            .food(new FoodProperties.Builder().nutrition(6).saturationMod(0.7F).build())));
 
     // SPEC §5.4: Pink Creeper drops and spawn egg
     public static final RegistrySupplier<Item> GLITTER = register("glitter", props -> new Item(props));
@@ -154,7 +152,7 @@ public final class FemboyItems {
 
     private static final int DRINK_STACK = 16;
     /**
-     * 1.21.1 spawn eggs tint their texture with two colors. Ours are drawn in full color (as in 26.3),
+     * 1.20.1 spawn eggs tint their texture with two colors. Ours are drawn in full color (as in 26.3),
      * so both tints are white, which leaves the texture unchanged.
      */
     private static final int NO_EGG_TINT = 0xFFFFFF;
@@ -175,27 +173,38 @@ public final class FemboyItems {
 
     private static RegistrySupplier<Item> backpack(String name, int rows, boolean indestructible) {
         return register(name, props -> {
-            props.stacksTo(1)
-                    .component(FemboyComponents.COSMETIC.get(), new Cosmetic(FemboySlots.BACK))
-                    .component(FemboyComponents.BACKPACK.get(), new BackpackSpec(rows))
-                    .component(DataComponents.CONTAINER, ItemContainerContents.EMPTY)
-                    .component(FemboyComponents.CHARMS.get(), ItemContainerContents.EMPTY);
+            props.stacksTo(1);
             if (indestructible) {
                 // Netherite: does not burn and survives lava, cactus and explosions as a dropped item.
-                // 1.21.1 has no damage_resistant component: fire_resistant covers fire and lava,
+                // 1.20.1 has no damage_resistant component: fireResistant covers fire and lava,
                 // the rest of #femboymod:backpack_immune_to goes through isDamageResistant.
                 props.fireResistant();
             }
-            return new BackpackItem(props);
+            BackpackItem item = new BackpackItem(props);
+            // 1.20.1 has no default components: every backpack stack falls back to these values
+            FemboyComponents.COSMETIC.setDefault(item, new Cosmetic(FemboySlots.BACK));
+            FemboyComponents.BACKPACK.setDefault(item, new BackpackSpec(rows));
+            FemboyComponents.CONTENTS.setDefault(item, ItemList.EMPTY);
+            FemboyComponents.CHARMS.setDefault(item, ItemList.EMPTY);
+            return item;
         });
     }
 
+    /** A cosmetic vanilla can dye (1.21.1: listed in #femboymod:dyeable_cosmetics; see DyeableCosmeticItem). */
     private static RegistrySupplier<Item> cosmetic(String name, ResourceLocation slot) {
-        return cosmetic(name, new Cosmetic(slot));
+        return cosmetic(name, new Cosmetic(slot), DyeableCosmeticItem::new);
     }
 
     private static RegistrySupplier<Item> cosmetic(String name, Cosmetic cosmetic) {
-        return register(name, props -> new Item(props.stacksTo(1).component(FemboyComponents.COSMETIC.get(), cosmetic)));
+        return cosmetic(name, cosmetic, Item::new);
+    }
+
+    private static RegistrySupplier<Item> cosmetic(String name, Cosmetic cosmetic, Function<Item.Properties, Item> factory) {
+        return register(name, props -> {
+            Item item = factory.apply(props.stacksTo(1));
+            FemboyComponents.COSMETIC.setDefault(item, cosmetic); // 1.21.1: default component
+            return item;
+        });
     }
 
     private static RegistrySupplier<Item> register(String name, Function<Item.Properties, Item> factory) {

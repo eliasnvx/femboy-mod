@@ -1,10 +1,11 @@
 {
   "wants": {
     "id": "minecraft:emerald",
-    "count": 5
+    "Count": 5
   },
   "gives": {
-    "id": "femboymod:byte_energy_rainbow"
+    "id": "femboymod:byte_energy_rainbow",
+    "Count": 1
   },
   "max_uses": 8,
   "xp": 15,

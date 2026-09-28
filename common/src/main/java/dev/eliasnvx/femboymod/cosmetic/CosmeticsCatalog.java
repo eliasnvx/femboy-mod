@@ -4,7 +4,7 @@ import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 
-/** Every wearable item (has the {@code femboymod:cosmetic} component), for the collection counter. */
+/** Every wearable item (has a default {@code femboymod:cosmetic} value), for the collection counter. */
 public final class CosmeticsCatalog {
 
     private static int size = -1;
@@ -17,7 +17,7 @@ public final class CosmeticsCatalog {
         if (size < 0) {
             int count = 0;
             for (Item item : BuiltInRegistries.ITEM) {
-                if (item.components().has(FemboyComponents.COSMETIC.get())) {
+                if (FemboyComponents.COSMETIC.getDefault(item) != null) {
                     count++;
                 }
             }

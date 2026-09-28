@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
-import dev.architectury.networking.NetworkManager;
+import dev.eliasnvx.femboymod.network.FemboyNetwork;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import dev.eliasnvx.femboymod.FemboyMod;
@@ -101,7 +101,7 @@ public final class FemboyModClient {
             }
             while (OPEN_BACKPACK.consumeClick()) {
                 if (minecraft.player != null && minecraft.screen == null) {
-                    NetworkManager.sendToServer(OpenBackpackPayload.INSTANCE);
+                    FemboyNetwork.sendToServer(OpenBackpackPayload.INSTANCE);
                 }
             }
         });
@@ -145,12 +145,11 @@ public final class FemboyModClient {
     }
 
     private static void requestCosmeticsScreen() {
-        NetworkManager.sendToServer(OpenCosmeticsMenuPayload.INSTANCE);
+        FemboyNetwork.sendToServer(OpenCosmeticsMenuPayload.INSTANCE);
     }
 
-    private static void appendTooltip(ItemStack stack, List<Component> lines, net.minecraft.world.item.Item.TooltipContext context,
-                                      net.minecraft.world.item.TooltipFlag flag) {
-        Cosmetic cosmetic = stack.get(FemboyComponents.COSMETIC.get());
+    private static void appendTooltip(ItemStack stack, List<Component> lines, net.minecraft.world.item.TooltipFlag flag) {
+        Cosmetic cosmetic = FemboyComponents.COSMETIC.get(stack);
         if (cosmetic != null) {
             int drip = dripOf(stack);
             if (drip > 0) {

@@ -21,7 +21,7 @@ public abstract class PlayerModelEmoteMixin {
         }
         PlayerModel<?> model = (PlayerModel<?>) (Object) this;
         EmoteClient.pose(model, entity.getId());
-        // 1.21.1 sleeves are separate parts copied from the arms before this point: follow the emote pose
+        // the sleeves are separate parts copied from the arms before this point: follow the emote pose
         model.leftSleeve.copyFrom(model.leftArm);
         model.rightSleeve.copyFrom(model.rightArm);
     }
