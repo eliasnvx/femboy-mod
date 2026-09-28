@@ -202,7 +202,7 @@ public final class DecorGameTests {
             var entries = VibeLeaderboard.get(helper.getLevel().getServer()).entries();
             int size = dev.eliasnvx.femboymod.config.FemboyConfig.common().vibeCheck().leaderboardSize();
             helper.assertTrue(entries.stream().anyMatch(entry -> entry.player().equals(player.getUUID()))
-                    || entries.size() == size && entries.getLast().score() >= score, "on the server leaderboard (or beaten by the whole top)");
+                    || entries.size() == size && entries.get(entries.size() - 1).score() >= score, "on the server leaderboard (or beaten by the whole top)");
         });
     }
 
@@ -333,6 +333,6 @@ public final class DecorGameTests {
     }
 
     private static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath("femboymod", path);
+        return new ResourceLocation("femboymod", path);
     }
 }

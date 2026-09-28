@@ -15,8 +15,8 @@ import net.minecraft.world.entity.monster.Zombie;
  */
 public final class CaffeinatedZombieRenderer extends ZombieRenderer {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/caffeinated_zombie.png");
-    private static final ResourceLocation EYES = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/caffeinated_zombie_eyes.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/caffeinated_zombie.png");
+    private static final ResourceLocation EYES = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/caffeinated_zombie_eyes.png");
 
     public CaffeinatedZombieRenderer(EntityRendererProvider.Context context) {
         super(context);

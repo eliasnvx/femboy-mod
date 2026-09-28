@@ -32,6 +32,6 @@ public final class FemboySlots {
     }
 
     private static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, path);
+        return new ResourceLocation(FemboyApi.MOD_ID, path);
     }
 }

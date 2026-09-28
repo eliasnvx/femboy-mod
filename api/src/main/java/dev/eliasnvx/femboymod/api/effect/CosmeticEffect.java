@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.api.effect;
 
+import net.minecraft.util.ExtraCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.api.FemboyApi;
@@ -20,8 +21,8 @@ import net.minecraft.server.level.ServerPlayer;
 public interface CosmeticEffect {
 
     /** Dispatch codec over {@link FemboyApi#cosmeticEffectTypes()}. */
-    Codec<CosmeticEffect> CODEC = Codec.lazyInitialized(() -> FemboyApi.get().cosmeticEffectTypes().byIdCodec()
-            .dispatch("type", CosmeticEffect::codec, codec -> codec));
+    Codec<CosmeticEffect> CODEC = ExtraCodecs.lazyInitializedCodec(() -> FemboyApi.get().cosmeticEffectTypes().byIdCodec()
+            .dispatch("type", CosmeticEffect::codec, codec -> codec.codec()));
 
     /**
      * Returns the codec of this effect's type; must be the instance registered in

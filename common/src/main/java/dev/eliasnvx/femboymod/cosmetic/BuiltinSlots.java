@@ -22,7 +22,7 @@ public final class BuiltinSlots {
      * {@code covers}: armor hidden by default while the slot is worn (the armor would draw over the item).
      */
     private static CosmeticSlotType slot(int order, ResourceLocation id, EquipmentSlot... covers) {
-        return new CosmeticSlotType(order, Optional.of(ResourceLocation.fromNamespaceAndPath(id.getNamespace(),
+        return new CosmeticSlotType(order, Optional.of(new ResourceLocation(id.getNamespace(),
                 "container/slot/cosmetic/" + id.getPath())), Set.of(covers));
     }
 

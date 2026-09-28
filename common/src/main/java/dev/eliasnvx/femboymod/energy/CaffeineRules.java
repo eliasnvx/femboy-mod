@@ -20,9 +20,9 @@ import java.util.List;
 public record CaffeineRules(List<EnergyDrink.Buff> crash, int jitterWindow, int jitterAfter, List<EnergyDrink.Buff> jitter) {
 
     public static final ResourceKey<Registry<CaffeineRules>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "caffeine"));
+            ResourceKey.createRegistryKey(new ResourceLocation(FemboyMod.MOD_ID, "caffeine"));
     public static final ResourceKey<CaffeineRules> DEFAULT =
-            ResourceKey.create(REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "default"));
+            ResourceKey.create(REGISTRY_KEY, new ResourceLocation(FemboyMod.MOD_ID, "default"));
     public static final CaffeineRules FALLBACK = new CaffeineRules(List.of(), 1, Integer.MAX_VALUE, List.of());
 
     public static final Codec<CaffeineRules> CODEC = RecordCodecBuilder.create(i -> i.group(

@@ -49,10 +49,10 @@ public final class FemboyWorldgen {
     }
 
     private static TagKey<Biome> biomeTag(String name) {
-        return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
+        return TagKey.create(Registries.BIOME, new ResourceLocation(FemboyMod.MOD_ID, name));
     }
 
     private static ResourceKey<PlacedFeature> placed(String name) {
-        return ResourceKey.create(Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
+        return ResourceKey.create(Registries.PLACED_FEATURE, new ResourceLocation(FemboyMod.MOD_ID, name));
     }
 }

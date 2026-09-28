@@ -14,10 +14,10 @@ import net.minecraft.world.entity.LivingEntity;
 final class FemboyClientApiImpl implements FemboyClientApi {
 
     private final SimpleApiRegistry<CosmeticRenderer.Factory> renderers =
-            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetic_renderer"));
+            new SimpleApiRegistry<>(new ResourceLocation(FemboyMod.MOD_ID, "cosmetic_renderer"));
 
     private final SimpleApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers =
-            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "chat_transformer"));
+            new SimpleApiRegistry<>(new ResourceLocation(FemboyMod.MOD_ID, "chat_transformer"));
 
     @Override
     public ApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers() {

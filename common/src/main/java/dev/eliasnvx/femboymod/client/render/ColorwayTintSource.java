@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
  */
 public record ColorwayTintSource(int defaultColor, int stripe) {
 
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "colorway");
+    public static final ResourceLocation ID = new ResourceLocation(FemboyMod.MOD_ID, "colorway");
 
     private static final int MAX_STRIPE = 64;
 

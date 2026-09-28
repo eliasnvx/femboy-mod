@@ -49,6 +49,6 @@ public class BubbleTeaItem extends DrinkItem {
                 return flavor;
             }
         }
-        return flavors.getLast();
+        return flavors.get(flavors.size() - 1);
     }
 }

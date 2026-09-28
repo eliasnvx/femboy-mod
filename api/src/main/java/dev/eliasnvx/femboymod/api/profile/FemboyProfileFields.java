@@ -45,6 +45,6 @@ public final class FemboyProfileFields {
     }
 
     private static <T> ProfileField<T> field(String name, Codec<T> codec, T defaultValue, boolean synced) {
-        return ProfileField.of(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, name), codec, defaultValue, synced);
+        return ProfileField.of(new ResourceLocation(FemboyApi.MOD_ID, name), codec, defaultValue, synced);
     }
 }

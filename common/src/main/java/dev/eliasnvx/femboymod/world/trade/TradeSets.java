@@ -62,7 +62,7 @@ public final class TradeSets {
     /** Called from FemboyMod.init. */
     public static void init() {
         ReloadListenerRegistry.register(PackType.SERVER_DATA, new Loader(),
-                ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "trade_sets"));
+                new ResourceLocation(FemboyMod.MOD_ID, "trade_sets"));
     }
 
     /**
@@ -212,10 +212,10 @@ public final class TradeSets {
         private static void expand(String entry, Map<ResourceLocation, List<String>> tags, Set<ResourceLocation> out,
                                    Set<ResourceLocation> visiting) {
             if (!entry.startsWith(TAG_PREFIX)) {
-                out.add(ResourceLocation.parse(entry));
+                out.add(new ResourceLocation(entry));
                 return;
             }
-            ResourceLocation tag = ResourceLocation.parse(entry.substring(TAG_PREFIX.length()));
+            ResourceLocation tag = new ResourceLocation(entry.substring(TAG_PREFIX.length()));
             if (!visiting.add(tag)) {
                 return; // a tag that includes itself
             }

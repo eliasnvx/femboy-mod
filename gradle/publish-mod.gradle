@@ -1,9 +1,9 @@
-// Modrinth + CurseForge publishing (SPEC §14), applied by :fabric and :neoforge.
+// Modrinth + CurseForge publishing (SPEC §14), applied by :fabric and :forge.
 // Run by .github/workflows/release.yml on a v* tag. Without tokens it is a dry run:
 //   ./gradlew :fabric:publishMods   (prints what would be uploaded)
 apply plugin: "me.modmuss50.mod-publish-plugin"
 
-def loader = project.name // "fabric" | "neoforge"
+def loader = project.name // "fabric" | "forge"
 // CurseForge only gives a project id after moderation; until then (id 0) only Modrinth is published
 def curseforgeEnabled = rootProject.curseforge_project_id != "0"
 def changelogText = providers.provider {
@@ -17,7 +17,7 @@ publishMods {
     file = tasks.remapJar.archiveFile
     changelog = changelogText
     version = "${rootProject.mod_version}+${rootProject.minecraft_version}-${loader}"
-    displayName = "${rootProject.mod_version} (${loader == "fabric" ? "Fabric" : "NeoForge"} ${rootProject.minecraft_version})"
+    displayName = "${rootProject.mod_version} (${loader == "fabric" ? "Fabric" : "Forge"} ${rootProject.minecraft_version})"
     type = rootProject.mod_version.contains("-alpha") ? ALPHA : rootProject.mod_version.contains("-beta") ? BETA : STABLE
     modLoaders.add(loader)
     dryRun = providers.environmentVariable("MODRINTH_TOKEN").orNull == null

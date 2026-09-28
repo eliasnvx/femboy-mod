@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.api.colorway;
 
+import dev.eliasnvx.femboymod.api.util.ListCodecs;
 import org.jetbrains.annotations.ApiStatus;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -45,11 +46,11 @@ public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron, O
 
     /** Registry key of the {@code femboymod:colorway} data pack registry. */
     public static final ResourceKey<Registry<ColorwayPattern>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "colorway"));
+            ResourceKey.createRegistryKey(new ResourceLocation(FemboyApi.MOD_ID, "colorway"));
 
     /** Codec for the JSON file format. */
     public static final Codec<ColorwayPattern> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Stripe.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("stripes").forGetter(ColorwayPattern::stripes),
+            ListCodecs.sized(Stripe.CODEC, 1, Integer.MAX_VALUE).fieldOf("stripes").forGetter(ColorwayPattern::stripes),
             Chevron.CODEC.optionalFieldOf("chevron").forGetter(ColorwayPattern::chevron),
             Shimmer.CODEC.optionalFieldOf("shimmer").forGetter(ColorwayPattern::shimmer)
     ).apply(instance, ColorwayPattern::new));
@@ -190,7 +191,7 @@ public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron, O
 
         /** JSON codec. */
         public static final Codec<Chevron> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Colors.RGB_HEX_CODEC.listOf(1, 16).fieldOf("colors").forGetter(Chevron::colors),
+                ListCodecs.sized(Colors.RGB_HEX_CODEC, 1, 16).fieldOf("colors").forGetter(Chevron::colors),
                 Codec.floatRange(0.01F, 0.5F).fieldOf("band_width").forGetter(Chevron::bandWidth)
         ).apply(instance, Chevron::new));
 
@@ -251,11 +252,11 @@ public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron, O
         }
 
         private static String serialize(Stripe stripe) {
-            return switch (stripe) {
-                case Base b -> "base";
-                case Secondary s -> "secondary";
-                case Fixed f -> Colors.toHex(f.rgb());
-            };
+            // Java 17: no pattern matching in switch
+            if (stripe instanceof Fixed f) {
+                return Colors.toHex(f.rgb());
+            }
+            return stripe instanceof Secondary ? "secondary" : "base";
         }
 
         /**

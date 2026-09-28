@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ColorwayPatternTest {
 
     private static ColorwayPattern parse(String json) {
-        return ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(json)).getOrThrow();
+        return ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(json)).getOrThrow(false, error -> { });
     }
 
     @Test
@@ -29,7 +29,7 @@ class ColorwayPatternTest {
     @Test
     void roundTripKeepsFormat() {
         ColorwayPattern pattern = parse("{\"stripes\":[\"base\",\"#00ff00\"]}");
-        var json = ColorwayPattern.CODEC.encodeStart(JsonOps.INSTANCE, pattern).getOrThrow();
+        var json = ColorwayPattern.CODEC.encodeStart(JsonOps.INSTANCE, pattern).getOrThrow(false, error -> { });
         assertEquals("{\"stripes\":[\"base\",\"#00FF00\"]}", json.toString());
     }
 
@@ -41,7 +41,7 @@ class ColorwayPatternTest {
                 "{\"stripes\":[\"pink\"]}",
                 "{\"stripes\":[\"#GGGGGG\"]}",
                 "{}"}) {
-            assertTrue(ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(bad)).isError(), bad);
+            assertTrue(ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(bad)).error().isPresent(), bad);
         }
     }
 
@@ -87,6 +87,6 @@ class ColorwayPatternTest {
     @Test
     void shimmerCannotStrobe() {
         assertTrue(ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(
-                "{\"stripes\":[\"#FF0000\"],\"shimmer\":{\"period_ticks\":" + (ColorwayPattern.Shimmer.MIN_PERIOD_TICKS - 1) + "}}")).isError());
+                "{\"stripes\":[\"#FF0000\"],\"shimmer\":{\"period_ticks\":" + (ColorwayPattern.Shimmer.MIN_PERIOD_TICKS - 1) + "}}")).error().isPresent());
     }
 }

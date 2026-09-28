@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 
 /**
  * Loader-independent GameTest bodies (SPEC §13). Registered by
- * {@code fabric/src/gametest} (Fabric) and {@code FemboyGameTestsNeoForge} (NeoForge).
+ * {@code fabric/src/gametest} (Fabric) and {@code FemboyGameTestsForge} (NeoForge).
  */
 public final class CosmeticGameTests {
 
@@ -151,8 +151,8 @@ public final class CosmeticGameTests {
     public static void attachmentCodecRoundTrip(GameTestHelper helper) {
         CosmeticInventory inventory = sampleInventory(helper);
         var ops = helper.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE);
-        Tag tag = CosmeticInventory.CODEC.encodeStart(ops, inventory).getOrThrow();
-        CosmeticInventory decoded = CosmeticInventory.CODEC.parse(ops, tag).getOrThrow();
+        Tag tag = CosmeticInventory.CODEC.encodeStart(ops, inventory).getOrThrow(false, error -> { });
+        CosmeticInventory decoded = CosmeticInventory.CODEC.parse(ops, tag).getOrThrow(false, error -> { });
         assertSame(helper, inventory, decoded);
         helper.succeed();
     }
@@ -175,7 +175,7 @@ public final class CosmeticGameTests {
     public static void colorwayPatternsLoaded(GameTestHelper helper) {
         Registry<ColorwayPattern> registry = helper.getLevel().registryAccess().registryOrThrow(ColorwayPattern.REGISTRY_KEY);
         Holder<ColorwayPattern> trans = registry.getHolderOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
-                ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_trans")));
+                new ResourceLocation(FemboyApi.MOD_ID, "pride_trans")));
         helper.assertValueEqual(trans.value().stripes().size(), 5, "trans flag stripes");
         helper.assertTrue(registry.size() >= 12, "All built-in patterns should load, got " + registry.size());
         helper.succeed();
@@ -205,7 +205,7 @@ public final class CosmeticGameTests {
         ItemStack ears = new ItemStack(FemboyItems.CAT_EARS.get());
         ears.set(FemboyComponents.COLORWAY.get(), new Colorway(0xFFB6D9,
                 Optional.of(patterns.getHolderOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
-                        ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_bi")))),
+                        new ResourceLocation(FemboyApi.MOD_ID, "pride_bi")))),
                 Optional.of(0x123456)));
         return CosmeticInventory.EMPTY.with(HEAD, ears)
                 .withArmor(net.minecraft.world.entity.EquipmentSlot.HEAD, dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility.SHOW)

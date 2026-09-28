@@ -95,9 +95,9 @@ public final class PanelGameTests {
             CosmeticsManager.setHidden(player, FemboySlots.LEGS_OVERLAY, true);
             CosmeticInventory saved = CosmeticInventory.CODEC.parse(JsonOps.INSTANCE,
                     CosmeticInventory.CODEC.encodeStart(helper.getLevel().registryAccess().createSerializationContext(JsonOps.INSTANCE),
-                            CosmeticsManager.get(player)).getOrThrow()).getOrThrow();
+                            CosmeticsManager.get(player)).getOrThrow(false, error -> { })).getOrThrow(false, error -> { });
             helper.assertTrue(saved.isHidden(FemboySlots.LEGS_OVERLAY), "hidden flag survives a save");
-            helper.assertFalse(CosmeticInventory.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString("{}")).getOrThrow()
+            helper.assertFalse(CosmeticInventory.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString("{}")).getOrThrow(false, error -> { })
                     .isHidden(FemboySlots.LEGS_OVERLAY), "old saves (plain slot map) still load");
             helper.assertFalse(CosmeticPanelActions.creativeSet(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get())),
                     "the creative packet does nothing in survival");

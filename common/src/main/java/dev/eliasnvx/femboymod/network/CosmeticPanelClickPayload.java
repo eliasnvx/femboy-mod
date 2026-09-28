@@ -14,7 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 public record CosmeticPanelClickPayload(ResourceLocation slot, boolean quickMove) implements CustomPacketPayload {
 
     public static final Type<CosmeticPanelClickPayload> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetic_panel_click"));
+            new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "cosmetic_panel_click"));
 
     public static final StreamCodec<ByteBuf, CosmeticPanelClickPayload> STREAM_CODEC = StreamCodec.composite(
             ResourceLocation.STREAM_CODEC, CosmeticPanelClickPayload::slot,

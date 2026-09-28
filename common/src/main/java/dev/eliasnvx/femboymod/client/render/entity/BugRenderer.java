@@ -10,8 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 
 public final class BugRenderer extends MobRenderer<Bug, BugModel> {
 
-    public static final ModelLayerLocation LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "bug"), "main");
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/bug.png");
+    public static final ModelLayerLocation LAYER = new ModelLayerLocation(new ResourceLocation(FemboyMod.MOD_ID, "bug"), "main");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/bug.png");
     private static final float SHADOW = 0.3F;
 
     public BugRenderer(EntityRendererProvider.Context context) {

@@ -31,7 +31,7 @@ import java.util.Optional;
 final class CreativeTabContents {
 
     private static final ResourceKey<ColorwayPattern> STRIPES = ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "stripes"));
+            new ResourceLocation(FemboyMod.MOD_ID, "stripes"));
     private static final int WHITE = 0xFFFFFF;
     private static final String ENTITY_ID_KEY = "id";
     private static final String PAINTING_ENTITY_ID = "minecraft:painting";
@@ -118,7 +118,7 @@ final class CreativeTabContents {
                 .sorted(Comparator.comparing(holder -> holder.key().location().getPath()))
                 .forEach(holder -> {
                     // 1.21.1 keeps the variant in the painting's entity data (like vanilla's preset paintings)
-                    CustomData entityData = CustomData.EMPTY.update(ops, Painting.VARIANT_MAP_CODEC, holder).getOrThrow()
+                    CustomData entityData = CustomData.EMPTY.update(ops, Painting.VARIANT_MAP_CODEC, holder).getOrThrow(false, error -> { })
                             .update(tag -> tag.putString(ENTITY_ID_KEY, PAINTING_ENTITY_ID));
                     ItemStack poster = new ItemStack(Items.PAINTING);
                     poster.set(DataComponents.ENTITY_DATA, entityData);

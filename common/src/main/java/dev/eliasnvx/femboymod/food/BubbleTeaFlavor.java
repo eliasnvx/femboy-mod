@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceKey;
 public record BubbleTeaFlavor(int weight, List<EnergyDrink.Buff> effects) {
 
     public static final ResourceKey<Registry<BubbleTeaFlavor>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "bubble_tea_flavor"));
+            ResourceKey.createRegistryKey(new ResourceLocation(FemboyMod.MOD_ID, "bubble_tea_flavor"));
 
     public static final Codec<BubbleTeaFlavor> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.intRange(1, 1000).optionalFieldOf("weight", 1).forGetter(BubbleTeaFlavor::weight),

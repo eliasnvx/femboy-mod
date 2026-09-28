@@ -34,7 +34,7 @@ public final class FirstPersonSleeves {
     private static final int WARMER_COLOR = 0xC8A2E8;
     private static final int NAIL_COLOR = 0xF291BE;
     private static final RenderType TYPE = RenderType.entityCutout(
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/knit.png"));
+            new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/cosmetic/knit.png"));
 
     private static final String RIGHT = "right";
     private static final String LEFT = "left";

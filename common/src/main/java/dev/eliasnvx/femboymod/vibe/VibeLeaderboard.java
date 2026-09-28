@@ -82,7 +82,7 @@ public final class VibeLeaderboard extends SavedData {
         entries.add(new Entry(player, name, previous == null ? score : Math.max(score, previous.score())));
         entries.sort(Comparator.comparingInt(Entry::score).reversed());
         while (entries.size() > size) {
-            entries.removeLast();
+            entries.remove(entries.size() - 1);
         }
         setDirty();
         for (int i = 0; i < entries.size(); i++) {

@@ -23,7 +23,7 @@ public final class EmotePayloads {
 
     /** C2S: play this emote. */
     public record Play(int emote) implements CustomPacketPayload {
-        public static final Type<Play> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "play_emote"));
+        public static final Type<Play> TYPE = new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "play_emote"));
         public static final StreamCodec<ByteBuf, Play> STREAM_CODEC = ByteBufCodecs.VAR_INT.map(Play::new, Play::emote);
 
         @Override
@@ -42,7 +42,7 @@ public final class EmotePayloads {
 
     /** S2C: an entity plays an emote. */
     public record Show(int entityId, int emote) implements CustomPacketPayload {
-        public static final Type<Show> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "show_emote"));
+        public static final Type<Show> TYPE = new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "show_emote"));
         public static final StreamCodec<ByteBuf, Show> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Show::entityId, ByteBufCodecs.VAR_INT, Show::emote, Show::new);
 

@@ -25,8 +25,8 @@ import net.minecraft.world.entity.monster.Creeper;
 /** Pink Creeper: vanilla creeper model with our own pink texture and a bow on the head (SPEC §5.4). */
 public final class PinkCreeperRenderer extends CreeperRenderer {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/pink_creeper.png");
-    public static final ModelLayerLocation BOW = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "pink_creeper_bow"), "main");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/pink_creeper.png");
+    public static final ModelLayerLocation BOW = new ModelLayerLocation(new ResourceLocation(FemboyMod.MOD_ID, "pink_creeper_bow"), "main");
 
     public PinkCreeperRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -54,7 +54,7 @@ public final class PinkCreeperRenderer extends CreeperRenderer {
     }
 
     private static final class BowLayer extends RenderLayer<Creeper, CreeperModel<Creeper>> {
-        private static final ResourceLocation BOW_TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png");
+        private static final ResourceLocation BOW_TEXTURE = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png");
         private static final int BOW_COLOR = FastColor.ARGB32.opaque(0xFF4FA3);
         private final ModelPart bow;
         private final ModelPart head;

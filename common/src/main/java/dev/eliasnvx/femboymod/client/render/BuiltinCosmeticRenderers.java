@@ -70,11 +70,11 @@ public final class BuiltinCosmeticRenderers {
     }
 
     private static ResourceLocation texture(String name) {
-        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/" + name + ".png");
+        return new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/cosmetic/" + name + ".png");
     }
 
     private static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+        return new ResourceLocation(FemboyMod.MOD_ID, path);
     }
 
     public static void register(ApiRegistry<CosmeticRenderer.Factory> registry) {

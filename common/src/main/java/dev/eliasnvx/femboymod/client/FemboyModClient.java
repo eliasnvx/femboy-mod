@@ -128,7 +128,7 @@ public final class FemboyModClient {
         BuiltinCosmeticRenderers.register(clientApi.cosmeticRenderers());
         clientApi.chatTransformers().register(UwuChat.ID, new UwuChat());
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new UwuChat.Loader(),
-                ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu_chat_rules"));
+                new ResourceLocation(FemboyMod.MOD_ID, "uwu_chat_rules"));
         ClientTickEvent.CLIENT_POST.register(GlowHostilesClient::tick);
         ClientTickEvent.CLIENT_POST.register(PhotoMode::tick);
         dev.eliasnvx.femboymod.item.PhoneItem.onClientUse = PhotoMode::start;

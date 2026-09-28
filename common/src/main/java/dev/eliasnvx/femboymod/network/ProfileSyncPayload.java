@@ -15,7 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 /** S2C: synced profile fields of the receiving player (all of them on join, single changes afterwards). */
 public record ProfileSyncPayload(CompoundTag values) implements CustomPacketPayload {
 
-    public static final Type<ProfileSyncPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "profile_sync"));
+    public static final Type<ProfileSyncPayload> TYPE = new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "profile_sync"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ProfileSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.COMPOUND_TAG, ProfileSyncPayload::values, ProfileSyncPayload::new);

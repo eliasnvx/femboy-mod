@@ -5,9 +5,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.RegistryFixedCodec;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 
 import java.util.Optional;
 
@@ -36,12 +36,33 @@ public record Colorway(int baseColor, Optional<Holder<ColorwayPattern>> pattern,
             Colors.RGB_HEX_CODEC.optionalFieldOf("secondary_color").forGetter(Colorway::secondaryColor)
     ).apply(instance, Colorway::new));
 
-    /** Network codec; requires the colorway registry to be synced (it is). */
-    public static final StreamCodec<RegistryFriendlyByteBuf, Colorway> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT, Colorway::baseColor,
-            ByteBufCodecs.optional(ByteBufCodecs.holderRegistry(ColorwayPattern.REGISTRY_KEY)), Colorway::pattern,
-            ByteBufCodecs.optional(ByteBufCodecs.INT), Colorway::secondaryColor,
-            Colorway::new);
+    /**
+     * Writes this colorway to a packet. The pattern is sent by id; the colorway registry is synced to clients.
+     *
+     * @param buf the packet buffer
+     */
+    public void write(FriendlyByteBuf buf) {
+        buf.writeInt(baseColor);
+        buf.writeOptional(pattern.flatMap(Holder::unwrapKey).map(ResourceKey::location), FriendlyByteBuf::writeResourceLocation);
+        buf.writeOptional(secondaryColor, FriendlyByteBuf::writeInt);
+    }
+
+    /**
+     * Reads a colorway written by {@link #write}. A pattern unknown to {@code registries} is dropped.
+     *
+     * @param buf        the packet buffer
+     * @param registries registries used to look the pattern up
+     * @return the colorway
+     */
+    public static Colorway read(FriendlyByteBuf buf, RegistryAccess registries) {
+        int base = buf.readInt();
+        Optional<Holder<ColorwayPattern>> pattern = buf.readOptional(FriendlyByteBuf::readResourceLocation)
+                .flatMap(id -> registries.registryOrThrow(ColorwayPattern.REGISTRY_KEY)
+                        .getHolder(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, id)))
+                .map(holder -> holder);
+        Optional<Integer> secondary = buf.readOptional(FriendlyByteBuf::readInt);
+        return new Colorway(base, pattern, secondary);
+    }
 
     /**
      * Normalizes colors to 24-bit RGB: alpha bits are dropped, so values compare equal no matter

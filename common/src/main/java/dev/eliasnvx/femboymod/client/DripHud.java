@@ -107,7 +107,7 @@ public final class DripHud {
         List<Integer> thresholds = rules.tierThresholds();
         setLine = Component.empty();
         if (!sets.isEmpty()) {
-            var line = Component.literal("✦ ").append(Component.translatable(sets.getFirst().toLanguageKey("set_bonus")));
+            var line = Component.literal("✦ ").append(Component.translatable(sets.get(0).toLanguageKey("set_bonus")));
             if (sets.size() > 1) {
                 line.append(" ").append(Component.translatable("hud.femboymod.drip.more_sets", sets.size() - 1));
             }

@@ -2,29 +2,27 @@ package dev.eliasnvx.femboymod.api;
 
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
-import net.minecraft.core.component.DataComponentType;
-
-import java.util.function.Supplier;
+import dev.eliasnvx.femboymod.api.item.ItemData;
 
 /**
- * Data component types added by Femboy Mod. Obtain via {@link FemboyApi#components()}.
+ * Item data added by Femboy Mod. Obtain via {@link FemboyApi#components()}.
  *
- * <p>The suppliers resolve once Minecraft's registries are populated (they are safe to call
- * inside item suppliers passed to a deferred register), not during {@code onInitialize}.
+ * <p>On Minecraft 1.20.1 there are no data components: the values live in the item's NBT and are read and
+ * written through {@link ItemData}.
  */
 public interface FemboyDataComponents {
 
     /**
      * {@code femboymod:cosmetic} — see {@link Cosmetic}.
      *
-     * @return supplier of the component type
+     * @return accessor for the cosmetic definition of an item stack
      */
-    Supplier<DataComponentType<Cosmetic>> cosmetic();
+    ItemData<Cosmetic> cosmetic();
 
     /**
      * {@code femboymod:colorway} — see {@link Colorway}.
      *
-     * @return supplier of the component type
+     * @return accessor for the colorway of an item stack
      */
-    Supplier<DataComponentType<Colorway>> colorway();
+    ItemData<Colorway> colorway();
 }

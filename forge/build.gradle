@@ -1,0 +1,63 @@
+apply plugin: "com.gradleup.shadow"
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+configurations {
+    common
+    shadowBundle
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    modImplementation "dev.architectury:architectury-forge:${rootProject.architectury_api_version}"
+    modImplementation "software.bernie.geckolib:geckolib-forge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+
+    common(project(path: ":api", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowBundle(project(path: ":api", configuration: "transformProductionForge")) { transitive false }
+    shadowBundle(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
+}
+
+// Server GameTests (SPEC §13): shared bodies in common/.../gametest, registered by FemboyGameTestsForge.
+loom {
+    forge {
+        // Forge only loads mixin configs listed in the jar manifest; Loom writes it from here
+        mixinConfig "femboymod.mixins.json"
+    }
+    runs {
+        gameTestServer {
+            server()
+            forgeTemplate("gameTestServer")
+            // Make sure the server runs in test mode with our namespaces
+            property "forge.gameTestServer", "true"
+            property "forge.enabledGameTestNamespaces", "femboymod"
+            name "Forge GameTest Server"
+            runDir "build/run/gameTest"
+        }
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = "dev-shadow"
+    exclude "fabric.mod.json"
+    exclude "architectury.common.json"
+    from rootProject.file("LICENSE")
+}
+
+remapJar {
+    inputFile.set(shadowJar.archiveFile)
+    archiveClassifier = null
+    archiveVersion = "${project.version}+${rootProject.minecraft_version}-forge"
+}
+
+// `build` -> `check` -> GameTests on Forge too (Fabric wires runGameTest into build itself).
+tasks.named("check") { dependsOn "runGameTestServer" }
+
+apply from: rootProject.file("gradle/publish-mod.gradle")

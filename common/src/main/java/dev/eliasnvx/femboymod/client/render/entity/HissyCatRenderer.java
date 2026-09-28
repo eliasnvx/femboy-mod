@@ -15,8 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 /** Vanilla cat model with the vanilla all-black coat (referenced, not shipped) and glowing angry eyes. */
 public final class HissyCatRenderer extends MobRenderer<HissyCat, HissyCatRenderer.Model> {
 
-    private static final ResourceLocation COAT = ResourceLocation.withDefaultNamespace("textures/entity/cat/all_black.png");
-    private static final ResourceLocation EYES = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/hissy_cat_eyes.png");
+    private static final ResourceLocation COAT = new ResourceLocation("textures/entity/cat/all_black.png");
+    private static final ResourceLocation EYES = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/hissy_cat_eyes.png");
     private static final float SHADOW = 0.4F;
     /** Vanilla CatRenderer draws cats at 80 %. */
     private static final float CAT_SCALE = 0.8F;

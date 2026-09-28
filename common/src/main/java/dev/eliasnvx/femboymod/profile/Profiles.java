@@ -55,7 +55,7 @@ public final class Profiles {
             if (!FemboyMod.api().profileFields().get(field.id()).map(registered -> registered == field).orElse(false)) {
                 throw new IllegalStateException("Profile field not registered: " + field.id());
             }
-            Tag encoded = field.codec().encodeStart(NbtOps.INSTANCE, value).getOrThrow();
+            Tag encoded = field.codec().encodeStart(NbtOps.INSTANCE, value).getOrThrow(false, error -> { });
             PlatformHelper.setProfile(player, PlatformHelper.getProfile(player).with(field.id().toString(), encoded));
             if (field.syncToOwner()) {
                 CompoundTag update = new CompoundTag();

@@ -66,7 +66,7 @@ public final class ItemTints {
         FemboyItems.REGISTER.forEach(items::add);
         ColorHandlerRegistry.registerItemColors(ItemTints::color, items.toArray(RegistrySupplier[]::new));
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new Loader(),
-                ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "item_tints"));
+                new ResourceLocation(FemboyMod.MOD_ID, "item_tints"));
     }
 
     private static int color(ItemStack stack, int tintIndex) {

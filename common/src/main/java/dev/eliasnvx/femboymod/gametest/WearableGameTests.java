@@ -38,7 +38,7 @@ public final class WearableGameTests {
             new CosmeticGameTests.Entry("fox_ears_crafted_and_count_as_ears", WearableGameTests::foxEarsCraftedAndCountAsEars));
 
     private static final Vec3 TEST_AREA_CENTER = new Vec3(1.5, 1.0, 1.5);
-    private static final ResourceLocation FULL_SET = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "full_femboy_mode");
+    private static final ResourceLocation FULL_SET = new ResourceLocation(FemboyMod.MOD_ID, "full_femboy_mode");
 
     /** Events seen by the recording listener; the listener is registered once (the bus has no removal). */
     private static final List<ResourceLocation> ACTIVATED_SETS = new ArrayList<>();

@@ -30,7 +30,7 @@ public record CosmeticStats(int drip, List<ConfiguredEffect> effects) {
 
     /** Registry key of the {@code femboymod:cosmetic_stats} data pack registry. */
     public static final ResourceKey<Registry<CosmeticStats>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "cosmetic_stats"));
+            ResourceKey.createRegistryKey(new ResourceLocation(FemboyApi.MOD_ID, "cosmetic_stats"));
 
     /** Stats of items without an entry. */
     public static final CosmeticStats NONE = new CosmeticStats(0, List.of());

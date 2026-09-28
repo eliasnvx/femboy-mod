@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.api.cosmetic;
 
+import dev.eliasnvx.femboymod.api.util.ListCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.eliasnvx.femboymod.api.FemboyApi;
@@ -36,11 +37,11 @@ public record SetBonus(List<HolderSet<Item>> pieces, Optional<Integer> required,
 
     /** Registry key of the {@code femboymod:set_bonus} data pack registry. */
     public static final ResourceKey<Registry<SetBonus>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "set_bonus"));
+            ResourceKey.createRegistryKey(new ResourceLocation(FemboyApi.MOD_ID, "set_bonus"));
 
     /** JSON codec. */
     public static final Codec<SetBonus> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            RegistryCodecs.homogeneousList(Registries.ITEM).listOf(1, Integer.MAX_VALUE).fieldOf("pieces").forGetter(SetBonus::pieces),
+            ListCodecs.sized(RegistryCodecs.homogeneousList(Registries.ITEM), 1, Integer.MAX_VALUE).fieldOf("pieces").forGetter(SetBonus::pieces),
             Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("required").forGetter(SetBonus::required),
             Codec.doubleRange(0, 10).optionalFieldOf("scaling_per_tier", 0.0).forGetter(SetBonus::scalingPerTier),
             ConfiguredEffect.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(SetBonus::effects)

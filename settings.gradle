@@ -3,6 +3,7 @@ pluginManagement {
         maven { url "https://maven.fabricmc.net/" }
         maven { url "https://maven.architectury.dev/" }
         maven { url "https://maven.neoforged.net/releases/" }
+        maven { url "https://maven.minecraftforge.net/" }
         gradlePluginPortal()
     }
 }
@@ -13,10 +14,10 @@ if (JavaVersion.current().ordinal() + 1 < 25) {
 
 rootProject.name = "femboymod"
 
-include("api", "common", "fabric", "neoforge")
+include("api", "common", "fabric", "forge")
 
 // Example addon: dogfoods the public API, never published (SPEC §8.5)
-include("example-addon-common", "example-addon-fabric", "example-addon-neoforge")
+include("example-addon-common", "example-addon-fabric", "example-addon-forge")
 project(":example-addon-common").projectDir = file("example-addon/common")
 project(":example-addon-fabric").projectDir = file("example-addon/fabric")
-project(":example-addon-neoforge").projectDir = file("example-addon/neoforge")
+project(":example-addon-forge").projectDir = file("example-addon/forge")

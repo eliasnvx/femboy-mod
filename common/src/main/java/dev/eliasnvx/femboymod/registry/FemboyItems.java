@@ -141,7 +141,7 @@ public final class FemboyItems {
             "heart", "star", "bow", "flower", "moon", "cherry", "bunny", "fish", "lightning", "butterfly");
     public static final List<RegistrySupplier<Item>> HAIR_CLIPS = HAIR_CLIP_SHAPES.stream()
             .map(shape -> cosmetic("hair_clip_" + shape, new Cosmetic(FemboySlots.HEAD_ACCESSORY,
-                    Optional.of(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "hair_clip")))))
+                    Optional.of(new ResourceLocation(FemboyMod.MOD_ID, "hair_clip")))))
             .toList();
 
     public static final RegistrySupplier<CreativeModeTab> TAB = TABS.register("main", () -> CreativeTabRegistry.create(builder -> builder
