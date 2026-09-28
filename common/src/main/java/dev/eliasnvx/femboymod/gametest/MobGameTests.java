@@ -18,10 +18,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.animal.equine.Horse;
-import net.minecraft.world.entity.animal.feline.Cat;
-import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.animal.Cat;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -39,6 +39,7 @@ public final class MobGameTests {
     private static final BlockPos MOB_POS = new BlockPos(1, 2, 1);
     private static final float HIT = 4.0F;
     private static final float EPSILON = 1.0E-4F;
+    private static final int CATS = 5;
 
     private MobGameTests() {
     }
@@ -88,7 +89,7 @@ public final class MobGameTests {
             float hit = DripCombat.modifyIncoming(player, helper.getLevel(), slap, HIT);
             helper.assertTrue(Math.abs(hit - HIT * 1.6F) < EPSILON, "no drip: the critic hits x1.6, got " + hit);
             critic.review(player);
-            helper.assertTrue(player.hasEffect(MobEffects.SLOWNESS), "bad review slows the player");
+            helper.assertTrue(player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN), "bad review slows the player");
             helper.assertFalse(critic.hasEffect(MobEffects.WEAKNESS), "the critic is not impressed");
 
             player.removeAllEffects();
@@ -98,7 +99,7 @@ public final class MobGameTests {
             CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.FISHNET_TIGHTS.get()));
             CosmeticEffectsManager.tick(player);
             critic.review(player);
-            helper.assertFalse(player.hasEffect(MobEffects.SLOWNESS), "good review does not slow the player");
+            helper.assertFalse(player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN), "good review does not slow the player");
             helper.assertTrue(critic.hasEffect(MobEffects.WEAKNESS), "impressed critic is weakened");
             float softer = DripCombat.modifyIncoming(player, helper.getLevel(), slap, HIT);
             helper.assertTrue(Math.abs(softer - HIT * 0.9F) < EPSILON, "tier 3: the critic hits x0.9, got " + softer);
@@ -107,10 +108,13 @@ public final class MobGameTests {
 
     /** The set's "followers": at most 3 small animals from #femboymod:cute_followers; horses stay put. */
     public static void onlyAFewCuteAnimalsFollow(GameTestHelper helper) {
-        Horse horse = helper.spawn(EntityTypes.HORSE, MOB_POS.offset(4, 0, 4));
-        List<Cat> cats = helper.spawn(EntityTypes.CAT, MOB_POS.offset(5, 0, 1), 5);
+        Horse horse = helper.spawn(EntityType.HORSE, MOB_POS.offset(4, 0, 4));
+        List<Cat> cats = new java.util.ArrayList<>();
+        for (int i = 0; i < CATS; i++) {
+            cats.add(helper.spawn(EntityType.CAT, MOB_POS.offset(5, 0, 1)));
+        }
         WearableGameTests.withPlayer(helper, player -> {
-            player.snapTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(1.5, 2, 1.5)));
+            player.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(1.5, 2, 1.5)));
             var effect = new BuiltinEffects.FollowPassiveEffect(16, 1.0, 1, 2.0,
                     net.minecraft.core.HolderSet.empty(), 3);
             var picked = effect.pickFollowers(player);
@@ -123,7 +127,7 @@ public final class MobGameTests {
     /** Programming socks: x1.5 against {@code #femboymod:bugs}, unchanged against zombies; gone when taken off. */
     public static void socksHitBugsHarder(GameTestHelper helper) {
         Bug bug = helper.spawnWithNoFreeWill(FemboyEntities.BUG.get(), MOB_POS);
-        Zombie zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, MOB_POS.east());
+        Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, MOB_POS.east());
         WearableGameTests.withPlayer(helper, player -> {
             DamageSource punch = player.damageSources().playerAttack(player);
             CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()));

@@ -8,15 +8,18 @@ import net.minecraft.client.model.geom.EntityModelSet;
  * {@link dev.eliasnvx.femboymod.api.cosmetic.Cosmetic} points to (by default the item id).
  *
  * <p>Called on the render thread from the player render layer, once per frame per worn item. Rendering
- * is deferred in 26.x: submit a {@code Model} together with the render state and pose it in the model's
- * own {@code setupAnim}, so that shared model instances are posed correctly for every player.
- * Implementations must not allocate per call.
+ * is immediate: draw right away into {@link CosmeticRenderContext#bufferSource()} with
+ * {@link CosmeticRenderContext#poseStack()} (already in player model space). The wearer's model
+ * ({@link CosmeticRenderContext#parentModel()}) is posed for this entity during this call only, so copy or
+ * follow its parts right before drawing (for example {@code parentModel().body.translateAndRotate(pose)}, or
+ * {@code HumanoidModel#copyPropertiesTo} onto your own shared model). Push and pop the pose stack yourself.
+ * Implementations must not allocate per call (cache {@code RenderType}s in fields).
  */
 @FunctionalInterface
 public interface CosmeticRenderer {
 
     /**
-     * Submits the cosmetic for rendering.
+     * Draws the cosmetic now.
      *
      * @param context what to draw and where; only valid during this call
      */

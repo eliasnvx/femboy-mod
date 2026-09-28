@@ -18,9 +18,9 @@ dependencies {
 
     // femboymod itself, so `runClient` here starts the mod + the addon
     implementation project(path: ":fabric", configuration: "namedElements")
-    common(project(path: ":api")) { transitive false }
-    common(project(path: ":common")) { transitive false }
-    common(project(path: ":example-addon-common")) { transitive false }
+    common(project(path: ":api", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(path: ":example-addon-common", configuration: "namedElements")) { transitive false }
 }
 
 // Addon GameTests run with `build` (CI): API regression check (SPEC §8.5, §13)

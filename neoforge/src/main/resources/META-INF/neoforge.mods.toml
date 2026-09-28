@@ -1,5 +1,6 @@
 modLoader = "javafml"
-loaderVersion = "[1,)"
+# FML 4.x ships with NeoForge 21.1
+loaderVersion = "[4,)"
 license = "MIT"
 
 [[mods]]
@@ -7,8 +8,9 @@ modId = "${mod_id}"
 version = "${version}"
 displayName = "${mod_name}"
 authors = "eliasnvx"
-iconFile = "femboymod:icon.png"
-bannerFile = "femboymod:banner.png"
+# FML 4 (1.21.1) only knows logoFile: a path from the jar root, shown at the top of the mod list entry
+logoFile = "assets/femboymod/banner.png"
+logoBlur = false
 description = '''
 Meme cosmetics mod: programming socks, cat ears, backpacks, energy drinks and more. Comes with a public API for addons.
 '''
@@ -22,7 +24,7 @@ api_version = "${api_version}"
 [[dependencies.${mod_id}]]
 modId = "minecraft"
 type = "required"
-versionRange = "[${minecraft_version},)"
+versionRange = "[${minecraft_version},1.21.2)"
 ordering = "NONE"
 side = "BOTH"
 

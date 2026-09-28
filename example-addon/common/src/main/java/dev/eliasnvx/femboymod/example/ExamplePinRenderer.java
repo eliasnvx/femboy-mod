@@ -11,9 +11,9 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 
 /**
  * A custom cosmetic renderer: a small pin on the chest that follows the body. The item points to it
@@ -25,6 +25,10 @@ public final class ExamplePinRenderer implements CosmeticRenderer {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID,
             "textures/item/friendship_pin.png");
     private static final int TEXTURE_SIZE = 16;
+    /** Untinted: the texture's own colors. */
+    private static final int COLOR = FastColor.ARGB32.opaque(0xFFFFFF);
+
+    private final RenderType renderType = RenderType.entityCutout(TEXTURE);
 
     private final ModelPart pin;
 
@@ -50,8 +54,8 @@ public final class ExamplePinRenderer implements CosmeticRenderer {
         PoseStack pose = context.poseStack();
         pose.pushPose();
         context.parentModel().body.translateAndRotate(pose);
-        context.collector().submitModelPart(pin, pose, RenderTypes.entityCutout(TEXTURE), context.light(),
-                context.overlay(), null, ARGB.opaque(0xFFFFFF));
+        // Immediate rendering on 1.21.1: the parent model is posed for this wearer right now
+        pin.render(pose, context.bufferSource().getBuffer(renderType), context.light(), context.overlay(), COLOR);
         pose.popPose();
     }
 }

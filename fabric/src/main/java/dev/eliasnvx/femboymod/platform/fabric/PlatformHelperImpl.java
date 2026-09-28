@@ -109,7 +109,7 @@ public final class PlatformHelperImpl {
     }
 
     public static void registerPoi() {
-        net.fabricmc.fabric.api.object.builder.v1.world.poi.PoiHelper.register(FemboyBlocks.THRIFTER_POI.identifier(), 1, 1,
+        net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper.register(FemboyBlocks.THRIFTER_POI.location(), 1, 1,
                 FemboyBlocks.CLOTHING_RACK.get());
     }
 }

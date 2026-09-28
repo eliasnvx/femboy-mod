@@ -18,7 +18,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -92,10 +91,10 @@ public final class WearableGameTests {
     }
 
     public static void vanillaDyeRecipeColorsCosmetic(GameTestHelper helper) {
-        CraftingInput input = CraftingInput.of(2, 1, List.of(new ItemStack(FemboyItems.CAT_EARS.get()), new ItemStack(Items.DYE.pick(DyeColor.LIGHT_BLUE))));
+        CraftingInput input = CraftingInput.of(2, 1, List.of(new ItemStack(FemboyItems.CAT_EARS.get()), new ItemStack(Items.LIGHT_BLUE_DYE)));
         var recipe = helper.getLevel().getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, helper.getLevel());
         helper.assertTrue(recipe.isPresent(), "a dye recipe matches cat ears + dye");
-        ItemStack result = recipe.get().value().assemble(input);
+        ItemStack result = recipe.get().value().assemble(input, helper.getLevel().registryAccess());
         helper.assertTrue(result.is(FemboyItems.CAT_EARS.get()), "result is cat ears");
         helper.assertTrue(Colorways.effective(result).isPresent(), "dyed ears have a colorway");
         helper.succeed();
@@ -108,7 +107,7 @@ public final class WearableGameTests {
         CraftingInput input = CraftingInput.of(2, 1, List.of(hoodie, new ItemStack(FemboyItems.CAT_EARS.get())));
         var recipe = helper.getLevel().getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, helper.getLevel());
         helper.assertTrue(recipe.isPresent(), "hoodie + cat ears has a recipe");
-        ItemStack result = recipe.get().value().assemble(input);
+        ItemStack result = recipe.get().value().assemble(input, helper.getLevel().registryAccess());
         helper.assertTrue(result.is(FemboyItems.CAT_EAR_HOODIE.get()), "result is the cat ear hoodie");
         helper.assertValueEqual(result.get(FemboyComponents.COLORWAY.get()), Colorway.solid(0xA8E6CF), "colorway kept");
         helper.assertTrue(result.is(FemboyTags.HOODIES), "cat ear hoodie is a hoodie (sleeves, set bonus)");
@@ -124,10 +123,10 @@ public final class WearableGameTests {
 
     /** Fox ears: wool + sweet berries + glitch shard + string; any ears complete the Full Femboy Mode set. */
     public static void foxEarsCraftedAndCountAsEars(GameTestHelper helper) {
-        CraftingInput input = CraftingInput.of(2, 2, List.of(new ItemStack(Items.WOOL.pick(DyeColor.ORANGE)), new ItemStack(Items.SWEET_BERRIES),
+        CraftingInput input = CraftingInput.of(2, 2, List.of(new ItemStack(Items.ORANGE_WOOL), new ItemStack(Items.SWEET_BERRIES),
                 new ItemStack(FemboyItems.GLITCH_SHARD.get()), new ItemStack(Items.STRING)));
         var recipe = helper.getLevel().getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, helper.getLevel());
-        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input).is(FemboyItems.FOX_EARS.get()), "fox ears recipe");
+        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input, helper.getLevel().registryAccess()).is(FemboyItems.FOX_EARS.get()), "fox ears recipe");
         withPlayer(helper, player -> {
             CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.FOX_EARS.get()));
             CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get()));
@@ -140,7 +139,7 @@ public final class WearableGameTests {
 
     static void withPlayer(GameTestHelper helper, Consumer<ServerPlayer> body) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        player.snapTo(helper.absoluteVec(TEST_AREA_CENTER));
+        player.moveTo(helper.absoluteVec(TEST_AREA_CENTER));
         try {
             body.accept(player);
             helper.succeed();

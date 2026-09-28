@@ -30,15 +30,15 @@ repositories {
 
 dependencies {
     // Architectury common module
-    compileOnly "dev.eliasnvx:femboymod-api:0.1.0+26.3"
+    compileOnly "dev.eliasnvx:femboymod-api:0.1.0+1.21.1"
 
     // Fabric module: API at compile time, full mod at runtime
-    compileOnly "dev.eliasnvx:femboymod-api:0.1.0+26.3"
-    runtimeOnly "maven.modrinth:femboy-mod:0.1.0+26.3-fabric"
+    compileOnly "dev.eliasnvx:femboymod-api:0.1.0+1.21.1"
+    runtimeOnly "maven.modrinth:femboy-mod:0.1.0+1.21.1-fabric"
 
     // NeoForge module
-    compileOnly "dev.eliasnvx:femboymod-api:0.1.0+26.3"
-    runtimeOnly "maven.modrinth:femboy-mod:0.1.0+26.3-neoforge"
+    compileOnly "dev.eliasnvx:femboymod-api:0.1.0+1.21.1"
+    runtimeOnly "maven.modrinth:femboy-mod:0.1.0+1.21.1-neoforge"
 }
 ```
 
@@ -69,7 +69,7 @@ new Item(new Item.Properties().setId(key).stacksTo(1)
 ```
 - `Cosmetic(slot)` picks the renderer by convention (below). `Cosmetic(slot, Optional.of(rendererId))` names a renderer explicitly.
 - Players wear it by right-clicking it or through the Cosmetics screen. The server checks everything, and `CosmeticEquipEvent` can cancel it.
-- Dyeable: add the item to `#femboymod:dyeable_cosmetics` and write a `crafting_dye` recipe (see `data/femboymod/recipe/*_dyed.json`). The colorway ends up in the `femboymod:colorway` component.
+- Dyeable: add the item to `#femboymod:dyeable_cosmetics`, no recipe needed. On 1.21.1 that tag is part of `#minecraft:dyeable`, so the vanilla armor dye recipe dyes it (`minecraft:dyed_color`, read back as the colorway) and a water cauldron washes the dye off again. Ready-made patterns live in the `femboymod:colorway` component.
 
 ## Armor under the outfit
 Vanilla armor would draw over cosmetics, so armor pieces a worn slot covers are hidden (visual only, the armor still protects). Give your slot type the armor it covers: `new CosmeticSlotType(order, icon, Set.of(EquipmentSlot.CHEST))`. Players can override each piece (`ArmorVisibility` AUTO / HIDE / SHOW, read with `CosmeticsView#armorVisibility`); servers can forbid hiding with the `femboymod:allow_hidden_armor` game rule.
@@ -187,20 +187,21 @@ public void submit(CosmeticRenderContext ctx) {
     PoseStack pose = ctx.poseStack();
     pose.pushPose();
     ctx.parentModel().body.translateAndRotate(pose); // follow a body part
-    ctx.collector().submitModelPart(pin, pose, RenderTypes.entityCutout(TEXTURE), ctx.light(), ctx.overlay(), null, 0xFFFFFFFF);
+    pin.render(pose, ctx.bufferSource().getBuffer(renderType), ctx.light(), ctx.overlay(), 0xFFFFFFFF); // renderType: a cached RenderType.entityCutout(TEXTURE)
     pose.popPose();
 }
 ```
 - Skip slots the wearer hid: `api.common().getCosmetics(player).isHidden(slot)` (built-in renderers do this already; custom renderers get only visible items).
-- The factory runs once per resource reload. `submit` runs every frame for every player who wears the item, so don't allocate in it.
+- Rendering is immediate on 1.21.1: draw into `ctx.bufferSource()` during `submit`. `ctx.parentModel()` is posed for this wearer only during the call, so follow or copy its parts (`HumanoidModel#copyPropertiesTo`) right before drawing.
+- The factory runs once per resource reload. `submit` runs every frame for every player who wears the item, so don't allocate in it (cache your `RenderType`).
 - `ctx.stack()` is the worn item: read the colorway with `api.common().getColorway(stack)`.
-- `ctx.state()` is the player's `AvatarRenderState`.
+- `ctx.entity()` is the wearer, `ctx.partialTick()` the frame's partial tick.
 - `ctx.motion()` gives smoothed movement values (walk amount, turn sway, phase) for procedural animation (`CosmeticMotion`).
 
 ## A Blockbench model instead of code
 If your item has no explicit renderer, you can draw it without code. Put the files at
-`assets/<ns>/geckolib/models/cosmetic/<item path>.geo.json` and `assets/<ns>/textures/cosmetic/<item path>.png`
-(an optional `_dyeable.png` is multiplied by the colorway; an optional `geckolib/animations/cosmetic/<item path>.animation.json` plays a looping `idle`).
+`assets/<ns>/geo/cosmetic/<item path>.geo.json` and `assets/<ns>/textures/cosmetic/<item path>.png`
+(an optional `_dyeable.png` is multiplied by the colorway; an optional `animations/cosmetic/<item path>.animation.json` plays a looping `idle`).
 Run `./gradlew :common:exportBlockbenchStarters` to get starting `.geo.json` files with the bone names the mod expects.
 
 ## Chat transformers
@@ -259,12 +260,14 @@ int wins = profile.update(MY_WINS, w -> w + 1);
 ## Style Points
 The shared currency for style: earned for worn set bonuses, impressing the critic, new cosmetics in the collection and the rubber duck (amounts in the config, `style_points`). Players trade them for Style Coupons in the Outfit screen; the Thrifter accepts coupons.
 
+Trades stay data-driven on 1.21.1: add `data/<ns>/villager_trade/...` entries and list them in a `trade_set` (same JSON as 26.3; the mod loads them itself because 1.21.1 has no vanilla trade registry). The Thrifter draws two listings per level, the Wandering Cosplayer takes `amount` trades from `cosplayer/exclusive` and `cosplayer/common`.
+
 - `api.addStylePoints(player, amount, reason)`: positive earns, negative spends; returns false if refused.
 - `StylePointsEvent` lets you change the amount or cancel. `FemboyProfileFields.STYLE_POINTS_EARNED` never decreases: use it for seasonal rankings.
 - Earning stops when the world's `femboymod:style_points` game rule is off.
 
 ## Game rules
-Per-world switches for admins (`/gamerule femboymod:<name> <value>`); a feature runs only if the config allows it too.
+Per-world switches for admins (`/gamerule femboymod:<name> <value>`); a feature runs only if the config allows it too. Their lang keys are `gamerule.femboymod:<name>` (and `.description`).
 
 | Rule | Default | Effect |
 |---|---|---|

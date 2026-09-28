@@ -173,8 +173,8 @@ public final class CosmeticGameTests {
     }
 
     public static void colorwayPatternsLoaded(GameTestHelper helper) {
-        Registry<ColorwayPattern> registry = helper.getLevel().registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY);
-        Holder<ColorwayPattern> trans = registry.getOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
+        Registry<ColorwayPattern> registry = helper.getLevel().registryAccess().registryOrThrow(ColorwayPattern.REGISTRY_KEY);
+        Holder<ColorwayPattern> trans = registry.getHolderOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
                 ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_trans")));
         helper.assertValueEqual(trans.value().stripes().size(), 5, "trans flag stripes");
         helper.assertTrue(registry.size() >= 12, "All built-in patterns should load, got " + registry.size());
@@ -201,10 +201,10 @@ public final class CosmeticGameTests {
     }
 
     private static CosmeticInventory sampleInventory(GameTestHelper helper) {
-        Registry<ColorwayPattern> patterns = helper.getLevel().registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY);
+        Registry<ColorwayPattern> patterns = helper.getLevel().registryAccess().registryOrThrow(ColorwayPattern.REGISTRY_KEY);
         ItemStack ears = new ItemStack(FemboyItems.CAT_EARS.get());
         ears.set(FemboyComponents.COLORWAY.get(), new Colorway(0xFFB6D9,
-                Optional.of(patterns.getOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
+                Optional.of(patterns.getHolderOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
                         ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "pride_bi")))),
                 Optional.of(0x123456)));
         return CosmeticInventory.EMPTY.with(HEAD, ears)
@@ -233,7 +233,7 @@ public final class CosmeticGameTests {
     private static void withPlayer(GameTestHelper helper, Consumer<ServerPlayer> body) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         // The mock player joins at world spawn; move it into the (loaded) test area.
-        player.snapTo(helper.absoluteVec(TEST_AREA_CENTER));
+        player.moveTo(helper.absoluteVec(TEST_AREA_CENTER));
         try {
             body.accept(player);
             helper.succeed();

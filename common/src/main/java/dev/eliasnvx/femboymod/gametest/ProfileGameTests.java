@@ -28,7 +28,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.GameRules;
 
 /** Player profile, Style Points, collection and the femboymod game rules. */
 public final class ProfileGameTests {
@@ -95,7 +95,7 @@ public final class ProfileGameTests {
             helper.assertFalse(StyleCoupons.redeem(player), "not enough points for a second one");
             helper.assertValueEqual(profile.get(FemboyProfileFields.STYLE_POINTS_EARNED), 30, "spending keeps the lifetime total");
 
-            withRule(helper, FemboyGameRules.STYLE_POINTS.get(), false, () ->
+            withRule(helper, FemboyGameRules.STYLE_POINTS, false, () ->
                     helper.assertFalse(FemboyMod.api().addStylePoints(player, 5, TEST_REASON), "game rule stops earning"));
         });
     }
@@ -120,7 +120,7 @@ public final class ProfileGameTests {
     public static void gameRulesGateFeatures(GameTestHelper helper) {
         helper.assertValueEqual(DripCombat.pvpMultiplier(4, 1, 10), 1.3F, "three tiers above: +30%");
         helper.assertValueEqual(DripCombat.pvpMultiplier(0, 5, 30), 0.0F, "never negative");
-        WearableGameTests.withPlayer(helper, player -> withRule(helper, FemboyGameRules.KEEP_COSMETICS.get(), true, () -> {
+        WearableGameTests.withPlayer(helper, player -> withRule(helper, FemboyGameRules.KEEP_COSMETICS, true, () -> {
             CosmeticsManager.set(player, FemboySlots.NECK, new ItemStack(FemboyItems.UWU_CHOKER.get()));
             CosmeticsEvents.dropOnDeath(player);
             helper.assertTrue(CosmeticsManager.get(player).get(FemboySlots.NECK).is(FemboyItems.UWU_CHOKER.get()), "choker kept on death");
@@ -147,7 +147,7 @@ public final class ProfileGameTests {
         WearableGameTests.withPlayer(helper, player -> {
             CosmeticsManager.setArmorVisibility(player, EquipmentSlot.FEET, ArmorVisibility.HIDE);
             helper.assertValueEqual(CosmeticsManager.get(player).armorVisibility(EquipmentSlot.FEET), ArmorVisibility.HIDE, "choice stored");
-            withRule(helper, FemboyGameRules.ALLOW_HIDDEN_ARMOR.get(), false, () ->
+            withRule(helper, FemboyGameRules.ALLOW_HIDDEN_ARMOR, false, () ->
                     helper.assertFalse(CosmeticsSyncPayload.of(player).armorHidingAllowed(), "sync carries the game rule"));
         });
     }
@@ -158,14 +158,14 @@ public final class ProfileGameTests {
         }
     }
 
-    private static void withRule(GameTestHelper helper, GameRule<Boolean> rule, boolean value, Runnable body) {
-        var rules = helper.getLevel().getGameRules();
-        boolean before = rules.get(rule);
-        rules.set(rule, value, helper.getLevel().getServer());
+    private static void withRule(GameTestHelper helper, GameRules.Key<GameRules.BooleanValue> key, boolean value, Runnable body) {
+        GameRules.BooleanValue rule = helper.getLevel().getGameRules().getRule(key);
+        boolean before = rule.get();
+        rule.set(value, helper.getLevel().getServer());
         try {
             body.run();
         } finally {
-            rules.set(rule, before, helper.getLevel().getServer());
+            rule.set(before, helper.getLevel().getServer());
         }
     }
 }

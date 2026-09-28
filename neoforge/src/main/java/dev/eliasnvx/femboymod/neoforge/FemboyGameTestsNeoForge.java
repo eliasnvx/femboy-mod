@@ -2,28 +2,25 @@ package dev.eliasnvx.femboymod.neoforge;
 
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.FunctionGameTestInstance;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.GameTestGenerator;
+import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
-/** Registers the shared {@link CosmeticGameTests} on NeoForge, only when GameTests are enabled. */
-final class FemboyGameTestsNeoForge {
+/**
+ * Registers the shared {@link CosmeticGameTests} on NeoForge, only when GameTests are enabled.
+ * Public because the game test registry invokes {@link #tests()} reflectively.
+ */
+public final class FemboyGameTestsNeoForge {
 
     private static final int MAX_TICKS = 100;
-    private static final ResourceLocation EMPTY_STRUCTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "empty");
+    private static final long SETUP_TICKS = 0L;
+    /** 8x8x8 of air in {@code data/femboymod/structure/empty.nbt}, the same size as Fabric's empty template. */
+    private static final String EMPTY_STRUCTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "empty").toString();
 
     private FemboyGameTestsNeoForge() {
     }
@@ -32,20 +29,15 @@ final class FemboyGameTestsNeoForge {
         if (!GameTestHooks.isGametestEnabled()) {
             return;
         }
-        DeferredRegister<Consumer<GameTestHelper>> functions = DeferredRegister.create(Registries.TEST_FUNCTION, FemboyMod.MOD_ID);
-        List<DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>>> holders = new ArrayList<>();
-        for (CosmeticGameTests.Entry entry : CosmeticGameTests.all()) {
-            holders.add(functions.register(entry.name(), entry::body));
-        }
-        functions.register(modBus);
+        modBus.addListener((RegisterGameTestsEvent event) -> event.register(FemboyGameTestsNeoForge.class));
+    }
 
-        modBus.addListener((RegisterGameTestsEvent event) -> {
-            Holder<TestEnvironmentDefinition<?>> environment =
-                    event.registerEnvironment(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "default"));
-            for (var holder : holders) {
-                event.registerTest(holder.getId(), new FunctionGameTestInstance(holder.getKey(),
-                        new TestData<>(environment, EMPTY_STRUCTURE, MAX_TICKS, 0, true)));
-            }
-        });
+    /** One test function per shared test, all in the {@code femboymod} batch. */
+    @GameTestGenerator
+    public static List<TestFunction> tests() {
+        return CosmeticGameTests.all().stream()
+                .map(entry -> new TestFunction(FemboyMod.MOD_ID, FemboyMod.MOD_ID + "." + entry.name(), EMPTY_STRUCTURE,
+                        MAX_TICKS, SETUP_TICKS, true, entry.body()))
+                .toList();
     }
 }

@@ -40,17 +40,17 @@ public final class PlatformHelperImpl {
 
     private static final Supplier<AttachmentType<CosmeticInventory>> COSMETICS = ATTACHMENTS.register("cosmetics",
             () -> AttachmentType.builder(() -> CosmeticInventory.EMPTY)
-                    .serialize(CosmeticInventory.CODEC.fieldOf("items"))
+                    .serialize(CosmeticInventory.CODEC.fieldOf("items").codec())
                     .copyOnDeath()
                     .build());
 
     private static final Supplier<AttachmentType<CaffeineLog>> CAFFEINE = ATTACHMENTS.register("caffeine",
-            () -> AttachmentType.builder(() -> CaffeineLog.EMPTY).serialize(CaffeineLog.CODEC.fieldOf("drinks")).build());
+            () -> AttachmentType.builder(() -> CaffeineLog.EMPTY).serialize(CaffeineLog.CODEC.fieldOf("drinks").codec()).build());
 
     private static final Supplier<AttachmentType<WardrobePresets>> PRESETS = ATTACHMENTS.register("wardrobe_presets",
-            () -> AttachmentType.builder(() -> WardrobePresets.EMPTY).serialize(WardrobePresets.CODEC.fieldOf("presets")).copyOnDeath().build());
+            () -> AttachmentType.builder(() -> WardrobePresets.EMPTY).serialize(WardrobePresets.CODEC.fieldOf("presets").codec()).copyOnDeath().build());
     private static final Supplier<AttachmentType<ProfileData>> PROFILE = ATTACHMENTS.register("profile",
-            () -> AttachmentType.builder(() -> ProfileData.EMPTY).serialize(ProfileData.CODEC.fieldOf("values")).copyOnDeath().build());
+            () -> AttachmentType.builder(() -> ProfileData.EMPTY).serialize(ProfileData.CODEC.fieldOf("values").codec()).copyOnDeath().build());
     private static final DeferredRegister<PoiType> POIS = DeferredRegister.create(Registries.POINT_OF_INTEREST_TYPE, FemboyMod.MOD_ID);
 
     private PlatformHelperImpl() {
@@ -142,7 +142,7 @@ public final class PlatformHelperImpl {
 
     /** NeoForge maps POI block states automatically on registration. */
     public static void registerPoi() {
-        POIS.register(FemboyBlocks.THRIFTER_POI.identifier().getPath(), () -> new PoiType(
+        POIS.register(FemboyBlocks.THRIFTER_POI.location().getPath(), () -> new PoiType(
                 java.util.Set.copyOf(FemboyBlocks.CLOTHING_RACK.get().getStateDefinition().getPossibleStates()), 1, 1));
     }
 }

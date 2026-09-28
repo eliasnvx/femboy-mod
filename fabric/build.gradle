@@ -36,8 +36,8 @@ dependencies {
         modRuntimeOnly "mezz.jei:jei-${rootProject.minecraft_version}-fabric:${rootProject.jei_version}"
     }
 
-    common(project(path: ":api")) { transitive false }
-    common(project(path: ":common")) { transitive false }
+    common(project(path: ":api", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowBundle(project(path: ":api", configuration: "transformProductionFabric")) { transitive false }
     shadowBundle(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
@@ -50,7 +50,7 @@ fabricApi {
         modId = "femboymod-test"
         enableGameTests = true
         // Client tests open a real window (screenshots of cosmetics); run manually: ./gradlew :fabric:runClientGameTest
-        enableClientGameTests = true
+        enableClientGameTests = false // 1.21.1 Fabric API has no client GameTest API (fabric-client-gametest-api-v1)
         eula = true // dev/CI test server only; accepted by the author on 2026-09-25
     }
 }

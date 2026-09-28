@@ -27,13 +27,15 @@ import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.entity.decoration.painting.Painting;
-import net.minecraft.world.entity.decoration.painting.PaintingVariant;
+import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -101,8 +103,8 @@ public final class DecorGameTests {
         helper.setBlock(CHAIR.offset(-1, 0, 1), FemboyBlocks.LED_STRIP.get());
         helper.setBlock(CHAIR.offset(2, 0, 0), FemboyBlocks.SHARK_PLUSH.get());
         helper.setBlock(CHAIR.offset(1, 1, 2), FemboyBlocks.RUBBER_DUCK.get());
-        var poster = helper.getLevel().registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT)
-                .getOrThrow(ResourceKey.create(Registries.PAINTING_VARIANT, id("btw")));
+        var poster = helper.getLevel().registryAccess().registryOrThrow(Registries.PAINTING_VARIANT)
+                .getHolderOrThrow(ResourceKey.create(Registries.PAINTING_VARIANT, id("btw")));
         Painting painting = new Painting(helper.getLevel(), chair.offset(0, 2, 2), Direction.NORTH, poster);
         helper.getLevel().addFreshEntity(painting);
         helper.assertValueEqual(SetupRating.evaluate(helper.getLevel(), chair, radius), SetupRating.MAX, "full setup");
@@ -116,7 +118,7 @@ public final class DecorGameTests {
         WearableGameTests.withPlayer(helper, player -> {
             int xp = player.totalExperience;
             helper.assertTrue(RubberDuckBlock.debug(player), "first debugging session helps");
-            helper.assertTrue(player.hasEffect(FemboyEffects.INSIGHT.asHolder()), "Insight granted");
+            helper.assertTrue(player.hasEffect(FemboyEffects.holder(FemboyEffects.INSIGHT)), "Insight granted");
             helper.assertTrue(player.totalExperience > xp, "a little experience");
             helper.assertFalse(RubberDuckBlock.debug(player), "cooldown: the duck needs a break too");
         });
@@ -129,21 +131,21 @@ public final class DecorGameTests {
             ItemStack tea = new ItemStack(FemboyItems.BUBBLE_TEA.get());
             tea.finishUsingItem(helper.getLevel(), player);
             helper.assertTrue(player.getActiveEffects().size() > before, "a flavor buff was applied");
-            var remainder = tea.get(net.minecraft.core.component.DataComponents.USE_REMAINDER);
-            helper.assertTrue(remainder != null && remainder.convertInto().create().is(Items.GLASS_BOTTLE), "the bottle comes back");
+            // The mock player is in creative (keeps the item), so check the container the food component gives back
+            helper.assertTrue(tea.get(DataComponents.FOOD).usingConvertsTo().filter(s -> s.is(Items.GLASS_BOTTLE)).isPresent(), "the bottle comes back");
 
-            player.addEffect(new MobEffectInstance(FemboyEffects.JITTER.asHolder(), 600));
-            player.addEffect(new MobEffectInstance(FemboyEffects.CAFFEINATED.asHolder(), 600));
+            player.addEffect(new MobEffectInstance(FemboyEffects.holder(FemboyEffects.JITTER), 600));
+            player.addEffect(new MobEffectInstance(FemboyEffects.holder(FemboyEffects.CAFFEINATED), 600));
             new ItemStack(FemboyItems.STRAWBERRY_MILK.get()).finishUsingItem(helper.getLevel(), player);
-            helper.assertFalse(player.hasEffect(FemboyEffects.JITTER.asHolder()), "jitter gone");
-            helper.assertFalse(player.hasEffect(FemboyEffects.CAFFEINATED.asHolder()), "no caffeine crash coming");
+            helper.assertFalse(player.hasEffect(FemboyEffects.holder(FemboyEffects.JITTER)), "jitter gone");
+            helper.assertFalse(player.hasEffect(FemboyEffects.holder(FemboyEffects.CAFFEINATED)), "no caffeine crash coming");
         });
     }
 
     public static void terminalCraftsAndSaysBtw(GameTestHelper helper) {
         helper.setBlock(CHAIR, FemboyBlocks.TERMINAL.get());
         WearableGameTests.withPlayer(helper, player -> {
-            player.snapTo(net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(CHAIR).above()));
+            player.moveTo(net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(CHAIR).above()));
             var menu = new TerminalBlock.Menu(1, player.getInventory(), ContainerLevelAccess.create(helper.getLevel(), helper.absolutePos(CHAIR)));
             helper.assertTrue(menu.stillValid(player), "Terminal works as a crafting table");
             helper.assertTrue(TerminalBlock.btw(player), "first btw");
@@ -237,15 +239,15 @@ public final class DecorGameTests {
         java.util.Set<String> exclusive = java.util.Set.of("sakura", "starlight", "cyber_pastel", "witchy");
         helper.assertTrue(offers.stream().anyMatch(offer -> {
             Colorway colorway = offer.getResult().get(FemboyComponents.COLORWAY.get());
-            return colorway != null && colorway.pattern().map(p -> exclusive.contains(p.unwrapKey().orElseThrow().identifier().getPath())).orElse(false);
+            return colorway != null && colorway.pattern().map(p -> exclusive.contains(p.unwrapKey().orElseThrow().location().getPath())).orElse(false);
         }), "at least one exclusive colorway on sale");
         helper.succeed();
     }
 
     public static void geodeCrystalsGrowAndNewOresDrop(GameTestHelper helper) {
-        var placed = helper.getLevel().registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
+        var placed = helper.getLevel().registryAccess().registryOrThrow(Registries.PLACED_FEATURE);
         for (var key : List.of(FemboyWorldgen.ORE_MOONSTONE, FemboyWorldgen.ORE_NEON_QUARTZ, FemboyWorldgen.ROSE_QUARTZ_GEODE)) {
-            helper.assertTrue(placed.get(key).isPresent(), key.identifier() + " loaded");
+            helper.assertTrue(placed.containsKey(key), key.location() + " loaded");
         }
         helper.setBlock(ORE, FemboyBlocks.BUDDING_ROSE_QUARTZ.get());
         helper.setBlock(ORE.above(), Blocks.AIR);
@@ -275,7 +277,7 @@ public final class DecorGameTests {
         WearableGameTests.withPlayer(helper, player -> {
             CosmeticsManager.set(player, FemboySlots.FACE, new ItemStack(FemboyItems.DARK_SHADES.get()));
             critic.review(player);
-            helper.assertFalse(player.hasEffect(net.minecraft.world.effect.MobEffects.SLOWNESS), "no bad review");
+            helper.assertFalse(player.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN), "no bad review");
             helper.assertTrue(critic.hasEffect(net.minecraft.world.effect.MobEffects.WEAKNESS), "the critic is impressed");
         });
     }
@@ -292,9 +294,9 @@ public final class DecorGameTests {
     }
 
     public static void oresGenerateAndDrop(GameTestHelper helper) {
-        var placed = helper.getLevel().registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
-        helper.assertTrue(placed.get(FemboyWorldgen.ORE_ROSE_QUARTZ).isPresent(), "rose quartz placed feature loaded");
-        helper.assertTrue(placed.get(FemboyWorldgen.ORE_GLITTER).isPresent(), "glitter placed feature loaded");
+        var placed = helper.getLevel().registryAccess().registryOrThrow(Registries.PLACED_FEATURE);
+        helper.assertTrue(placed.containsKey(FemboyWorldgen.ORE_ROSE_QUARTZ), "rose quartz placed feature loaded");
+        helper.assertTrue(placed.containsKey(FemboyWorldgen.ORE_GLITTER), "glitter placed feature loaded");
 
         ItemStack pickaxe = new ItemStack(Items.IRON_PICKAXE);
         Map<Block, Item> drops = Map.of(
@@ -311,21 +313,21 @@ public final class DecorGameTests {
     }
 
     public static void postersAndGlitterColorway(GameTestHelper helper) {
-        var paintings = helper.getLevel().registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT);
+        var paintings = helper.getLevel().registryAccess().registryOrThrow(Registries.PAINTING_VARIANT);
         Map<String, int[]> sizes = Map.of("btw", new int[]{1, 1}, "stay_warm", new int[]{1, 2}, "code_with_love", new int[]{2, 2});
         sizes.forEach((name, size) -> {
-            PaintingVariant variant = paintings.getValueOrThrow(ResourceKey.create(Registries.PAINTING_VARIANT, id(name)));
+            PaintingVariant variant = paintings.getOrThrow(ResourceKey.create(Registries.PAINTING_VARIANT, id(name)));
             helper.assertValueEqual(variant.width() + "x" + variant.height(), size[0] + "x" + size[1], name + " size");
         });
 
-        var recipe = helper.getLevel().recipeAccess().byKey(ResourceKey.create(Registries.RECIPE, id("programming_socks_glitter")))
-                .orElseThrow(() -> helper.assertionException("glitter recipe missing"));
+        var recipe = helper.getLevel().getRecipeManager().byKey(id("programming_socks_glitter"))
+                .orElseThrow(() -> new GameTestAssertException("glitter recipe missing"));
         CraftingInput input = CraftingInput.of(3, 1, List.of(new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()),
                 new ItemStack(FemboyItems.GLITTER.get()), new ItemStack(FemboyItems.GLITTER.get())));
         @SuppressWarnings("unchecked")
         Recipe<CraftingInput> crafting = (Recipe<CraftingInput>) recipe.value();
         helper.assertTrue(crafting instanceof CraftingRecipe && crafting.matches(input, helper.getLevel()), "socks + 2 glitter match");
-        Colorway colorway = crafting.assemble(input).get(FemboyComponents.COLORWAY.get());
+        Colorway colorway = crafting.assemble(input, helper.getLevel().registryAccess()).get(FemboyComponents.COLORWAY.get());
         helper.assertTrue(colorway != null && colorway.hasShimmer(), "glitter socks shimmer: " + colorway);
         helper.succeed();
     }
