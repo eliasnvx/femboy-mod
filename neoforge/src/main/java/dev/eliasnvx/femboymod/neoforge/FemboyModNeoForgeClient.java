@@ -1,19 +1,17 @@
 package dev.eliasnvx.femboymod.neoforge;
 
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.client.ConfigScreen;
 import dev.eliasnvx.femboymod.client.FemboyModClient;
-import dev.eliasnvx.femboymod.client.render.ColorwayTintSource;
 import dev.eliasnvx.femboymod.client.render.CosmeticLayer;
-import net.minecraft.client.renderer.entity.player.AvatarRenderer;
-import net.minecraft.world.entity.player.PlayerModelType;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.resources.PlayerSkin;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import dev.eliasnvx.femboymod.client.ConfigScreen;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 @Mod(value = FemboyMod.MOD_ID, dist = Dist.CLIENT)
 public final class FemboyModNeoForgeClient {
@@ -21,12 +19,10 @@ public final class FemboyModNeoForgeClient {
     public FemboyModNeoForgeClient(IEventBus modBus, ModContainer container) {
         FemboyModClient.init();
         container.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> new ConfigScreen(parent));
-        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
-                event.register(ColorwayTintSource.ID, ColorwayTintSource.MAP_CODEC));
+        // Item colorway tints come from client/ItemTints (an ItemColor); 1.21.1 has no item tint sources.
         modBus.addListener((EntityRenderersEvent.AddLayers event) -> {
-            for (PlayerModelType skin : event.getSkins()) {
-                AvatarRenderer<?> renderer = event.getPlayerRenderer(skin);
-                if (renderer != null) {
+            for (PlayerSkin.Model skin : event.getSkins()) {
+                if (event.getSkin(skin) instanceof PlayerRenderer renderer) {
                     renderer.addLayer(new CosmeticLayer(renderer, event.getEntityModels()));
                 }
             }

@@ -8,6 +8,9 @@ loom {
         gameTestServer {
             server()
             forgeTemplate("gameTestServer")
+            // The 21.1 template starts a plain dedicated server: switch it into test mode explicitly
+            property "neoforge.gameTestServer", "true"
+            property "neoforge.enabledGameTestNamespaces", "femboymod_example"
             name "Example Addon GameTest Server"
             runDir "build/run/gameTest"
         }
@@ -34,9 +37,9 @@ dependencies {
     // femboymod itself, so `runClient` here starts the mod + the addon
     implementation(project(path: ":neoforge", configuration: "namedElements")) { transitive false }
     // femboymod's common code is injected by the Architectury transformer only if listed here
-    common(project(path: ":api")) { transitive false }
-    common(project(path: ":common")) { transitive false }
-    common(project(path: ":example-addon-common")) { transitive false }
+    common(project(path: ":api", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(path: ":example-addon-common", configuration: "namedElements")) { transitive false }
 }
 
 tasks.withType(PublishToMavenRepository).configureEach { enabled = false }

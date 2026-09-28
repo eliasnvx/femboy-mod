@@ -16,11 +16,10 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.attribute.EnvironmentAttributes;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
-import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
@@ -68,17 +67,17 @@ public final class WorldGameTests {
     }
 
     public static void pinkCreeperSpawns(GameTestHelper helper) {
-        var biomes = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME);
-        helper.assertTrue(spawnsIn(biomes.getOrThrow(Biomes.FLOWER_FOREST).value()), "spawns in flower forests");
-        helper.assertTrue(spawnsIn(biomes.getOrThrow(Biomes.CHERRY_GROVE).value()), "spawns in cherry groves");
-        helper.assertFalse(spawnsIn(biomes.getOrThrow(Biomes.PLAINS).value()), "not in plain plains");
+        var biomes = helper.getLevel().registryAccess().registryOrThrow(Registries.BIOME);
+        helper.assertTrue(spawnsIn(biomes.getOrThrow(Biomes.FLOWER_FOREST)), "spawns in flower forests");
+        helper.assertTrue(spawnsIn(biomes.getOrThrow(Biomes.CHERRY_GROVE)), "spawns in cherry groves");
+        helper.assertFalse(spawnsIn(biomes.getOrThrow(Biomes.PLAINS)), "not in plain plains");
         helper.succeed();
     }
 
     private static boolean spawnsIn(Biome biome) {
-        MobSpawnSettings spawns = biome.getAttributes().applyModifier(EnvironmentAttributes.NATURAL_MOB_SPAWNS, MobSpawnSettings.EMPTY);
-        return spawns.getMobsInCategory(MobCategory.MONSTER).unwrap().stream()
-                .anyMatch(w -> w.value().type() == FemboyEntities.PINK_CREEPER.get());
+        MobSpawnSettings spawns = biome.getMobSettings();
+        return spawns.getMobs(MobCategory.MONSTER).unwrap().stream()
+                .anyMatch(data -> data.type == FemboyEntities.PINK_CREEPER.get());
     }
 
     public static void rackIsJobSite(GameTestHelper helper) {
@@ -88,11 +87,11 @@ public final class WorldGameTests {
     }
 
     public static void thrifterTrades(GameTestHelper helper) {
-        Villager villager = helper.spawn(EntityTypes.VILLAGER, new BlockPos(1, 1, 1));
-        villager.setVillagerData(villager.getVillagerData().withProfession(FemboyBlocks.THRIFTER.asHolder()).withLevel(1));
+        Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(1, 1, 1));
+        villager.setVillagerData(villager.getVillagerData().setProfession(FemboyBlocks.THRIFTER.get()).setLevel(1));
         List<MerchantOffer> offers = villager.getOffers();
         helper.assertTrue(!offers.isEmpty(), "thrifter has trades");
-        helper.assertTrue(offers.stream().anyMatch(o -> o.getResult().getItem().builtInRegistryHolder().key().identifier().getNamespace().equals(FemboyMod.MOD_ID)
+        helper.assertTrue(offers.stream().anyMatch(o -> o.getResult().getItem().builtInRegistryHolder().key().location().getNamespace().equals(FemboyMod.MOD_ID)
                 || o.getCostA().is(Items.STRING)), "trades come from the femboymod trade set");
         villager.discard();
         helper.succeed();
@@ -101,7 +100,7 @@ public final class WorldGameTests {
     public static void rackHangAndTake(GameTestHelper helper) {
         BlockPos pos = new BlockPos(1, 1, 1);
         helper.setBlock(pos, FemboyBlocks.CLOTHING_RACK.get());
-        ClothingRackBlockEntity rack = helper.getBlockEntity(pos, ClothingRackBlockEntity.class);
+        ClothingRackBlockEntity rack = helper.getBlockEntity(pos);
         ItemStack hand = new ItemStack(FemboyItems.PLEATED_SKIRT.get(), 1);
         helper.assertTrue(rack.hang(hand), "hangs");
         helper.assertTrue(hand.isEmpty(), "moved from the hand (no copy)");
@@ -148,7 +147,7 @@ public final class WorldGameTests {
 
     private static void withPlayer(GameTestHelper helper, Consumer<ServerPlayer> body) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        player.snapTo(helper.absoluteVec(TEST_AREA_CENTER));
+        player.moveTo(helper.absoluteVec(TEST_AREA_CENTER));
         try {
             body.accept(player);
             helper.succeed();

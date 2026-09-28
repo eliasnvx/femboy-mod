@@ -5,7 +5,7 @@ architectury {
 
 dependencies {
     compileOnly "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    implementation project(":api")
+    implementation project(path: ":api", configuration: "namedElements")
     modImplementation "dev.architectury:architectury:${rootProject.architectury_api_version}"
 }
 

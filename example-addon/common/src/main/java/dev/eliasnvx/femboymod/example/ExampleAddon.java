@@ -76,9 +76,7 @@ public final class ExampleAddon implements FemboyAddon {
         api.cosmeticSlots().register(PIN_SLOT, new CosmeticSlotType(PIN_SLOT_ORDER));
         ExampleEffects.register(api);
 
-        ResourceKey<Item> pinKey = ResourceKey.create(Registries.ITEM, id("friendship_pin"));
-        RegistrySupplier<Item> pin = friendshipPin = ITEMS.register(pinKey.identifier(), () -> new Item(new Item.Properties()
-                .setId(pinKey)
+        RegistrySupplier<Item> pin = friendshipPin = ITEMS.register(id("friendship_pin"), () -> new Item(new Item.Properties()
                 .stacksTo(1)
                 .arch$tab(FEMBOYMOD_TAB)
                 .component(api.components().cosmetic().get(), new Cosmetic(PIN_SLOT, Optional.of(PIN_RENDERER)))));

@@ -15,8 +15,10 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityHurtMixin {
 
-    @ModifyVariable(method = "hurtServer", at = @At("HEAD"), argsOnly = true)
-    private float femboymod$dripDamage(float amount, ServerLevel level, DamageSource source) {
-        return DripCombat.modifyIncoming((LivingEntity) (Object) this, level, source, amount);
+    // 1.21.1: hurt(DamageSource, float) runs on both sides; only the server scales damage
+    @ModifyVariable(method = "hurt", at = @At("HEAD"), argsOnly = true)
+    private float femboymod$dripDamage(float amount, DamageSource source) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        return self.level() instanceof ServerLevel level ? DripCombat.modifyIncoming(self, level, source, amount) : amount;
     }
 }

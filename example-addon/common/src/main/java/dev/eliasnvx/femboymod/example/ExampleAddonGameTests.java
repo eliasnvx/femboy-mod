@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -52,12 +52,12 @@ public final class ExampleAddonGameTests {
     }
 
     public static void candyPatternLoaded(GameTestHelper helper) {
-        ColorwayPattern candy = helper.getLevel().registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY)
-                .getValue(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
+        ColorwayPattern candy = helper.getLevel().registryAccess().registryOrThrow(ColorwayPattern.REGISTRY_KEY)
+                .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
                         ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "candy")));
         helper.assertTrue(candy != null && candy.stripes().size() == 4, "candy pattern loaded from the addon's data pack");
-        ColorwayPattern shimmer = helper.getLevel().registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY)
-                .getValue(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
+        ColorwayPattern shimmer = helper.getLevel().registryAccess().registryOrThrow(ColorwayPattern.REGISTRY_KEY)
+                .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
                         ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "candy_shimmer")));
         helper.assertTrue(shimmer != null && shimmer.shimmer().isPresent()
                 && shimmer.stripeColor(0, 40.0F, 0xFFFFFF, 0xFFFFFF) != shimmer.stripeColor(0, 0.0F, 0xFFFFFF, 0xFFFFFF),
@@ -101,8 +101,8 @@ public final class ExampleAddonGameTests {
     }
 
     public static void friendshipSetBonusLoaded(GameTestHelper helper) {
-        SetBonus bonus = helper.getLevel().registryAccess().lookupOrThrow(SetBonus.REGISTRY_KEY)
-                .getValue(ResourceKey.create(SetBonus.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "friendship")));
+        SetBonus bonus = helper.getLevel().registryAccess().registryOrThrow(SetBonus.REGISTRY_KEY)
+                .get(ResourceKey.create(SetBonus.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "friendship")));
         helper.assertTrue(bonus != null && bonus.pieces().size() == 2, "friendship set bonus loaded with two pieces");
         helper.assertTrue(bonus.effects().getFirst().effect() instanceof ExampleEffects.XpTrickle, "set bonus uses the custom effect");
         helper.assertTrue(bonus.effects().getFirst().when().orElseThrow() instanceof ExampleEffects.Daytime, "set bonus uses the custom condition");
@@ -110,9 +110,9 @@ public final class ExampleAddonGameTests {
     }
 
     public static void dripDamageRuleLoaded(GameTestHelper helper) {
-        DripDamage rule = helper.getLevel().registryAccess().lookupOrThrow(DripDamage.REGISTRY_KEY)
-                .getValue(ResourceKey.create(DripDamage.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "phantoms")));
-        helper.assertTrue(rule != null && rule.attackers().contains(EntityTypes.PHANTOM.builtInRegistryHolder()), "phantom rule loaded");
+        DripDamage rule = helper.getLevel().registryAccess().registryOrThrow(DripDamage.REGISTRY_KEY)
+                .get(ResourceKey.create(DripDamage.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "phantoms")));
+        helper.assertTrue(rule != null && rule.attackers().contains(EntityType.PHANTOM.builtInRegistryHolder()), "phantom rule loaded");
         helper.assertValueEqual(rule.multiplierFor(99), 0.75F, "tiers past the list use the last multiplier");
         helper.succeed();
     }
@@ -121,8 +121,8 @@ public final class ExampleAddonGameTests {
         Item pin = ExampleAddon.friendshipPin.get();
         helper.assertTrue(new ItemStack(pin).is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "charms"))),
                 "pin is in #femboymod:charms");
-        helper.assertTrue(helper.getLevel().registryAccess().lookupOrThrow(CharmStats.REGISTRY_KEY)
-                .getValue(CharmStats.keyOf(pin)) != null, "pin has charm stats");
+        helper.assertTrue(helper.getLevel().registryAccess().registryOrThrow(CharmStats.REGISTRY_KEY)
+                .get(CharmStats.keyOf(pin)) != null, "pin has charm stats");
         helper.succeed();
     }
 }

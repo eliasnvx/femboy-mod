@@ -18,8 +18,8 @@ dependencies {
     modImplementation "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
     modImplementation "software.bernie.geckolib:geckolib-neoforge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
-    common(project(path: ":api")) { transitive false }
-    common(project(path: ":common")) { transitive false }
+    common(project(path: ":api", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowBundle(project(path: ":api", configuration: "transformProductionNeoForge")) { transitive false }
     shadowBundle(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
 }
@@ -30,6 +30,9 @@ loom {
         gameTestServer {
             server()
             forgeTemplate("gameTestServer")
+            // The 21.1 template starts a plain dedicated server: switch it into test mode explicitly
+            property "neoforge.gameTestServer", "true"
+            property "neoforge.enabledGameTestNamespaces", "femboymod"
             name "NeoForge GameTest Server"
             runDir "build/run/gameTest"
         }

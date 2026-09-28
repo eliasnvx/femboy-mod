@@ -39,7 +39,7 @@ publishMods {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = rootProject.curseforge_project_id
         minecraftVersions.add(rootProject.minecraft_version)
-        javaVersions.add(JavaVersion.VERSION_25)
+        javaVersions.add(JavaVersion.VERSION_21)
         clientRequired = true
         serverRequired = true
         requires("architectury-api", "geckolib")

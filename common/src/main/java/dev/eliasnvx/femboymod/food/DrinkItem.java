@@ -42,6 +42,11 @@ public class DrinkItem extends Item {
         this.remainder = remainder;
     }
 
+    /** @return the container left behind by a drink without food (empty for food drinks, see usingConvertsTo) */
+    public ItemStack remainder() {
+        return remainder == null ? ItemStack.EMPTY : new ItemStack(remainder.get());
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (player.getItemInHand(hand).has(DataComponents.FOOD)) {

@@ -60,7 +60,7 @@ public final class ExampleEffects {
 
         @Override
         public boolean test(Player player) {
-            return player.level().isBrightOutside();
+            return player.level().isDay();
         }
     }
 }
