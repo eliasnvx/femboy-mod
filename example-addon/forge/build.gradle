@@ -38,6 +38,8 @@ dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
     modImplementation "dev.architectury:architectury-forge:${rootProject.architectury_api_version}"
     modImplementation "software.bernie.geckolib:geckolib-forge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+    // GeckoLib ships mclib as jar-in-jar; Forge dev runs do not unpack it, so put it on the dev classpath
+    forgeRuntimeLibrary "com.eliotlash.mclib:mclib:20"
 
     // femboymod itself, so `runClient` here starts the mod + the addon
     implementation(project(path: ":forge", configuration: "namedElements")) { transitive false }
