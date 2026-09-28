@@ -10,6 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FemboyApiHolderTest {
 
+    @org.junit.jupiter.api.BeforeAll
+    static void bootstrapMinecraft() {
+        // 1.20.1 registries refuse to create keys before Minecraft is bootstrapped
+        net.minecraft.SharedConstants.tryDetectVersion();
+        net.minecraft.server.Bootstrap.bootStrap();
+    }
+
     /** Stub implementation; only identity matters for these tests. */
     private static final FemboyApi STUB = (FemboyApi) java.lang.reflect.Proxy.newProxyInstance(
             FemboyApi.class.getClassLoader(), new Class<?>[]{FemboyApi.class}, (proxy, method, args) -> null);
