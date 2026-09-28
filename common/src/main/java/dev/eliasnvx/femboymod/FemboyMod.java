@@ -54,7 +54,11 @@ public final class FemboyMod {
         BuiltinConditions.register(api.cosmeticConditionTypes());
         ProfileHooks.registerFields(api.profileFields());
 
-        FemboyComponents.REGISTER.register();
+        // 1.20.1: item data lives in NBT; decoding holders from it needs the server's registries
+        dev.architectury.event.events.common.LifecycleEvent.SERVER_STARTING.register(server ->
+                dev.eliasnvx.femboymod.item.RegistryAccessContext.setServer(server.registryAccess()));
+        dev.architectury.event.events.common.LifecycleEvent.SERVER_STOPPED.register(server ->
+                dev.eliasnvx.femboymod.item.RegistryAccessContext.setServer(null));
         FemboyEffects.REGISTER.register();
         FemboyTriggers.REGISTER.register();
         FemboyEntities.init();
