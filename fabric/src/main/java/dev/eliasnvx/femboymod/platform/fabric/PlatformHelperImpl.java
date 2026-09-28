@@ -119,4 +119,8 @@ public final class PlatformHelperImpl {
         net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper.register(FemboyBlocks.THRIFTER_POI.location(), 1, 1,
                 FemboyBlocks.CLOTHING_RACK.get());
     }
+
+    public static boolean canReceive(net.minecraft.server.level.ServerPlayer player, net.minecraft.resources.ResourceLocation id) {
+        return dev.architectury.networking.NetworkManager.canPlayerReceive(player, id);
+    }
 }

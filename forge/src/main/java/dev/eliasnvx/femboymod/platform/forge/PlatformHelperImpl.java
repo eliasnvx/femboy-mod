@@ -199,4 +199,9 @@ public final class PlatformHelperImpl {
             setter.accept(data);
         }
     }
+
+    public static boolean canReceive(net.minecraft.server.level.ServerPlayer player, net.minecraft.resources.ResourceLocation id) {
+        // Architectury 9 on Forge records the client's C2S ids as its receivables; any modded client has our channel
+        return !net.minecraftforge.network.NetworkHooks.isVanillaConnection(player.connection.connection);
+    }
 }
