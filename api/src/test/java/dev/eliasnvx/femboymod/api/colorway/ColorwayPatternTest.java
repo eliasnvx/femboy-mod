@@ -93,7 +93,10 @@ class ColorwayPatternTest {
 
     @Test
     void shimmerCannotStrobe() {
-        assertTrue(ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(
-                "{\"stripes\":[\"#FF0000\"],\"shimmer\":{\"period_ticks\":" + (ColorwayPattern.Shimmer.MIN_PERIOD_TICKS - 1) + "}}")).error().isPresent());
+        // 1.20.1 DFU: optionalFieldOf drops an invalid value instead of failing, so a too-fast shimmer is either
+        // rejected or removed; it can never come out as a flashing pattern
+        var result = ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(
+                "{\"stripes\":[\"#FF0000\"],\"shimmer\":{\"period_ticks\":" + (ColorwayPattern.Shimmer.MIN_PERIOD_TICKS - 1) + "}}"));
+        assertTrue(result.error().isPresent() || result.result().orElseThrow().shimmer().isEmpty());
     }
 }
