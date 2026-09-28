@@ -1,0 +1,30 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "item": "femboymod:clothing_rack"
+    },
+    "title": {
+      "translate": "advancements.femboymod.thrifted.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.thrifted.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:villager_trade",
+      "conditions": {
+        "item": {
+          "tag": "femboymod:thrifter_goods"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "femboymod:rose_quartz_block"
+    }
+  ],
+  "result": {
+    "item": "femboymod:rose_quartz",
+    "count": 9
+  }
+}

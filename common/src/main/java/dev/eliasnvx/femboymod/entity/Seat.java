@@ -9,7 +9,6 @@ import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -120,7 +119,13 @@ public class Seat extends Entity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData() {
+    }
+
+    /** Riders sit on top of the seat, like the 1.21 default passenger attachment (1.20.1 defaults to 3/4 height). */
+    @Override
+    public double getPassengersRidingOffset() {
+        return getBbHeight();
     }
 
     @Override

@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "item": "femboymod:glitter"
+    },
+    "title": {
+      "translate": "advancements.femboymod.confetti_survivor.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.confetti_survivor.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "confetti_survivor",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

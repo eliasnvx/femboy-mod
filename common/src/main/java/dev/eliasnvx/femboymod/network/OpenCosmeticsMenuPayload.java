@@ -3,27 +3,31 @@ package dev.eliasnvx.femboymod.network;
 import dev.architectury.networking.NetworkManager;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.menu.CosmeticsMenu;
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 
 /** C2S: the player asks to open the cosmetic slots screen. Carries no data. */
-public record OpenCosmeticsMenuPayload() implements CustomPacketPayload {
+public record OpenCosmeticsMenuPayload() implements FemboyPacket {
 
     public static final OpenCosmeticsMenuPayload INSTANCE = new OpenCosmeticsMenuPayload();
 
-    public static final Type<OpenCosmeticsMenuPayload> TYPE =
-            new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "open_cosmetics"));
-
-    public static final StreamCodec<ByteBuf, OpenCosmeticsMenuPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final ResourceLocation ID = new ResourceLocation(FemboyMod.MOD_ID, "open_cosmetics");
 
     @Override
-    public Type<OpenCosmeticsMenuPayload> type() {
-        return TYPE;
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        // no data
+    }
+
+    public static OpenCosmeticsMenuPayload read(FriendlyByteBuf buf) {
+        return INSTANCE;
     }
 
     public static void handle(OpenCosmeticsMenuPayload payload, NetworkManager.PacketContext context) {

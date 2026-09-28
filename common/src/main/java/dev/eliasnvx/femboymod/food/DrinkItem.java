@@ -2,7 +2,6 @@ package dev.eliasnvx.femboymod.food;
 
 import java.util.function.Supplier;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stats;
@@ -19,10 +18,10 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A drink. Minecraft 1.21.1 has no consumable component, so this class does what 26.3's
+ * A drink. Minecraft 1.20.1 has no consumable component, so this class does what 26.3's
  * {@code Consumables.defaultDrink()} did: drink animation and sound, and for drinks without food
- * (Byte Energy) the vanilla drink time and an empty container back. Drinks with food get their
- * container back through {@code FoodProperties.usingConvertsTo}.
+ * (Byte Energy) the vanilla drink time. Every drink leaves its container behind (1.20.1 food has no
+ * {@code usingConvertsTo}, so food drinks get it back here too).
  */
 public class DrinkItem extends Item {
 
@@ -31,33 +30,36 @@ public class DrinkItem extends Item {
 
     private final @Nullable Supplier<? extends ItemLike> remainder;
 
-    /** A drink with food properties (the food component handles use time and the empty container). */
+    /** A drink that leaves nothing behind. */
     public DrinkItem(Properties properties) {
         this(properties, null);
     }
 
-    /** A drink without food that can always be drunk and leaves {@code remainder} behind. */
+    /**
+     * A drink that leaves {@code remainder} behind. Without food properties it can always be drunk;
+     * with them, the food decides use time and whether the player may drink.
+     */
     public DrinkItem(Properties properties, @Nullable Supplier<? extends ItemLike> remainder) {
         super(properties);
         this.remainder = remainder;
     }
 
-    /** @return the container left behind by a drink without food (empty for food drinks, see usingConvertsTo) */
+    /** @return the container left behind, or empty */
     public ItemStack remainder() {
         return remainder == null ? ItemStack.EMPTY : new ItemStack(remainder.get());
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (player.getItemInHand(hand).has(DataComponents.FOOD)) {
+        if (isEdible()) {
             return super.use(level, player, hand);
         }
         return ItemUtils.startUsingInstantly(level, player, hand);
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return stack.has(DataComponents.FOOD) ? super.getUseDuration(stack, entity) : DRINK_TICKS;
+    public int getUseDuration(ItemStack stack) {
+        return isEdible() ? super.getUseDuration(stack) : DRINK_TICKS;
     }
 
     @Override
@@ -72,21 +74,25 @@ public class DrinkItem extends Item {
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        if (stack.has(DataComponents.FOOD)) {
-            return super.finishUsingItem(stack, level, entity);
+        boolean creative = entity instanceof Player player && player.getAbilities().instabuild;
+        if (isEdible()) {
+            stack = super.finishUsingItem(stack, level, entity); // eats, shrinks (not in creative), triggers advancements
+        } else {
+            if (entity instanceof ServerPlayer player) {
+                CriteriaTriggers.CONSUME_ITEM.trigger(player, stack);
+                player.awardStat(Stats.ITEM_USED.get(this));
+            }
+            if (!creative) {
+                stack.shrink(1);
+            }
         }
-        if (entity instanceof ServerPlayer player) {
-            CriteriaTriggers.CONSUME_ITEM.trigger(player, stack);
-            player.awardStat(Stats.ITEM_USED.get(this));
-        }
-        stack.consume(1, entity);
         if (remainder == null) {
             return stack;
         }
         if (stack.isEmpty()) {
             return new ItemStack(remainder.get());
         }
-        if (entity instanceof Player player && !player.hasInfiniteMaterials()) {
+        if (entity instanceof Player player && !creative) {
             ItemStack empty = new ItemStack(remainder.get());
             if (!player.getInventory().add(empty)) {
                 player.drop(empty, false);

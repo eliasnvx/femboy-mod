@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "item": "femboymod:rubber_duck"
+    },
+    "title": {
+      "translate": "advancements.femboymod.rubber_duck_debugging.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.rubber_duck_debugging.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "duck_debugging",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

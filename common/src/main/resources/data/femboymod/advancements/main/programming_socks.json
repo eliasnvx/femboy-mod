@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "item": "femboymod:programming_socks"
+    },
+    "title": {
+      "translate": "advancements.femboymod.programming_socks.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.programming_socks.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "programming_socks",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

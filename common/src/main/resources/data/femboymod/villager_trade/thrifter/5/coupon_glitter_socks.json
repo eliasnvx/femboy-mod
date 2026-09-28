@@ -1,11 +1,12 @@
 {
   "wants": {
     "id": "femboymod:style_coupon",
-    "count": 5
+    "Count": 5
   },
   "gives": {
     "id": "femboymod:programming_socks",
-    "components": {
+    "Count": 1,
+    "tag": {
       "femboymod:colorway": {
         "base_color": "#FFD1EC",
         "pattern": "femboymod:glitter"

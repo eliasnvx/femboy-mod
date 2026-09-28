@@ -9,7 +9,11 @@ import dev.eliasnvx.femboymod.api.effect.EffectSource;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
 import dev.eliasnvx.femboymod.combat.DripCombat;
 import dev.eliasnvx.femboymod.registry.FemboyTags;
+import com.mojang.serialization.DataResult;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,6 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import org.jetbrains.annotations.Nullable;
 
 /** Built-in {@link CosmeticEffect} types. All numbers come from JSON. */
 public final class BuiltinEffects {
@@ -82,14 +87,38 @@ public final class BuiltinEffects {
         return new ResourceLocation(FemboyMod.MOD_ID, path);
     }
 
-    /** Transient attribute modifier; amount is multiplied by the source scale. Id = source id. */
-    public record AttributeEffect(Holder<Attribute> attribute, double amount, AttributeModifier.Operation operation)
+    /**
+     * Operation names as the 1.21.1 JSON writes them ({@code add_value}, {@code add_multiplied_base},
+     * {@code add_multiplied_total}); the 1.20.1 enum has no codec and older names.
+     */
+    private static final List<String> OPERATION_NAMES = List.of("add_value", "add_multiplied_base", "add_multiplied_total");
+    static final Codec<AttributeModifier.Operation> OPERATION_CODEC = Codec.STRING.comapFlatMap(
+            name -> {
+                int index = OPERATION_NAMES.indexOf(name);
+                return index < 0 ? DataResult.error(() -> "Unknown attribute operation: " + name)
+                        : DataResult.success(AttributeModifier.Operation.fromValue(index));
+            },
+            operation -> OPERATION_NAMES.get(operation.toValue()));
+
+    /**
+     * 1.20.1 attribute modifiers are keyed by UUID, not by id: derive a stable UUID from the source id,
+     * so re-activating the same source replaces its modifier.
+     */
+    public static UUID modifierUuid(ResourceLocation id) {
+        return UUID.nameUUIDFromBytes(id.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Transient attribute modifier; amount is multiplied by the source scale. Id = source id. The attribute keeps its
+     * 1.21.1 id: attributes 1.20.1 lacks are either computed by {@link EmulatedAttributes} or skipped with a warning.
+     */
+    public record AttributeEffect(ResourceLocation attribute, double amount, AttributeModifier.Operation operation)
             implements CosmeticEffect {
 
         public static final MapCodec<AttributeEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-                Attribute.CODEC.fieldOf("attribute").forGetter(AttributeEffect::attribute),
+                ResourceLocation.CODEC.fieldOf("attribute").forGetter(AttributeEffect::attribute),
                 Codec.DOUBLE.fieldOf("amount").forGetter(AttributeEffect::amount),
-                AttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(AttributeEffect::operation)
+                OPERATION_CODEC.fieldOf("operation").forGetter(AttributeEffect::operation)
         ).apply(i, AttributeEffect::new));
 
         @Override
@@ -97,29 +126,43 @@ public final class BuiltinEffects {
             return CODEC;
         }
 
+        /** @return the vanilla instance on the player, or null when the attribute is emulated or missing */
+        private @Nullable AttributeInstance instance(ServerPlayer player) {
+            if (EmulatedAttributes.isEmulated(attribute)) {
+                return null; // computed from the worn items, see EmulatedAttributes
+            }
+            Attribute resolved = BuiltInRegistries.ATTRIBUTE.get(attribute);
+            if (resolved == null) {
+                EmulatedAttributes.warnMissing(attribute);
+                return null;
+            }
+            return player.getAttribute(resolved);
+        }
+
         @Override
         public void onActivate(ServerPlayer player, EffectSource source) {
-            AttributeInstance instance = player.getAttribute(attribute);
+            AttributeInstance instance = instance(player);
             if (instance != null) {
-                instance.removeModifier(source.id());
-                instance.addTransientModifier(new AttributeModifier(source.id(), amount * source.scale(), operation));
+                UUID uuid = modifierUuid(source.id());
+                instance.removeModifier(uuid);
+                instance.addTransientModifier(new AttributeModifier(uuid, source.id().toString(), amount * source.scale(), operation));
             }
         }
 
         @Override
         public void onDeactivate(ServerPlayer player, EffectSource source) {
-            AttributeInstance instance = player.getAttribute(attribute);
+            AttributeInstance instance = instance(player);
             if (instance != null) {
-                instance.removeModifier(source.id());
+                instance.removeModifier(modifierUuid(source.id()));
             }
         }
     }
 
     /** Keeps a potion effect topped up while active; it simply runs out after deactivation. */
-    public record MobEffectEffect(Holder<MobEffect> effect, int amplifier, int duration, boolean showIcon) implements CosmeticEffect {
+    public record MobEffectEffect(MobEffect effect, int amplifier, int duration, boolean showIcon) implements CosmeticEffect {
 
         public static final MapCodec<MobEffectEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-                MobEffect.CODEC.fieldOf("effect").forGetter(MobEffectEffect::effect),
+                BuiltInRegistries.MOB_EFFECT.byNameCodec().fieldOf("effect").forGetter(MobEffectEffect::effect),
                 Codec.intRange(0, 255).optionalFieldOf("amplifier", 0).forGetter(MobEffectEffect::amplifier),
                 Codec.intRange(2, 20 * 60).optionalFieldOf("duration", 60).forGetter(MobEffectEffect::duration),
                 Codec.BOOL.optionalFieldOf("show_icon", true).forGetter(MobEffectEffect::showIcon)
@@ -194,7 +237,7 @@ public final class BuiltinEffects {
                 return;
             }
             if (player.moveDist - last >= distance) {
-                player.level().playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundSource.PLAYERS, volume, pitch);
+                player.level().playSound(null, player.getX(), player.getY(), player.getZ(), sound.value(), SoundSource.PLAYERS, volume, pitch);
                 LAST.put(player, player.moveDist);
             }
         }
@@ -213,7 +256,7 @@ public final class BuiltinEffects {
     public record FollowPassiveEffect(double radius, double speed, int interval, double stopDistance,
                                       HolderSet<EntityType<?>> followers, int maxFollowers) implements CosmeticEffect {
 
-        private static final HolderSet<EntityType<?>> NO_TAG = HolderSet.empty();
+        private static final HolderSet<EntityType<?>> NO_TAG = HolderSet.direct();
 
         public static final MapCodec<FollowPassiveEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Codec.doubleRange(1, 32).fieldOf("radius").forGetter(FollowPassiveEffect::radius),

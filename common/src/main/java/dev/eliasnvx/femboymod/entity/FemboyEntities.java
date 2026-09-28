@@ -16,13 +16,19 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+/**
+ * Entity types, attributes, spawn placements and natural spawns.
+ * 1.20.1 has no {@code EntityType.Builder#eyeHeight}/{@code passengerAttachments}: eye heights come from the
+ * entity classes ({@code getStandingEyeHeight}; Zombie 1.74, villagers 1.62, cats half their height, Fashion Critic
+ * overrides it), and passenger offsets use the 1.20.1 defaults.
+ */
 public final class FemboyEntities {
 
     public static final DeferredRegister<EntityType<?>> REGISTER = DeferredRegister.create(FemboyMod.MOD_ID, Registries.ENTITY_TYPE);
@@ -43,7 +49,7 @@ public final class FemboyEntities {
     public static final ResourceKey<EntityType<?>> CAFFEINATED_ZOMBIE_KEY = key("caffeinated_zombie");
     public static final RegistrySupplier<EntityType<CaffeinatedZombie>> CAFFEINATED_ZOMBIE = REGISTER.register(CAFFEINATED_ZOMBIE_KEY.location(),
             () -> EntityType.Builder.<CaffeinatedZombie>of(CaffeinatedZombie::new, MobCategory.MONSTER)
-                    .sized(0.6F, 1.95F).eyeHeight(1.74F).clientTrackingRange(8).build(CAFFEINATED_ZOMBIE_KEY.location().toString()));
+                    .sized(0.6F, 1.95F).clientTrackingRange(8).build(CAFFEINATED_ZOMBIE_KEY.location().toString()));
     public static final TagKey<Biome> CAFFEINATED_ZOMBIE_SPAWNS = biomeTag("caffeinated_zombie_spawns");
 
     public static final ResourceKey<EntityType<?>> HISSY_CAT_KEY = key("hissy_cat");
@@ -55,7 +61,7 @@ public final class FemboyEntities {
     public static final ResourceKey<EntityType<?>> FASHION_CRITIC_KEY = key("fashion_critic");
     public static final RegistrySupplier<EntityType<FashionCritic>> FASHION_CRITIC = REGISTER.register(FASHION_CRITIC_KEY.location(),
             () -> EntityType.Builder.of(FashionCritic::new, MobCategory.MONSTER)
-                    .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).build(FASHION_CRITIC_KEY.location().toString()));
+                    .sized(0.6F, 1.95F).clientTrackingRange(10).build(FASHION_CRITIC_KEY.location().toString()));
     public static final TagKey<Biome> FASHION_CRITIC_SPAWNS = biomeTag("fashion_critic_spawns");
 
     /** Invisible seat for the Gamer Chair. Saved (like on 26.3, which refuses riding unsaved entities) but removes itself when empty. */
@@ -68,14 +74,14 @@ public final class FemboyEntities {
     public static final ResourceKey<EntityType<?>> STRAY_CAT_KEY = key("stray_cat");
     public static final RegistrySupplier<EntityType<StrayCat>> STRAY_CAT = REGISTER.register(STRAY_CAT_KEY.location(),
             () -> EntityType.Builder.<StrayCat>of(StrayCat::new, MobCategory.CREATURE)
-                    .sized(0.6F, 0.7F).eyeHeight(0.35F).passengerAttachments(0.5125F).clientTrackingRange(8).build(STRAY_CAT_KEY.location().toString()));
+                    .sized(0.6F, 0.7F).clientTrackingRange(8).build(STRAY_CAT_KEY.location().toString()));
     public static final TagKey<Biome> STRAY_CAT_SPAWNS = biomeTag("stray_cat_spawns");
 
     /** Wandering Cosplayer (SPEC v1.2): rare travelling trader with exclusive colorways (see CosplayerSpawner). */
     public static final ResourceKey<EntityType<?>> COSPLAYER_KEY = key("cosplayer");
     public static final RegistrySupplier<EntityType<Cosplayer>> COSPLAYER = REGISTER.register(COSPLAYER_KEY.location(),
             () -> EntityType.Builder.<Cosplayer>of(Cosplayer::new, MobCategory.CREATURE)
-                    .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).build(COSPLAYER_KEY.location().toString()));
+                    .sized(0.6F, 1.95F).clientTrackingRange(10).build(COSPLAYER_KEY.location().toString()));
 
     /** Flowery biomes (flower forest, cherry grove, meadow, sunflower plains, dappled forest); data-driven. */
     public static final TagKey<Biome> PINK_CREEPER_SPAWNS =
@@ -95,7 +101,7 @@ public final class FemboyEntities {
     /** Natural spawning of a hostile mob in a biome tag, if its config weight is above 0. */
     private static <T extends Monster> void addMonsterSpawn(RegistrySupplier<EntityType<T>> type, TagKey<Biome> biomes,
                                                            CommonConfig.Mob config) {
-        SpawnPlacementsRegistry.register(type, SpawnPlacementTypes.ON_GROUND,
+        SpawnPlacementsRegistry.register(type, SpawnPlacements.Type.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
         if (config.spawnWeight() > 0) {
             BiomeModifications.addProperties(ctx -> ctx.hasTag(biomes), (ctx, props) ->
@@ -117,7 +123,7 @@ public final class FemboyEntities {
         addMonsterSpawn(FASHION_CRITIC, FASHION_CRITIC_SPAWNS, mobs.fashionCritic());
         EntityAttributeRegistry.register(STRAY_CAT, Cat::createAttributes);
         EntityAttributeRegistry.register(COSPLAYER, net.minecraft.world.entity.Mob::createMobAttributes);
-        SpawnPlacementsRegistry.register(STRAY_CAT, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+        SpawnPlacementsRegistry.register(STRAY_CAT, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Animal::checkAnimalSpawnRules);
         int strayCats = FemboyConfig.common().friends().strayCatSpawnWeight();
         if (strayCats > 0) {
@@ -126,7 +132,7 @@ public final class FemboyEntities {
                             new MobSpawnSettings.SpawnerData(STRAY_CAT.get(), strayCats, 1, 1)));
         }
         EntityAttributeRegistry.register(PINK_CREEPER, Creeper::createAttributes);
-        SpawnPlacementsRegistry.register(PINK_CREEPER, SpawnPlacementTypes.ON_GROUND,
+        SpawnPlacementsRegistry.register(PINK_CREEPER, SpawnPlacements.Type.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
         CommonConfig.PinkCreeper config = FemboyConfig.common().pinkCreeper();
         if (config.spawnWeight() > 0) {

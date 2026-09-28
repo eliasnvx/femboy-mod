@@ -78,9 +78,10 @@ public final class ExampleAddon implements FemboyAddon {
 
         RegistrySupplier<Item> pin = friendshipPin = ITEMS.register(id("friendship_pin"), () -> new Item(new Item.Properties()
                 .stacksTo(1)
-                .arch$tab(FEMBOYMOD_TAB)
-                .component(api.components().cosmetic().get(), new Cosmetic(PIN_SLOT, Optional.of(PIN_RENDERER)))));
+                .arch$tab(FEMBOYMOD_TAB)));
         ITEMS.register();
+        // 1.20.1 has no default components: every pin reads this cosmetic until one is stored on the stack
+        pin.listen(item -> api.components().cosmetic().setDefault(item, new Cosmetic(PIN_SLOT, Optional.of(PIN_RENDERER))));
 
         api.events().addListener(CosmeticChangedEvent.class, event ->
                 LOGGER.info("{} changed slot {}: {} -> {}", event.entity().getName().getString(), event.slot(),

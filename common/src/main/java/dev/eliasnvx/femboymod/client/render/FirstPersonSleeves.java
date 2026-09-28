@@ -19,7 +19,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor.ARGB32;
 import net.minecraft.world.item.ItemStack;
 
 /** Hoodie sleeve and mittens on the first-person hand (called from PlayerRendererHandMixin). */
@@ -105,6 +104,6 @@ public final class FirstPersonSleeves {
     private static void part(ModelPart parts, String name, ModelPart arm, PoseStack pose, VertexConsumer buffer, int light, int color) {
         ModelPart part = parts.getChild(name);
         part.copyFrom(arm);
-        part.render(pose, buffer, light, OverlayTexture.NO_OVERLAY, ARGB32.opaque(color));
+        ModelColors.render(part, pose, buffer, light, OverlayTexture.NO_OVERLAY, ModelColors.opaque(color));
     }
 }

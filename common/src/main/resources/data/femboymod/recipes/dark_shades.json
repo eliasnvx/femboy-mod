@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_nugget"
+    },
+    "T": {
+      "item": "minecraft:tinted_glass"
+    },
+    "B": {
+      "item": "minecraft:black_dye"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "T T"
+  ],
+  "result": {
+    "item": "femboymod:dark_shades"
+  }
+}

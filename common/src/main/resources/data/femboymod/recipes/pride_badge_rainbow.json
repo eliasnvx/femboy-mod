@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "femboymod_pride_badge",
+  "ingredients": [
+    {
+      "item": "femboymod:pride_badge"
+    },
+    {
+      "item": "minecraft:red_dye"
+    },
+    {
+      "item": "minecraft:orange_dye"
+    },
+    {
+      "item": "minecraft:yellow_dye"
+    },
+    {
+      "item": "minecraft:lime_dye"
+    },
+    {
+      "item": "minecraft:blue_dye"
+    },
+    {
+      "item": "minecraft:purple_dye"
+    }
+  ],
+  "result": {
+    "item": "femboymod:pride_badge",
+    "nbt": {
+      "femboymod:colorway": {
+        "base_color": "#FFFFFF",
+        "pattern": "femboymod:pride_rainbow"
+      }
+    }
+  }
+}

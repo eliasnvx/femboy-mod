@@ -56,7 +56,7 @@ public final class EmoteClient {
     }
 
     /**
-     * Called at the end of {@code PlayerModel#setupAnim} with the id of the entity being posed (1.21.1 has no
+     * Called at the end of {@code PlayerModel#setupAnim} with the id of the entity being posed (1.20.1 has no
      * render states, so the mixin passes the entity's id). Does not allocate.
      */
     public static void pose(HumanoidModel<?> model, int entityId) {

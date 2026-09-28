@@ -2,8 +2,9 @@ package dev.eliasnvx.femboymod.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import com.mojang.serialization.MapCodec;
+import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -23,16 +24,10 @@ public class WardrobeBlock extends BaseEntityBlock {
 
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    public static final MapCodec<WardrobeBlock> CODEC = simpleCodec(WardrobeBlock::new);
 
     public WardrobeBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
-    }
-
-    @Override
-    protected MapCodec<WardrobeBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -46,7 +41,7 @@ public class WardrobeBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -56,7 +51,7 @@ public class WardrobeBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof WardrobeBlockEntity wardrobe) {
             player.openMenu(wardrobe);
         }
@@ -64,8 +59,11 @@ public class WardrobeBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        Containers.dropContentsOnDestroy(state, newState, level, pos); // contents drop when broken
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof Container container) {
+            Containers.dropContents(level, pos, container); // contents drop when broken
+            level.updateNeighbourForOutputSignal(pos, this);
+        }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 }

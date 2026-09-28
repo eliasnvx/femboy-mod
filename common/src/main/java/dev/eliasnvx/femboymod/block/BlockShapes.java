@@ -7,7 +7,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/** Shape helpers that 1.21.1 lacks (26.3: {@code Shapes.rotateHorizontal}). */
+/** Shape helpers that 1.20.1 lacks (26.3: {@code Shapes.rotateHorizontal}). */
 public final class BlockShapes {
 
     private static final int QUARTER_TURNS = 4;

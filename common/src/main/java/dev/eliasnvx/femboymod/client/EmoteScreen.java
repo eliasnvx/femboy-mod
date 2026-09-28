@@ -1,8 +1,9 @@
 package dev.eliasnvx.femboymod.client;
 
-import dev.architectury.networking.NetworkManager;
+import dev.eliasnvx.femboymod.network.FemboyNetwork;
 import dev.eliasnvx.femboymod.emote.Emote;
 import dev.eliasnvx.femboymod.network.EmotePayloads;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -28,10 +29,16 @@ public final class EmoteScreen extends Screen {
             int x = width / 2 + Math.round(Mth.cos(angle) * RADIUS) - BUTTON_W / 2;
             int y = height / 2 + Math.round(Mth.sin(angle) * RADIUS) - BUTTON_H / 2;
             addRenderableWidget(Button.builder(Component.translatable(emote.translationKey()), b -> {
-                NetworkManager.sendToServer(new EmotePayloads.Play(emote.ordinal()));
+                FemboyNetwork.sendToServer(new EmotePayloads.Play(emote.ordinal()));
                 onClose();
             }).bounds(x, y, BUTTON_W, BUTTON_H).build());
         }
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        renderBackground(graphics); // 1.20.1: screens draw their own background
+        super.render(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override

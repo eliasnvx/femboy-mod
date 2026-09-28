@@ -168,7 +168,7 @@ public final class BuiltinCosmeticRenderers {
     /** Poses the model for the wearer and draws it right away with one tint. */
     static void submit(CosmeticRenderContext ctx, CosmeticModels.GroupModel model, RenderType type, int rgb) {
         model.pose(ctx.parentModel(), ctx.entity(), ctx.partialTick());
-        model.renderToBuffer(ctx.poseStack(), ctx.bufferSource().getBuffer(type), ctx.light(), ctx.overlay(), ARGB32.opaque(rgb));
+        ModelColors.render(model, ctx.poseStack(), ctx.bufferSource().getBuffer(type), ctx.light(), ctx.overlay(), ModelColors.opaque(rgb));
     }
 
     /** Mixes a color toward white ({@code amount > 0}) or black ({@code amount < 0}). */

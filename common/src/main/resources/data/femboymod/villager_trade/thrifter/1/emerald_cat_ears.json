@@ -1,10 +1,11 @@
 {
   "wants": {
     "id": "minecraft:emerald",
-    "count": 5
+    "Count": 5
   },
   "gives": {
-    "id": "femboymod:cat_ears"
+    "id": "femboymod:cat_ears",
+    "Count": 1
   },
   "max_uses": 6,
   "xp": 2,

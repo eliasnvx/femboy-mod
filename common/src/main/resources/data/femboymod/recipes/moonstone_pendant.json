@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "N": {
+      "item": "minecraft:gold_nugget"
+    },
+    "M": {
+      "item": "femboymod:moonstone"
+    }
+  },
+  "pattern": [
+    "NNN",
+    "N N",
+    " M "
+  ],
+  "result": {
+    "item": "femboymod:moonstone_pendant"
+  }
+}

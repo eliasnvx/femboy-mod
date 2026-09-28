@@ -17,7 +17,7 @@ import dev.eliasnvx.femboymod.cosmetic.Colorways;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.api.backpack.CharmStats;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
-import net.minecraft.world.item.component.ItemContainerContents;
+import dev.eliasnvx.femboymod.item.ItemList;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -117,16 +117,16 @@ public final class WornEvaluator {
 
     /** Charms hanging on a worn backpack (SPEC §5.3). */
     private static void addCharmEffects(List<PlannedEffect> out, ItemStack stack, ResourceLocation slot, RegistryAccess registries) {
-        if (!stack.has(FemboyComponents.BACKPACK.get())) {
+        if (!FemboyComponents.BACKPACK.has(stack)) {
             return;
         }
         Optional<Registry<CharmStats>> charmRegistry = registries.registry(CharmStats.REGISTRY_KEY);
         if (charmRegistry.isEmpty()) {
             return;
         }
-        ItemContainerContents charms = stack.getOrDefault(FemboyComponents.CHARMS.get(), ItemContainerContents.EMPTY);
+        ItemList charms = FemboyComponents.CHARMS.getOrDefault(stack, ItemList.EMPTY);
         int index = 0;
-        for (ItemStack charm : charms.nonEmptyItemsCopy()) {
+        for (ItemStack charm : charms.nonEmptyItems()) {
             CharmStats stats = charmRegistry.get().getOptional(CharmStats.keyOf(charm.getItem())).orElse(null);
             if (stats != null) {
                 addEffects(out, stats.effects(), sourceId("charm", slot) + "/" + index, 1.0);

@@ -10,6 +10,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.client.render.ColorwayClock;
+import dev.eliasnvx.femboymod.client.render.ModelColors;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -17,7 +18,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Colorway tinting of item icons on 1.21.1. 26.3 used item model definitions ({@code assets/<ns>/items/*.json})
- * with the {@code femboymod:colorway} tint source; 1.21.1 has no such definitions, so this reads the same files
+ * Colorway tinting of item icons on 1.20.1 (ported unchanged from 1.21.1). 26.3 used item model definitions ({@code assets/<ns>/items/*.json})
+ * with the {@code femboymod:colorway} tint source; 1.20.1 has no such definitions, so this reads the same files
  * on resource reload and serves their {@code tints} lists (index = model layer = tint index) through an
  * {@link net.minecraft.client.color.item.ItemColor} registered for every femboymod item.
  * <p>
@@ -51,7 +51,7 @@ public final class ItemTints {
                 return color;
             }
             Colorway value = Colorways.effective(stack).orElse(null);
-            return FastColor.ARGB32.opaque(value == null ? color : value.stripeColor(stripe, ColorwayClock.ticks()));
+            return ModelColors.opaque(value == null ? color : value.stripeColor(stripe, ColorwayClock.ticks()));
         }
     }
 

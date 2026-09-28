@@ -12,7 +12,7 @@ import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.api.profile.PlayerProfile;
 import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
 import dev.eliasnvx.femboymod.api.FemboyApi;
-import dev.architectury.networking.NetworkManager;
+import dev.eliasnvx.femboymod.network.FemboyNetwork;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.client.gui.FemboyGui;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
@@ -58,7 +58,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
     /** Armor toggles under the coupon button: one slot per armor piece. */
     private static final int ARMOR_ROW_GAP = 4;
     private static final int STATS_H = 2 * LINE + PRESET_BUTTON_H + ARMOR_ROW_GAP + FemboyGui.SLOT + 6;
-    /** 1.21.1 keeps the empty armor silhouettes in the block atlas, not in the GUI sprite atlas. */
+    /** 1.20.1 keeps the empty armor silhouettes in the block atlas, not in the GUI sprite atlas. */
     private static final ResourceLocation[] ARMOR_SPRITES = {InventoryMenu.EMPTY_ARMOR_SLOT_HELMET,
             InventoryMenu.EMPTY_ARMOR_SLOT_CHESTPLATE, InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS, InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS};
     private static final int ICON = 16;
@@ -164,6 +164,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        renderBackground(g); // 1.20.1: screens draw their own background
         super.render(g, mouseX, mouseY, partialTick);
         renderTooltip(g, mouseX, mouseY);
     }
@@ -185,8 +186,17 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
         }
         Player player = Minecraft.getInstance().player;
         if (player != null) {
-            InventoryScreen.renderEntityInInventoryFollowsMouse(g, dollX + 1, top + 1, dollX + CosmeticsMenu.DOLL_W - 1,
-                    top + CosmeticsMenu.SIDE_H - 1, DOLL_SCALE, DOLL_Y_OFFSET, mouseX, mouseY, player);
+            // 1.20.1 takes the feet position instead of a box: center the doll in the box like 1.21 does
+            int x1 = dollX + 1;
+            int y1 = top + 1;
+            int x2 = dollX + CosmeticsMenu.DOLL_W - 1;
+            int y2 = top + CosmeticsMenu.SIDE_H - 1;
+            int centerX = (x1 + x2) / 2;
+            int centerY = (y1 + y2) / 2;
+            int feetY = centerY + Math.round((player.getBbHeight() / 2.0F + DOLL_Y_OFFSET) * DOLL_SCALE);
+            g.enableScissor(x1, y1, x2, y2);
+            InventoryScreen.renderEntityInInventoryFollowsMouse(g, centerX, feetY, DOLL_SCALE, centerX - mouseX, centerY - mouseY, player);
+            g.disableScissor();
         }
     }
 
@@ -265,7 +275,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int armor = hoveredArmor(mouseX, mouseY);
         if (armor >= 0) {
-            NetworkManager.sendToServer(new CycleArmorVisibilityPayload(ArmorHiding.ARMOR_SLOTS.get(armor)));
+            FemboyNetwork.sendToServer(new CycleArmorVisibilityPayload(ArmorHiding.ARMOR_SLOTS.get(armor)));
             return true;
         }
         Player player = Minecraft.getInstance().player;
@@ -273,7 +283,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
             for (Slot slot : menu.slots) {
                 if (slot instanceof CosmeticSlot cosmetic && FemboyGui.onEye(mouseX - leftPos, mouseY - topPos, slot.x - 1, slot.y - 1)
                         && (slot.hasItem() || CosmeticsManager.get(player).isHidden(cosmetic.slotId()))) {
-                    NetworkManager.sendToServer(new ToggleCosmeticHiddenPayload(cosmetic.slotId()));
+                    FemboyNetwork.sendToServer(new ToggleCosmeticHiddenPayload(cosmetic.slotId()));
                     return true;
                 }
             }

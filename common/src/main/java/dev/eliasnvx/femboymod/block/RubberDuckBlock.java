@@ -1,6 +1,5 @@
 package dev.eliasnvx.femboymod.block;
 
-import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
 import dev.eliasnvx.femboymod.api.profile.PlayerProfile;
@@ -13,6 +12,7 @@ import dev.eliasnvx.femboymod.entity.FemboyTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -32,21 +32,14 @@ public class RubberDuckBlock extends PlushBlock {
     public static final int LINES = 10;
     private static final String LINE_KEY = "message.femboymod.duck.";
 
-    private final MapCodec<RubberDuckBlock> codec;
 
     public RubberDuckBlock(Properties properties, VoxelShape northShape) {
         super(properties, northShape);
-        this.codec = simpleCodec(props -> new RubberDuckBlock(props, northShape));
     }
 
     @Override
-    protected MapCodec<RubberDuckBlock> codec() {
-        return codec;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        InteractionResult squeak = super.useWithoutItem(state, level, pos, player, hit);
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        InteractionResult squeak = super.use(state, level, pos, player, hand, hit);
         if (player instanceof ServerPlayer serverPlayer) {
             serverPlayer.displayClientMessage(Component.translatable(LINE_KEY + level.getRandom().nextInt(LINES)), true);
             debug(serverPlayer);

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "N": {
+      "item": "minecraft:gold_nugget"
+    },
+    "Q": {
+      "item": "femboymod:rose_quartz"
+    }
+  },
+  "pattern": [
+    "NQN",
+    "N N",
+    "NNN"
+  ],
+  "result": {
+    "item": "femboymod:rose_quartz_bracelet"
+  }
+}

@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * Draws everything a player wears (SPEC §4.5). Added to every player renderer on both loaders
- * (Fabric: LivingEntityFeatureRendererRegistrationCallback, NeoForge: EntityRenderersEvent.AddLayers).
+ * (Fabric: LivingEntityFeatureRendererRegistrationCallback, Forge: EntityRenderersEvent.AddLayers).
  */
 public final class CosmeticLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 

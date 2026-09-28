@@ -2,6 +2,7 @@ package dev.eliasnvx.femboymod.drip;
 
 import dev.eliasnvx.femboymod.api.drip.DripLevel;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
+import net.minecraft.util.Mth;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,7 @@ public final class DripCalculator {
             }
         }
         level += completedSets * rules.setBonus();
-        level = Math.clamp(level, 0, rules.maxLevel());
+        level = Mth.clamp(level, 0, rules.maxLevel());
         return new DripLevel(level, rules.tierOf(level));
     }
 }

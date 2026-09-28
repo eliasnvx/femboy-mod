@@ -3,7 +3,6 @@ package dev.eliasnvx.femboymod.energy;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.eliasnvx.femboymod.FemboyMod;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -36,9 +35,9 @@ public record EnergyDrink(List<Buff> effects) {
     }
 
     /** A timed potion effect. */
-    public record Buff(Holder<MobEffect> effect, int duration, int amplifier) {
+    public record Buff(MobEffect effect, int duration, int amplifier) {
         public static final Codec<Buff> CODEC = RecordCodecBuilder.create(i -> i.group(
-                MobEffect.CODEC.fieldOf("effect").forGetter(Buff::effect),
+                BuiltInRegistries.MOB_EFFECT.byNameCodec().fieldOf("effect").forGetter(Buff::effect),
                 Codec.intRange(1, 20 * 60 * 60).fieldOf("duration").forGetter(Buff::duration),
                 Codec.intRange(0, 255).optionalFieldOf("amplifier", 0).forGetter(Buff::amplifier)
         ).apply(i, Buff::new));

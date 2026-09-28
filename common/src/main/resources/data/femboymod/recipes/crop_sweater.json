@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "W": {
+      "item": "minecraft:pink_wool"
+    }
+  },
+  "pattern": [
+    "W W",
+    "WWW"
+  ],
+  "result": {
+    "item": "femboymod:crop_sweater"
+  }
+}

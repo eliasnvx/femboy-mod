@@ -43,7 +43,7 @@ public final class Outfits {
         for (ResourceLocation slot : CosmeticsManager.orderedSlots()) {
             ItemStack wanted = outfit.getOrDefault(slot, ItemStack.EMPTY);
             ItemStack worn = CosmeticsManager.get(player).get(slot);
-            if (ItemStack.isSameItemSameComponents(wanted, worn) || (wanted.isEmpty() && worn.isEmpty())) {
+            if (ItemStack.isSameItemSameTags(wanted, worn) || (wanted.isEmpty() && worn.isEmpty())) {
                 continue;
             }
             ItemStack found = wanted.isEmpty() ? ItemStack.EMPTY : take(wardrobe, wanted);
@@ -69,7 +69,7 @@ public final class Outfits {
                 break; // never take armor/offhand
             }
             ItemStack stack = container.getItem(i);
-            if (ItemStack.isSameItemSameComponents(stack, wanted)) {
+            if (ItemStack.isSameItemSameTags(stack, wanted)) {
                 ItemStack taken = container.removeItem(i, 1);
                 container.setChanged();
                 return taken;

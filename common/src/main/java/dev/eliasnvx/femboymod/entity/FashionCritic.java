@@ -20,7 +20,9 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -53,6 +55,8 @@ public class FashionCritic extends Monster {
     private static final int XP_REWARD = 30;
     private static final float VOICE_PITCH = 0.85F;
     private static final float REVIEW_PITCH = 0.8F;
+    /** Player-like eyes (1.21 used {@code EntityType.Builder#eyeHeight}). */
+    private static final float EYE_HEIGHT = 1.62F;
 
     private final ServerBossEvent bossBar = new ServerBossEvent(getDisplayName(),
             BossEvent.BossBarColor.PINK, BossEvent.BossBarOverlay.NOTCHED_6);
@@ -81,6 +85,11 @@ public class FashionCritic extends Monster {
         goalSelector.addGoal(8, new RandomLookAroundGoal(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+    }
+
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return EYE_HEIGHT;
     }
 
     @Override

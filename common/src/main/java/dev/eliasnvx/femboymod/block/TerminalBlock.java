@@ -1,6 +1,5 @@
 package dev.eliasnvx.femboymod.block;
 
-import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.profile.ProfileHooks;
@@ -10,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class TerminalBlock extends HorizontalDirectionalBlock {
 
-    public static final MapCodec<TerminalBlock> CODEC = simpleCodec(TerminalBlock::new);
 
     /** Number of {@code message.femboymod.terminal.<n>} lines. */
     public static final int LINES = 6;
@@ -52,11 +51,6 @@ public class TerminalBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected MapCodec<TerminalBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
@@ -67,12 +61,12 @@ public class TerminalBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return shapes.get(state.getValue(FACING));
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (player instanceof ServerPlayer serverPlayer) {
             serverPlayer.openMenu(new SimpleMenuProvider((id, inventory, p) -> new Menu(id, inventory, ContainerLevelAccess.create(level, pos)), TITLE));
             btw(serverPlayer);

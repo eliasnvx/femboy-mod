@@ -1,12 +1,16 @@
 package dev.eliasnvx.femboymod.client.gui;
 
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** Vanilla-looking panels and slots drawn with fills, so layouts live in code, not in a texture. */
 public final class FemboyGui {
@@ -120,9 +124,32 @@ public final class FemboyGui {
 
     /** The slot type's empty silhouette (a GUI sprite) at the item position, if it has one. */
     public static void emptySlotIcon(GuiGraphics g, @Nullable ResourceLocation sprite, int itemX, int itemY) {
-        if (sprite != null) {
-            g.blitSprite(sprite, itemX, itemY, ICON, ICON);
+        if (sprite == null) {
+            return;
         }
+        ResourceLocation texture = spriteTexture(sprite);
+        if (texture != null) {
+            g.blit(texture, itemX, itemY, 0.0F, 0.0F, ICON, ICON, ICON, ICON);
+        }
+    }
+
+    private static final String SPRITE_DIR = "textures/gui/sprites/";
+    private static final String SPRITE_SUFFIX = ".png";
+    /** Sprite id -> its texture file, or itself when the file is missing (drawn as nothing). */
+    private static final Map<ResourceLocation, ResourceLocation> SPRITE_TEXTURES = new HashMap<>();
+
+    /**
+     * 1.20.1 has no GUI sprite atlas: a sprite id {@code ns:path} is drawn from its file
+     * {@code ns:textures/gui/sprites/path.png} (the same place 1.20.2+ reads it from). Resolved once per id.
+     *
+     * @return the texture, or null when no such file exists (e.g. an addon naming a newer vanilla sprite)
+     */
+    private static @Nullable ResourceLocation spriteTexture(ResourceLocation sprite) {
+        ResourceLocation texture = SPRITE_TEXTURES.computeIfAbsent(sprite, id -> {
+            ResourceLocation file = new ResourceLocation(id.getNamespace(), SPRITE_DIR + id.getPath() + SPRITE_SUFFIX);
+            return Minecraft.getInstance().getResourceManager().getResource(file).isPresent() ? file : id;
+        });
+        return texture.equals(sprite) ? null : texture;
     }
 
     /** Pink progress bar for the Drip Level. */

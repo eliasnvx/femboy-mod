@@ -50,15 +50,15 @@ public final class FemboyBlocks {
 
     // Ores (rose quartz in mountains and caves, glitter in flower biomes). Generation: data/femboymod/worldgen.
     public static final RegistrySupplier<Block> ROSE_QUARTZ_ORE = block("rose_quartz_ore",
-            props -> new DropExperienceBlock(UniformInt.of(2, 5), props),
+            props -> new DropExperienceBlock(props, UniformInt.of(2, 5)),
             BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(3.0F, 3.0F).requiresCorrectToolForDrops()
                     .instrument(NoteBlockInstrument.BASEDRUM));
     public static final RegistrySupplier<Block> DEEPSLATE_ROSE_QUARTZ_ORE = block("deepslate_rose_quartz_ore",
-            props -> new DropExperienceBlock(UniformInt.of(2, 5), props),
+            props -> new DropExperienceBlock(props, UniformInt.of(2, 5)),
             BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).requiresCorrectToolForDrops()
                     .sound(SoundType.DEEPSLATE).instrument(NoteBlockInstrument.BASEDRUM));
     public static final RegistrySupplier<Block> GLITTER_ORE = block("glitter_ore",
-            props -> new DropExperienceBlock(UniformInt.of(1, 3), props),
+            props -> new DropExperienceBlock(props, UniformInt.of(1, 3)),
             BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(3.0F, 3.0F).requiresCorrectToolForDrops()
                     .instrument(NoteBlockInstrument.BASEDRUM));
     public static final RegistrySupplier<Block> ROSE_QUARTZ_BLOCK = block("rose_quartz_block", Block::new,
@@ -69,14 +69,14 @@ public final class FemboyBlocks {
     public static final RegistrySupplier<Block> BUDDING_ROSE_QUARTZ = block("budding_rose_quartz", BuddingRoseQuartzBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).randomTicks().strength(1.5F).sound(SoundType.AMETHYST)
                     .requiresCorrectToolForDrops().pushReaction(PushReaction.DESTROY)); // 26.3: POPPED
-    public static final RegistrySupplier<Block> ROSE_QUARTZ_CLUSTER = cluster("rose_quartz_cluster", 7.0F, 3.0F, SoundType.AMETHYST_CLUSTER, 5);
-    public static final RegistrySupplier<Block> LARGE_ROSE_QUARTZ_BUD = cluster("large_rose_quartz_bud", 5.0F, 3.0F, SoundType.LARGE_AMETHYST_BUD, 4);
-    public static final RegistrySupplier<Block> MEDIUM_ROSE_QUARTZ_BUD = cluster("medium_rose_quartz_bud", 4.0F, 3.0F, SoundType.MEDIUM_AMETHYST_BUD, 2);
-    public static final RegistrySupplier<Block> SMALL_ROSE_QUARTZ_BUD = cluster("small_rose_quartz_bud", 3.0F, 4.0F, SoundType.SMALL_AMETHYST_BUD, 1);
+    public static final RegistrySupplier<Block> ROSE_QUARTZ_CLUSTER = cluster("rose_quartz_cluster", 7, 3, SoundType.AMETHYST_CLUSTER, 5);
+    public static final RegistrySupplier<Block> LARGE_ROSE_QUARTZ_BUD = cluster("large_rose_quartz_bud", 5, 3, SoundType.LARGE_AMETHYST_BUD, 4);
+    public static final RegistrySupplier<Block> MEDIUM_ROSE_QUARTZ_BUD = cluster("medium_rose_quartz_bud", 4, 3, SoundType.MEDIUM_AMETHYST_BUD, 2);
+    public static final RegistrySupplier<Block> SMALL_ROSE_QUARTZ_BUD = cluster("small_rose_quartz_bud", 3, 4, SoundType.SMALL_AMETHYST_BUD, 1);
 
     // Moonstone: deep ore that glows faintly, night jewelry, the pearl colorway and a night light
     public static final RegistrySupplier<Block> DEEPSLATE_MOONSTONE_ORE = block("deepslate_moonstone_ore",
-            props -> new DropExperienceBlock(UniformInt.of(3, 7), props),
+            props -> new DropExperienceBlock(props, UniformInt.of(3, 7)),
             BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).requiresCorrectToolForDrops()
                     .sound(SoundType.DEEPSLATE).instrument(NoteBlockInstrument.BASEDRUM).lightLevel(state -> 3));
     public static final RegistrySupplier<Block> MOONSTONE_LAMP = block("moonstone_lamp", MoonstoneLampBlock::new,
@@ -85,7 +85,7 @@ public final class FemboyBlocks {
 
     // Neon quartz (Nether): glowing ore, neon signs, the cyber visor and the neon colorway
     public static final RegistrySupplier<Block> NEON_QUARTZ_ORE = block("neon_quartz_ore",
-            props -> new DropExperienceBlock(UniformInt.of(2, 5), props),
+            props -> new DropExperienceBlock(props, UniformInt.of(2, 5)),
             BlockBehaviour.Properties.of().mapColor(MapColor.NETHER).strength(3.0F, 3.0F).requiresCorrectToolForDrops()
                     .sound(SoundType.NETHER_ORE).instrument(NoteBlockInstrument.BASEDRUM).lightLevel(state -> 4));
     public static final RegistrySupplier<Block> NEON_SIGN = block("neon_sign", NeonSignBlock::new,
@@ -120,7 +120,7 @@ public final class FemboyBlocks {
     private static final int LISTINGS_PER_LEVEL = 2;
     private static final String THRIFTER_NAME = "thrifter";
 
-    // 1.21.1 professions carry no display name and no trade sets: the name comes from the lang key
+    // 1.20.1 professions carry no display name and no trade sets: the name comes from the lang key
     // entity.minecraft.villager[.femboymod].thrifter, trades from trade_set/thrifter/level_<n> via TradeSets.
     public static final RegistrySupplier<VillagerProfession> THRIFTER = PROFESSIONS.register(THRIFTER_NAME, () ->
             new VillagerProfession(THRIFTER_NAME, poi -> poi.is(THRIFTER_POI), poi -> poi.is(THRIFTER_POI),
@@ -140,7 +140,7 @@ public final class FemboyBlocks {
     }
 
     /** Rose quartz bud/cluster: amethyst-style crystal on any face (height and side inset in pixels). */
-    private static RegistrySupplier<Block> cluster(String name, float height, float inset, SoundType sound, int light) {
+    private static RegistrySupplier<Block> cluster(String name, int height, int inset, SoundType sound, int light) {
         return block(name, props -> new AmethystClusterBlock(height, inset, props),
                 BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).forceSolidOn().noOcclusion().sound(sound).strength(1.5F)
                         .lightLevel(state -> light).pushReaction(PushReaction.DESTROY)); // 26.3: POPPED

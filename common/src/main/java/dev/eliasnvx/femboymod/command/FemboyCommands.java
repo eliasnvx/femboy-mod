@@ -59,14 +59,14 @@ public final class FemboyCommands {
         Optional<Integer> secondary = withSecondary
                 ? Optional.of(color(StringArgumentType.getString(ctx, "secondary")))
                 : Optional.empty();
-        stack.set(FemboyComponents.COLORWAY.get(), new Colorway(base, pattern, secondary));
+        FemboyComponents.COLORWAY.set(stack, new Colorway(base, pattern, secondary));
         ctx.getSource().sendSuccess(() -> Component.translatable("commands.femboymod.colorway.set", stack.getDisplayName()), false);
         return 1;
     }
 
     private static int clear(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ItemStack stack = heldItem(ctx);
-        stack.remove(FemboyComponents.COLORWAY.get());
+        FemboyComponents.COLORWAY.remove(stack);
         ctx.getSource().sendSuccess(() -> Component.translatable("commands.femboymod.colorway.cleared", stack.getDisplayName()), false);
         return 1;
     }

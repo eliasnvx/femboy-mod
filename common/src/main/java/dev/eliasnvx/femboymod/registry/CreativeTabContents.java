@@ -1,13 +1,8 @@
 package dev.eliasnvx.femboymod.registry;
 
 import java.util.Comparator;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.entity.decoration.Painting;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.Items;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
@@ -33,8 +28,8 @@ final class CreativeTabContents {
     private static final ResourceKey<ColorwayPattern> STRIPES = ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
             new ResourceLocation(FemboyMod.MOD_ID, "stripes"));
     private static final int WHITE = 0xFFFFFF;
-    private static final String ENTITY_ID_KEY = "id";
-    private static final String PAINTING_ENTITY_ID = "minecraft:painting";
+    /** Where 1.20.1 keeps a spawned entity's data on its item (CreativeModeTabs#generatePresetPaintings). */
+    private static final String ENTITY_TAG_KEY = "EntityTag";
 
     /** A solid colorway, or two-color stripes (base + secondary) when {@code striped}. */
     private record Preset(int base, boolean striped, int secondary) {
@@ -96,7 +91,7 @@ final class CreativeTabContents {
                         .sorted(Comparator.comparing(pattern -> pattern.key().location().getPath()))
                         .forEach(pattern -> {
                             ItemStack badge = new ItemStack(item);
-                            badge.set(FemboyComponents.COLORWAY.get(), new Colorway(WHITE, Optional.of(pattern), Optional.empty()));
+                            FemboyComponents.COLORWAY.set(badge, new Colorway(WHITE, Optional.of(pattern), Optional.empty()));
                             output.accept(badge);
                         }));
             }
@@ -105,23 +100,19 @@ final class CreativeTabContents {
                     continue; // data pack removed the pattern
                 }
                 ItemStack stack = new ItemStack(item);
-                stack.set(FemboyComponents.COLORWAY.get(), preset.striped()
+                FemboyComponents.COLORWAY.set(stack, preset.striped()
                         ? new Colorway(preset.base(), stripes, Optional.of(preset.secondary()))
                         : Colorway.solid(preset.base()));
                 output.accept(stack);
             }
         }
-        // Posters: the mod's painting variants (data-driven), as ready-to-hang paintings
-        RegistryOps<Tag> ops = parameters.holders().createSerializationContext(NbtOps.INSTANCE);
+        // Posters: the mod's painting variants (FemboyPaintings), as ready-to-hang paintings like vanilla's presets
         parameters.holders().lookup(Registries.PAINTING_VARIANT).ifPresent(lookup -> lookup.listElements()
                 .filter(holder -> holder.key().location().getNamespace().equals(FemboyMod.MOD_ID))
                 .sorted(Comparator.comparing(holder -> holder.key().location().getPath()))
                 .forEach(holder -> {
-                    // 1.21.1 keeps the variant in the painting's entity data (like vanilla's preset paintings)
-                    CustomData entityData = CustomData.EMPTY.update(ops, Painting.VARIANT_MAP_CODEC, holder).getOrThrow(false, error -> { })
-                            .update(tag -> tag.putString(ENTITY_ID_KEY, PAINTING_ENTITY_ID));
                     ItemStack poster = new ItemStack(Items.PAINTING);
-                    poster.set(DataComponents.ENTITY_DATA, entityData);
+                    Painting.storeVariant(poster.getOrCreateTagElement(ENTITY_TAG_KEY), holder);
                     output.accept(poster);
                 }));
     }

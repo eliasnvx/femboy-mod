@@ -1,11 +1,11 @@
 package dev.eliasnvx.femboymod.block;
 
-import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.entity.Seat;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -24,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 /** Gamer Chair (SPEC v1.1): right-click to sit; sitting slowly heals (config {@code furniture}). */
 public class GamerChairBlock extends HorizontalDirectionalBlock {
 
-    public static final MapCodec<GamerChairBlock> CODEC = simpleCodec(GamerChairBlock::new);
 
     /** Seat surface height; the model's cushion top is at 8 px. */
     private static final double SEAT_HEIGHT = 0.3;
@@ -41,11 +40,6 @@ public class GamerChairBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected MapCodec<GamerChairBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
@@ -56,12 +50,12 @@ public class GamerChairBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return shapes.get(state.getValue(FACING));
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (player.isSecondaryUseActive() || player.isPassenger()) {
             return InteractionResult.PASS;
         }

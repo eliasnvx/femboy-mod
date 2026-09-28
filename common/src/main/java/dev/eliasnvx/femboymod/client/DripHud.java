@@ -4,7 +4,6 @@ import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.drip.WornEvaluator;
 import java.util.List;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -65,17 +64,17 @@ public final class DripHud {
     private DripHud() {
     }
 
-    public static void render(GuiGraphics g, DeltaTracker delta) {
+    public static void render(GuiGraphics g, float partialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
-        if (!FemboyConfig.client().dripHud() || player == null || minecraft.getDebugOverlay().showDebugScreen()) {
+        if (!FemboyConfig.client().dripHud() || player == null || minecraft.options.renderDebug) {
             return;
         }
         if (player.tickCount != lastTick) {
             lastTick = player.tickCount;
             refresh(minecraft.font, player);
         }
-        float step = delta.getRealtimeDeltaTicks();
+        float step = minecraft.getDeltaFrameTime(); // real ticks since the last frame
         shown += (target - shown) * Math.min(1.0F, step * EASE_PER_TICK);
         glowTicks = (glowTicks + step) % GLOW_PERIOD_TICKS;
         draw(g, minecraft.font);

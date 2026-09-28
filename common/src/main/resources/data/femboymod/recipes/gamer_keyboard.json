@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": {
+      "tag": "minecraft:stone_buttons"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone_slab"
+    },
+    "Q": {
+      "item": "femboymod:rose_quartz"
+    }
+  },
+  "pattern": [
+    "BBB",
+    "SQS"
+  ],
+  "result": {
+    "item": "femboymod:gamer_keyboard"
+  }
+}

@@ -1,11 +1,12 @@
 {
   "wants": {
     "id": "femboymod:style_coupon",
-    "count": 3
+    "Count": 3
   },
   "gives": {
     "id": "femboymod:rose_quartz_earrings",
-    "components": {
+    "Count": 1,
+    "tag": {
       "femboymod:colorway": {
         "base_color": "#FFD1EC",
         "pattern": "femboymod:glitter"

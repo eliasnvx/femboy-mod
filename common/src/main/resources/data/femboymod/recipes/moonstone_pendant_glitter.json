@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_glitter",
+  "ingredients": [
+    {
+      "item": "femboymod:moonstone_pendant"
+    },
+    {
+      "item": "femboymod:glitter"
+    },
+    {
+      "item": "femboymod:glitter"
+    }
+  ],
+  "result": {
+    "item": "femboymod:moonstone_pendant",
+    "nbt": {
+      "femboymod:colorway": {
+        "base_color": "#FFD1EC",
+        "pattern": "femboymod:glitter"
+      }
+    }
+  }
+}

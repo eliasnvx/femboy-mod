@@ -4,14 +4,12 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import net.minecraft.SharedConstants;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.DifficultyInstance;
@@ -24,7 +22,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
@@ -37,8 +34,7 @@ import org.jetbrains.annotations.Nullable;
 public class StrayCat extends Cat {
 
     public static final int COATS = 5;
-    public static final ResourceKey<LootTable> GIFT = ResourceKey.create(Registries.LOOT_TABLE,
-            new ResourceLocation(FemboyMod.MOD_ID, "gameplay/stray_cat_gift"));
+    public static final ResourceLocation GIFT = new ResourceLocation(FemboyMod.MOD_ID, "gameplay/stray_cat_gift");
     /** Morning = the first in-game hour of a day. */
     private static final long MORNING_END = 1000;
     private static final String COAT_TAG = "femboymod_coat";
@@ -60,16 +56,16 @@ public class StrayCat extends Cat {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(COAT, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(COAT, 0);
     }
 
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason,
-                                        @Nullable SpawnGroupData data) {
+                                        @Nullable SpawnGroupData data, @Nullable CompoundTag entityTag) {
         setCoat(level.getRandom().nextInt(COATS));
-        return super.finalizeSpawn(level, difficulty, reason, data);
+        return super.finalizeSpawn(level, difficulty, reason, data, entityTag);
     }
 
     @Override
@@ -93,7 +89,7 @@ public class StrayCat extends Cat {
             kitten.setCoat(partner instanceof StrayCat other && random.nextBoolean() ? other.coat() : coat());
             if (isTame() && getOwner() != null) {
                 kitten.setOwnerUUID(getOwnerUUID());
-                kitten.setTame(true, true);
+                kitten.setTame(true);
             }
         }
         return kitten;
@@ -124,7 +120,7 @@ public class StrayCat extends Cat {
                 .withParameter(LootContextParams.ORIGIN, position())
                 .withParameter(LootContextParams.THIS_ENTITY, this)
                 .create(LootContextParamSets.GIFT);
-        for (ItemStack gift : level.getServer().reloadableRegistries().getLootTable(GIFT).getRandomItems(params)) {
+        for (ItemStack gift : level.getServer().getLootData().getLootTable(GIFT).getRandomItems(params)) {
             owner.spawnAtLocation(gift);
         }
         owner.displayClientMessage(Component.translatable("message.femboymod.stray_cat.gift", getDisplayName()), true);

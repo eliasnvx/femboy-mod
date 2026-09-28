@@ -12,22 +12,21 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor.ARGB32;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
-import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.Color;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.cache.GeckoLibCache;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoObjectRenderer;
-import software.bernie.geckolib.util.Color;
-import software.bernie.geckolib.util.GeckoLibUtil;
-import software.bernie.geckolib.util.RenderUtil;
+import software.bernie.geckolib.util.RenderUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +35,7 @@ import java.util.Map;
  * Renderer {@code femboymod:geo}: draws a Blockbench/GeckoLib model for a cosmetic item (SPEC §4.5).
  *
  * <p>Convention for an item {@code <ns>:<path>} (used automatically when the model file exists, so it
- * overrides the built-in code model; works for addon items too). GeckoLib 4 (Minecraft 1.21.1) paths:
+ * overrides the built-in code model; works for addon items too). GeckoLib 4 (Minecraft 1.20.1) paths:
  * <ul>
  *     <li>model: {@code assets/<ns>/geo/cosmetic/<path>.geo.json}</li>
  *     <li>texture: {@code assets/<ns>/textures/cosmetic/<path>.png} (drawn as-is while undyed)</li>
@@ -97,7 +96,7 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         Colorway colorway = ctx.colorway();
         boolean tinted = colorway != null && Minecraft.getInstance().getResourceManager().getResource(dyeableTexture).isPresent();
         related.entityId = ctx.entity().getId();
-        related.color = tinted ? ARGB32.opaque(colorway.stripeColor(0, ColorwayClock.ticks())) : 0xFFFFFFFF;
+        related.color = tinted ? ModelColors.opaque(colorway.stripeColor(0, ColorwayClock.ticks())) : 0xFFFFFFFF;
         related.texture = tinted ? dyeableTexture : texture;
         related.overlay = ctx.overlay();
         related.parent = ctx.parentModel();
@@ -105,7 +104,8 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         RenderType type = RenderType.entityCutoutNoCull(related.texture);
         VertexConsumer buffer = buffers.getBuffer(type);
         // A non-null buffer keeps GeckoLib on our buffer source (it falls back to the level's otherwise).
-        renderer.render(ctx.poseStack(), animatable, buffers, type, buffer, ctx.light(), ctx.partialTick());
+        // GeckoLib 4 for 1.20.1 takes the frame's partial tick from Minecraft itself.
+        renderer.render(ctx.poseStack(), animatable, buffers, type, buffer, ctx.light());
         related.parent = null;
     }
 
@@ -120,8 +120,12 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         Color cachedColor = Color.WHITE;
     }
 
-    private final class Animatable implements SingletonGeoAnimatable {
-        private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    /**
+     * Plain core {@link GeoAnimatable} with a singleton (per-instance-id) cache: GeckoLib's
+     * {@code SingletonGeoAnimatable} differs between its Fabric and Forge builds, this does not.
+     */
+    private final class Animatable implements GeoAnimatable {
+        private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
         @Override
         public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -138,7 +142,7 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
 
         @Override
         public double getTick(Object object) {
-            return RenderUtil.getCurrentTick();
+            return RenderUtils.getCurrentTick();
         }
     }
 
@@ -176,7 +180,7 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         @Override
         public void preRender(PoseStack poseStack, Animatable animatable, BakedGeoModel model, @Nullable MultiBufferSource bufferSource,
                               @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
-                              int packedOverlay, int colour) {
+                              int packedOverlay, float red, float green, float blue, float alpha) {
             HumanoidModel<?> parent = related.parent;
             if (parent != null) {
                 follow(model, "armorHead", parent.head, 0.0F, 0.0F);
@@ -194,7 +198,7 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         private void follow(BakedGeoModel model, String boneName, ModelPart part, float offsetX, float offsetY) {
             GeoBone bone = model.getBone(boneName).orElse(null);
             if (bone != null) {
-                RenderUtil.matchModelPartRot(part, bone);
+                RenderUtils.matchModelPartRot(part, bone);
                 bone.updatePosition(part.x + offsetX, offsetY - part.y, part.z);
             }
         }

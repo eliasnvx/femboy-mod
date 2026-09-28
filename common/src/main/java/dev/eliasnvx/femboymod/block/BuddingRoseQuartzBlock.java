@@ -25,7 +25,7 @@ public class BuddingRoseQuartzBlock extends Block {
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (random.nextInt(GROWTH_CHANCE) == 0) {
             grow(level, pos, DIRECTIONS[random.nextInt(DIRECTIONS.length)]);
         }

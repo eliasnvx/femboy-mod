@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * 1.21.1 has no {@code damage_resistant} component: a dropped netherite backpack ignores the damage in
+ * 1.20.1 has no {@code damage_resistant} component: a dropped netherite backpack ignores the damage in
  * {@code #femboymod:backpack_immune_to} (cactus, explosions; fire and lava are covered by fire_resistant).
  */
 @Mixin(ItemEntity.class)

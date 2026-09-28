@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "Q": {
+      "item": "femboymod:rose_quartz"
+    }
+  },
+  "pattern": [
+    "QQQ",
+    "QQQ",
+    "QQQ"
+  ],
+  "result": {
+    "item": "femboymod:rose_quartz_block"
+  }
+}

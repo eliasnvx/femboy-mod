@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "M": {
+      "item": "femboymod:moonstone"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone_slab"
+    }
+  },
+  "pattern": [
+    " M ",
+    "GGG",
+    "S S"
+  ],
+  "result": {
+    "item": "femboymod:moonstone_lamp"
+  }
+}

@@ -8,7 +8,7 @@ import net.minecraft.world.level.GameRules;
  * Per-world switches for server admins, changed in game with {@code /gamerule femboymod:<name> <value>}.
  * They complement the global config file: a feature runs only if both allow it.
  * <p>
- * 1.21.1 has no game rule registry: the rules go through {@link GameRules#register} under the same names as on 26.3
+ * 1.20.1 has no game rule registry: the rules go through {@link GameRules#register} under the same names as on 26.3
  * ({@code femboymod:style_points}, ...). Read them with {@code level.getGameRules().getBoolean(RULE)} and
  * {@link #dripPvpPercent(GameRules)}. The lang key is {@code gamerule.femboymod:<name>} ({@link GameRules.Key#getDescriptionId()}).
  */
@@ -23,7 +23,7 @@ public final class FemboyGameRules {
     /** Players may hide their armor under the outfit; off = armor is always drawn (PvP servers). */
     public static final GameRules.Key<GameRules.BooleanValue> ALLOW_HIDDEN_ARMOR = bool("allow_hidden_armor", GameRules.Category.PLAYER, true);
 
-    /** Range of {@link #DRIP_PVP_PERCENT}; 1.21.1 integer rules have no built-in bounds, so values are clamped. */
+    /** Range of {@link #DRIP_PVP_PERCENT}; 1.20.1 integer rules have no built-in bounds, so values are clamped. */
     public static final int DRIP_PVP_MIN = 0;
     public static final int DRIP_PVP_MAX = 50;
     /**

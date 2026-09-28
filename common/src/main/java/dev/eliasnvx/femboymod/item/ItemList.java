@@ -7,6 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ObjIntConsumer;
 import java.util.stream.Stream;
 
 /**
@@ -53,6 +54,25 @@ public final class ItemList {
     /** @return a copy of the stack in {@code slot}, or empty */
     public ItemStack get(int slot) {
         return slot >= 0 && slot < items.size() ? items.get(slot).copy() : ItemStack.EMPTY;
+    }
+
+    /**
+     * The stack in {@code slot} without copying, for hot read-only paths (rendering). Never modify it.
+     *
+     * @return the stored stack, or empty
+     */
+    public ItemStack peek(int slot) {
+        return slot >= 0 && slot < items.size() ? items.get(slot) : ItemStack.EMPTY;
+    }
+
+    /** Calls {@code action} with each non-empty stored stack and its slot, without copying. Never modify them. */
+    public void forEachNonEmpty(ObjIntConsumer<ItemStack> action) {
+        for (int slot = 0; slot < items.size(); slot++) {
+            ItemStack stack = items.get(slot);
+            if (!stack.isEmpty()) {
+                action.accept(stack, slot);
+            }
+        }
     }
 
     /** @return copies of all stacks, empty slots included */

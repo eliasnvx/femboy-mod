@@ -2,10 +2,9 @@ package dev.eliasnvx.femboymod.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import com.mojang.serialization.MapCodec;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -31,17 +30,11 @@ import org.jetbrains.annotations.Nullable;
 public class ClothingRackBlock extends BaseEntityBlock {
 
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final MapCodec<ClothingRackBlock> CODEC = simpleCodec(ClothingRackBlock::new);
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
     public ClothingRackBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
-    }
-
-    @Override
-    protected MapCodec<ClothingRackBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -55,12 +48,12 @@ public class ClothingRackBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -70,23 +63,22 @@ public class ClothingRackBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
-                                              InteractionHand hand, BlockHitResult hit) {
-        if (stack.isEmpty() || !(level.getBlockEntity(pos) instanceof ClothingRackBlockEntity rack)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        }
-        if (!level.isClientSide()) {
-            if (!rack.hang(player.getAbilities().instabuild ? stack.copy() : stack)) {
-                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-            }
-            level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.BLOCKS, 1.0F, 1.2F);
-        }
-        return ItemInteractionResult.SUCCESS;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof ClothingRackBlockEntity rack)) {
+            return InteractionResult.PASS;
+        }
+        ItemStack stack = player.getItemInHand(hand);
+        if (!stack.isEmpty()) {
+            if (level.isClientSide()) {
+                return InteractionResult.SUCCESS;
+            }
+            if (rack.hang(player.getAbilities().instabuild ? stack.copy() : stack)) {
+                level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.BLOCKS, 1.0F, 1.2F);
+                return InteractionResult.SUCCESS;
+            }
+        }
+        // Like 1.21.1 useWithoutItem: taking the last item only happens for the main hand
+        if (hand != InteractionHand.MAIN_HAND) {
             return InteractionResult.PASS;
         }
         if (!level.isClientSide()) {
@@ -97,14 +89,17 @@ public class ClothingRackBlock extends BaseEntityBlock {
             if (!player.getInventory().add(taken)) {
                 player.drop(taken, false);
             }
-            level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.BLOCKS, 1.0F, 0.9F);
+            level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.BLOCKS, 1.0F, 0.9F);
         }
         return InteractionResult.SUCCESS;
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        Containers.dropContentsOnDestroy(state, newState, level, pos); // hung items drop when the rack is broken
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof Container container) {
+            Containers.dropContents(level, pos, container); // hung items drop when the rack is broken
+            level.updateNeighbourForOutputSignal(pos, this);
+        }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 }

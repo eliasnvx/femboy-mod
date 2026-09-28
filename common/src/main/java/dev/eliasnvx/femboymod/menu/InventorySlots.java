@@ -5,7 +5,7 @@ import net.minecraft.world.inventory.Slot;
 
 import java.util.function.Consumer;
 
-/** The player's 27 inventory slots and the hotbar, laid out like vanilla (1.21.1 has no addStandardInventorySlots). */
+/** The player's 27 inventory slots and the hotbar, laid out like vanilla (1.20.1 has no addStandardInventorySlots). */
 public final class InventorySlots {
 
     public static final int SLOT_SIZE = 18;

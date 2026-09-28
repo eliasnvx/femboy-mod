@@ -104,7 +104,7 @@ public final class CosmeticRenderData implements CosmeticMotion {
             if (inventory.isHidden(slot)) {
                 return; // worn but hidden by the wearer
             }
-            Cosmetic cosmetic = stack.get(FemboyComponents.COSMETIC.get());
+            Cosmetic cosmetic = FemboyComponents.COSMETIC.get(stack);
             ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
             ResourceLocation renderer = cosmetic != null && cosmetic.renderer().isPresent() ? cosmetic.renderer().get() : itemId;
             list.add(new Worn(slot, stack, itemId, renderer, Colorways.effective(stack).orElse(null)));
