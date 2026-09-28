@@ -11,6 +11,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimpleApiRegistryTest {
 
+    @org.junit.jupiter.api.BeforeAll
+    static void bootstrapMinecraft() {
+        // 1.20.1 registries refuse to create keys before Minecraft is bootstrapped
+        net.minecraft.SharedConstants.tryDetectVersion();
+        net.minecraft.server.Bootstrap.bootStrap();
+    }
+
     private static final ResourceLocation A = new ResourceLocation("test", "a");
 
     private final SimpleApiRegistry<String> registry = new SimpleApiRegistry<>(new ResourceLocation("test", "reg"));

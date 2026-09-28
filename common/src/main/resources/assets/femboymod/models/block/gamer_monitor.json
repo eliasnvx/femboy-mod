@@ -240,7 +240,7 @@
         }
       },
       "light_emission": 15,
-      "neoforge_data": {
+      "forge_data": {
         "block_light": 15
       }
     }

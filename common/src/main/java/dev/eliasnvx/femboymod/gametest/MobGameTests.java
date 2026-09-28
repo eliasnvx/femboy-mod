@@ -49,7 +49,7 @@ public final class MobGameTests {
         Bug bug = helper.spawnWithNoFreeWill(FemboyEntities.BUG.get(), MOB_POS);
         WearableGameTests.withPlayer(helper, player -> {
             DamageSource bite = player.damageSources().mobAttack(bug);
-            helper.assertValueEqual(DripCombat.modifyIncoming(player, helper.getLevel(), bite, HIT), HIT, "no drip, full damage");
+            GameTestAsserts.assertValueEqual(helper, DripCombat.modifyIncoming(player, helper.getLevel(), bite, HIT), HIT, "no drip, full damage");
 
             CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get()));
             CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get()));
@@ -57,7 +57,7 @@ public final class MobGameTests {
             CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.FISHNET_TIGHTS.get()));
             CosmeticEffectsManager.tick(player);
             int tier = FemboyMod.api().getDripLevel(player).tier();
-            helper.assertValueEqual(tier, 3, "full set is drip tier 3");
+            GameTestAsserts.assertValueEqual(helper, tier, 3, "full set is drip tier 3");
             float reduced = DripCombat.modifyIncoming(player, helper.getLevel(), bite, HIT);
             helper.assertTrue(Math.abs(reduced - HIT * 0.6F) < EPSILON, "tier 3 takes 60% from bugs, got " + reduced);
         });
@@ -68,8 +68,8 @@ public final class MobGameTests {
         CommonConfig.Mobs mobs = FemboyConfig.common().mobs();
         CaffeinatedZombie zombie = helper.spawnWithNoFreeWill(FemboyEntities.CAFFEINATED_ZOMBIE.get(), MOB_POS);
         HissyCat cat = helper.spawnWithNoFreeWill(FemboyEntities.HISSY_CAT.get(), MOB_POS.east());
-        helper.assertValueEqual((double) zombie.getMaxHealth(), mobs.caffeinatedZombie().health(), "zombie health from config");
-        helper.assertValueEqual((double) cat.getMaxHealth(), mobs.hissyCat().health(), "cat health from config");
+        GameTestAsserts.assertValueEqual(helper, (double) zombie.getMaxHealth(), mobs.caffeinatedZombie().health(), "zombie health from config");
+        GameTestAsserts.assertValueEqual(helper, (double) cat.getMaxHealth(), mobs.hissyCat().health(), "cat health from config");
         WearableGameTests.withPlayer(helper, player -> {
             CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get()));
             CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.OVERSIZED_HOODIE.get()));
@@ -116,10 +116,10 @@ public final class MobGameTests {
         WearableGameTests.withPlayer(helper, player -> {
             player.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(1.5, 2, 1.5)));
             var effect = new BuiltinEffects.FollowPassiveEffect(16, 1.0, 1, 2.0,
-                    net.minecraft.core.HolderSet.empty(), 3);
+                    net.minecraft.core.HolderSet.direct(List.of()), 3);
             var picked = effect.pickFollowers(player);
             helper.assertFalse(picked.contains(horse), "horses do not follow");
-            helper.assertValueEqual(picked.size(), 3, "only the 3 nearest cats follow");
+            GameTestAsserts.assertValueEqual(helper, picked.size(), 3, "only the 3 nearest cats follow");
             helper.assertTrue(cats.containsAll(picked), "the followers are cats");
         });
     }
@@ -134,11 +134,11 @@ public final class MobGameTests {
             CosmeticEffectsManager.tick(player);
             helper.assertTrue(Math.abs(DripCombat.modifyIncoming(bug, helper.getLevel(), punch, HIT) - HIT * 1.5F) < EPSILON,
                     "socks: +50% against bugs");
-            helper.assertValueEqual(DripCombat.modifyIncoming(zombie, helper.getLevel(), punch, HIT), HIT, "no bonus against zombies");
+            GameTestAsserts.assertValueEqual(helper, DripCombat.modifyIncoming(zombie, helper.getLevel(), punch, HIT), HIT, "no bonus against zombies");
 
             CosmeticsManager.set(player, FemboySlots.LEGS_OVERLAY, ItemStack.EMPTY);
             CosmeticEffectsManager.tick(player);
-            helper.assertValueEqual(DripCombat.modifyIncoming(bug, helper.getLevel(), punch, HIT), HIT, "bonus removed with the socks");
+            GameTestAsserts.assertValueEqual(helper, DripCombat.modifyIncoming(bug, helper.getLevel(), punch, HIT), HIT, "bonus removed with the socks");
         });
     }
 }

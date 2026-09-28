@@ -10,6 +10,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.effect.MobEffectInstance;
 import dev.eliasnvx.femboymod.block.TerminalBlock;
 import dev.eliasnvx.femboymod.food.BubbleTeaItem;
+import dev.eliasnvx.femboymod.food.DrinkItem;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.block.FemboyBlocks;
 import dev.eliasnvx.femboymod.block.GamerMonitorBlock;
@@ -35,9 +36,8 @@ import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Block;
@@ -65,6 +65,7 @@ public final class DecorGameTests {
 
     private static final BlockPos CHAIR = new BlockPos(1, 1, 1);
     private static final BlockPos ORE = new BlockPos(2, 1, 1);
+    private static final int PIXELS_PER_BLOCK = 16;
 
     private DecorGameTests() {
     }
@@ -97,7 +98,7 @@ public final class DecorGameTests {
         helper.setBlock(CHAIR, FemboyBlocks.GAMER_CHAIR.get());
         BlockPos chair = helper.absolutePos(CHAIR);
         int radius = FemboyConfig.common().furniture().setupRadius();
-        helper.assertValueEqual(SetupRating.evaluate(helper.getLevel(), chair, radius), 0, "bare chair");
+        GameTestAsserts.assertValueEqual(helper, SetupRating.evaluate(helper.getLevel(), chair, radius), 0, "bare chair");
         helper.setBlock(CHAIR.offset(0, 1, 1), FemboyBlocks.GAMER_MONITOR.get());
         helper.setBlock(CHAIR.offset(1, 1, 1), FemboyBlocks.GAMER_KEYBOARD.get());
         helper.setBlock(CHAIR.offset(-1, 0, 1), FemboyBlocks.LED_STRIP.get());
@@ -107,9 +108,9 @@ public final class DecorGameTests {
                 .getHolderOrThrow(ResourceKey.create(Registries.PAINTING_VARIANT, id("btw")));
         Painting painting = new Painting(helper.getLevel(), chair.offset(0, 2, 2), Direction.NORTH, poster);
         helper.getLevel().addFreshEntity(painting);
-        helper.assertValueEqual(SetupRating.evaluate(helper.getLevel(), chair, radius), SetupRating.MAX, "full setup");
+        GameTestAsserts.assertValueEqual(helper, SetupRating.evaluate(helper.getLevel(), chair, radius), SetupRating.MAX, "full setup");
         helper.setBlock(CHAIR.offset(0, 1, 1), FemboyBlocks.GAMER_MONITOR.get().defaultBlockState().setValue(GamerMonitorBlock.LIT, false));
-        helper.assertValueEqual(SetupRating.evaluate(helper.getLevel(), chair, radius), SetupRating.MAX - 1, "monitor off");
+        GameTestAsserts.assertValueEqual(helper, SetupRating.evaluate(helper.getLevel(), chair, radius), SetupRating.MAX - 1, "monitor off");
         painting.discard();
         helper.succeed();
     }
@@ -131,8 +132,8 @@ public final class DecorGameTests {
             ItemStack tea = new ItemStack(FemboyItems.BUBBLE_TEA.get());
             tea.finishUsingItem(helper.getLevel(), player);
             helper.assertTrue(player.getActiveEffects().size() > before, "a flavor buff was applied");
-            // The mock player is in creative (keeps the item), so check the container the food component gives back
-            helper.assertTrue(tea.get(DataComponents.FOOD).usingConvertsTo().filter(s -> s.is(Items.GLASS_BOTTLE)).isPresent(), "the bottle comes back");
+            // The mock player is in creative (keeps the item), so check the container the drink gives back
+            helper.assertTrue(((DrinkItem) FemboyItems.BUBBLE_TEA.get()).remainder().is(Items.GLASS_BOTTLE), "the bottle comes back");
 
             player.addEffect(new MobEffectInstance(FemboyEffects.holder(FemboyEffects.JITTER), 600));
             player.addEffect(new MobEffectInstance(FemboyEffects.holder(FemboyEffects.CAFFEINATED), 600));
@@ -168,7 +169,7 @@ public final class DecorGameTests {
         helper.assertTrue(FemboyMod.api().cosmeticEffectTypes().get(id("muffle_sounds")).isPresent(), "muffle_sounds registered");
         WearableGameTests.withPlayer(helper, player -> slots.forEach((item, slot) -> {
             ItemStack stack = new ItemStack(item);
-            helper.assertValueEqual(CosmeticsManager.slotOf(stack), slot, item + " slot");
+            GameTestAsserts.assertValueEqual(helper, CosmeticsManager.slotOf(stack), slot, item + " slot");
             CosmeticsManager.set(player, slot, stack);
             helper.assertTrue(FemboyMod.api().getDripLevel(player).level() > 0, item + " adds drip");
             CosmeticsManager.set(player, slot, ItemStack.EMPTY);
@@ -180,11 +181,11 @@ public final class DecorGameTests {
         java.util.UUID a = java.util.UUID.randomUUID();
         java.util.UUID b = java.util.UUID.randomUUID();
         board.record(a, "a", 40, 2);
-        helper.assertValueEqual(board.record(b, "b", 70, 2), 1, "higher score ranks first");
-        helper.assertValueEqual(board.record(a, "a", 10, 2), 2, "a worse scan keeps the best");
-        helper.assertValueEqual(board.entries().get(1).score(), 40, "best kept");
+        GameTestAsserts.assertValueEqual(helper, board.record(b, "b", 70, 2), 1, "higher score ranks first");
+        GameTestAsserts.assertValueEqual(helper, board.record(a, "a", 10, 2), 2, "a worse scan keeps the best");
+        GameTestAsserts.assertValueEqual(helper, board.entries().get(1).score(), 40, "best kept");
         board.record(java.util.UUID.randomUUID(), "c", 90, 2);
-        helper.assertValueEqual(board.entries().size(), 2, "only the top N stay");
+        GameTestAsserts.assertValueEqual(helper, board.entries().size(), 2, "only the top N stay");
 
         WearableGameTests.withPlayer(helper, player -> {
             int bare = VibeScannerBlock.baseScore(player);
@@ -196,7 +197,7 @@ public final class DecorGameTests {
             int afterFirst = FemboyMod.api().getProfile(player).get(dev.eliasnvx.femboymod.api.profile.FemboyProfileFields.STYLE_POINTS);
             helper.assertTrue(afterFirst > points, "daily scan pays Style Points");
             VibeScannerBlock.scan(player);
-            helper.assertValueEqual(FemboyMod.api().getProfile(player).get(dev.eliasnvx.femboymod.api.profile.FemboyProfileFields.STYLE_POINTS),
+            GameTestAsserts.assertValueEqual(helper, FemboyMod.api().getProfile(player).get(dev.eliasnvx.femboymod.api.profile.FemboyProfileFields.STYLE_POINTS),
                     afterFirst, "only once per day");
             // the test world is reused between runs, so the board may already be full of better scans
             var entries = VibeLeaderboard.get(helper.getLevel().getServer()).entries();
@@ -207,7 +208,7 @@ public final class DecorGameTests {
     }
 
     public static void emotesPlayOnServer(GameTestHelper helper) {
-        helper.assertValueEqual(dev.eliasnvx.femboymod.emote.Emote.byId(99), dev.eliasnvx.femboymod.emote.Emote.WAVE, "unknown ids fall back");
+        GameTestAsserts.assertValueEqual(helper, dev.eliasnvx.femboymod.emote.Emote.byId(99), dev.eliasnvx.femboymod.emote.Emote.WAVE, "unknown ids fall back");
         WearableGameTests.withPlayer(helper, player -> {
             for (dev.eliasnvx.femboymod.emote.Emote emote : dev.eliasnvx.femboymod.emote.Emote.values()) {
                 dev.eliasnvx.femboymod.network.EmotePayloads.play(player, emote); // broadcast + particles must not throw
@@ -218,7 +219,7 @@ public final class DecorGameTests {
     public static void strayCatTamesAndBringsGifts(GameTestHelper helper) {
         StrayCat cat = helper.spawn(dev.eliasnvx.femboymod.entity.FemboyEntities.STRAY_CAT.get(), CHAIR);
         cat.setCoat(7);
-        helper.assertValueEqual(cat.coat(), 7 % StrayCat.COATS, "coat wraps to a valid pastel");
+        GameTestAsserts.assertValueEqual(helper, cat.coat(), 7 % StrayCat.COATS, "coat wraps to a valid pastel");
         WearableGameTests.withPlayer(helper, player -> {
             cat.tame(player);
             helper.assertTrue(cat.isTame() && cat.getOwner() == player, "tamed by the player");
@@ -238,7 +239,7 @@ public final class DecorGameTests {
         helper.assertTrue(offers.size() >= 4, "exclusive + common trades generated: " + offers.size());
         java.util.Set<String> exclusive = java.util.Set.of("sakura", "starlight", "cyber_pastel", "witchy");
         helper.assertTrue(offers.stream().anyMatch(offer -> {
-            Colorway colorway = offer.getResult().get(FemboyComponents.COLORWAY.get());
+            Colorway colorway = FemboyComponents.COLORWAY.get(offer.getResult());
             return colorway != null && colorway.pattern().map(p -> exclusive.contains(p.unwrapKey().orElseThrow().location().getPath())).orElse(false);
         }), "at least one exclusive colorway on sale");
         helper.succeed();
@@ -286,10 +287,10 @@ public final class DecorGameTests {
         int color = 0;
         for (int i = 1; i < LedStripBlock.COLORS; i++) {
             color = LedStripBlock.nextColor(color, true);
-            helper.assertValueEqual(color, i, "cycle step " + i);
+            GameTestAsserts.assertValueEqual(helper, color, i, "cycle step " + i);
         }
-        helper.assertValueEqual(LedStripBlock.nextColor(LedStripBlock.RAINBOW, true), 0, "rainbow wraps to pink");
-        helper.assertValueEqual(LedStripBlock.nextColor(LedStripBlock.RAINBOW - 1, false), 0, "rainbow skipped when disabled");
+        GameTestAsserts.assertValueEqual(helper, LedStripBlock.nextColor(LedStripBlock.RAINBOW, true), 0, "rainbow wraps to pink");
+        GameTestAsserts.assertValueEqual(helper, LedStripBlock.nextColor(LedStripBlock.RAINBOW - 1, false), 0, "rainbow skipped when disabled");
         helper.succeed();
     }
 
@@ -317,17 +318,19 @@ public final class DecorGameTests {
         Map<String, int[]> sizes = Map.of("btw", new int[]{1, 1}, "stay_warm", new int[]{1, 2}, "code_with_love", new int[]{2, 2});
         sizes.forEach((name, size) -> {
             PaintingVariant variant = paintings.getOrThrow(ResourceKey.create(Registries.PAINTING_VARIANT, id(name)));
-            helper.assertValueEqual(variant.width() + "x" + variant.height(), size[0] + "x" + size[1], name + " size");
+            // 1.20.1 painting sizes are in pixels
+            GameTestAsserts.assertValueEqual(helper, variant.getWidth() / PIXELS_PER_BLOCK + "x" + variant.getHeight() / PIXELS_PER_BLOCK,
+                    size[0] + "x" + size[1], name + " size");
         });
 
         var recipe = helper.getLevel().getRecipeManager().byKey(id("programming_socks_glitter"))
                 .orElseThrow(() -> new GameTestAssertException("glitter recipe missing"));
-        CraftingInput input = CraftingInput.of(3, 1, List.of(new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()),
+        CraftingContainer input = TestContainers.crafting(3, 1, List.of(new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()),
                 new ItemStack(FemboyItems.GLITTER.get()), new ItemStack(FemboyItems.GLITTER.get())));
         @SuppressWarnings("unchecked")
-        Recipe<CraftingInput> crafting = (Recipe<CraftingInput>) recipe.value();
+        Recipe<CraftingContainer> crafting = (Recipe<CraftingContainer>) recipe;
         helper.assertTrue(crafting instanceof CraftingRecipe && crafting.matches(input, helper.getLevel()), "socks + 2 glitter match");
-        Colorway colorway = crafting.assemble(input, helper.getLevel().registryAccess()).get(FemboyComponents.COLORWAY.get());
+        Colorway colorway = FemboyComponents.COLORWAY.get(crafting.assemble(input, helper.getLevel().registryAccess()));
         helper.assertTrue(colorway != null && colorway.hasShimmer(), "glitter socks shimmer: " + colorway);
         helper.succeed();
     }

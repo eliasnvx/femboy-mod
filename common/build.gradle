@@ -15,6 +15,6 @@ dependencies {
 }
 
 // The Architectury transformer reads :api classes; make sure the api jar is complete first (parallel builds).
-tasks.matching { it.name.startsWith("transformProduction") }.configureEach { dependsOn(":api:jar", ":api:remapJar") }
+tasks.matching { it.name.startsWith("transformProduction") }.configureEach { task -> task.dependsOn(":api:jar", ":api:remapJar", ":api:" + task.name) }
 
 // The Blockbench starter export (exportBlockbenchStarters) lives on the 26.3 branch only: art is authored there.

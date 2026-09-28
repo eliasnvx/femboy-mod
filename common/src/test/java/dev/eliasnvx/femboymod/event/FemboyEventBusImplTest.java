@@ -14,6 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FemboyEventBusImplTest {
 
+    @org.junit.jupiter.api.BeforeAll
+    static void bootstrapMinecraft() {
+        // 1.20.1 registries refuse to create keys before Minecraft is bootstrapped
+        net.minecraft.SharedConstants.tryDetectVersion();
+        net.minecraft.server.Bootstrap.bootStrap();
+    }
+
     static final class Ping implements FemboyEvent {
         final List<String> calls = new ArrayList<>();
     }

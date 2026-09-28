@@ -7,6 +7,7 @@ import dev.eliasnvx.femboymod.api.combat.DripDamage;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /** API regression tests: they only use the public API, exactly like a third-party addon would. */
@@ -39,6 +41,13 @@ public final class ExampleAddonGameTests {
     public record Entry(String name, Consumer<GameTestHelper> body) {
     }
 
+    /** 1.20.1's GameTestHelper has no assertValueEqual; same message as 1.21's. */
+    private static <T> void assertValueEqual(GameTestHelper helper, T actual, T expected, String name) {
+        if (!Objects.equals(actual, expected)) {
+            throw new GameTestAssertException("Expected " + name + " to be " + expected + ", but was " + actual);
+        }
+    }
+
     public static void pinSlotRegistered(GameTestHelper helper) {
         helper.assertTrue(FemboyApi.get().cosmeticSlots().get(ExampleAddon.PIN_SLOT).isPresent(), "pin slot registered");
         helper.assertTrue(FemboyApi.get().cosmeticSlots().isFrozen(), "slot registry frozen after init");
@@ -46,7 +55,7 @@ public final class ExampleAddonGameTests {
     }
 
     public static void pinIsCosmetic(GameTestHelper helper) {
-        Cosmetic cosmetic = new ItemStack(ExampleAddon.friendshipPin.get()).get(FemboyApi.get().components().cosmetic().get());
+        Cosmetic cosmetic = FemboyApi.get().components().cosmetic().get(new ItemStack(ExampleAddon.friendshipPin.get()));
         helper.assertTrue(cosmetic != null && cosmetic.slot().equals(ExampleAddon.PIN_SLOT), "pin is worn in the pin slot");
         helper.succeed();
     }
@@ -66,7 +75,7 @@ public final class ExampleAddonGameTests {
     }
 
     public static void freshPlayerWearsNothing(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = mockPlayer(helper);
         try {
             helper.assertTrue(FemboyApi.get().getCosmetics(player).isEmpty(), "fresh player wears nothing");
             helper.succeed();
@@ -77,16 +86,16 @@ public final class ExampleAddonGameTests {
 
     public static void profileFieldAndStylePoints(GameTestHelper helper) {
         helper.assertTrue(FemboyApi.get().profileFields().get(ExampleAddon.FRIENDSHIP_POINTS.id()).isPresent(), "addon field registered");
-        helper.assertValueEqual(ExampleAddon.withPinBonus(5, true), 6, "pin bonus on earnings");
-        helper.assertValueEqual(ExampleAddon.withPinBonus(-25, true), -25, "no bonus on spending");
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        assertValueEqual(helper, ExampleAddon.withPinBonus(5, true), 6, "pin bonus on earnings");
+        assertValueEqual(helper, ExampleAddon.withPinBonus(-25, true), -25, "no bonus on spending");
+        ServerPlayer player = mockPlayer(helper);
         try {
             var profile = FemboyApi.get().getProfile(player);
             profile.update(ExampleAddon.FRIENDSHIP_POINTS, points -> points + 3);
-            helper.assertValueEqual(profile.get(ExampleAddon.FRIENDSHIP_POINTS), 3, "addon field stored");
+            assertValueEqual(helper, profile.get(ExampleAddon.FRIENDSHIP_POINTS), 3, "addon field stored");
             helper.assertTrue(FemboyApi.get().addStylePoints(player, 5, new ResourceLocation(ExampleAddon.MOD_ID, "test")),
                     "addon gives Style Points");
-            helper.assertValueEqual(profile.get(dev.eliasnvx.femboymod.api.profile.FemboyProfileFields.STYLE_POINTS), 5,
+            assertValueEqual(helper, profile.get(dev.eliasnvx.femboymod.api.profile.FemboyProfileFields.STYLE_POINTS), 5,
                     "no pin, no bonus");
             helper.succeed();
         } finally {
@@ -113,7 +122,7 @@ public final class ExampleAddonGameTests {
         DripDamage rule = helper.getLevel().registryAccess().registryOrThrow(DripDamage.REGISTRY_KEY)
                 .get(ResourceKey.create(DripDamage.REGISTRY_KEY, new ResourceLocation(ExampleAddon.MOD_ID, "phantoms")));
         helper.assertTrue(rule != null && rule.attackers().contains(EntityType.PHANTOM.builtInRegistryHolder()), "phantom rule loaded");
-        helper.assertValueEqual(rule.multiplierFor(99), 0.75F, "tiers past the list use the last multiplier");
+        assertValueEqual(helper, rule.multiplierFor(99), 0.75F, "tiers past the list use the last multiplier");
         helper.succeed();
     }
 
@@ -124,5 +133,28 @@ public final class ExampleAddonGameTests {
         helper.assertTrue(helper.getLevel().registryAccess().registryOrThrow(CharmStats.REGISTRY_KEY)
                 .get(CharmStats.keyOf(pin)) != null, "pin has charm stats");
         helper.succeed();
+    }
+
+    /**
+     * 1.20.1's makeMockServerPlayerInLevel gives the player a connection without a netty channel, and Forge's login
+     * hooks crash on it; this copy attaches the connection to an EmbeddedChannel (vanilla does that from 1.20.5).
+     */
+    private static net.minecraft.server.level.ServerPlayer mockPlayer(net.minecraft.gametest.framework.GameTestHelper helper) {
+        var player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "test-mock-player")) {
+            @Override
+            public boolean isSpectator() {
+                return false;
+            }
+
+            @Override
+            public boolean isCreative() {
+                return true;
+            }
+        };
+        var connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
+        new io.netty.channel.embedded.EmbeddedChannel(connection);
+        helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player);
+        return player;
     }
 }

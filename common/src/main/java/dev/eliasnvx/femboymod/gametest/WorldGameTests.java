@@ -61,7 +61,7 @@ public final class WorldGameTests {
             helper.assertBlockPresent(Blocks.STONE, floor.east());
             helper.assertBlockPresent(Blocks.GLASS, floor.west());
             helper.assertTrue(creeper.isRemoved(), "the creeper is gone after bursting");
-            helper.assertValueEqual(player.getHealth(), health, "players take no damage by default");
+            GameTestAsserts.assertValueEqual(helper, player.getHealth(), health, "players take no damage by default");
             helper.assertTrue(player.getDeltaMovement().lengthSqr() > 0, "but get a playful push");
         });
     }
@@ -100,7 +100,7 @@ public final class WorldGameTests {
     public static void rackHangAndTake(GameTestHelper helper) {
         BlockPos pos = new BlockPos(1, 1, 1);
         helper.setBlock(pos, FemboyBlocks.CLOTHING_RACK.get());
-        ClothingRackBlockEntity rack = helper.getBlockEntity(pos);
+        ClothingRackBlockEntity rack = (ClothingRackBlockEntity) helper.getBlockEntity(pos);
         ItemStack hand = new ItemStack(FemboyItems.PLEATED_SKIRT.get(), 1);
         helper.assertTrue(rack.hang(hand), "hangs");
         helper.assertTrue(hand.isEmpty(), "moved from the hand (no copy)");
@@ -126,13 +126,13 @@ public final class WorldGameTests {
             player.getInventory().setItem(5, new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()));
 
             int changed = Outfits.apply(player, wardrobe, 0);
-            helper.assertValueEqual(changed, 2, "two slots switched");
+            GameTestAsserts.assertValueEqual(helper, changed, 2, "two slots switched");
             helper.assertTrue(CosmeticsManager.get(player).get(FemboySlots.HEAD_ACCESSORY).is(FemboyItems.CAT_EARS.get()), "ears from the wardrobe");
             helper.assertTrue(CosmeticsManager.get(player).get(FemboySlots.LEGS_OVERLAY).is(FemboyItems.PROGRAMMING_SOCKS.get()), "socks from the inventory");
             helper.assertTrue(wardrobe.getItem(0).isEmpty() || !wardrobe.getItem(0).is(FemboyItems.CAT_EARS.get()), "ears left the wardrobe");
             helper.assertTrue(wardrobe.countItem(FemboyItems.FISHNET_TIGHTS.get()) == 1, "tights were put into the wardrobe");
-            helper.assertValueEqual(player.getInventory().countItem(FemboyItems.PROGRAMMING_SOCKS.get()), 0, "socks left the inventory (moved, not copied)");
-            helper.assertValueEqual(Outfits.apply(player, wardrobe, 3), 0, "empty preset does nothing");
+            GameTestAsserts.assertValueEqual(helper, player.getInventory().countItem(FemboyItems.PROGRAMMING_SOCKS.get()), 0, "socks left the inventory (moved, not copied)");
+            GameTestAsserts.assertValueEqual(helper, Outfits.apply(player, wardrobe, 3), 0, "empty preset does nothing");
         });
     }
 
@@ -140,13 +140,13 @@ public final class WorldGameTests {
         var advancements = helper.getLevel().getServer().getAdvancements();
         for (String name : List.of("root", "programming_socks", "drip_max", "caffeine_overflow", "thrifted", "confetti_survivor", "full_femboy_mode",
                 "battlestation", "just_need_a_break", "cant_decide", "ready_to_deploy", "rubber_duck_debugging", "btw", "immaculate_vibes")) {
-            helper.assertTrue(advancements.get(new ResourceLocation(FemboyMod.MOD_ID, "main/" + name)) != null, "advancement " + name);
+            helper.assertTrue(advancements.getAdvancement(new ResourceLocation(FemboyMod.MOD_ID, "main/" + name)) != null, "advancement " + name);
         }
         helper.succeed();
     }
 
     private static void withPlayer(GameTestHelper helper, Consumer<ServerPlayer> body) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.create(helper);
         player.moveTo(helper.absoluteVec(TEST_AREA_CENTER));
         try {
             body.accept(player);

@@ -72,9 +72,9 @@ public final class ProfileGameTests {
             var encoded = ProfileData.CODEC.encodeStart(NbtOps.INSTANCE, stored).getOrThrow(false, error -> { });
             ProfileData decoded = ProfileData.CODEC.parse(NbtOps.INSTANCE, encoded).getOrThrow(false, error -> { });
             PlatformHelper.setProfile(player, decoded);
-            helper.assertValueEqual(profile.get(FemboyProfileFields.BEST_DRIP_LEVEL), 42, "value survives saving");
+            GameTestAsserts.assertValueEqual(helper, profile.get(FemboyProfileFields.BEST_DRIP_LEVEL), 42, "value survives saving");
             helper.assertTrue(decoded.values().contains("otheraddon:clan"), "fields of removed addons are kept");
-            helper.assertValueEqual(profile.get(FemboyProfileFields.CRITIC_REVIEWS), 0, "unset field reads its default");
+            GameTestAsserts.assertValueEqual(helper, profile.get(FemboyProfileFields.CRITIC_REVIEWS), 0, "unset field reads its default");
         });
     }
 
@@ -83,17 +83,17 @@ public final class ProfileGameTests {
         WearableGameTests.withPlayer(helper, player -> {
             PlayerProfile profile = FemboyMod.api().getProfile(player);
             helper.assertTrue(FemboyMod.api().addStylePoints(player, 30, TEST_REASON), "earn");
-            helper.assertValueEqual(profile.get(FemboyProfileFields.STYLE_POINTS), 30, "balance");
-            helper.assertValueEqual(profile.get(FemboyProfileFields.STYLE_POINTS_EARNED), 30, "lifetime total");
+            GameTestAsserts.assertValueEqual(helper, profile.get(FemboyProfileFields.STYLE_POINTS), 30, "balance");
+            GameTestAsserts.assertValueEqual(helper, profile.get(FemboyProfileFields.STYLE_POINTS_EARNED), 30, "lifetime total");
             helper.assertFalse(FemboyMod.api().addStylePoints(player, 10, BLOCKED_REASON), "listener cancels");
             helper.assertFalse(FemboyMod.api().addStylePoints(player, -40, TEST_REASON), "can't overspend");
 
             int cost = FemboyConfig.common().stylePoints().couponCost();
             helper.assertTrue(StyleCoupons.redeem(player), "redeem a coupon");
-            helper.assertValueEqual(profile.get(FemboyProfileFields.STYLE_POINTS), 30 - cost, "coupon cost paid");
+            GameTestAsserts.assertValueEqual(helper, profile.get(FemboyProfileFields.STYLE_POINTS), 30 - cost, "coupon cost paid");
             helper.assertTrue(player.getInventory().contains(new ItemStack(FemboyItems.STYLE_COUPON.get())), "coupon given");
             helper.assertFalse(StyleCoupons.redeem(player), "not enough points for a second one");
-            helper.assertValueEqual(profile.get(FemboyProfileFields.STYLE_POINTS_EARNED), 30, "spending keeps the lifetime total");
+            GameTestAsserts.assertValueEqual(helper, profile.get(FemboyProfileFields.STYLE_POINTS_EARNED), 30, "spending keeps the lifetime total");
 
             withRule(helper, FemboyGameRules.STYLE_POINTS, false, () ->
                     helper.assertFalse(FemboyMod.api().addStylePoints(player, 5, TEST_REASON), "game rule stops earning"));
@@ -111,15 +111,15 @@ public final class ProfileGameTests {
             CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, ItemStack.EMPTY);
             CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.BEAR_EARS.get()));
             helper.assertTrue(profile.get(FemboyProfileFields.COLLECTION).contains(ears), "bear ears collected");
-            helper.assertValueEqual(countUnlocks(ears) - unlocksBefore, 1, "unlock event fired once");
-            helper.assertValueEqual(profile.get(FemboyProfileFields.STYLE_POINTS), points, "no points for wearing it again");
-            helper.assertValueEqual(profile.get(FemboyProfileFields.EQUIPS), 2, "both equips counted");
+            GameTestAsserts.assertValueEqual(helper, countUnlocks(ears) - unlocksBefore, 1, "unlock event fired once");
+            GameTestAsserts.assertValueEqual(helper, profile.get(FemboyProfileFields.STYLE_POINTS), points, "no points for wearing it again");
+            GameTestAsserts.assertValueEqual(helper, profile.get(FemboyProfileFields.EQUIPS), 2, "both equips counted");
         });
     }
 
     public static void gameRulesGateFeatures(GameTestHelper helper) {
-        helper.assertValueEqual(DripCombat.pvpMultiplier(4, 1, 10), 1.3F, "three tiers above: +30%");
-        helper.assertValueEqual(DripCombat.pvpMultiplier(0, 5, 30), 0.0F, "never negative");
+        GameTestAsserts.assertValueEqual(helper, DripCombat.pvpMultiplier(4, 1, 10), 1.3F, "three tiers above: +30%");
+        GameTestAsserts.assertValueEqual(helper, DripCombat.pvpMultiplier(0, 5, 30), 0.0F, "never negative");
         WearableGameTests.withPlayer(helper, player -> withRule(helper, FemboyGameRules.KEEP_COSMETICS, true, () -> {
             CosmeticsManager.set(player, FemboySlots.NECK, new ItemStack(FemboyItems.UWU_CHOKER.get()));
             CosmeticsEvents.dropOnDeath(player);
@@ -140,13 +140,13 @@ public final class ProfileGameTests {
                 "hide works without cosmetics");
         helper.assertFalse(ArmorHiding.isHidden(hoodie, EquipmentSlot.CHEST, false), "game rule off: armor always drawn");
         CosmeticInventory socks = CosmeticInventory.EMPTY.with(FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()));
-        helper.assertValueEqual(ArmorHiding.mask(socks, true), 4 | 8, "socks hide leggings and boots");
+        GameTestAsserts.assertValueEqual(helper, ArmorHiding.mask(socks, true), 4 | 8, "socks hide leggings and boots");
         helper.assertTrue(ArmorHiding.visible(new ItemStack(Items.ELYTRA), true).is(Items.ELYTRA), "elytra stays visible");
         helper.assertTrue(ArmorHiding.visible(new ItemStack(Items.IRON_CHESTPLATE), true).isEmpty(), "chestplate hidden");
 
         WearableGameTests.withPlayer(helper, player -> {
             CosmeticsManager.setArmorVisibility(player, EquipmentSlot.FEET, ArmorVisibility.HIDE);
-            helper.assertValueEqual(CosmeticsManager.get(player).armorVisibility(EquipmentSlot.FEET), ArmorVisibility.HIDE, "choice stored");
+            GameTestAsserts.assertValueEqual(helper, CosmeticsManager.get(player).armorVisibility(EquipmentSlot.FEET), ArmorVisibility.HIDE, "choice stored");
             withRule(helper, FemboyGameRules.ALLOW_HIDDEN_ARMOR, false, () ->
                     helper.assertFalse(CosmeticsSyncPayload.of(player).armorHidingAllowed(), "sync carries the game rule"));
         });

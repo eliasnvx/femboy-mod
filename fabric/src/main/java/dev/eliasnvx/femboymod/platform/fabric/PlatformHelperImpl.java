@@ -27,24 +27,31 @@ import java.util.List;
 
 public final class PlatformHelperImpl {
 
-    private static final AttachmentType<CosmeticInventory> COSMETICS = AttachmentRegistry.create(
-            new ResourceLocation(FemboyMod.MOD_ID, "cosmetics"),
-            builder -> builder
-                    .initializer(() -> CosmeticInventory.EMPTY)
-                    .persistent(CosmeticInventory.CODEC)
-                    .copyOnDeath());
+    // Fabric API 0.92 ships the (experimental) Data Attachment API v1.0.x: builder() + buildAndRegister(id).
+    // Persistent attachments are saved into the player's NBT; copyOnDeath ones survive respawn, the rest
+    // survive only the End-exit "respawn" (same semantics as 1.21.1).
+    private static final AttachmentType<CosmeticInventory> COSMETICS = AttachmentRegistry.<CosmeticInventory>builder()
+            .initializer(() -> CosmeticInventory.EMPTY)
+            .persistent(CosmeticInventory.CODEC)
+            .copyOnDeath()
+            .buildAndRegister(new ResourceLocation(FemboyMod.MOD_ID, "cosmetics"));
 
-    private static final AttachmentType<CaffeineLog> CAFFEINE = AttachmentRegistry.create(
-            new ResourceLocation(FemboyMod.MOD_ID, "caffeine"),
-            builder -> builder.initializer(() -> CaffeineLog.EMPTY).persistent(CaffeineLog.CODEC));
+    private static final AttachmentType<CaffeineLog> CAFFEINE = AttachmentRegistry.<CaffeineLog>builder()
+            .initializer(() -> CaffeineLog.EMPTY)
+            .persistent(CaffeineLog.CODEC)
+            .buildAndRegister(new ResourceLocation(FemboyMod.MOD_ID, "caffeine"));
 
-    private static final AttachmentType<WardrobePresets> PRESETS = AttachmentRegistry.create(
-            new ResourceLocation(FemboyMod.MOD_ID, "wardrobe_presets"),
-            builder -> builder.initializer(() -> WardrobePresets.EMPTY).persistent(WardrobePresets.CODEC).copyOnDeath());
+    private static final AttachmentType<WardrobePresets> PRESETS = AttachmentRegistry.<WardrobePresets>builder()
+            .initializer(() -> WardrobePresets.EMPTY)
+            .persistent(WardrobePresets.CODEC)
+            .copyOnDeath()
+            .buildAndRegister(new ResourceLocation(FemboyMod.MOD_ID, "wardrobe_presets"));
 
-    private static final AttachmentType<ProfileData> PROFILE = AttachmentRegistry.create(
-            new ResourceLocation(FemboyMod.MOD_ID, "profile"),
-            builder -> builder.initializer(() -> ProfileData.EMPTY).persistent(ProfileData.CODEC).copyOnDeath());
+    private static final AttachmentType<ProfileData> PROFILE = AttachmentRegistry.<ProfileData>builder()
+            .initializer(() -> ProfileData.EMPTY)
+            .persistent(ProfileData.CODEC)
+            .copyOnDeath()
+            .buildAndRegister(new ResourceLocation(FemboyMod.MOD_ID, "profile"));
 
     private PlatformHelperImpl() {
     }

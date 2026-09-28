@@ -1,4 +1,8 @@
 loom {
+    forge {
+        // femboymod's mixins in this dev run; Forge 47 only reads mixin configs from jar manifests / this list
+        mixinConfig "femboymod.mixins.json"
+    }
     mods {
         femboymod {
             sourceSet project(":forge").sourceSets.main
@@ -8,7 +12,8 @@ loom {
         gameTestServer {
             server()
             forgeTemplate("gameTestServer")
-            // Make sure the server runs in test mode with our namespaces
+            // Forge 47 ForgeGameTestHooks reads these (GameTestMain sets the first two as well)
+            property "forge.enableGameTest", "true"
             property "forge.gameTestServer", "true"
             property "forge.enabledGameTestNamespaces", "femboymod_example"
             name "Example Addon GameTest Server"

@@ -5,28 +5,28 @@ import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.gametest.GameTestHooks;
+import net.minecraftforge.event.RegisterGameTestsEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.gametest.ForgeGameTestHooks;
 
 import java.util.List;
 
 /**
- * Registers the shared {@link CosmeticGameTests} on NeoForge, only when GameTests are enabled.
+ * Registers the shared {@link CosmeticGameTests} on Forge, only when GameTests are enabled.
  * Public because the game test registry invokes {@link #tests()} reflectively.
  */
 public final class FemboyGameTestsForge {
 
     private static final int MAX_TICKS = 100;
     private static final long SETUP_TICKS = 0L;
-    /** 8x8x8 of air in {@code data/femboymod/structure/empty.nbt}, the same size as Fabric's empty template. */
+    /** 8x8x8 of air in {@code data/femboymod/structures/empty.nbt}, the same size as Fabric's empty template. */
     private static final String EMPTY_STRUCTURE = new ResourceLocation(FemboyMod.MOD_ID, "empty").toString();
 
     private FemboyGameTestsForge() {
     }
 
     static void register(IEventBus modBus) {
-        if (!GameTestHooks.isGametestEnabled()) {
+        if (!ForgeGameTestHooks.isGametestEnabled()) {
             return;
         }
         modBus.addListener((RegisterGameTestsEvent event) -> event.register(FemboyGameTestsForge.class));

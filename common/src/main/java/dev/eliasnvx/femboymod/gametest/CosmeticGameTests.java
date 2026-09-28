@@ -18,7 +18,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,7 +41,7 @@ import java.util.function.Consumer;
 
 /**
  * Loader-independent GameTest bodies (SPEC §13). Registered by
- * {@code fabric/src/gametest} (Fabric) and {@code FemboyGameTestsForge} (NeoForge).
+ * {@code fabric/src/gametest} (Fabric) and {@code FemboyGameTestsForge} (Forge).
  */
 public final class CosmeticGameTests {
 
@@ -100,13 +101,13 @@ public final class CosmeticGameTests {
             helper.assertTrue(CosmeticsManager.get(player).get(HEAD).is(FemboyItems.CAT_EARS.get()), "Ears should be worn");
 
             ItemStack pinkEars = new ItemStack(FemboyItems.CAT_EARS.get());
-            pinkEars.set(FemboyComponents.COLORWAY.get(), Colorway.solid(0xFFB6D9));
+            FemboyComponents.COLORWAY.set(pinkEars, Colorway.solid(0xFFB6D9));
             player.setItemInHand(InteractionHand.MAIN_HAND, pinkEars);
             CosmeticsEvents.equipFromHand(player, InteractionHand.MAIN_HAND);
 
-            helper.assertTrue(CosmeticsManager.get(player).get(HEAD).has(FemboyComponents.COLORWAY.get()), "New ears should be worn");
+            helper.assertTrue(FemboyComponents.COLORWAY.has(CosmeticsManager.get(player).get(HEAD)), "New ears should be worn");
             helper.assertTrue(player.getMainHandItem().is(FemboyItems.CAT_EARS.get())
-                    && !player.getMainHandItem().has(FemboyComponents.COLORWAY.get()), "Old ears should come back to the hand");
+                    && !FemboyComponents.COLORWAY.has(player.getMainHandItem()), "Old ears should come back to the hand");
             assertCount(helper, player, FemboyItems.CAT_EARS.get(), 2);
         });
     }
@@ -143,14 +144,14 @@ public final class CosmeticGameTests {
 
             List<ItemEntity> drops = helper.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(3),
                     item -> item.getItem().is(FemboyItems.CAT_EARS.get()));
-            helper.assertValueEqual(drops.size(), 1, "Exactly one ears drop");
+            GameTestAsserts.assertValueEqual(helper, drops.size(), 1, "Exactly one ears drop");
             drops.forEach(Entity::discard);
         });
     }
 
     public static void attachmentCodecRoundTrip(GameTestHelper helper) {
         CosmeticInventory inventory = sampleInventory(helper);
-        var ops = helper.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        var ops = RegistryOps.create(NbtOps.INSTANCE, helper.getLevel().registryAccess());
         Tag tag = CosmeticInventory.CODEC.encodeStart(ops, inventory).getOrThrow(false, error -> { });
         CosmeticInventory decoded = CosmeticInventory.CODEC.parse(ops, tag).getOrThrow(false, error -> { });
         assertSame(helper, inventory, decoded);
@@ -159,11 +160,11 @@ public final class CosmeticGameTests {
 
     public static void syncPayloadRoundTrip(GameTestHelper helper) {
         CosmeticsSyncPayload payload = new CosmeticsSyncPayload(42, sampleInventory(helper), false);
-        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), helper.getLevel().registryAccess());
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
-            CosmeticsSyncPayload.STREAM_CODEC.encode(buf, payload);
-            CosmeticsSyncPayload decoded = CosmeticsSyncPayload.STREAM_CODEC.decode(buf);
-            helper.assertValueEqual(decoded.entityId(), 42, "entity id");
+            payload.write(buf);
+            CosmeticsSyncPayload decoded = CosmeticsSyncPayload.read(buf);
+            GameTestAsserts.assertValueEqual(helper, decoded.entityId(), 42, "entity id");
             assertSame(helper, payload.cosmetics(), decoded.cosmetics());
             helper.assertFalse(decoded.armorHidingAllowed(), "armor hiding flag");
         } finally {
@@ -176,7 +177,7 @@ public final class CosmeticGameTests {
         Registry<ColorwayPattern> registry = helper.getLevel().registryAccess().registryOrThrow(ColorwayPattern.REGISTRY_KEY);
         Holder<ColorwayPattern> trans = registry.getHolderOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
                 new ResourceLocation(FemboyApi.MOD_ID, "pride_trans")));
-        helper.assertValueEqual(trans.value().stripes().size(), 5, "trans flag stripes");
+        GameTestAsserts.assertValueEqual(helper, trans.value().stripes().size(), 5, "trans flag stripes");
         helper.assertTrue(registry.size() >= 12, "All built-in patterns should load, got " + registry.size());
         helper.succeed();
     }
@@ -190,20 +191,20 @@ public final class CosmeticGameTests {
                 .filter(item -> BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(FemboyApi.MOD_ID)).count();
         long plainInTab = tab.getDisplayItems().stream()
                 .filter(stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(FemboyApi.MOD_ID))
-                .filter(stack -> !stack.has(FemboyComponents.COLORWAY.get())).count();
-        helper.assertValueEqual(plainInTab, modItems, "every femboymod item is in the tab once");
+                .filter(stack -> !FemboyComponents.COLORWAY.has(stack)).count();
+        GameTestAsserts.assertValueEqual(helper, plainInTab, modItems, "every femboymod item is in the tab once");
         long stripedSocks = tab.getDisplayItems().stream()
                 .filter(stack -> stack.is(FemboyItems.PROGRAMMING_SOCKS.get()))
-                .filter(stack -> stack.has(FemboyComponents.COLORWAY.get()) && stack.get(FemboyComponents.COLORWAY.get()).stripeCount() == 2)
+                .filter(stack -> FemboyComponents.COLORWAY.has(stack) && FemboyComponents.COLORWAY.get(stack).stripeCount() == 2)
                 .count();
-        helper.assertValueEqual(stripedSocks, 3L, "black, blue and red striped socks next to the pink ones");
+        GameTestAsserts.assertValueEqual(helper, stripedSocks, 3L, "black, blue and red striped socks next to the pink ones");
         helper.succeed();
     }
 
     private static CosmeticInventory sampleInventory(GameTestHelper helper) {
         Registry<ColorwayPattern> patterns = helper.getLevel().registryAccess().registryOrThrow(ColorwayPattern.REGISTRY_KEY);
         ItemStack ears = new ItemStack(FemboyItems.CAT_EARS.get());
-        ears.set(FemboyComponents.COLORWAY.get(), new Colorway(0xFFB6D9,
+        FemboyComponents.COLORWAY.set(ears, new Colorway(0xFFB6D9,
                 Optional.of(patterns.getHolderOrThrow(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
                         new ResourceLocation(FemboyApi.MOD_ID, "pride_bi")))),
                 Optional.of(0x123456)));
@@ -213,8 +214,8 @@ public final class CosmeticGameTests {
     }
 
     private static void assertSame(GameTestHelper helper, CosmeticInventory expected, CosmeticInventory actual) {
-        helper.assertValueEqual(actual.all().keySet(), expected.all().keySet(), "slots");
-        helper.assertValueEqual(actual.armor(), expected.armor(), "armor visibility");
+        GameTestAsserts.assertValueEqual(helper, actual.all().keySet(), expected.all().keySet(), "slots");
+        GameTestAsserts.assertValueEqual(helper, actual.armor(), expected.armor(), "armor visibility");
         expected.all().forEach((slot, stack) ->
                 helper.assertTrue(ItemStack.matches(stack, actual.get(slot)), "Stack in " + slot + " should survive the round trip"));
     }
@@ -226,12 +227,12 @@ public final class CosmeticGameTests {
                 count += worn.getCount();
             }
         }
-        helper.assertValueEqual(count, expected, "total " + item + " (inventory + worn)");
+        GameTestAsserts.assertValueEqual(helper, count, expected, "total " + item + " (inventory + worn)");
     }
 
     /** Runs the body with a fresh mock player and always removes the player afterwards. */
     private static void withPlayer(GameTestHelper helper, Consumer<ServerPlayer> body) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.create(helper);
         // The mock player joins at world spawn; move it into the (loaded) test area.
         player.moveTo(helper.absoluteVec(TEST_AREA_CENTER));
         try {

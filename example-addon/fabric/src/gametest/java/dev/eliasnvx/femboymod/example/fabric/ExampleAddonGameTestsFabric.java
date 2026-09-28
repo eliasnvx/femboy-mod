@@ -3,6 +3,7 @@ package dev.eliasnvx.femboymod.example.fabric;
 import dev.eliasnvx.femboymod.example.ExampleAddonGameTests;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 
 /** Fabric glue for the shared {@link ExampleAddonGameTests}; every test runs in Fabric's empty 8x8x8 template. */
@@ -55,7 +56,9 @@ public final class ExampleAddonGameTestsFabric implements FabricGameTest {
 
     @GameTest(template = EMPTY_STRUCTURE)
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(ExampleAddonGameTests.ALL.size(), 9, "shared tests wired into the Fabric glue");
+        if (ExampleAddonGameTests.ALL.size() != 9) {
+            throw new GameTestAssertException("Expected 9 shared tests wired into the Fabric glue, got " + ExampleAddonGameTests.ALL.size());
+        }
         helper.succeed();
     }
 }

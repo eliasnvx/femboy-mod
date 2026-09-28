@@ -34,7 +34,8 @@ loom {
         gameTestServer {
             server()
             forgeTemplate("gameTestServer")
-            // Make sure the server runs in test mode with our namespaces
+            // Forge 47 ForgeGameTestHooks reads these (GameTestMain sets the first two as well)
+            property "forge.enableGameTest", "true"
             property "forge.gameTestServer", "true"
             property "forge.enabledGameTestNamespaces", "femboymod"
             name "Forge GameTest Server"

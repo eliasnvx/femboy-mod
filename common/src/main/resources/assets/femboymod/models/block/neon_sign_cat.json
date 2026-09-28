@@ -97,7 +97,7 @@
           "texture": "#neon"
         }
       },
-      "neoforge_data": {
+      "forge_data": {
         "block_light": 15
       }
     }
