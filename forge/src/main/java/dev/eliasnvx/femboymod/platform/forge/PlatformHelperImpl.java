@@ -43,6 +43,10 @@ import java.util.function.Function;
 
 public final class PlatformHelperImpl {
 
+    /** Same key as Forge's package-private NetworkConstants.FML_NETVERSION (AttributeKey.valueOf returns the existing one). */
+    private static final io.netty.util.AttributeKey<String> FML_NETVERSION = io.netty.util.AttributeKey.valueOf("fml:netversion");
+
+
     private static final Type ADDON_ANNOTATION = Type.getType(RegisterFemboyAddon.class);
     private static final DeferredRegister<PoiType> POIS = DeferredRegister.create(Registries.POINT_OF_INTEREST_TYPE, FemboyMod.MOD_ID);
 
@@ -201,7 +205,10 @@ public final class PlatformHelperImpl {
     }
 
     public static boolean canReceive(net.minecraft.server.level.ServerPlayer player, net.minecraft.resources.ResourceLocation id) {
-        // Architectury 9 on Forge records the client's C2S ids as its receivables; any modded client has our channel
-        return !net.minecraftforge.network.NetworkHooks.isVanillaConnection(player.connection.connection);
+        // Architectury 9 on Forge records the client's C2S ids as its receivables; any modded client has our channel.
+        // Forge's isVanillaConnection throws without the FML version attribute (e.g. GameTest mock players): check it first.
+        var channel = player.connection.connection.channel();
+        return channel != null && channel.attr(FML_NETVERSION).get() != null
+                && !net.minecraftforge.network.NetworkHooks.isVanillaConnection(player.connection.connection);
     }
 }
