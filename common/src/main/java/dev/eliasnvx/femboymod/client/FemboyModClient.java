@@ -70,6 +70,11 @@ public final class FemboyModClient {
     }
 
     public static void init() {
+        // 1.20.1: item data decodes colorway patterns with the client level's registries
+        dev.eliasnvx.femboymod.item.RegistryAccessContext.setClient(() -> {
+            var level = net.minecraft.client.Minecraft.getInstance().level;
+            return level == null ? null : level.registryAccess();
+        });
         FemboyMenus.COSMETICS.listen(type -> MenuRegistry.registerScreenFactory(type, CosmeticsScreen::new));
 
         FemboyMenus.BACKPACK.listen(type -> MenuRegistry.registerScreenFactory(type, BackpackScreen::new));

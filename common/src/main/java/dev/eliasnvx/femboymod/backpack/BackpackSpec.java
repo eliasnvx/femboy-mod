@@ -2,9 +2,6 @@ package dev.eliasnvx.femboymod.backpack;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 /** Component {@code femboymod:backpack}: marks an item as a backpack and sets its capacity (rows of 9). */
 public record BackpackSpec(int rows) {
