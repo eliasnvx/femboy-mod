@@ -11,6 +11,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UwuTransformerTest {
 
+    @org.junit.jupiter.api.BeforeAll
+    static void bootstrapMinecraft() {
+        // 1.20.1 registries refuse to create keys before Minecraft is bootstrapped
+        net.minecraft.SharedConstants.tryDetectVersion();
+        net.minecraft.server.Bootstrap.bootStrap();
+    }
+
     private static final UwuRules EN = new UwuRules(
             List.of(new UwuRules.Replacement("r", "w"), new UwuRules.Replacement("l", "w")),
             Map.of("hello", "hewwo"), 0.0F, 0.0F, List.of());

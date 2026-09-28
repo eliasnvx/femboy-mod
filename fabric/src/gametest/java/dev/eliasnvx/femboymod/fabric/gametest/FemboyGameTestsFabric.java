@@ -3,6 +3,7 @@ package dev.eliasnvx.femboymod.fabric.gametest;
 import dev.eliasnvx.femboymod.gametest.BackpackGameTests;
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
 import dev.eliasnvx.femboymod.gametest.DecorGameTests;
+import dev.eliasnvx.femboymod.gametest.GameTestAsserts;
 import dev.eliasnvx.femboymod.gametest.MobGameTests;
 import dev.eliasnvx.femboymod.gametest.PanelGameTests;
 import dev.eliasnvx.femboymod.gametest.ProfileGameTests;
@@ -310,7 +311,7 @@ public final class FemboyGameTestsFabric implements FabricGameTest {
 
     @GameTest(template = EMPTY_STRUCTURE)
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 58, "shared tests wired into the Fabric glue");
+        GameTestAsserts.assertValueEqual(helper, CosmeticGameTests.all().size(), 58, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

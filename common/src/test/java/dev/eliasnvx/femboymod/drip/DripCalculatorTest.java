@@ -13,6 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DripCalculatorTest {
 
+    @org.junit.jupiter.api.BeforeAll
+    static void bootstrapMinecraft() {
+        // 1.20.1 registries refuse to create keys before Minecraft is bootstrapped
+        net.minecraft.SharedConstants.tryDetectVersion();
+        net.minecraft.server.Bootstrap.bootStrap();
+    }
+
     private static final DripRules RULES = new DripRules(5, 10, 100, List.of(20, 40, 60, 80, 95));
 
     private static Worn plain(int drip) {

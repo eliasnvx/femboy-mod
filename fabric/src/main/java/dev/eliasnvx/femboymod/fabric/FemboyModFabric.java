@@ -12,7 +12,7 @@ public final class FemboyModFabric implements ModInitializer {
     public void onInitialize() {
         PlatformHelperImpl.init();
         FemboyMod.init();
-        // Architectury 13 has no start-tracking event: sync a player's cosmetics when they come into view.
+        // Architectury 9 has no start-tracking event: sync a player's cosmetics when they come into view.
         EntityTrackingEvents.START_TRACKING.register(CosmeticsEvents::onStartTracking);
     }
 }

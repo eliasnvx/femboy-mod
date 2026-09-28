@@ -154,7 +154,7 @@
         }
       },
       "light_emission": 8,
-      "neoforge_data": {
+      "forge_data": {
         "block_light": 8
       }
     }

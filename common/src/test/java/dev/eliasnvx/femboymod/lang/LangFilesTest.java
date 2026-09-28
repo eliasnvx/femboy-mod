@@ -19,6 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /** Every translation has exactly the keys of en_us and no empty values (release checklist). */
 class LangFilesTest {
 
+    @org.junit.jupiter.api.BeforeAll
+    static void bootstrapMinecraft() {
+        // 1.20.1 registries refuse to create keys before Minecraft is bootstrapped
+        net.minecraft.SharedConstants.tryDetectVersion();
+        net.minecraft.server.Bootstrap.bootStrap();
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn"})
     void sameKeysAsEnglish(String lang) throws IOException {

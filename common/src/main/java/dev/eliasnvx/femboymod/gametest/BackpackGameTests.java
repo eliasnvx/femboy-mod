@@ -8,9 +8,9 @@ import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.effect.CosmeticEffectsManager;
 import dev.eliasnvx.femboymod.energy.EnergyDrinkItem;
 import dev.eliasnvx.femboymod.energy.FemboyEffects;
+import dev.eliasnvx.femboymod.item.ItemList;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
@@ -19,10 +19,9 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemContainerContents;
-import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SmithingRecipeInput;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -51,13 +50,13 @@ public final class BackpackGameTests {
 
     private static ItemStack backpackWith(Item tier, ItemStack... contents) {
         ItemStack backpack = new ItemStack(tier);
-        backpack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(contents)));
+        FemboyComponents.CONTENTS.set(backpack, ItemList.fromItems(List.of(contents)));
         return backpack;
     }
 
     private static int count(ServerPlayer player, Item item, ItemStack backpack) {
         int total = player.getInventory().countItem(item);
-        for (ItemStack stack : backpack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).nonEmptyStream().toList()) {
+        for (ItemStack stack : FemboyComponents.CONTENTS.getOrDefault(backpack, ItemList.EMPTY).nonEmptyItems()) {
             if (stack.is(item)) {
                 total += stack.getCount();
             }
@@ -65,10 +64,23 @@ public final class BackpackGameTests {
         return total;
     }
 
+    /** Same stacks (item, count, NBT) in the same slots; ItemList has no equals. */
+    private static boolean sameItems(ItemList a, ItemList b) {
+        if (a == null || b == null || a.size() != b.size()) {
+            return a == b;
+        }
+        for (int slot = 0; slot < a.size(); slot++) {
+            if (!ItemStack.matches(a.peek(slot), b.peek(slot))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /** Opens the backpack held in hotbar slot 0 (as right-click would). */
     private static BackpackMenu openFromHand(ServerPlayer player) {
         player.getInventory().selected = HOTBAR_SLOT;
-        int rows = player.getInventory().getItem(HOTBAR_SLOT).get(FemboyComponents.BACKPACK.get()).rows();
+        int rows = FemboyComponents.BACKPACK.get(player.getInventory().getItem(HOTBAR_SLOT)).rows();
         return new BackpackMenu(1, player.getInventory(), new BackpackMenuData(false, HOTBAR_SLOT, rows));
     }
 
@@ -88,30 +100,30 @@ public final class BackpackGameTests {
             BackpackMenu menu = openFromHand(player);
             menu.quickMoveStack(player, inventoryMenuIndex(menu, 5));
             helper.assertTrue(player.getInventory().getItem(5).is(FemboyItems.CANVAS_BACKPACK.get()), "shift-click must not nest backpacks");
-            helper.assertTrue(player.getInventory().getItem(HOTBAR_SLOT).get(DataComponents.CONTAINER).nonEmptyStream().findAny().isEmpty(),
+            helper.assertTrue(FemboyComponents.CONTENTS.getOrDefault(player.getInventory().getItem(HOTBAR_SLOT), ItemList.EMPTY).nonEmptyItems().isEmpty(),
                     "open backpack stays empty");
         });
     }
 
     public static void contentsSurviveUpgrades(GameTestHelper helper) {
         ItemStack canvas = backpackWith(FemboyItems.CANVAS_BACKPACK.get(), new ItemStack(Items.DIAMOND, 7));
-        canvas.set(FemboyComponents.CHARMS.get(), ItemContainerContents.fromItems(List.of(new ItemStack(FemboyItems.HEART_PIN.get()))));
+        FemboyComponents.CHARMS.set(canvas, ItemList.fromItems(List.of(new ItemStack(FemboyItems.HEART_PIN.get()))));
 
-        CraftingInput leatherInput = CraftingInput.of(2, 1, List.of(canvas, new ItemStack(Items.LEATHER)));
+        CraftingContainer leatherInput = TestContainers.crafting(2, 1, List.of(canvas, new ItemStack(Items.LEATHER)));
         var leatherRecipe = helper.getLevel().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, leatherInput, helper.getLevel());
         helper.assertTrue(leatherRecipe.isPresent(), "canvas + leather recipe");
-        ItemStack leather = leatherRecipe.get().value().assemble(leatherInput, helper.getLevel().registryAccess());
+        ItemStack leather = leatherRecipe.get().assemble(leatherInput, helper.getLevel().registryAccess());
         helper.assertTrue(leather.is(FemboyItems.LEATHER_BACKPACK.get()), "leather backpack crafted");
 
-        SmithingRecipeInput smithing = new SmithingRecipeInput(new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), leather, new ItemStack(Items.NETHERITE_INGOT));
+        SimpleContainer smithing = TestContainers.smithing(new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), leather, new ItemStack(Items.NETHERITE_INGOT));
         var netheriteRecipe = helper.getLevel().getRecipeManager().getRecipeFor(RecipeType.SMITHING, smithing, helper.getLevel());
         helper.assertTrue(netheriteRecipe.isPresent(), "netherite smithing recipe");
-        ItemStack netherite = netheriteRecipe.get().value().assemble(smithing, helper.getLevel().registryAccess());
+        ItemStack netherite = netheriteRecipe.get().assemble(smithing, helper.getLevel().registryAccess());
 
         helper.assertTrue(netherite.is(FemboyItems.NETHERITE_BACKPACK.get()), "netherite backpack smithed");
-        helper.assertValueEqual(netherite.get(DataComponents.CONTAINER), canvas.get(DataComponents.CONTAINER), "contents kept through both upgrades");
-        helper.assertValueEqual(FemboyApi.get().getCharms(netherite).size(), 1, "charms kept");
-        helper.assertValueEqual(netherite.get(FemboyComponents.BACKPACK.get()).rows(), 3, "netherite has 27 slots");
+        helper.assertTrue(sameItems(FemboyComponents.CONTENTS.get(netherite), FemboyComponents.CONTENTS.get(canvas)), "contents kept through both upgrades");
+        GameTestAsserts.assertValueEqual(helper, FemboyApi.get().getCharms(netherite).size(), 1, "charms kept");
+        GameTestAsserts.assertValueEqual(helper, FemboyComponents.BACKPACK.get(netherite).rows(), 3, "netherite has 27 slots");
         helper.succeed();
     }
 
@@ -123,12 +135,12 @@ public final class BackpackGameTests {
             ItemStack backpack = player.getInventory().getItem(HOTBAR_SLOT);
 
             menu.quickMoveStack(player, inventoryMenuIndex(menu, 3));
-            helper.assertValueEqual(count(player, Items.COBBLESTONE, backpack), 40, "cobblestone conserved (into backpack)");
-            helper.assertTrue(backpack.get(DataComponents.CONTAINER).nonEmptyStream().anyMatch(s -> s.is(Items.COBBLESTONE)),
-                    "written straight into the item component");
+            GameTestAsserts.assertValueEqual(helper, count(player, Items.COBBLESTONE, backpack), 40, "cobblestone conserved (into backpack)");
+            helper.assertTrue(FemboyComponents.CONTENTS.getOrDefault(backpack, ItemList.EMPTY).nonEmptyStream().anyMatch(s -> s.is(Items.COBBLESTONE)),
+                    "written straight into the item data");
 
             menu.quickMoveStack(player, 0);
-            helper.assertValueEqual(count(player, Items.COBBLESTONE, backpack), 40, "cobblestone conserved (back out)");
+            GameTestAsserts.assertValueEqual(helper, count(player, Items.COBBLESTONE, backpack), 40, "cobblestone conserved (back out)");
         });
     }
 
@@ -143,7 +155,7 @@ public final class BackpackGameTests {
             helper.assertFalse(menu.stillValid(player), "menu must become invalid once the backpack is gone");
 
             menu.getSlot(0).set(new ItemStack(Items.DIAMOND, 64));
-            helper.assertTrue(backpack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).nonEmptyStream().findAny().isEmpty(),
+            helper.assertTrue(FemboyComponents.CONTENTS.getOrDefault(backpack, ItemList.EMPTY).nonEmptyItems().isEmpty(),
                     "no writes into the dropped backpack (would duplicate items)");
             menu.clicked(0, 0, ClickType.PICKUP, player);
             helper.assertTrue(menu.getCarried().isEmpty(), "clicks are ignored on an invalid menu");
@@ -182,14 +194,14 @@ public final class BackpackGameTests {
         withPlayer(helper, player -> {
             double before = player.getAttribute(Attributes.MAX_HEALTH).getValue();
             ItemStack backpack = new ItemStack(FemboyItems.CANVAS_BACKPACK.get());
-            backpack.set(FemboyComponents.CHARMS.get(), ItemContainerContents.fromItems(List.of(new ItemStack(FemboyItems.HEART_PIN.get()))));
+            FemboyComponents.CHARMS.set(backpack, ItemList.fromItems(List.of(new ItemStack(FemboyItems.HEART_PIN.get()))));
             player.getInventory().setItem(4, backpack.copy());
             CosmeticEffectsManager.tick(player);
-            helper.assertValueEqual(player.getAttribute(Attributes.MAX_HEALTH).getValue(), before, "charm does nothing in the inventory");
+            GameTestAsserts.assertValueEqual(helper, player.getAttribute(Attributes.MAX_HEALTH).getValue(), before, "charm does nothing in the inventory");
 
             CosmeticsManager.set(player, FemboySlots.BACK, backpack);
             CosmeticEffectsManager.tick(player);
-            helper.assertValueEqual(player.getAttribute(Attributes.MAX_HEALTH).getValue(), before + 2, "heart pin: +1 heart while worn");
+            GameTestAsserts.assertValueEqual(helper, player.getAttribute(Attributes.MAX_HEALTH).getValue(), before + 2, "heart pin: +1 heart while worn");
         });
     }
 
@@ -197,12 +209,12 @@ public final class BackpackGameTests {
         var sources = helper.getLevel().damageSources();
         ItemStack netherite = new ItemStack(FemboyItems.NETHERITE_BACKPACK.get());
         ItemStack canvas = new ItemStack(FemboyItems.CANVAS_BACKPACK.get());
-        helper.assertFalse(netherite.canBeHurtBy(sources.lava()), "netherite backpack survives lava");
-        helper.assertFalse(netherite.canBeHurtBy(sources.inFire()), "and fire");
+        helper.assertFalse(netherite.getItem().canBeHurtBy(sources.lava()), "netherite backpack survives lava");
+        helper.assertFalse(netherite.getItem().canBeHurtBy(sources.inFire()), "and fire");
         // 1.21.1: fire_resistant only covers fire; cactus and explosions go through ItemEntityDamageMixin
         helper.assertTrue(FemboyItems.isDamageResistant(netherite, sources.cactus()), "and cactus");
         helper.assertTrue(FemboyItems.isDamageResistant(netherite, sources.explosion(null, null)), "and explosions");
-        helper.assertTrue(canvas.canBeHurtBy(sources.lava()), "canvas burns");
+        helper.assertTrue(canvas.getItem().canBeHurtBy(sources.lava()), "canvas burns");
         helper.succeed();
     }
 
@@ -211,13 +223,13 @@ public final class BackpackGameTests {
             ItemStack can = new ItemStack(FemboyItems.BYTE_ENERGY_PINK.get());
             ((EnergyDrinkItem) can.getItem()).finishUsingItem(can, helper.getLevel(), player);
             // The mock player is in creative (keeps the item), so check the container the drink gives back
-            helper.assertTrue(((EnergyDrinkItem) can.getItem()).remainder().is(FemboyItems.EMPTY_ENERGY_CAN.get()), "an empty can is left after drinking");
+            helper.assertTrue(((EnergyDrinkItem) FemboyItems.BYTE_ENERGY_PINK.get()).remainder().is(FemboyItems.EMPTY_ENERGY_CAN.get()), "an empty can is left after drinking");
             helper.assertTrue(player.hasEffect(MobEffects.MOVEMENT_SPEED), "pink = speed");
             helper.assertTrue(player.hasEffect(FemboyEffects.holder(FemboyEffects.CAFFEINATED)), "caffeine tracked");
 
             var caffeinated = FemboyEffects.CAFFEINATED.get();
-            helper.assertTrue(caffeinated.shouldApplyEffectTickThisTick(1, 0), "crash triggers on the last tick");
-            helper.assertFalse(caffeinated.shouldApplyEffectTickThisTick(100, 0), "not before");
+            helper.assertTrue(caffeinated.isDurationEffectTick(1, 0), "crash triggers on the last tick");
+            helper.assertFalse(caffeinated.isDurationEffectTick(100, 0), "not before");
             caffeinated.applyEffectTick(player, 0);
             helper.assertTrue(player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN), "crash: slowness");
             helper.assertTrue(player.hasEffect(MobEffects.DIG_SLOWDOWN), "crash: mining fatigue");
@@ -238,7 +250,7 @@ public final class BackpackGameTests {
     }
 
     private static void withPlayer(GameTestHelper helper, Consumer<ServerPlayer> body) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = MockPlayers.create(helper);
         player.moveTo(helper.absoluteVec(TEST_AREA_CENTER));
         try {
             body.accept(player);

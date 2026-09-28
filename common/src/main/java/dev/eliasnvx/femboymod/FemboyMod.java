@@ -55,7 +55,7 @@ public final class FemboyMod {
         ProfileHooks.registerFields(api.profileFields());
 
         // 1.20.1: item data lives in NBT; decoding holders from it needs the server's registries
-        dev.architectury.event.events.common.LifecycleEvent.SERVER_STARTING.register(server ->
+        dev.architectury.event.events.common.LifecycleEvent.SERVER_BEFORE_START.register(server ->
                 dev.eliasnvx.femboymod.item.RegistryAccessContext.setServer(server.registryAccess()));
         dev.architectury.event.events.common.LifecycleEvent.SERVER_STOPPED.register(server ->
                 dev.eliasnvx.femboymod.item.RegistryAccessContext.setServer(null));

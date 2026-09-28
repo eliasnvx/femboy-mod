@@ -13,6 +13,7 @@ import dev.eliasnvx.femboymod.registry.FemboyItems;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.Item;
@@ -39,19 +40,19 @@ public final class PanelGameTests {
             menu.setCarried(socks(0xF5A9B8));
             helper.assertTrue(CosmeticPanelActions.click(player, FemboySlots.LEGS_OVERLAY, false), "equip from the cursor");
             helper.assertTrue(menu.getCarried().isEmpty(), "cursor emptied");
-            helper.assertValueEqual(count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "one pair after equip");
+            GameTestAsserts.assertValueEqual(helper, count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "one pair after equip");
 
             menu.setCarried(socks(0x2A2A33));
             helper.assertTrue(CosmeticPanelActions.click(player, FemboySlots.LEGS_OVERLAY, false), "swap");
-            helper.assertValueEqual(CosmeticsManager.get(player).get(FemboySlots.LEGS_OVERLAY)
-                    .get(FemboyComponents.COLORWAY.get()), Colorway.solid(0x2A2A33), "black socks now worn");
-            helper.assertValueEqual(menu.getCarried().get(FemboyComponents.COLORWAY.get()), Colorway.solid(0xF5A9B8), "pink ones on the cursor");
-            helper.assertValueEqual(count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 2, "two pairs after the swap");
+            GameTestAsserts.assertValueEqual(helper, FemboyComponents.COLORWAY.get(CosmeticsManager.get(player).get(FemboySlots.LEGS_OVERLAY)),
+                    Colorway.solid(0x2A2A33), "black socks now worn");
+            GameTestAsserts.assertValueEqual(helper, FemboyComponents.COLORWAY.get(menu.getCarried()), Colorway.solid(0xF5A9B8), "pink ones on the cursor");
+            GameTestAsserts.assertValueEqual(helper, count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 2, "two pairs after the swap");
 
             menu.setCarried(ItemStack.EMPTY);
             helper.assertTrue(CosmeticPanelActions.click(player, FemboySlots.LEGS_OVERLAY, false), "take off to the cursor");
             helper.assertTrue(CosmeticsManager.get(player).get(FemboySlots.LEGS_OVERLAY).isEmpty(), "slot emptied");
-            helper.assertValueEqual(count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "one pair: the worn one is now on the cursor");
+            GameTestAsserts.assertValueEqual(helper, count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "one pair: the worn one is now on the cursor");
         });
     }
 
@@ -68,12 +69,12 @@ public final class PanelGameTests {
                 player.getInventory().setItem(i, new ItemStack(Items.DIRT, 64));
             }
             helper.assertFalse(CosmeticPanelActions.click(player, FemboySlots.LEGS_OVERLAY, true), "full inventory: shift-click does nothing");
-            helper.assertValueEqual(count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "nothing lost with a full inventory");
+            GameTestAsserts.assertValueEqual(helper, count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "nothing lost with a full inventory");
 
             player.getInventory().setItem(0, ItemStack.EMPTY);
             helper.assertTrue(CosmeticPanelActions.click(player, FemboySlots.LEGS_OVERLAY, true), "shift-click into the free slot");
             helper.assertTrue(player.getInventory().getItem(0).is(FemboyItems.PROGRAMMING_SOCKS.get()), "socks in the inventory");
-            helper.assertValueEqual(count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "exactly one pair after shift-click");
+            GameTestAsserts.assertValueEqual(helper, count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "exactly one pair after shift-click");
 
             // Another menu open: the panel does nothing
             player.openMenu(new SimpleMenuProvider((id, inv, p) -> ChestMenu.threeRows(id, inv), Component.empty()));
@@ -94,7 +95,7 @@ public final class PanelGameTests {
 
             CosmeticsManager.setHidden(player, FemboySlots.LEGS_OVERLAY, true);
             CosmeticInventory saved = CosmeticInventory.CODEC.parse(JsonOps.INSTANCE,
-                    CosmeticInventory.CODEC.encodeStart(helper.getLevel().registryAccess().createSerializationContext(JsonOps.INSTANCE),
+                    CosmeticInventory.CODEC.encodeStart(RegistryOps.create(JsonOps.INSTANCE, helper.getLevel().registryAccess()),
                             CosmeticsManager.get(player)).getOrThrow(false, error -> { })).getOrThrow(false, error -> { });
             helper.assertTrue(saved.isHidden(FemboySlots.LEGS_OVERLAY), "hidden flag survives a save");
             helper.assertFalse(CosmeticInventory.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString("{}")).getOrThrow(false, error -> { })
@@ -108,13 +109,13 @@ public final class PanelGameTests {
             helper.assertTrue(CosmeticsManager.get(player).get(FemboySlots.LEGS_OVERLAY).isEmpty(), "socks taken off");
             menu.clickMenuButton(player, CosmeticsMenu.APPLY_BUTTON);          // put preset 1 back on
             helper.assertTrue(CosmeticsManager.get(player).get(FemboySlots.LEGS_OVERLAY).is(FemboyItems.PROGRAMMING_SOCKS.get()), "preset puts the socks on");
-            helper.assertValueEqual(count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "moved from the inventory, not copied");
+            GameTestAsserts.assertValueEqual(helper, count(player, FemboyItems.PROGRAMMING_SOCKS.get()), 1, "moved from the inventory, not copied");
         });
     }
 
     private static ItemStack socks(int color) {
         ItemStack stack = new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get());
-        stack.set(FemboyComponents.COLORWAY.get(), Colorway.solid(color));
+        FemboyComponents.COLORWAY.set(stack, Colorway.solid(color));
         return stack;
     }
 

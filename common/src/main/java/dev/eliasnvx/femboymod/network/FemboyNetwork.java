@@ -36,12 +36,28 @@ public final class FemboyNetwork {
 
     /** Sends {@code packet} to one player; the caller checks {@link #canReceive} for optional messages. */
     public static void sendToPlayer(ServerPlayer player, FemboyPacket packet) {
-        NetworkManager.sendToPlayer(player, packet.id(), encode(packet));
+        if (isConnected(player)) {
+            NetworkManager.sendToPlayer(player, packet.id(), encode(packet));
+        }
     }
 
     /** Encodes {@code packet} once and sends the same bytes to every player in {@code players}. */
     public static void sendToPlayers(Iterable<ServerPlayer> players, FemboyPacket packet) {
-        NetworkManager.sendToPlayers(players, packet.id(), encode(packet));
+        java.util.List<ServerPlayer> connected = new java.util.ArrayList<>();
+        players.forEach(player -> {
+            if (isConnected(player)) {
+                connected.add(player);
+            }
+        });
+        if (!connected.isEmpty()) {
+            NetworkManager.sendToPlayers(connected, packet.id(), encode(packet));
+        }
+    }
+
+    /** GameTest mock players have a connection without a channel; Forge throws when a packet is sent to them. */
+    private static boolean isConnected(ServerPlayer player) {
+        return player.connection != null
+                && ((dev.eliasnvx.femboymod.mixin.ServerGamePacketListenerAccessor) player.connection).femboymod$connection().isConnected();
     }
 
     /** Players without femboymod (vanilla clients on a modded server) have no receiver for our channels. */
