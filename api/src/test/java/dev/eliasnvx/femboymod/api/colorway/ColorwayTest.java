@@ -9,6 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ColorwayTest {
 
+    @org.junit.jupiter.api.BeforeAll
+    static void bootstrapMinecraft() {
+        // 1.20.1 registries refuse to create keys before Minecraft is bootstrapped
+        net.minecraft.SharedConstants.tryDetectVersion();
+        net.minecraft.server.Bootstrap.bootStrap();
+    }
+
     @Test
     void alphaIsDroppedSoNetworkDecodedColorsCompareEqual() {
         // ByteBufCodecs.RGB_COLOR decodes 0xFFB6D9 as 0xFFFFB6D9 (opaque alpha)

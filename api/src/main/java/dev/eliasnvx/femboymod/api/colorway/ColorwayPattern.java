@@ -3,6 +3,7 @@ package dev.eliasnvx.femboymod.api.colorway;
 import dev.eliasnvx.femboymod.api.util.ListCodecs;
 import org.jetbrains.annotations.ApiStatus;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.eliasnvx.femboymod.api.FemboyApi;
 import net.minecraft.core.Registry;
@@ -169,9 +170,12 @@ public record ColorwayPattern(List<Stripe> stripes, Optional<Chevron> chevron, O
         public static final int MAX_PERIOD_TICKS = 2400;
 
         /** JSON codec. */
-        public static final Codec<Shimmer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.intRange(MIN_PERIOD_TICKS, MAX_PERIOD_TICKS).fieldOf("period_ticks").forGetter(Shimmer::periodTicks)
-        ).apply(instance, Shimmer::new));
+        // 1.20.1 DFU keeps a partial value on range errors and would still call the constructor: validate first
+        public static final Codec<Shimmer> CODEC = Codec.INT.fieldOf("period_ticks").codec().comapFlatMap(
+                ticks -> ticks < MIN_PERIOD_TICKS || ticks > MAX_PERIOD_TICKS
+                        ? DataResult.error(() -> "period_ticks out of range: " + ticks)
+                        : DataResult.success(new Shimmer(ticks)),
+                Shimmer::periodTicks);
 
         /** Validates the period. */
         public Shimmer {

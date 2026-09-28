@@ -10,6 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ColorwayPatternTest {
 
+    @org.junit.jupiter.api.BeforeAll
+    static void bootstrapMinecraft() {
+        // 1.20.1 registries refuse to create keys before Minecraft is bootstrapped
+        net.minecraft.SharedConstants.tryDetectVersion();
+        net.minecraft.server.Bootstrap.bootStrap();
+    }
+
     private static ColorwayPattern parse(String json) {
         return ColorwayPattern.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(json)).getOrThrow(false, error -> { });
     }
