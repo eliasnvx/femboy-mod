@@ -62,7 +62,7 @@ public final class FemboyNetwork {
 
     /** Players without femboymod (vanilla clients on a modded server) have no receiver for our channels. */
     public static boolean canReceive(ServerPlayer player, ResourceLocation id) {
-        return NetworkManager.canPlayerReceive(player, id);
+        return dev.eliasnvx.femboymod.platform.PlatformHelper.canReceive(player, id);
     }
 
     /** @return a fresh buffer holding the message body */

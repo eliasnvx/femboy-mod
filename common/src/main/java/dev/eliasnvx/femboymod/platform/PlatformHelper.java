@@ -14,6 +14,16 @@ public final class PlatformHelper {
     }
 
     /** Finds and instantiates every {@link dev.eliasnvx.femboymod.api.FemboyAddon} provided by installed mods. */
+    /**
+     * Whether {@code player}'s client can receive our S2C packet {@code id}. On Forge 1.20.1 Architectury 9's own
+     * check never passes for S2C-only ids (its handshake reports the client's C2S ids), so Forge checks for a modded
+     * connection instead.
+     */
+    @ExpectPlatform
+    public static boolean canReceive(net.minecraft.server.level.ServerPlayer player, net.minecraft.resources.ResourceLocation id) {
+        throw new AssertionError();
+    }
+
     @ExpectPlatform
     public static List<DiscoveredAddon> discoverAddons() {
         throw new AssertionError();
