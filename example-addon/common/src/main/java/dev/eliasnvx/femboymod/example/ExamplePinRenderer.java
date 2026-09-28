@@ -22,7 +22,7 @@ import net.minecraft.util.FastColor;
 public final class ExamplePinRenderer implements CosmeticRenderer {
 
     private static final ModelLayerLocation LAYER = new ModelLayerLocation(ExampleAddon.PIN_RENDERER, "main");
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID,
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ExampleAddon.MOD_ID,
             "textures/item/friendship_pin.png");
     private static final int TEXTURE_SIZE = 16;
     /** Untinted: the texture's own colors. */

@@ -77,7 +77,7 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
         left.sort(Comparator.comparingInt(i -> LEFT.indexOf(cosmetics.slotId(i))));
         right.sort(Comparator.comparingInt(i -> RIGHT.indexOf(cosmetics.slotId(i))));
         while (right.size() < COLUMN_SLOTS && !extra.isEmpty()) {
-            right.add(extra.removeFirst()); // first addon slot fills the free spot on the right
+            right.add(extra.remove(0)); // first addon slot fills the free spot on the right
         }
         this.extraRows = (extra.size() + MAX_EXTRA_PER_ROW - 1) / MAX_EXTRA_PER_ROW;
 

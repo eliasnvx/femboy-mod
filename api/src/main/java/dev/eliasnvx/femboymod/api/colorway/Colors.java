@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.api.colorway;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
@@ -9,9 +10,11 @@ import java.util.Locale;
 public final class Colors {
 
     /** Codec for {@code "#RRGGBB"} strings. Also accepts a plain integer for convenience. */
-    public static final Codec<Integer> RGB_HEX_CODEC = Codec.withAlternative(
-            Codec.STRING.comapFlatMap(Colors::parseHex, Colors::toHex),
-            Codec.intRange(0, 0xFFFFFF));
+    public static final Codec<Integer> RGB_HEX_CODEC = Codec.either(
+                    Codec.STRING.comapFlatMap(Colors::parseHex, Colors::toHex),
+                    Codec.intRange(0, 0xFFFFFF))
+            // 1.20.1 DFU has no withAlternative: read either form, always write the hex string
+            .xmap(either -> either.map(rgb -> rgb, rgb -> rgb), Either::left);
 
     private Colors() {
     }

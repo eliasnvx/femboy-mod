@@ -41,13 +41,13 @@ public final class FemboyApiImpl implements FemboyApi {
     private final String apiVersion = readApiVersion();
     private final FemboyEventBusImpl events = new FemboyEventBusImpl(FemboyMod.LOGGER);
     private final SimpleApiRegistry<CosmeticSlotType> cosmeticSlots =
-            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "cosmetic_slot"));
+            new SimpleApiRegistry<>(new ResourceLocation(MOD_ID, "cosmetic_slot"));
     private final SimpleApiRegistry<MapCodec<? extends CosmeticEffect>> effectTypes =
-            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "cosmetic_effect_type"));
+            new SimpleApiRegistry<>(new ResourceLocation(MOD_ID, "cosmetic_effect_type"));
     private final SimpleApiRegistry<MapCodec<? extends CosmeticCondition>> conditionTypes =
-            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "cosmetic_condition_type"));
+            new SimpleApiRegistry<>(new ResourceLocation(MOD_ID, "cosmetic_condition_type"));
     private final SimpleApiRegistry<ProfileField<?>> profileFields =
-            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "profile_field"));
+            new SimpleApiRegistry<>(new ResourceLocation(MOD_ID, "profile_field"));
 
     @Override
     public String apiVersion() {

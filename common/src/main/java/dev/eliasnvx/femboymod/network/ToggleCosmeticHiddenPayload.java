@@ -13,7 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 public record ToggleCosmeticHiddenPayload(ResourceLocation slot) implements CustomPacketPayload {
 
     public static final Type<ToggleCosmeticHiddenPayload> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "toggle_cosmetic_hidden"));
+            new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "toggle_cosmetic_hidden"));
 
     public static final StreamCodec<ByteBuf, ToggleCosmeticHiddenPayload> STREAM_CODEC =
             ResourceLocation.STREAM_CODEC.map(ToggleCosmeticHiddenPayload::new, ToggleCosmeticHiddenPayload::slot);

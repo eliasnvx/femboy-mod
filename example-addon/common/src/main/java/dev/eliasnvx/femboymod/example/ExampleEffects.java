@@ -17,8 +17,8 @@ import net.minecraft.world.entity.player.Player;
  */
 public final class ExampleEffects {
 
-    public static final ResourceLocation XP_TRICKLE = ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "xp_trickle");
-    public static final ResourceLocation DAYTIME = ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "daytime");
+    public static final ResourceLocation XP_TRICKLE = new ResourceLocation(ExampleAddon.MOD_ID, "xp_trickle");
+    public static final ResourceLocation DAYTIME = new ResourceLocation(ExampleAddon.MOD_ID, "daytime");
 
     private ExampleEffects() {
     }

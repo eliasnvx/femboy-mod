@@ -19,7 +19,7 @@ import net.minecraft.world.entity.animal.Cat;
  */
 public final class StrayCatRenderer extends CatRenderer {
 
-    private static final ResourceLocation WHITE = ResourceLocation.withDefaultNamespace("textures/entity/cat/white.png");
+    private static final ResourceLocation WHITE = new ResourceLocation("textures/entity/cat/white.png");
     /** Pink, lavender, mint, peach, sky. */
     private static final int[] COATS = {
             FastColor.ARGB32.opaque(0xFFD1E6), FastColor.ARGB32.opaque(0xE3D1FF), FastColor.ARGB32.opaque(0xCFF5E2),

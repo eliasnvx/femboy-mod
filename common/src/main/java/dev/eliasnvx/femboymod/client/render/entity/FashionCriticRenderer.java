@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 /** Humanoid on the player model: beret on the hat layer, sunglasses, turtleneck (texture in skin layout). */
 public final class FashionCriticRenderer extends HumanoidMobRenderer<FashionCritic, HumanoidModel<FashionCritic>> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/fashion_critic.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/fashion_critic.png");
     private static final float SHADOW = 0.5F;
 
     public FashionCriticRenderer(EntityRendererProvider.Context context) {

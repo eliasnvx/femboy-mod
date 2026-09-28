@@ -18,8 +18,8 @@ import net.minecraft.util.FastColor;
 /** Wandering Cosplayer: player model in a pastel costume (texture in skin layout) with the mod's cat ears on top. */
 public final class CosplayerRenderer extends HumanoidMobRenderer<Cosplayer, HumanoidModel<Cosplayer>> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosplayer.png");
-    private static final ResourceLocation FUR = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fur.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/cosplayer.png");
+    private static final ResourceLocation FUR = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/cosmetic/fur.png");
     private static final int EAR_COLOR = FastColor.ARGB32.opaque(0xFFB6DA);
     private static final float SHADOW = 0.5F;
 

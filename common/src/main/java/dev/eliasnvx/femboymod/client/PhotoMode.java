@@ -33,7 +33,7 @@ public final class PhotoMode {
     private static final float BOTTOM_MARGIN = 0.26F;
     /** Watermark height as a share of the bottom margin. */
     private static final float WATERMARK_HEIGHT = 0.3F;
-    private static final ResourceLocation WATERMARK = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/gui/photo_watermark.png");
+    private static final ResourceLocation WATERMARK = new ResourceLocation(FemboyMod.MOD_ID, "textures/gui/photo_watermark.png");
 
     private static int countdown = -1;
     private static CameraType previousCamera;

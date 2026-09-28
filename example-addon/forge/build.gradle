@@ -1,0 +1,48 @@
+loom {
+    mods {
+        femboymod {
+            sourceSet project(":forge").sourceSets.main
+        }
+    }
+    runs {
+        gameTestServer {
+            server()
+            forgeTemplate("gameTestServer")
+            // Make sure the server runs in test mode with our namespaces
+            property "forge.gameTestServer", "true"
+            property "forge.enabledGameTestNamespaces", "femboymod_example"
+            name "Example Addon GameTest Server"
+            runDir "build/run/gameTest"
+        }
+    }
+}
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+configurations {
+    common
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    modImplementation "dev.architectury:architectury-forge:${rootProject.architectury_api_version}"
+    modImplementation "software.bernie.geckolib:geckolib-forge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+
+    // femboymod itself, so `runClient` here starts the mod + the addon
+    implementation(project(path: ":forge", configuration: "namedElements")) { transitive false }
+    // femboymod's common code is injected by the Architectury transformer only if listed here
+    common(project(path: ":api", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(path: ":example-addon-common", configuration: "namedElements")) { transitive false }
+}
+
+tasks.withType(PublishToMavenRepository).configureEach { enabled = false }
+
+// Addon GameTests run with `build` (CI): API regression check (SPEC §8.5, §13)
+tasks.named("check") { dependsOn "runGameTestServer" }

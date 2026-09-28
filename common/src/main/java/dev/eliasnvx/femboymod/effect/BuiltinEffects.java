@@ -79,7 +79,7 @@ public final class BuiltinEffects {
     }
 
     private static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+        return new ResourceLocation(FemboyMod.MOD_ID, path);
     }
 
     /** Transient attribute modifier; amount is multiplied by the source scale. Id = source id. */

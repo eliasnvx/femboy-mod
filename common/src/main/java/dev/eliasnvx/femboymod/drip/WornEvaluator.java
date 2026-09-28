@@ -162,7 +162,7 @@ public final class WornEvaluator {
     private static void addEffects(List<PlannedEffect> out, List<ConfiguredEffect> effects, String prefix, double scale) {
         for (int i = 0; i < effects.size(); i++) {
             out.add(new PlannedEffect(effects.get(i),
-                    new EffectSource(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, prefix + "/" + i), scale)));
+                    new EffectSource(new ResourceLocation(FemboyMod.MOD_ID, prefix + "/" + i), scale)));
         }
     }
 

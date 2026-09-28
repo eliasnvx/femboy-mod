@@ -69,10 +69,10 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
 
     public GeoCosmeticRenderer(ResourceLocation itemId) {
         this.model = modelId(itemId);
-        this.animation = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), ANIMATION_DIR + itemId.getPath() + ANIMATION_SUFFIX);
+        this.animation = new ResourceLocation(itemId.getNamespace(), ANIMATION_DIR + itemId.getPath() + ANIMATION_SUFFIX);
         String base = "textures/cosmetic/" + itemId.getPath();
-        this.texture = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), base + ".png");
-        this.dyeableTexture = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), base + "_dyeable.png");
+        this.texture = new ResourceLocation(itemId.getNamespace(), base + ".png");
+        this.dyeableTexture = new ResourceLocation(itemId.getNamespace(), base + "_dyeable.png");
         this.renderer = new Renderer(new Model());
         FemboyMod.LOGGER.info("Using GeckoLib model {} for cosmetic {}", model, itemId);
     }
@@ -81,7 +81,7 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
     private static final Map<ResourceLocation, ResourceLocation> MODEL_IDS = new HashMap<>();
 
     private static ResourceLocation modelId(ResourceLocation itemId) {
-        return ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), MODEL_DIR + itemId.getPath() + MODEL_SUFFIX);
+        return new ResourceLocation(itemId.getNamespace(), MODEL_DIR + itemId.getPath() + MODEL_SUFFIX);
     }
 
     /**

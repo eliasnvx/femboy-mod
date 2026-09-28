@@ -31,7 +31,7 @@ final class BackpackCharmsRenderer {
     private final ModelPart[][] flags = new ModelPart[CosmeticModels.CHARM_SLOTS][CosmeticModels.FLAG_STRIPES];
     private static final int BADGE_DEFAULT = 0xF291BE;
     private final RenderType type = RenderType.entityCutout(
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png"));
+            new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/cosmetic/fabric.png"));
 
     BackpackCharmsRenderer(ModelPart root) {
         for (int i = 0; i < CosmeticModels.CHARM_SLOTS; i++) {

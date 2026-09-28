@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundSource;
 /** "Nya" when jumping in the full set (SPEC §5.7). Off by default; only you hear it. */
 public final class NyaSound {
 
-    private static final ResourceLocation FULL_SET = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "full_femboy_mode");
+    private static final ResourceLocation FULL_SET = new ResourceLocation(FemboyMod.MOD_ID, "full_femboy_mode");
     private static final float VOLUME = 0.6F;
     private static boolean wasOnGround = true;
 

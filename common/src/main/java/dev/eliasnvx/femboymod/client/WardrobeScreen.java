@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Inventory;
 /** Wardrobe screen: storage + a side panel with 5 presets ("put on" / "save") and the Drip Level (SPEC §6.1). */
 public final class WardrobeScreen extends AbstractContainerScreen<WardrobeMenu> {
 
-    private static final ResourceLocation BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/container/generic_54.png");
     private static final int TEXTURE_SIZE = 256;
     private static final int WIDTH = 176;
     private static final int HEADER_HEIGHT = 17;

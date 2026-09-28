@@ -54,11 +54,11 @@ public final class ExampleAddonGameTests {
     public static void candyPatternLoaded(GameTestHelper helper) {
         ColorwayPattern candy = helper.getLevel().registryAccess().registryOrThrow(ColorwayPattern.REGISTRY_KEY)
                 .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
-                        ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "candy")));
+                        new ResourceLocation(ExampleAddon.MOD_ID, "candy")));
         helper.assertTrue(candy != null && candy.stripes().size() == 4, "candy pattern loaded from the addon's data pack");
         ColorwayPattern shimmer = helper.getLevel().registryAccess().registryOrThrow(ColorwayPattern.REGISTRY_KEY)
                 .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY,
-                        ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "candy_shimmer")));
+                        new ResourceLocation(ExampleAddon.MOD_ID, "candy_shimmer")));
         helper.assertTrue(shimmer != null && shimmer.shimmer().isPresent()
                 && shimmer.stripeColor(0, 40.0F, 0xFFFFFF, 0xFFFFFF) != shimmer.stripeColor(0, 0.0F, 0xFFFFFF, 0xFFFFFF),
                 "candy_shimmer flows over time");
@@ -84,7 +84,7 @@ public final class ExampleAddonGameTests {
             var profile = FemboyApi.get().getProfile(player);
             profile.update(ExampleAddon.FRIENDSHIP_POINTS, points -> points + 3);
             helper.assertValueEqual(profile.get(ExampleAddon.FRIENDSHIP_POINTS), 3, "addon field stored");
-            helper.assertTrue(FemboyApi.get().addStylePoints(player, 5, ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "test")),
+            helper.assertTrue(FemboyApi.get().addStylePoints(player, 5, new ResourceLocation(ExampleAddon.MOD_ID, "test")),
                     "addon gives Style Points");
             helper.assertValueEqual(profile.get(dev.eliasnvx.femboymod.api.profile.FemboyProfileFields.STYLE_POINTS), 5,
                     "no pin, no bonus");
@@ -102,16 +102,16 @@ public final class ExampleAddonGameTests {
 
     public static void friendshipSetBonusLoaded(GameTestHelper helper) {
         SetBonus bonus = helper.getLevel().registryAccess().registryOrThrow(SetBonus.REGISTRY_KEY)
-                .get(ResourceKey.create(SetBonus.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "friendship")));
+                .get(ResourceKey.create(SetBonus.REGISTRY_KEY, new ResourceLocation(ExampleAddon.MOD_ID, "friendship")));
         helper.assertTrue(bonus != null && bonus.pieces().size() == 2, "friendship set bonus loaded with two pieces");
-        helper.assertTrue(bonus.effects().getFirst().effect() instanceof ExampleEffects.XpTrickle, "set bonus uses the custom effect");
-        helper.assertTrue(bonus.effects().getFirst().when().orElseThrow() instanceof ExampleEffects.Daytime, "set bonus uses the custom condition");
+        helper.assertTrue(bonus.effects().get(0).effect() instanceof ExampleEffects.XpTrickle, "set bonus uses the custom effect");
+        helper.assertTrue(bonus.effects().get(0).when().orElseThrow() instanceof ExampleEffects.Daytime, "set bonus uses the custom condition");
         helper.succeed();
     }
 
     public static void dripDamageRuleLoaded(GameTestHelper helper) {
         DripDamage rule = helper.getLevel().registryAccess().registryOrThrow(DripDamage.REGISTRY_KEY)
-                .get(ResourceKey.create(DripDamage.REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(ExampleAddon.MOD_ID, "phantoms")));
+                .get(ResourceKey.create(DripDamage.REGISTRY_KEY, new ResourceLocation(ExampleAddon.MOD_ID, "phantoms")));
         helper.assertTrue(rule != null && rule.attackers().contains(EntityType.PHANTOM.builtInRegistryHolder()), "phantom rule loaded");
         helper.assertValueEqual(rule.multiplierFor(99), 0.75F, "tiers past the list use the last multiplier");
         helper.succeed();
@@ -119,7 +119,7 @@ public final class ExampleAddonGameTests {
 
     public static void pinIsCharm(GameTestHelper helper) {
         Item pin = ExampleAddon.friendshipPin.get();
-        helper.assertTrue(new ItemStack(pin).is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "charms"))),
+        helper.assertTrue(new ItemStack(pin).is(TagKey.create(Registries.ITEM, new ResourceLocation(FemboyApi.MOD_ID, "charms"))),
                 "pin is in #femboymod:charms");
         helper.assertTrue(helper.getLevel().registryAccess().registryOrThrow(CharmStats.REGISTRY_KEY)
                 .get(CharmStats.keyOf(pin)) != null, "pin has charm stats");

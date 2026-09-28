@@ -140,7 +140,7 @@ public final class WorldGameTests {
         var advancements = helper.getLevel().getServer().getAdvancements();
         for (String name : List.of("root", "programming_socks", "drip_max", "caffeine_overflow", "thrifted", "confetti_survivor", "full_femboy_mode",
                 "battlestation", "just_need_a_break", "cant_decide", "ready_to_deploy", "rubber_duck_debugging", "btw", "immaculate_vibes")) {
-            helper.assertTrue(advancements.get(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "main/" + name)) != null, "advancement " + name);
+            helper.assertTrue(advancements.get(new ResourceLocation(FemboyMod.MOD_ID, "main/" + name)) != null, "advancement " + name);
         }
         helper.succeed();
     }

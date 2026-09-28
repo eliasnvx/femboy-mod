@@ -28,22 +28,22 @@ import java.util.List;
 public final class PlatformHelperImpl {
 
     private static final AttachmentType<CosmeticInventory> COSMETICS = AttachmentRegistry.create(
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetics"),
+            new ResourceLocation(FemboyMod.MOD_ID, "cosmetics"),
             builder -> builder
                     .initializer(() -> CosmeticInventory.EMPTY)
                     .persistent(CosmeticInventory.CODEC)
                     .copyOnDeath());
 
     private static final AttachmentType<CaffeineLog> CAFFEINE = AttachmentRegistry.create(
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "caffeine"),
+            new ResourceLocation(FemboyMod.MOD_ID, "caffeine"),
             builder -> builder.initializer(() -> CaffeineLog.EMPTY).persistent(CaffeineLog.CODEC));
 
     private static final AttachmentType<WardrobePresets> PRESETS = AttachmentRegistry.create(
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "wardrobe_presets"),
+            new ResourceLocation(FemboyMod.MOD_ID, "wardrobe_presets"),
             builder -> builder.initializer(() -> WardrobePresets.EMPTY).persistent(WardrobePresets.CODEC).copyOnDeath());
 
     private static final AttachmentType<ProfileData> PROFILE = AttachmentRegistry.create(
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "profile"),
+            new ResourceLocation(FemboyMod.MOD_ID, "profile"),
             builder -> builder.initializer(() -> ProfileData.EMPTY).persistent(ProfileData.CODEC).copyOnDeath());
 
     private PlatformHelperImpl() {

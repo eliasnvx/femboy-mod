@@ -54,7 +54,7 @@ public final class ExampleAddon implements FemboyAddon {
 
     /** femboymod's creative tab, referenced by key so the addon does not touch femboymod internals. */
     private static final ResourceKey<CreativeModeTab> FEMBOYMOD_TAB = ResourceKey.create(Registries.CREATIVE_MODE_TAB,
-            ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "main"));
+            new ResourceLocation(FemboyApi.MOD_ID, "main"));
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(MOD_ID, Registries.ITEM);
 
@@ -121,6 +121,6 @@ public final class ExampleAddon implements FemboyAddon {
     }
 
     private static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+        return new ResourceLocation(MOD_ID, path);
     }
 }

@@ -13,7 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 public record OpenBackpackPayload() implements CustomPacketPayload {
 
     public static final OpenBackpackPayload INSTANCE = new OpenBackpackPayload();
-    public static final Type<OpenBackpackPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "open_backpack"));
+    public static final Type<OpenBackpackPayload> TYPE = new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "open_backpack"));
     public static final StreamCodec<ByteBuf, OpenBackpackPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
     @Override

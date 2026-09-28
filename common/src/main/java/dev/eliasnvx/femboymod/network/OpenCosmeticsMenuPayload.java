@@ -17,7 +17,7 @@ public record OpenCosmeticsMenuPayload() implements CustomPacketPayload {
     public static final OpenCosmeticsMenuPayload INSTANCE = new OpenCosmeticsMenuPayload();
 
     public static final Type<OpenCosmeticsMenuPayload> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "open_cosmetics"));
+            new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "open_cosmetics"));
 
     public static final StreamCodec<ByteBuf, OpenCosmeticsMenuPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 

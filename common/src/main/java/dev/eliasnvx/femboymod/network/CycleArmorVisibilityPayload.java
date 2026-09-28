@@ -17,7 +17,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 public record CycleArmorVisibilityPayload(EquipmentSlot armorSlot) implements CustomPacketPayload {
 
     public static final Type<CycleArmorVisibilityPayload> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cycle_armor_visibility"));
+            new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "cycle_armor_visibility"));
 
     /** 1.21.1 has no EquipmentSlot stream codec; an unknown id decodes to MAINHAND, which the handler rejects. */
     public static final StreamCodec<ByteBuf, CycleArmorVisibilityPayload> STREAM_CODEC =

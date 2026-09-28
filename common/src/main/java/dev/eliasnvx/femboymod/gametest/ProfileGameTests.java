@@ -40,8 +40,8 @@ public final class ProfileGameTests {
             new CosmeticGameTests.Entry("game_rules_gate_features", ProfileGameTests::gameRulesGateFeatures),
             new CosmeticGameTests.Entry("armor_hides_under_outfit", ProfileGameTests::armorHidesUnderOutfit));
 
-    private static final ResourceLocation TEST_REASON = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "gametest");
-    private static final ResourceLocation BLOCKED_REASON = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "gametest_blocked");
+    private static final ResourceLocation TEST_REASON = new ResourceLocation(FemboyMod.MOD_ID, "gametest");
+    private static final ResourceLocation BLOCKED_REASON = new ResourceLocation(FemboyMod.MOD_ID, "gametest_blocked");
     private static final List<ResourceLocation> UNLOCKS = new ArrayList<>();
     private static boolean listenersAdded;
 
@@ -69,8 +69,8 @@ public final class ProfileGameTests {
             PlayerProfile profile = FemboyMod.api().getProfile(player);
             profile.set(FemboyProfileFields.BEST_DRIP_LEVEL, 42);
             ProfileData stored = PlatformHelper.getProfile(player).with("otheraddon:clan", StringTag.valueOf("pink"));
-            var encoded = ProfileData.CODEC.encodeStart(NbtOps.INSTANCE, stored).getOrThrow();
-            ProfileData decoded = ProfileData.CODEC.parse(NbtOps.INSTANCE, encoded).getOrThrow();
+            var encoded = ProfileData.CODEC.encodeStart(NbtOps.INSTANCE, stored).getOrThrow(false, error -> { });
+            ProfileData decoded = ProfileData.CODEC.parse(NbtOps.INSTANCE, encoded).getOrThrow(false, error -> { });
             PlatformHelper.setProfile(player, decoded);
             helper.assertValueEqual(profile.get(FemboyProfileFields.BEST_DRIP_LEVEL), 42, "value survives saving");
             helper.assertTrue(decoded.values().contains("otheraddon:clan"), "fields of removed addons are kept");
@@ -104,7 +104,7 @@ public final class ProfileGameTests {
         addListeners();
         WearableGameTests.withPlayer(helper, player -> {
             PlayerProfile profile = FemboyMod.api().getProfile(player);
-            ResourceLocation ears = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "bear_ears");
+            ResourceLocation ears = new ResourceLocation(FemboyMod.MOD_ID, "bear_ears");
             int unlocksBefore = countUnlocks(ears);
             CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.BEAR_EARS.get()));
             int points = profile.get(FemboyProfileFields.STYLE_POINTS);

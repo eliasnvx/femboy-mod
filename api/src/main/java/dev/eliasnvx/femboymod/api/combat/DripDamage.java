@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.api.combat;
 
+import dev.eliasnvx.femboymod.api.util.ListCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.eliasnvx.femboymod.api.FemboyApi;
@@ -31,12 +32,12 @@ public record DripDamage(HolderSet<EntityType<?>> attackers, List<Float> multipl
 
     /** Registry key of the {@code femboymod:drip_damage} data pack registry. */
     public static final ResourceKey<Registry<DripDamage>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "drip_damage"));
+            ResourceKey.createRegistryKey(new ResourceLocation(FemboyApi.MOD_ID, "drip_damage"));
 
     /** JSON codec. */
     public static final Codec<DripDamage> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("attackers").forGetter(DripDamage::attackers),
-            Codec.floatRange(0.0F, 10.0F).listOf(1, 32).fieldOf("multiplier_by_tier").forGetter(DripDamage::multiplierByTier)
+            ListCodecs.sized(Codec.floatRange(0.0F, 10.0F), 1, 32).fieldOf("multiplier_by_tier").forGetter(DripDamage::multiplierByTier)
     ).apply(instance, DripDamage::new));
 
     /** Defensive copy. */

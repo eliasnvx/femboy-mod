@@ -15,8 +15,8 @@ import net.minecraft.world.level.Level;
  */
 public class Cosplayer extends WanderingTrader {
 
-    private static final ResourceLocation EXCLUSIVE = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosplayer/exclusive");
-    private static final ResourceLocation COMMON = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosplayer/common");
+    private static final ResourceLocation EXCLUSIVE = new ResourceLocation(FemboyMod.MOD_ID, "cosplayer/exclusive");
+    private static final ResourceLocation COMMON = new ResourceLocation(FemboyMod.MOD_ID, "cosplayer/common");
 
     public Cosplayer(EntityType<? extends WanderingTrader> type, Level level) {
         super(type, level);

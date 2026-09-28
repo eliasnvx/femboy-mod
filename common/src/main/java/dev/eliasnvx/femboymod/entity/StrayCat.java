@@ -38,7 +38,7 @@ public class StrayCat extends Cat {
 
     public static final int COATS = 5;
     public static final ResourceKey<LootTable> GIFT = ResourceKey.create(Registries.LOOT_TABLE,
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "gameplay/stray_cat_gift"));
+            new ResourceLocation(FemboyMod.MOD_ID, "gameplay/stray_cat_gift"));
     /** Morning = the first in-game hour of a day. */
     private static final long MORNING_END = 1000;
     private static final String COAT_TAG = "femboymod_coat";

@@ -26,7 +26,7 @@ public final class FemboySounds {
     }
 
     private static RegistrySupplier<SoundEvent> event(String name) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name);
+        ResourceLocation id = new ResourceLocation(FemboyMod.MOD_ID, name);
         return REGISTER.register(id, () -> SoundEvent.createVariableRangeEvent(id));
     }
 }

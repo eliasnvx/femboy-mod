@@ -24,7 +24,7 @@ public final class StylePoints {
     }
 
     private static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+        return new ResourceLocation(FemboyMod.MOD_ID, path);
     }
 
     /** See {@link dev.eliasnvx.femboymod.api.FemboyApi#addStylePoints}. */

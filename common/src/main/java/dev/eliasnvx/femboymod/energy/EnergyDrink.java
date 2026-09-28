@@ -21,7 +21,7 @@ import java.util.List;
 public record EnergyDrink(List<Buff> effects) {
 
     public static final ResourceKey<Registry<EnergyDrink>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "energy_drink"));
+            ResourceKey.createRegistryKey(new ResourceLocation(FemboyMod.MOD_ID, "energy_drink"));
 
     public static final Codec<EnergyDrink> CODEC = RecordCodecBuilder.create(i -> i.group(
             Buff.CODEC.listOf().fieldOf("effects").forGetter(EnergyDrink::effects)

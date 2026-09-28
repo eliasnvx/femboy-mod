@@ -31,7 +31,7 @@ public final class SetupRating {
             kind("screen"), kind("input"), kind("lighting"), kind("comfort"), kind("debugging"));
     public static final String POSTER_KIND = "poster";
     public static final TagKey<PaintingVariant> POSTERS =
-            TagKey.create(Registries.PAINTING_VARIANT, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "posters"));
+            TagKey.create(Registries.PAINTING_VARIANT, new ResourceLocation(FemboyMod.MOD_ID, "posters"));
     /** Block kinds plus posters. */
     public static final int MAX = BLOCK_KINDS.size() + 1;
 
@@ -42,7 +42,7 @@ public final class SetupRating {
     }
 
     private static Kind kind(String name) {
-        return new Kind(name, TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "setup/" + name)));
+        return new Kind(name, TagKey.create(Registries.BLOCK, new ResourceLocation(FemboyMod.MOD_ID, "setup/" + name)));
     }
 
     /** Number of distinct setup kinds within {@code radius} blocks of {@code center} (0..{@link #MAX}). */

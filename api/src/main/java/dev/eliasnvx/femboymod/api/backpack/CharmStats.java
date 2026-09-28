@@ -24,7 +24,7 @@ public record CharmStats(List<ConfiguredEffect> effects) {
 
     /** Registry key of the {@code femboymod:charm} data pack registry. */
     public static final ResourceKey<Registry<CharmStats>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FemboyApi.MOD_ID, "charm"));
+            ResourceKey.createRegistryKey(new ResourceLocation(FemboyApi.MOD_ID, "charm"));
 
     /** JSON codec. */
     public static final Codec<CharmStats> CODEC = RecordCodecBuilder.create(i -> i.group(

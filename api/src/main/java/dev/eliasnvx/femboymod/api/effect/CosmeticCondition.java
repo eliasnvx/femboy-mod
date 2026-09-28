@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.api.effect;
 
+import net.minecraft.util.ExtraCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.api.FemboyApi;
@@ -15,8 +16,8 @@ import net.minecraft.world.entity.player.Player;
 public interface CosmeticCondition {
 
     /** Dispatch codec over {@link FemboyApi#cosmeticConditionTypes()}. */
-    Codec<CosmeticCondition> CODEC = Codec.lazyInitialized(() -> FemboyApi.get().cosmeticConditionTypes().byIdCodec()
-            .dispatch("type", CosmeticCondition::codec, codec -> codec));
+    Codec<CosmeticCondition> CODEC = ExtraCodecs.lazyInitializedCodec(() -> FemboyApi.get().cosmeticConditionTypes().byIdCodec()
+            .dispatch("type", CosmeticCondition::codec, codec -> codec.codec()));
 
     /**
      * @return the codec of this condition's type, as registered

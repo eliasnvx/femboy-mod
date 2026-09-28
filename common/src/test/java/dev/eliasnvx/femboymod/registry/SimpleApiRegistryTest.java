@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimpleApiRegistryTest {
 
-    private static final ResourceLocation A = ResourceLocation.fromNamespaceAndPath("test", "a");
+    private static final ResourceLocation A = new ResourceLocation("test", "a");
 
-    private final SimpleApiRegistry<String> registry = new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath("test", "reg"));
+    private final SimpleApiRegistry<String> registry = new SimpleApiRegistry<>(new ResourceLocation("test", "reg"));
 
     @Test
     void registerAndLookup() {
@@ -28,15 +28,15 @@ class SimpleApiRegistryTest {
         assertThrows(IllegalArgumentException.class, () -> registry.register(A, "other"));
         registry.freeze();
         assertThrows(IllegalStateException.class,
-                () -> registry.register(ResourceLocation.fromNamespaceAndPath("test", "b"), "late"));
+                () -> registry.register(new ResourceLocation("test", "b"), "late"));
     }
 
     @Test
     void codecRoundTripAndUnknownId() {
         String entry = registry.register(A, "value");
-        var encoded = registry.byIdCodec().encodeStart(JsonOps.INSTANCE, entry).getOrThrow();
+        var encoded = registry.byIdCodec().encodeStart(JsonOps.INSTANCE, entry).getOrThrow(false, error -> { });
         assertEquals(new JsonPrimitive("test:a"), encoded);
-        assertEquals(entry, registry.byIdCodec().parse(JsonOps.INSTANCE, encoded).getOrThrow());
-        assertTrue(registry.byIdCodec().parse(JsonOps.INSTANCE, new JsonPrimitive("test:missing")).isError());
+        assertEquals(entry, registry.byIdCodec().parse(JsonOps.INSTANCE, encoded).getOrThrow(false, error -> { }));
+        assertTrue(registry.byIdCodec().parse(JsonOps.INSTANCE, new JsonPrimitive("test:missing")).error().isPresent());
     }
 }

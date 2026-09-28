@@ -28,7 +28,7 @@ public final class FemboyEntities {
     public static final DeferredRegister<EntityType<?>> REGISTER = DeferredRegister.create(FemboyMod.MOD_ID, Registries.ENTITY_TYPE);
 
     public static final ResourceKey<EntityType<?>> PINK_CREEPER_KEY =
-            ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "pink_creeper"));
+            ResourceKey.create(Registries.ENTITY_TYPE, new ResourceLocation(FemboyMod.MOD_ID, "pink_creeper"));
     public static final RegistrySupplier<EntityType<PinkCreeper>> PINK_CREEPER = REGISTER.register(PINK_CREEPER_KEY.location(),
             () -> EntityType.Builder.of(PinkCreeper::new, MobCategory.MONSTER)
                     .sized(0.6F, 1.7F).clientTrackingRange(8).build(PINK_CREEPER_KEY.location().toString()));
@@ -79,17 +79,17 @@ public final class FemboyEntities {
 
     /** Flowery biomes (flower forest, cherry grove, meadow, sunflower plains, dappled forest); data-driven. */
     public static final TagKey<Biome> PINK_CREEPER_SPAWNS =
-            TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "pink_creeper_spawns"));
+            TagKey.create(Registries.BIOME, new ResourceLocation(FemboyMod.MOD_ID, "pink_creeper_spawns"));
 
     private FemboyEntities() {
     }
 
     private static ResourceKey<EntityType<?>> key(String name) {
-        return ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
+        return ResourceKey.create(Registries.ENTITY_TYPE, new ResourceLocation(FemboyMod.MOD_ID, name));
     }
 
     private static TagKey<Biome> biomeTag(String name) {
-        return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name));
+        return TagKey.create(Registries.BIOME, new ResourceLocation(FemboyMod.MOD_ID, name));
     }
 
     /** Natural spawning of a hostile mob in a biome tag, if its config weight is above 0. */

@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 public record CreativeCosmeticSetPayload(ResourceLocation slot, ItemStack stack) implements CustomPacketPayload {
 
     public static final Type<CreativeCosmeticSetPayload> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "creative_cosmetic_set"));
+            new Type<>(new ResourceLocation(FemboyMod.MOD_ID, "creative_cosmetic_set"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CreativeCosmeticSetPayload> STREAM_CODEC = StreamCodec.composite(
             ResourceLocation.STREAM_CODEC, CreativeCosmeticSetPayload::slot,

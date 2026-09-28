@@ -25,7 +25,7 @@ import java.util.Random;
 /** The UwU choker's chat transformer ({@code femboymod:uwu}): active while the choker is worn. */
 public final class UwuChat implements ChatTransformer {
 
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu");
+    public static final ResourceLocation ID = new ResourceLocation(FemboyMod.MOD_ID, "uwu");
     private static volatile Map<String, UwuRules> rules = Map.of();
 
     @Override

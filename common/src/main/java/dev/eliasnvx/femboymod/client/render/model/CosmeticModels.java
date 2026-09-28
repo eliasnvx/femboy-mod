@@ -140,7 +140,7 @@ public final class CosmeticModels {
     }
 
     private static ModelLayerLocation layer(String name) {
-        return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, name), "main");
+        return new ModelLayerLocation(new ResourceLocation(FemboyMod.MOD_ID, name), "main");
     }
 
     public static void registerLayers() {

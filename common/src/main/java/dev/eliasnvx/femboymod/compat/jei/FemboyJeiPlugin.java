@@ -25,9 +25,9 @@ import java.util.function.Predicate;
 @JeiPlugin
 public final class FemboyJeiPlugin implements IModPlugin {
 
-    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "jei_plugin");
+    private static final ResourceLocation UID = new ResourceLocation(FemboyMod.MOD_ID, "jei_plugin");
     private static final TagKey<Item> DYEABLE = TagKey.create(Registries.ITEM,
-            ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "dyeable_cosmetics"));
+            new ResourceLocation(FemboyMod.MOD_ID, "dyeable_cosmetics"));
 
     @Override
     public ResourceLocation getPluginUid() {

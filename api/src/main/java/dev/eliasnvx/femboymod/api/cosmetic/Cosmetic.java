@@ -2,9 +2,7 @@ package dev.eliasnvx.femboymod.api.cosmetic;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
@@ -28,11 +26,25 @@ public record Cosmetic(ResourceLocation slot, Optional<ResourceLocation> rendere
             ResourceLocation.CODEC.optionalFieldOf("renderer").forGetter(Cosmetic::renderer)
     ).apply(instance, Cosmetic::new));
 
-    /** Network codec. */
-    public static final StreamCodec<ByteBuf, Cosmetic> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC, Cosmetic::slot,
-            ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), Cosmetic::renderer,
-            Cosmetic::new);
+    /**
+     * Writes this cosmetic to a packet.
+     *
+     * @param buf the packet buffer
+     */
+    public void write(FriendlyByteBuf buf) {
+        buf.writeResourceLocation(slot);
+        buf.writeOptional(renderer, FriendlyByteBuf::writeResourceLocation);
+    }
+
+    /**
+     * Reads a cosmetic written by {@link #write}.
+     *
+     * @param buf the packet buffer
+     * @return the cosmetic
+     */
+    public static Cosmetic read(FriendlyByteBuf buf) {
+        return new Cosmetic(buf.readResourceLocation(), buf.readOptional(FriendlyByteBuf::readResourceLocation));
+    }
 
     /**
      * Creates a cosmetic with the default renderer.

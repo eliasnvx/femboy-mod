@@ -15,7 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
  * addon was removed) are kept untouched, so re-adding the addon restores them.
  *
  * <p>Example: a clan addon could register
- * {@code ProfileField.of(ResourceLocation.fromNamespaceAndPath("myclans", "clan"), Codec.STRING, "", true)}.
+ * {@code ProfileField.of(new ResourceLocation("myclans", "clan"), Codec.STRING, "", true)}.
  *
  * @param id           unique id, also the storage key
  * @param codec        how the value is saved

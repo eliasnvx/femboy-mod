@@ -44,7 +44,7 @@ public final class ProfileHooks {
     }
 
     private static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, path);
+        return new ResourceLocation(FemboyMod.MOD_ID, path);
     }
 
     public static void registerFields(ApiRegistry<ProfileField<?>> registry) {
