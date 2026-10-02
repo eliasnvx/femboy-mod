@@ -34,7 +34,9 @@ public final class MobGameTests {
             new CosmeticGameTests.Entry("socks_hit_bugs_harder", MobGameTests::socksHitBugsHarder),
             new CosmeticGameTests.Entry("meme_mobs_use_config_and_drip", MobGameTests::memeMobsUseConfigAndDrip),
             new CosmeticGameTests.Entry("fashion_critic_judges_drip", MobGameTests::fashionCriticJudgesDrip),
-            new CosmeticGameTests.Entry("only_a_few_cute_animals_follow", MobGameTests::onlyAFewCuteAnimalsFollow));
+            new CosmeticGameTests.Entry("only_a_few_cute_animals_follow", MobGameTests::onlyAFewCuteAnimalsFollow),
+            new CosmeticGameTests.Entry("cosmetic_night_vision_never_flickers", MobGameTests::cosmeticNightVisionNeverFlickers),
+            new CosmeticGameTests.Entry("fashion_critic_leaves_when_idle", MobGameTests::fashionCriticLeavesWhenIdle));
 
     private static final BlockPos MOB_POS = new BlockPos(1, 2, 1);
     private static final float HIT = 4.0F;
@@ -79,6 +81,36 @@ public final class MobGameTests {
             float hit = DripCombat.modifyIncoming(player, helper.getLevel(), player.damageSources().mobAttack(zombie), HIT);
             helper.assertTrue(Math.abs(hit - HIT * 0.75F) < EPSILON, "tier 3 takes 75% from meme monsters, got " + hit);
         });
+    }
+
+    /**
+     * Vanilla night vision flickers in its last 200 ticks; the cosmetic version must never get there, and it is
+     * removed as soon as the cosmetic stops applying it (player report: the moonstone pendant made vision blink).
+     */
+    public static void cosmeticNightVisionNeverFlickers(GameTestHelper helper) {
+        WearableGameTests.withPlayer(helper, player -> {
+            var effect = new dev.eliasnvx.femboymod.effect.BuiltinEffects.MobEffectEffect(MobEffects.NIGHT_VISION, 0, 60, true);
+            effect.tick(player, null);
+            helper.assertTrue(player.getEffect(MobEffects.NIGHT_VISION).getDuration() > 200, "applied above the flicker threshold");
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(MobEffects.NIGHT_VISION, 230, 0, true, false, true));
+            effect.tick(player, null);
+            helper.assertTrue(player.getEffect(MobEffects.NIGHT_VISION).getDuration() > 230, "refreshed before it could flicker");
+            effect.onDeactivate(player, null);
+            helper.assertFalse(player.hasEffect(MobEffects.NIGHT_VISION), "removed when the cosmetic stops");
+        });
+    }
+
+    /** Player report: critics piled up around a base with their boss bars. Idle critics may despawn, fighting ones stay. */
+    public static void fashionCriticLeavesWhenIdle(GameTestHelper helper) {
+        FashionCritic critic = helper.spawnWithNoFreeWill(FemboyEntities.FASHION_CRITIC.get(), MOB_POS);
+        helper.assertTrue(critic.removeWhenFarAway(64.0 * 64.0), "an idle critic despawns like other monsters");
+        // Monsters never target creative mock players, so give it another living target
+        var opponent = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, MOB_POS.east());
+        critic.setTarget(opponent);
+        helper.assertFalse(critic.removeWhenFarAway(64.0 * 64.0), "a critic in a fight stays");
+        opponent.discard();
+        critic.discard();
+        helper.succeed();
     }
 
     /** Low Drip: the critic hits x1.6 and its review slows you; tier 3: it hits softer and is weakened itself. */
