@@ -51,6 +51,9 @@ public class FashionCritic extends Monster {
     private static final float LOOK_DISTANCE = 12.0F;
     private static final double KNOCKBACK_RESISTANCE = 0.6;
     private static final double FOLLOW_RANGE = 32.0;
+    /** The boss bar only shows to players this close (not the whole tracking range of ~160 blocks). */
+    private static final double BOSS_BAR_RANGE = FOLLOW_RANGE;
+    private static final int BOSS_BAR_UPDATE_TICKS = 20;
     private static final int XP_REWARD = 30;
     private static final float VOICE_PITCH = 0.85F;
     private static final float REVIEW_PITCH = 0.8F;
@@ -94,6 +97,9 @@ public class FashionCritic extends Monster {
     protected void customServerAiStep(ServerLevel level) {
         super.customServerAiStep(level);
         bossBar.setProgress(getHealth() / getMaxHealth());
+        if (tickCount % BOSS_BAR_UPDATE_TICKS == 0) {
+            updateBossBarViewers(level);
+        }
         if (reviewCooldown > 0) {
             reviewCooldown--;
             return;
@@ -142,12 +148,6 @@ public class FashionCritic extends Monster {
     }
 
     @Override
-    public void startSeenByPlayer(ServerPlayer player) {
-        super.startSeenByPlayer(player);
-        bossBar.addPlayer(player);
-    }
-
-    @Override
     public void stopSeenByPlayer(ServerPlayer player) {
         super.stopSeenByPlayer(player);
         bossBar.removePlayer(player);
@@ -181,6 +181,19 @@ public class FashionCritic extends Monster {
 
     @Override
     public boolean removeWhenFarAway(double distance) {
-        return false; // a boss does not despawn mid-fight
+        // Stays while it fights; otherwise despawns like any monster instead of piling up around bases
+        return getTarget() == null;
+    }
+
+    /** Shows the boss bar to nearby players only, and hides it from players who walked away. */
+    private void updateBossBarViewers(ServerLevel level) {
+        double rangeSqr = BOSS_BAR_RANGE * BOSS_BAR_RANGE;
+        for (ServerPlayer player : level.players()) {
+            if (isAlive() && distanceToSqr(player) <= rangeSqr) {
+                bossBar.addPlayer(player);
+            } else {
+                bossBar.removePlayer(player);
+            }
+        }
     }
 }

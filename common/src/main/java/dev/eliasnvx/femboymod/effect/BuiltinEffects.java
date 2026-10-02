@@ -22,6 +22,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -130,11 +131,28 @@ public final class BuiltinEffects {
             return CODEC;
         }
 
+        /** Vanilla night vision flickers while fewer ticks than this are left (photosensitivity: never let it). */
+        private static final int NIGHT_VISION_FLICKER_TICKS = 200;
+        /** Refresh night vision this many ticks before it would start to flicker. */
+        private static final int NIGHT_VISION_MARGIN_TICKS = 40;
+
         @Override
         public void tick(ServerPlayer player, EffectSource source) {
+            boolean nightVision = effect.is(MobEffects.NIGHT_VISION);
+            int length = nightVision ? Math.max(duration, NIGHT_VISION_FLICKER_TICKS + 2 * NIGHT_VISION_MARGIN_TICKS) : duration;
+            int refreshBelow = nightVision ? NIGHT_VISION_FLICKER_TICKS + NIGHT_VISION_MARGIN_TICKS : duration / 2;
             MobEffectInstance current = player.getEffect(effect);
-            if (current == null || current.getAmplifier() < amplifier || current.getDuration() < duration / 2) {
-                player.addEffect(new MobEffectInstance(effect, duration, amplifier, true, false, showIcon));
+            if (current == null || current.getAmplifier() < amplifier || current.getDuration() < refreshBelow) {
+                player.addEffect(new MobEffectInstance(effect, length, amplifier, true, false, showIcon));
+            }
+        }
+
+        @Override
+        public void onDeactivate(ServerPlayer player, EffectSource source) {
+            // Ours is ambient: remove it right away instead of letting the long night vision run out
+            MobEffectInstance current = player.getEffect(effect);
+            if (current != null && current.isAmbient() && current.getAmplifier() == amplifier) {
+                player.removeEffect(effect);
             }
         }
     }
