@@ -109,6 +109,16 @@ public final class FemboyGameTestsFabric implements FabricGameTest {
     }
 
     @GameTest(template = EMPTY_STRUCTURE)
+    public void cosmeticNightVisionNeverFlickers(GameTestHelper helper) {
+        MobGameTests.cosmeticNightVisionNeverFlickers(helper);
+    }
+
+    @GameTest(template = EMPTY_STRUCTURE)
+    public void fashionCriticLeavesWhenIdle(GameTestHelper helper) {
+        MobGameTests.fashionCriticLeavesWhenIdle(helper);
+    }
+
+    @GameTest(template = EMPTY_STRUCTURE)
     public void socksHitBugsHarder(GameTestHelper helper) {
         MobGameTests.socksHitBugsHarder(helper);
     }
@@ -310,7 +320,7 @@ public final class FemboyGameTestsFabric implements FabricGameTest {
 
     @GameTest(template = EMPTY_STRUCTURE)
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 58, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 60, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }
