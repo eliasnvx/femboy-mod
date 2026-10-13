@@ -121,7 +121,7 @@ public final class FemboyGui {
     /** The slot type's empty silhouette (a GUI sprite) at the item position, if it has one. */
     public static void emptySlotIcon(GuiGraphics g, @Nullable ResourceLocation sprite, int itemX, int itemY) {
         if (sprite != null) {
-            g.blitSprite(sprite, itemX, itemY, ICON, ICON);
+            PixelSprites.blitFitted(g, sprite, itemX, itemY, ICON);
         }
     }
 
