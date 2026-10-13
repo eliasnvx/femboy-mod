@@ -36,7 +36,9 @@ public final class MobGameTests {
             new CosmeticGameTests.Entry("fashion_critic_judges_drip", MobGameTests::fashionCriticJudgesDrip),
             new CosmeticGameTests.Entry("only_a_few_cute_animals_follow", MobGameTests::onlyAFewCuteAnimalsFollow),
             new CosmeticGameTests.Entry("cosmetic_night_vision_never_flickers", MobGameTests::cosmeticNightVisionNeverFlickers),
-            new CosmeticGameTests.Entry("fashion_critic_leaves_when_idle", MobGameTests::fashionCriticLeavesWhenIdle));
+            new CosmeticGameTests.Entry("fashion_critic_leaves_when_idle", MobGameTests::fashionCriticLeavesWhenIdle),
+            new CosmeticGameTests.Entry("fashion_critic_boss_bar_only_for_its_target", MobGameTests::fashionCriticBossBarOnlyForItsTarget),
+            new CosmeticGameTests.Entry("fashion_critics_keep_their_distance_and_time_out", MobGameTests::fashionCriticsKeepTheirDistanceAndTimeOut));
 
     private static final BlockPos MOB_POS = new BlockPos(1, 2, 1);
     private static final float HIT = 4.0F;
@@ -98,6 +100,39 @@ public final class MobGameTests {
             effect.onDeactivate(player, null);
             helper.assertFalse(player.hasEffect(MobEffects.NIGHT_VISION), "removed when the cosmetic stops");
         });
+    }
+
+    /** Player report: five boss bars at once from critics under a base. Only the player a critic is after sees its bar. */
+    public static void fashionCriticBossBarOnlyForItsTarget(GameTestHelper helper) {
+        FashionCritic critic = helper.spawnWithNoFreeWill(FemboyEntities.FASHION_CRITIC.get(), MOB_POS);
+        WearableGameTests.withPlayer(helper, player -> {
+            critic.refreshBossBar();
+            helper.assertTrue(critic.bossBarPlayers().isEmpty(), "no target: nobody sees the bar");
+            critic.showBossBarTo(player);
+            helper.assertTrue(critic.bossBarPlayers().contains(player), "the target sees it");
+            critic.refreshBossBar();
+            helper.assertTrue(critic.bossBarPlayers().isEmpty(), "without a target the bar goes away");
+        });
+        critic.discard();
+    }
+
+    /** Critics spawn apart from each other and an idle one leaves; a fight resets the timer. */
+    public static void fashionCriticsKeepTheirDistanceAndTimeOut(GameTestHelper helper) {
+        FashionCritic critic = helper.spawnWithNoFreeWill(FemboyEntities.FASHION_CRITIC.get(), MOB_POS);
+        var pos = helper.absolutePos(MOB_POS);
+        helper.assertFalse(FashionCritic.noCriticWithin(helper.getLevel(), pos.offset(20, 0, 0), 64), "another critic is too close");
+        helper.assertTrue(FashionCritic.noCriticWithin(helper.getLevel(), pos.offset(200, 0, 0), 64), "far enough away");
+        helper.assertTrue(FashionCritic.noCriticWithin(helper.getLevel(), pos, 0), "spacing 0 means no limit");
+        helper.assertFalse(critic.tickIdle(3), "idle tick 1");
+        helper.assertFalse(critic.tickIdle(3), "idle tick 2");
+        helper.assertTrue(critic.tickIdle(3), "idle tick 3: time to leave");
+        helper.assertFalse(critic.tickIdle(0), "0 means never");
+        var opponent = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.PIG, MOB_POS.east());
+        critic.setTarget(opponent);
+        helper.assertFalse(critic.tickIdle(1), "fighting is not idle");
+        opponent.discard();
+        critic.discard();
+        helper.succeed();
     }
 
     /** Player report: critics piled up around a base with their boss bars. Idle critics may despawn, fighting ones stay. */
