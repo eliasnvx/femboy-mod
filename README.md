@@ -7,7 +7,7 @@
 [![NeoForge](https://img.shields.io/badge/NeoForge-26.3-E68A00?style=for-the-badge)](https://neoforged.net/)
 [![Architectury](https://img.shields.io/badge/Architectury-22.0.2-9C6ADE?style=for-the-badge)](https://modrinth.com/mod/architectury-api)
 [![License](https://img.shields.io/badge/License-MIT-C9A7FF?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.1.0-F291BE?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-0.1.1-F291BE?style=for-the-badge)](CHANGELOG.md)
 
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1BD96A?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/mod/femboy-mod)
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-F16436?style=for-the-badge&logo=curseforge&logoColor=white)](https://www.curseforge.com/minecraft/mc-mods/femboy-mod)
