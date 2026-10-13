@@ -56,3 +56,6 @@ tools/docs/square_icon.py
 
 # Rejected procedural icon options
 art/icon/options/
+
+# Earlier AI-drafted slot icons, kept locally (the shipped 16x16 sprites come from tools/gui/make_slot_icons.py)
+art/source/slot_icons/raw/
