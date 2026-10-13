@@ -18,8 +18,8 @@ import net.minecraft.util.Util;
 
 /**
  * Photo Mode (SPEC v1.1): the Phone flips the camera to a selfie, hides the HUD for a moment, grabs the frame and
- * turns it into an instant-camera print: a square shot in a cream frame with a wide bottom margin carrying the
- * mod's watermark. Saved to {@code screenshots/}. No flash effect.
+ * turns it into an instant-camera print: a square shot in a rounded cream card with a wide bottom margin carrying the
+ * mod's watermark, on a soft shadow. Saved to {@code screenshots/}. No flash effect.
  */
 public final class PhotoMode {
 
@@ -30,6 +30,19 @@ public final class PhotoMode {
     /** Print margins as a share of the photo's side: thin on three sides, wide at the bottom like an instant print. */
     private static final float SIDE_MARGIN = 0.06F;
     private static final float BOTTOM_MARGIN = 0.26F;
+    /** Paper corner radius as a share of the paper width; the photo window has smaller corners (share of its side). */
+    private static final float CORNER_RADIUS = 0.035F;
+    private static final float PHOTO_CORNER_RADIUS = 0.018F;
+    /** Width of the darker hairline along the paper edge, in pixels. */
+    private static final float PAPER_EDGE_WIDTH = 1.5F;
+    /** Inner shade along the photo edge: width as a share of the photo side, and its strength at the edge. */
+    private static final float PHOTO_SHADE_WIDTH = 0.008F;
+    private static final float PHOTO_SHADE = 0.22F;
+    /** Soft shadow under the card: blur and downward offset as shares of the paper width. */
+    private static final float SHADOW_BLUR = 0.035F;
+    private static final float SHADOW_DROP = 0.012F;
+    private static final float SHADOW_ALPHA = 0.35F;
+    private static final int SHADOW_COLOR = 0xFF2A1A22;
     /** Watermark height as a share of the bottom margin. */
     private static final float WATERMARK_HEIGHT = 0.3F;
     private static final Identifier WATERMARK = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/gui/photo_watermark.png");
@@ -94,41 +107,63 @@ public final class PhotoMode {
         });
     }
 
-    /** A new image: the centre square of the shot on cream paper, watermark centred on the wide bottom margin. */
+    /**
+     * A new image: the centre square of the shot in a rounded window on rounded cream paper, the watermark centred
+     * on the wide bottom margin, and a soft shadow under the card. Corners and shadow are transparent PNG.
+     */
     static NativeImage print(Minecraft minecraft, NativeImage shot) {
         int side = Math.min(shot.getWidth(), shot.getHeight());
         int srcX = (shot.getWidth() - side) / 2;
         int srcY = (shot.getHeight() - side) / 2;
         int margin = Math.round(side * SIDE_MARGIN);
         int bottom = Math.round(side * BOTTOM_MARGIN);
-        int width = side + 2 * margin;
-        int height = side + margin + bottom;
+        int paperWidth = side + 2 * margin;
+        int paperHeight = side + margin + bottom;
+        float radius = paperWidth * CORNER_RADIUS;
+        float photoRadius = side * PHOTO_CORNER_RADIUS;
+        float photoShade = Math.max(1, side * PHOTO_SHADE_WIDTH);
+        float blur = paperWidth * SHADOW_BLUR;
+        float drop = paperWidth * SHADOW_DROP;
+        int pad = (int) Math.ceil(blur + drop);
+        int width = paperWidth + 2 * pad;
+        int height = paperHeight + 2 * pad;
         NativeImage print = new NativeImage(width, height, false);
-        print.fillRect(0, 0, width, height, PAPER_COLOR);
-        for (int y = 0; y < side; y++) {
-            for (int x = 0; x < side; x++) {
-                print.setPixel(margin + x, margin + y, shot.getPixel(srcX + x, srcY + y));
-            }
-        }
-        // a hairline around the photo and the paper edge, like a real print
-        for (int x = 0; x < width; x++) {
-            print.setPixel(x, 0, PAPER_EDGE_COLOR);
-            print.setPixel(x, height - 1, PAPER_EDGE_COLOR);
-        }
         for (int y = 0; y < height; y++) {
-            print.setPixel(0, y, PAPER_EDGE_COLOR);
-            print.setPixel(width - 1, y, PAPER_EDGE_COLOR);
+            for (int x = 0; x < width; x++) {
+                // pixel centre in paper coordinates
+                float px = x - pad + 0.5F;
+                float py = y - pad + 0.5F;
+                float shadowDistance = InstantPrint.distance(px, py - drop, 0, 0, paperWidth, paperHeight, radius);
+                int color = InstantPrint.shadow(shadowDistance, blur, SHADOW_COLOR, SHADOW_ALPHA);
+                float paperDistance = InstantPrint.distance(px, py, 0, 0, paperWidth, paperHeight, radius);
+                float paper = InstantPrint.coverage(paperDistance);
+                if (paper > 0) {
+                    int card = InstantPrint.mix(PAPER_COLOR, PAPER_EDGE_COLOR, InstantPrint.edge(paperDistance, PAPER_EDGE_WIDTH));
+                    float photoDistance = InstantPrint.distance(px, py, margin, margin, side, side, photoRadius);
+                    float photo = InstantPrint.coverage(photoDistance);
+                    if (photo > 0) {
+                        int sx = Math.max(0, Math.min(side - 1, x - pad - margin));
+                        int sy = Math.max(0, Math.min(side - 1, y - pad - margin));
+                        int pixel = 0xFF000000 | shot.getPixel(srcX + sx, srcY + sy);
+                        // the photo sits slightly below the paper: a soft inner shade along its edge
+                        pixel = InstantPrint.mix(pixel, 0xFF000000, PHOTO_SHADE * InstantPrint.edge(photoDistance, photoShade));
+                        card = InstantPrint.mix(card, pixel, photo);
+                    }
+                    color = InstantPrint.over(card, paper, color);
+                }
+                print.setPixel(x, y, color);
+            }
         }
         try (InputStream in = minecraft.getResourceManager().open(WATERMARK); NativeImage mark = NativeImage.read(in)) {
             int scale = Math.max(1, Math.round(bottom * WATERMARK_HEIGHT / mark.getHeight()));
-            int x0 = (width - mark.getWidth() * scale) / 2;
-            int y0 = side + margin + (bottom - mark.getHeight() * scale) / 2;
+            int x0 = pad + (paperWidth - mark.getWidth() * scale) / 2;
+            int y0 = pad + side + margin + (bottom - mark.getHeight() * scale) / 2;
             for (int y = 0; y < mark.getHeight() * scale; y++) {
                 for (int x = 0; x < mark.getWidth() * scale; x++) {
                     int argb = mark.getPixel(x / scale, y / scale);
                     // the white outline would vanish on paper: draw only the pink letters and heart
                     if ((argb >>> 24) > 0 && (argb & 0xFFFFFF) != 0xFFFFFF && x0 + x >= 0 && x0 + x < width) {
-                        print.setPixel(x0 + x, y0 + y, argb);
+                        print.setPixel(x0 + x, y0 + y, InstantPrint.over(argb, 1, print.getPixel(x0 + x, y0 + y)));
                     }
                 }
             }
