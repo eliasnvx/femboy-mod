@@ -9,6 +9,9 @@ import dev.eliasnvx.femboymod.api.event.profile.CriticReviewEvent;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
+import java.util.Collection;
+import java.util.List;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
@@ -21,6 +24,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,6 +42,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.AABB;
 
 /**
  * Fashion Critic: a rare mini-boss in a beret and sunglasses. Hits unstylish players hard
@@ -51,8 +58,6 @@ public class FashionCritic extends Monster {
     private static final float LOOK_DISTANCE = 12.0F;
     private static final double KNOCKBACK_RESISTANCE = 0.6;
     private static final double FOLLOW_RANGE = 32.0;
-    /** The boss bar only shows to players this close (not the whole tracking range of ~160 blocks). */
-    private static final double BOSS_BAR_RANGE = FOLLOW_RANGE;
     private static final int BOSS_BAR_UPDATE_TICKS = 20;
     private static final int XP_REWARD = 30;
     private static final float VOICE_PITCH = 0.85F;
@@ -61,6 +66,7 @@ public class FashionCritic extends Monster {
     private final ServerBossEvent bossBar = new ServerBossEvent(getUUID(), getDisplayName(),
             BossEvent.BossBarColor.PINK, BossEvent.BossBarOverlay.NOTCHED_6);
     private int reviewCooldown;
+    private int idleTicks;
 
     public FashionCritic(EntityType<? extends FashionCritic> type, Level level) {
         super(type, level);
@@ -98,7 +104,11 @@ public class FashionCritic extends Monster {
         super.customServerAiStep(level);
         bossBar.setProgress(getHealth() / getMaxHealth());
         if (tickCount % BOSS_BAR_UPDATE_TICKS == 0) {
-            updateBossBarViewers(level);
+            refreshBossBar();
+        }
+        if (tickIdle(FemboyConfig.common().mobs().criticReview().idleDespawnTicks())) {
+            discard();
+            return;
         }
         if (reviewCooldown > 0) {
             reviewCooldown--;
@@ -179,21 +189,66 @@ public class FashionCritic extends Monster {
         return VOICE_PITCH;
     }
 
+    /**
+     * Counts the ticks without a target; true once {@code limit} of them are over (0 = never), so critics that
+     * spawned somewhere nobody fights them (under a base) do not stay around forever.
+     */
+    public boolean tickIdle(int limit) {
+        if (getTarget() != null) {
+            idleTicks = 0;
+            return false;
+        }
+        return limit > 0 && ++idleTicks >= limit;
+    }
+
+    /**
+     * Natural spawning: only on the surface (not in caves under a base) in the dark, and not near another critic, so
+     * a long-lived world does not collect them.
+     */
+    public static boolean checkSpawnRules(EntityType<FashionCritic> type, ServerLevelAccessor level, EntitySpawnReason reason,
+                                          BlockPos pos, RandomSource random) {
+        if (!Monster.checkMonsterSpawnRules(type, level, reason, pos, random) || !level.canSeeSky(pos)) {
+            return false;
+        }
+        return noCriticWithin(level, pos, FemboyConfig.common().mobs().criticReview().spawnSpacing());
+    }
+
+    /** @return true if no critic is within {@code spacing} blocks of {@code pos} (always true for 0) */
+    public static boolean noCriticWithin(LevelAccessor level, BlockPos pos, int spacing) {
+        return spacing <= 0 || level.getEntitiesOfClass(FashionCritic.class, new AABB(pos).inflate(spacing)).isEmpty();
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        bossBar.removeAllPlayers();
+    }
+
     @Override
     public boolean removeWhenFarAway(double distance) {
         // Stays while it fights; otherwise despawns like any monster instead of piling up around bases
         return getTarget() == null;
     }
 
-    /** Shows the boss bar to nearby players only, and hides it from players who walked away. */
-    private void updateBossBarViewers(ServerLevel level) {
-        double rangeSqr = BOSS_BAR_RANGE * BOSS_BAR_RANGE;
-        for (ServerPlayer player : level.players()) {
-            if (isAlive() && distanceToSqr(player) <= rangeSqr) {
-                bossBar.addPlayer(player);
-            } else {
-                bossBar.removePlayer(player);
+    /** The boss bar belongs to the fight: only the player this critic is after sees it. */
+    public void refreshBossBar() {
+        showBossBarTo(getTarget() instanceof ServerPlayer player && isAlive() ? player : null);
+    }
+
+    /** Shows the boss bar to {@code viewer} only ({@code null}: to nobody). */
+    public void showBossBarTo(ServerPlayer viewer) {
+        for (ServerPlayer shown : List.copyOf(bossBar.getPlayers())) {
+            if (shown != viewer) {
+                bossBar.removePlayer(shown);
             }
         }
+        if (viewer != null) {
+            bossBar.addPlayer(viewer);
+        }
+    }
+
+    /** @return the players currently shown the boss bar (for GameTests) */
+    public Collection<ServerPlayer> bossBarPlayers() {
+        return bossBar.getPlayers();
     }
 }

@@ -18,6 +18,7 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.biome.Biome;
@@ -96,8 +97,13 @@ public final class FemboyEntities {
     /** Natural spawning of a hostile mob in a biome tag, if its config weight is above 0. */
     private static <T extends Monster> void addMonsterSpawn(RegistrySupplier<EntityType<T>> type, TagKey<Biome> biomes,
                                                            CommonConfig.Mob config) {
+        addMonsterSpawn(type, biomes, config, Monster::checkMonsterSpawnRules);
+    }
+
+    private static <T extends Monster> void addMonsterSpawn(RegistrySupplier<EntityType<T>> type, TagKey<Biome> biomes,
+                                                           CommonConfig.Mob config, SpawnPlacements.SpawnPredicate<T> rules) {
         SpawnPlacementsRegistry.register(type, SpawnPlacementTypes.ON_GROUND,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, rules);
         if (config.spawnWeight() > 0) {
             BiomeModifications.addProperties(ctx -> ctx.hasTag(biomes), (ctx, props) ->
                     props.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(type.get(),
@@ -115,7 +121,7 @@ public final class FemboyEntities {
         EntityAttributeRegistry.register(HISSY_CAT, () -> HissyCat.createAttributes(mobs.hissyCat()));
         addMonsterSpawn(HISSY_CAT, HISSY_CAT_SPAWNS, mobs.hissyCat());
         EntityAttributeRegistry.register(FASHION_CRITIC, () -> FashionCritic.createAttributes(mobs.fashionCritic()));
-        addMonsterSpawn(FASHION_CRITIC, FASHION_CRITIC_SPAWNS, mobs.fashionCritic());
+        addMonsterSpawn(FASHION_CRITIC, FASHION_CRITIC_SPAWNS, mobs.fashionCritic(), FashionCritic::checkSpawnRules);
         EntityAttributeRegistry.register(STRAY_CAT, Cat::createAttributes);
         EntityAttributeRegistry.register(COSPLAYER, net.minecraft.world.entity.Mob::createMobAttributes);
         SpawnPlacementsRegistry.register(STRAY_CAT, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
