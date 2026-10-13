@@ -3,6 +3,17 @@
 All notable changes to Femboy Mod. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/api/CHANGELOG.md`.
 
+## [Unreleased]
+
+## [0.1.1] - 2026-10-09
+### Fixed
+- Night vision from the moonstone pendant no longer flickers: it is kept well above vanilla's flicker threshold and removed as soon as the cosmetic stops applying it
+- Fashion Critic no longer piles up around bases: it spawns only on the surface at night, never within `critic_review.spawn_spacing` blocks (128) of another critic, leaves after `idle_despawn_ticks` (6000) without a fight, and its boss bar is shown only to the player it is after
+
+### Changed
+- Photo Mode selfies look like a real instant photo: rounded, anti-aliased corners on the card and the photo, a soft inner shade around the shot and a soft shadow under the card (transparent PNG)
+- Empty cosmetic slot icons are redrawn in vanilla's style (16x16, one dark grey, 1 px lines), so they match the armor slots and stay sharp at every GUI scale
+
 ## [0.1.0] - 2026-09-27
 ### Added
 - 9 cosmetic slots (head accessory, face, neck, back, tail, legs overlay, outfit top, outfit bottom, hands) with a Cosmetics screen and key binding
