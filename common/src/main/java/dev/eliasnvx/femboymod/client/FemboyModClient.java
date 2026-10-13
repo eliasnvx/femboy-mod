@@ -132,6 +132,8 @@ public final class FemboyModClient {
         EntityRendererRegistry.register(FemboyEntities.FASHION_CRITIC, FashionCriticRenderer::new);
         BuiltinCosmeticRenderers.register(clientApi.cosmeticRenderers());
         clientApi.chatTransformers().register(UwuChat.ID, new UwuChat());
+        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new dev.eliasnvx.femboymod.client.gui.PixelSprites.Reloader(),
+                new ResourceLocation(FemboyMod.MOD_ID, "pixel_sprites"));
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new UwuChat.Loader(),
                 new ResourceLocation(FemboyMod.MOD_ID, "uwu_chat_rules"));
         ClientTickEvent.CLIENT_POST.register(GlowHostilesClient::tick);
