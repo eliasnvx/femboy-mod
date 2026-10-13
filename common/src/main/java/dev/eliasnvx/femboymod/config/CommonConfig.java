@@ -208,16 +208,19 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<ResourceLocation> 
      * Drip tier below {@code impressedTier}: slowness + weakness on the player; otherwise the critic is
      * impressed and gets weakness itself. Effects last {@code effectTicks}.
      */
-    public record CriticReview(int cooldownTicks, double range, int impressedTier, int effectTicks, int slownessLevel) {
+    public record CriticReview(int cooldownTicks, double range, int impressedTier, int effectTicks, int slownessLevel,
+                               int spawnSpacing, int idleDespawnTicks) {
 
-        public static final CriticReview DEFAULTS = new CriticReview(160, 12.0, 3, 100, 1);
+        public static final CriticReview DEFAULTS = new CriticReview(160, 12.0, 3, 100, 1, 128, 6000);
 
         public static final Codec<CriticReview> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.intRange(20, 12000).fieldOf("cooldown_ticks").orElse(DEFAULTS.cooldownTicks).forGetter(CriticReview::cooldownTicks),
                 Codec.doubleRange(1, 64).fieldOf("range").orElse(DEFAULTS.range).forGetter(CriticReview::range),
                 Codec.intRange(0, 32).fieldOf("impressed_tier").orElse(DEFAULTS.impressedTier).forGetter(CriticReview::impressedTier),
                 Codec.intRange(1, 12000).fieldOf("effect_ticks").orElse(DEFAULTS.effectTicks).forGetter(CriticReview::effectTicks),
-                Codec.intRange(0, 4).fieldOf("slowness_level").orElse(DEFAULTS.slownessLevel).forGetter(CriticReview::slownessLevel)
+                Codec.intRange(0, 4).fieldOf("slowness_level").orElse(DEFAULTS.slownessLevel).forGetter(CriticReview::slownessLevel),
+                Codec.intRange(0, 1024).fieldOf("spawn_spacing").orElse(DEFAULTS.spawnSpacing).forGetter(CriticReview::spawnSpacing),
+                Codec.intRange(0, 720000).fieldOf("idle_despawn_ticks").orElse(DEFAULTS.idleDespawnTicks).forGetter(CriticReview::idleDespawnTicks)
         ).apply(i, CriticReview::new));
     }
 }
