@@ -118,6 +118,16 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void fashionCriticBossBarOnlyForItsTarget(GameTestHelper helper) {
+        MobGameTests.fashionCriticBossBarOnlyForItsTarget(helper);
+    }
+
+    @GameTest
+    public void fashionCriticsKeepTheirDistanceAndTimeOut(GameTestHelper helper) {
+        MobGameTests.fashionCriticsKeepTheirDistanceAndTimeOut(helper);
+    }
+
+    @GameTest
     public void socksHitBugsHarder(GameTestHelper helper) {
         MobGameTests.socksHitBugsHarder(helper);
     }
@@ -319,7 +329,7 @@ public final class FemboyGameTestsFabric {
 
     @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 60, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 62, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }
