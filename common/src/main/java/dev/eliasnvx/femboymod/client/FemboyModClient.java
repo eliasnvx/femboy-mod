@@ -128,6 +128,8 @@ public final class FemboyModClient {
         clientApi.chatTransformers().register(UwuChat.ID, new UwuChat());
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new UwuChat.Loader(),
                 Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu_chat_rules"));
+        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new dev.eliasnvx.femboymod.client.gui.PixelSprites.Reloader(),
+                Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "pixel_sprites"));
         ClientTickEvent.CLIENT_POST.register(GlowHostilesClient::tick);
         ClientTickEvent.CLIENT_POST.register(PhotoMode::tick);
         dev.eliasnvx.femboymod.item.PhoneItem.onClientUse = PhotoMode::start;

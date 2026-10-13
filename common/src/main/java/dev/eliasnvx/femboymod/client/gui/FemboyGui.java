@@ -105,7 +105,7 @@ public final class FemboyGui {
             g.itemDecorations(font, stack, x + 1, y + 1);
         } else {
             CosmeticsManager.slotType(slot).emptySlotIcon()
-                    .ifPresent(icon -> g.blitSprite(RenderPipelines.GUI_TEXTURED, icon, x + 1, y + 1, 16, 16));
+                    .ifPresent(icon -> PixelSprites.blitFitted(g, icon, x + 1, y + 1, 16));
         }
         if (hidden && !stack.isEmpty()) {
             hiddenShade(g, x, y);

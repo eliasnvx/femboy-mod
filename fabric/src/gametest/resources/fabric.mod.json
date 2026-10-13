@@ -11,7 +11,8 @@
     "fabric-client-gametest": [
       "dev.eliasnvx.femboymod.fabric.gametest.MultiplayerLookClientTest",
       "dev.eliasnvx.femboymod.fabric.gametest.RenderShowcaseClientTest",
-      "dev.eliasnvx.femboymod.fabric.gametest.DocsShotsClientTest"
+      "dev.eliasnvx.femboymod.fabric.gametest.DocsShotsClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.SlotIconScalingClientTest"
     ]
   },
   "depends": {
