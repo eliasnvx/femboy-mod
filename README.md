@@ -5,9 +5,9 @@
 [![Minecraft](https://img.shields.io/badge/Minecraft-26.3-62B47A?style=for-the-badge&logo=minecraft&logoColor=white)](https://www.minecraft.net/)
 [![Fabric](https://img.shields.io/badge/Fabric-0.19.5+-DBD0B4?style=for-the-badge)](https://fabricmc.net/)
 [![NeoForge](https://img.shields.io/badge/NeoForge-26.3-E68A00?style=for-the-badge)](https://neoforged.net/)
-[![Architectury](https://img.shields.io/badge/Architectury-22.0.2-9C6ADE?style=for-the-badge)](https://modrinth.com/mod/architectury-api)
+[![Architectury](https://img.shields.io/badge/Architectury-22.0.4-9C6ADE?style=for-the-badge)](https://modrinth.com/mod/architectury-api)
 [![License](https://img.shields.io/badge/License-MIT-C9A7FF?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.1.1-F291BE?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-0.2.0-F291BE?style=for-the-badge)](CHANGELOG.md)
 
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1BD96A?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/mod/femboy-mod)
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-F16436?style=for-the-badge&logo=curseforge&logoColor=white)](https://www.curseforge.com/minecraft/mc-mods/femboy-mod)
@@ -22,11 +22,11 @@
 
 ## About
 
-**Femboy Mod** lets you dress up. Ten cosmetic slots that live next to your armor, dozens of clothes and accessories in any color, pride flags and shimmering glitter, and a little game around looking good: your **Drip Level** grows with every piece, full sets give bonuses, the Fashion Critic judges you mid-fight and the whole server competes at the Vibe Check Scanner.
+**Femboy Mod** lets you dress up. Eleven cosmetic slots that live next to your armor, dozens of clothes and accessories in any color, pride flags and shimmering glitter, and a little game around looking good: your **Drip Level** grows with every piece, full sets give bonuses, the Fashion Critic judges you mid-fight and the whole server competes at the Vibe Check Scanner.
 
 It's SFW and meme-flavored — socks = coding skill, energy drinks, "btw" — with no third-party brands and no flashing effects.
 
-**Languages:** English, Русский, Español, Deutsch, Français, Português (Brasil), Nederlands, Svenska, 日本語, 简体中文
+**Languages:** English, Русский, Español, Deutsch, Français, Português (Brasil), Nederlands, Svenska, 日本語, 简体中文, Polski, Türkçe, 한국어, Italiano, Українська
 
 ![Outfits](docs/images/outfits.png)
 
@@ -36,7 +36,7 @@ It's SFW and meme-flavored — socks = coding skill, energy drinks, "btw" — wi
 
 ## Cosmetics & Outfits
 
-Ten **cosmetic slots**, separate from armor, shown to everyone on the server:
+Eleven **cosmetic slots**, separate from armor, shown to everyone on the server:
 
 | Slot | What goes there |
 |---|---|
@@ -44,10 +44,11 @@ Ten **cosmetic slots**, separate from armor, shown to everyone on the server:
 | Face | heart glasses · dark shades · cyber visor · rose quartz earrings |
 | Neck | UwU choker · moonstone pendant |
 | Top | oversized hoodie · cat-ear hoodie · crop sweater |
-| Hands | striped mittens · arm warmers · nail polish · rose quartz bracelet |
+| Hands | striped mittens · cat paw gloves · arm warmers · nail polish · rose quartz bracelet |
 | Bottom | pleated skirt |
 | Waist | belt chains |
 | Legs | programming socks · fishnet tights |
+| Feet | sneakers · canvas high-tops · platform sneakers · bunny slippers |
 | Tail | a fluffy fox-style tail that sways and curls |
 | Back | backpacks with charms |
 
@@ -57,6 +58,7 @@ Ten **cosmetic slots**, separate from armor, shown to everyone on the server:
 - **First person too** — hoodie sleeves, mittens, arm warmers and nail polish on your hand
 - **Outfit presets** — save up to five looks and switch in one click (also at the Wardrobe block)
 - **Shift-click** a cosmetic in your inventory to wear it; a slot panel sits right next to the vanilla inventory
+- **Lookbook** — a guide book you get on your first join: every piece by slot, where to find it, and what you have already collected
 
 ![Dress up](docs/images/ui.png)
 
@@ -105,7 +107,9 @@ Ten **cosmetic slots**, separate from armor, shown to everyone on the server:
 - **LED Strip** — four colors and a slow rainbow (never strobes) ·  **Moonstone Night Light** ·  **Neon Signs** (heart / cat / btw)
 - **Rubber Duck** — explain your code to it: a meme answer, a bit of XP and *Insight* (faster digging)
 - **20 posters** in 1×1, 1×2 and 2×2
-- **Phone** — Photo Mode takes a selfie as an instant print with the mod's watermark
+- **Phone** — Photo Mode takes a selfie as an instant print with the mod's watermark; with paper it also prints a **Photo** you can hang in an item frame or give to a friend
+- **Mirror** (and a gilded one) — see your outfit live, with everyone standing in front of it; right-click to change clothes
+- **Cozy corner** — bean bag (sit and heal), fluffy rugs (square, round or heart), fairy lights, lava lamp, pet bed (your cats and dogs rest and heal on it), laundry basket, mini fridge (chilled Byte Energy lasts longer) and a vanity table with a real mirror; rugs, bean bags, pet beds and lamps in all 16 dye colors
 
 ---
 
@@ -168,7 +172,7 @@ Drip matters in a fight: the better you look, the less they hurt.
 
 **Addon API** — a separate, documented `api` module: new cosmetics, slots, set bonuses, charms, colorways (with shimmer), effect types and conditions, renderers, chat transformers, a **player profile** for your own data (clans, ranks, points), **Style Points** and events (critic reviews, setup ratings, vibe checks, collection unlocks…). Most content is plain JSON in a data pack. Guide: [`docs/api/README.md`](docs/api/README.md), a working [example addon](example-addon).
 
-**Compatibility** — Sodium + Iris, JEI (info pages), Mod Menu. See [`docs/compat.md`](docs/compat.md).
+**Compatibility** — Sodium + Iris, JEI (info pages), Mod Menu, Xaero's maps, JourneyMap. See [`docs/compat.md`](docs/compat.md).
 
 ---
 
@@ -179,8 +183,8 @@ Drip matters in a fight: the better you look, the less they hurt.
 | | Fabric | NeoForge |
 |---|---|---|
 | Minecraft | 26.3 | 26.3 |
-| Loader | [Fabric Loader](https://fabricmc.net/) 0.19.5+ and [Fabric API](https://modrinth.com/mod/fabric-api) | [NeoForge](https://neoforged.net/) 26.3.0.16-beta+ |
-| [Architectury API](https://modrinth.com/mod/architectury-api) | 22.0.2+ | 22.0.2+ |
+| Loader | [Fabric Loader](https://fabricmc.net/) 0.19.5+ and [Fabric API](https://modrinth.com/mod/fabric-api) | [NeoForge](https://neoforged.net/) 26.3.0.76+ |
+| [Architectury API](https://modrinth.com/mod/architectury-api) | 22.0.4+ | 22.0.4+ |
 | [GeckoLib](https://modrinth.com/mod/geckolib) | 5.5.7+ | 5.5.7+ |
 | [JEI](https://modrinth.com/mod/jei), [Mod Menu](https://modrinth.com/mod/modmenu) | optional | optional |
 
