@@ -1,4 +1,4 @@
-# Femboy Mod API: addon guide (API 0.1.0)
+# Femboy Mod API: addon guide (API 0.2.0)
 
 > The API is `0.x`, so minor versions may still break things. Changes are listed in [CHANGELOG.md](CHANGELOG.md).
 > Working reference: [`example-addon/`](../../example-addon). CI builds and tests it, and every snippet below comes from it.
@@ -70,6 +70,7 @@ new Item(new Item.Properties().setId(key).stacksTo(1)
 - `Cosmetic(slot)` picks the renderer by convention (below). `Cosmetic(slot, Optional.of(rendererId))` names a renderer explicitly.
 - Players wear it by right-clicking it or through the Cosmetics screen. The server checks everything, and `CosmeticEquipEvent` can cancel it.
 - Dyeable: add the item to `#femboymod:dyeable_cosmetics` and write a `crafting_dye` recipe (see `data/femboymod/recipe/*_dyed.json`). The colorway ends up in the `femboymod:colorway` component.
+- Creative tab: `FemboyCreativeTabs.OUTFITS` puts it next to ours (`.arch$tab(FemboyCreativeTabs.OUTFITS)` with Architectury). The other tabs are `ROOM`, `SNACKS`, `MATERIALS` and `MOBS`.
 
 ## Armor under the outfit
 Vanilla armor would draw over cosmetics, so armor pieces a worn slot covers are hidden (visual only, the armor still protects). Give your slot type the armor it covers: `new CosmeticSlotType(order, icon, Set.of(EquipmentSlot.CHEST))`. Players can override each piece (`ArmorVisibility` AUTO / HIDE / SHOW, read with `CosmeticsView#armorVisibility`); servers can forbid hiding with the `femboymod:allow_hidden_armor` game rule.
@@ -80,6 +81,8 @@ api.cosmeticSlots().register(id("pin"), new CosmeticSlotType(1000)); // sort ord
 ```
 The slot name is the lang key `cosmetic_slot.<ns>.<path>`. The built-in slots are listed in `FemboySlots`.
 Give it a silhouette for when it's empty with `new CosmeticSlotType(order, Optional.of(spriteId))`: a GUI sprite at `assets/<ns>/textures/gui/sprites/<path>.png` (built-ins use `femboymod:container/slot/cosmetic/<slot>`). It shows in the inventory panel and in the outfit screen, where addon slots go in a row under the doll. Draw it like vanilla's empty armor slots: 16x16, 1 px lines in one dark grey (vanilla and the built-ins use #555555), no fill and no anti-aliasing. Then its pixels match the GUI's pixels at every scale. A 32x32 sprite (artwork within the central 24x24) also works and is drawn at a whole multiple of its pixels, but next to the 16x16 GUI its pixels are a different size, so it never looks as clean.
+
+Other mods' slots (Curios, and on 1.21.1 / 1.20.1 also Trinkets and Accessories): a cosmetic in one of their slots counts as worn, as long as that slot is empty in the outfit. Which items fit comes from item tags: built-in slots have `#femboymod:slot/<slot>` (add your cosmetic there when it belongs in a built-in slot), and the slot mod's own tags point at them (for example `#curios:head`). A cosmetic in your own slot can go straight into the slot mod's tag. Backpacks only work in the back slot.
 
 ## Stats: Drip and effects
 `data/<ns>/femboymod/cosmetic_stats/<item path>.json`. The file name is the item id, so the file for `femboymod_example:friendship_pin` is `data/femboymod_example/femboymod/cosmetic_stats/friendship_pin.json`.
@@ -107,6 +110,19 @@ Built-in effect types:
 | `femboymod:damage_bonus` | `targets` (entity id, list or tag), `multiplier`: the wearer hits those mobs harder |
 
 Built-in conditions (`"when"`): `femboymod:cold_biome`, `femboymod:crouching`, `femboymod:sprinting`.
+
+## Lookbook: where to get it
+The Lookbook (a book every player gets once, also a button in the Outfit screen) lists every cosmetic by slot. Tell players where to find yours in `data/<ns>/femboymod/lookbook/<item path>.json` (file name = item id, like `cosmetic_stats`):
+```json
+{
+  "sources": [
+    { "kind": "crafting", "items": ["minecraft:white_wool", { "id": "minecraft:string", "count": 2 }] },
+    { "kind": "trade", "from": "femboymod:cosplayer", "items": [{ "id": "femboymod:style_coupon", "count": 2 }] },
+    { "kind": "note", "note": "lookbook.mymod.scarf.how" }
+  ]
+}
+```
+`kind`: `crafting` (ingredients), `smithing` (template, base, addition), `trade` (`from` = an entity type or a villager profession, optional `level`, `items` = price), `drop` and `gift` (`from` = the mob), `note` (just the line). Any source can add a `note` line (a translation key). `items` take an id or `{ "id", "count" }`. Items without an entry still show up, marked as creative only. The registry is `LookbookEntry` (`femboymod:lookbook`, synced to clients); the example addon has one for its pin.
 
 ## A set bonus
 `data/<ns>/femboymod/set_bonus/<name>.json`, lang key `set_bonus.<ns>.<name>`:
@@ -233,6 +249,7 @@ Subscribe with `api.events().addListener(EventClass.class, handler)`. You can pa
 | `SetupRatedEvent` | server | no | a Gamer Chair setup was rated (stars) |
 | `EnergyDrinkEvent` | server | no | a player drank Byte Energy |
 | `VibeCheckEvent` | server | no | a Vibe Check Scanner rated a player (score can be changed) |
+| `HeadpatEvent` | server | yes | a player is about to give a headpat (how long the target stays Cozy can be changed) |
 
 Handlers of cancellable events should only look and decide. Do the actual work in an event that fires after the change, such as `CosmeticChangedEvent`.
 

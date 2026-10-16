@@ -2,6 +2,16 @@
 
 Format: Keep a Changelog. SemVer for the API is independent of the mod version.
 
+## [0.2.0] - 2026-10-16
+### Added
+- Data pack registry `LookbookEntry` (`lookbook`, synced): where to get a cosmetic, shown in the Lookbook
+- Built-in slot `FemboySlots.FEET` (shoes, over socks; hides boots), sort order 850: between `legs_overlay` and `tail`, later slots keep their order
+- `HeadpatEvent` (`api.event.social`, cancellable): a headpat is about to happen; change how long the target stays Cozy
+- `FemboyCreativeTabs`: keys of the creative tabs `OUTFITS`, `ROOM`, `SNACKS`, `MATERIALS`, `MOBS`, so addon items can sit next to ours
+
+### Changed
+- The single creative tab `femboymod:main` is now five tabs; cosmetics are in `femboymod:clothes` (`FemboyCreativeTabs.OUTFITS`)
+
 ## [0.1.0] - unreleased
 ### Added
 - `FemboyApi`, `FemboyAddon`, `FemboyClientApi`, `@RegisterFemboyAddon`
