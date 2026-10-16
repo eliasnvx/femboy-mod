@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        "minecraft:orange_wool",
+        "minecraft:sweet_berries",
+        "femboymod:glitch_shard",
+        "minecraft:string"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:orange_wool",
+          "count": 3
+        },
+        "minecraft:carved_pumpkin",
+        "minecraft:string"
+      ]
+    }
+  ]
+}

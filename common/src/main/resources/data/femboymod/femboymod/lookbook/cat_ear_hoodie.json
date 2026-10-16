@@ -1,0 +1,33 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        "femboymod:oversized_hoodie",
+        "femboymod:cat_ears"
+      ]
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "minecraft:emerald",
+          "count": 14
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 4
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "femboymod:style_coupon",
+          "count": 3
+        }
+      ],
+      "from": "femboymod:cosplayer",
+      "note": "lookbook.femboymod.note.colorway"
+    }
+  ]
+}

@@ -21,7 +21,7 @@ public final class EmoteScreen extends Screen {
 
     @Override
     protected void init() {
-        Emote[] emotes = Emote.values();
+        Emote[] emotes = java.util.Arrays.stream(Emote.values()).filter(Emote::inWheel).toArray(Emote[]::new);
         for (int i = 0; i < emotes.length; i++) {
             Emote emote = emotes[i];
             float angle = -Mth.HALF_PI + i * Mth.TWO_PI / emotes.length;

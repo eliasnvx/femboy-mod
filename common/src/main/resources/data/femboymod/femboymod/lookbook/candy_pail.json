@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        "minecraft:carved_pumpkin",
+        "minecraft:string",
+        "femboymod:candy"
+      ]
+    }
+  ]
+}

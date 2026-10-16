@@ -2,6 +2,8 @@
   "values": [
     "femboymod:led_strip",
     "femboymod:neon_sign",
-    "femboymod:moonstone_lamp"
+    "femboymod:moonstone_lamp",
+    "femboymod:fairy_lights",
+    "femboymod:lava_lamp"
   ]
 }

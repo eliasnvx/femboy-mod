@@ -10,7 +10,9 @@
     "client.ClientPacketListenerChatMixin",
     "client.AbstractContainerScreenAccessor",
     "client.SoundEngineMuffleMixin",
-    "client.PlayerModelEmoteMixin"
+    "client.PlayerModelEmoteMixin",
+    "client.LivingEntityRendererNameTagMixin",
+    "client.AgeableListModelAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -19,6 +21,7 @@
     "CreeperMixin",
     "LivingEntityHurtMixin",
     "InventoryMenuMixin",
-    "ItemEntityDamageMixin"
+    "ItemEntityDamageMixin",
+    "PetBedGoalsMixin"
   ]
 }

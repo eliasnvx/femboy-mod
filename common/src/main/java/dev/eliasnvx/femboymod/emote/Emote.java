@@ -2,19 +2,28 @@ package dev.eliasnvx.femboymod.emote;
 
 /** Built-in emotes (SPEC v1.2): simple arm poses, synced to everyone who sees the player. */
 public enum Emote {
-    WAVE(60),
-    PEACE(60),
-    HEART_HANDS(80);
+    WAVE(60, true),
+    PEACE(60, true),
+    HEART_HANDS(80, true),
+    /** The patting hand of a headpat ({@code Headpats}); not in the emote wheel. */
+    HEADPAT(16, false);
 
     /** How long the emote plays, in ticks; moving cancels it earlier. */
     private final int durationTicks;
+    private final boolean inWheel;
 
-    Emote(int durationTicks) {
+    Emote(int durationTicks, boolean inWheel) {
         this.durationTicks = durationTicks;
+        this.inWheel = inWheel;
     }
 
     public int durationTicks() {
         return durationTicks;
+    }
+
+    /** Players can pick it in the emote wheel (others are played by the mod itself). */
+    public boolean inWheel() {
+        return inWheel;
     }
 
     public String translationKey() {

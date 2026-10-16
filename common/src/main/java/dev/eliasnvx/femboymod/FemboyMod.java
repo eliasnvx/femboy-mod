@@ -55,6 +55,9 @@ public final class FemboyMod {
         ProfileHooks.registerFields(api.profileFields());
 
         FemboyComponents.REGISTER.register();
+        // printed photos belong to the world that stopped
+        dev.architectury.event.events.common.LifecycleEvent.SERVER_STOPPED.register(server ->
+                dev.eliasnvx.femboymod.photo.PhotoStore.clearCache());
         FemboyEffects.REGISTER.register();
         FemboyTriggers.REGISTER.register();
         FemboyEntities.init();
@@ -73,6 +76,9 @@ public final class FemboyMod {
 
         FemboyNetwork.register();
         CosmeticsEvents.register();
+        dev.eliasnvx.femboymod.pet.PetOutfits.init();
+        dev.eliasnvx.femboymod.halloween.TrickOrTreat.init();
+        dev.eliasnvx.femboymod.social.Headpats.init();
         CommandRegistrationEvent.EVENT.register(FemboyCommands::register);
 
         AdvancementHooks.register(api.events());

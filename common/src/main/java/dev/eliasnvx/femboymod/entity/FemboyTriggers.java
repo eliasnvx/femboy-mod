@@ -37,6 +37,10 @@ public final class FemboyTriggers {
     public static final String DUCK_DEBUGGING = "duck_debugging";
     /** A Vibe Check Scanner rated the player (value = score). */
     public static final String VIBE_CHECK = "vibe_check";
+    /** Gave another player a headpat. */
+    public static final String HEADPAT_PLAYER = "headpat_player";
+    /** Gave a tamed pet a headpat. */
+    public static final String HEADPAT_PET = "headpat_pet";
 
     public static final DeferredRegister<CriterionTrigger<?>> REGISTER = DeferredRegister.create(FemboyMod.MOD_ID, Registries.TRIGGER_TYPE);
     public static final RegistrySupplier<EventTrigger> EVENT = REGISTER.register("event", EventTrigger::new);

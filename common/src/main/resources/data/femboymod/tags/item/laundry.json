@@ -1,0 +1,15 @@
+{
+  "values": [
+    "#femboymod:slot/face",
+    "#femboymod:slot/feet",
+    "#femboymod:slot/hands",
+    "#femboymod:slot/head_accessory",
+    "#femboymod:slot/legs_overlay",
+    "#femboymod:slot/neck",
+    "#femboymod:slot/outfit_bottom",
+    "#femboymod:slot/outfit_top",
+    "#femboymod:slot/tail",
+    "#femboymod:slot/waist",
+    "femboymod:lost_sock"
+  ]
+}

@@ -78,6 +78,20 @@ public final class FemboyEntities {
             () -> EntityType.Builder.<Cosplayer>of(Cosplayer::new, MobCategory.CREATURE)
                     .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).build(COSPLAYER_KEY.location().toString()));
 
+    /** Sock Goblin (0.2.0): steals socks at night, never attacks; allowed in peaceful (it may hold someone's socks). */
+    public static final ResourceKey<EntityType<?>> SOCK_GOBLIN_KEY = key("sock_goblin");
+    public static final RegistrySupplier<EntityType<SockGoblin>> SOCK_GOBLIN = REGISTER.register(SOCK_GOBLIN_KEY.location(),
+            () -> EntityType.Builder.<SockGoblin>of(SockGoblin::new, MobCategory.MONSTER)
+                    .sized(0.5F, 0.9F).eyeHeight(0.75F).clientTrackingRange(8).build(SOCK_GOBLIN_KEY.location().toString()));
+    public static final TagKey<Biome> SOCK_GOBLIN_SPAWNS = biomeTag("sock_goblin_spawns");
+
+    /** Rubber Duck (0.2.0): river banks and beaches; tameable, debugs its owner. */
+    public static final ResourceKey<EntityType<?>> RUBBER_DUCK_KEY = key("rubber_duck");
+    public static final RegistrySupplier<EntityType<RubberDuck>> RUBBER_DUCK = REGISTER.register(RUBBER_DUCK_KEY.location(),
+            () -> EntityType.Builder.<RubberDuck>of(RubberDuck::new, MobCategory.CREATURE)
+                    .sized(0.4F, 0.5F).eyeHeight(0.42F).clientTrackingRange(8).build(RUBBER_DUCK_KEY.location().toString()));
+    public static final TagKey<Biome> RUBBER_DUCK_SPAWNS = biomeTag("rubber_duck_spawns");
+
     /** Flowery biomes (flower forest, cherry grove, meadow, sunflower plains, dappled forest); data-driven. */
     public static final TagKey<Biome> PINK_CREEPER_SPAWNS =
             TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "pink_creeper_spawns"));
@@ -121,6 +135,17 @@ public final class FemboyEntities {
         addMonsterSpawn(HISSY_CAT, HISSY_CAT_SPAWNS, mobs.hissyCat());
         EntityAttributeRegistry.register(FASHION_CRITIC, () -> FashionCritic.createAttributes(mobs.fashionCritic()));
         addMonsterSpawn(FASHION_CRITIC, FASHION_CRITIC_SPAWNS, mobs.fashionCritic(), FashionCritic::checkSpawnRules);
+        EntityAttributeRegistry.register(SOCK_GOBLIN, () -> SockGoblin.createAttributes(mobs.sockGoblin()));
+        addMonsterSpawn(SOCK_GOBLIN, SOCK_GOBLIN_SPAWNS, mobs.sockGoblin());
+        EntityAttributeRegistry.register(RUBBER_DUCK, RubberDuck::createAttributes);
+        SpawnPlacementsRegistry.register(RUBBER_DUCK, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                RubberDuck::checkDuckSpawnRules);
+        CommonConfig.RubberDucks ducks = FemboyConfig.common().rubberDucks();
+        if (ducks.spawnWeight() > 0) {
+            BiomeModifications.addProperties(ctx -> ctx.hasTag(RUBBER_DUCK_SPAWNS), (ctx, props) ->
+                    props.getSpawnProperties().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(RUBBER_DUCK.get(),
+                            ducks.spawnWeight(), ducks.minGroup(), Math.max(ducks.minGroup(), ducks.maxGroup()))));
+        }
         EntityAttributeRegistry.register(STRAY_CAT, Cat::createAttributes);
         EntityAttributeRegistry.register(COSPLAYER, net.minecraft.world.entity.Mob::createMobAttributes);
         SpawnPlacementsRegistry.register(STRAY_CAT, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
