@@ -5,6 +5,9 @@
   "name": "Femboy Mod GameTests",
   "environment": "*",
   "entrypoints": {
+    "client": [
+      "dev.eliasnvx.femboymod.fabric.gametest.ClientTestExit"
+    ],
     "fabric-gametest": [
       "dev.eliasnvx.femboymod.fabric.gametest.FemboyGameTestsFabric"
     ],
@@ -12,7 +15,14 @@
       "dev.eliasnvx.femboymod.fabric.gametest.MultiplayerLookClientTest",
       "dev.eliasnvx.femboymod.fabric.gametest.RenderShowcaseClientTest",
       "dev.eliasnvx.femboymod.fabric.gametest.DocsShotsClientTest",
-      "dev.eliasnvx.femboymod.fabric.gametest.SlotIconScalingClientTest"
+      "dev.eliasnvx.femboymod.fabric.gametest.SlotIconScalingClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.MirrorClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.InteriorClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.CompatModelsClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.CreativeTabsClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.MapModsClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.PetsClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.RejoinClientTest"
     ]
   },
   "depends": {

@@ -23,6 +23,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -71,10 +72,27 @@ public final class CosmeticGameTests {
         all.addAll(PanelGameTests.ALL);
         all.addAll(DecorGameTests.ALL);
         all.addAll(ProfileGameTests.ALL);
+        all.addAll(LookbookGameTests.ALL);
+        all.addAll(FeetSlotGameTests.ALL);
+        all.addAll(MirrorGameTests.ALL);
+        all.addAll(PhotoGameTests.ALL);
+        all.addAll(ExternalSlotsGameTests.ALL);
+        all.addAll(FriendsGameTests.ALL);
+        all.addAll(InteriorGameTests.ALL);
         return all;
     }
 
-    public record Entry(String name, Consumer<GameTestHelper> body) {
+    /**
+     * A shared test: its name, body and how many ticks it may take (loaders without per-test annotations read it;
+     * Fabric's {@code @GameTest(maxTicks)} must match).
+     */
+    public record Entry(String name, Consumer<GameTestHelper> body, int maxTicks) {
+
+        public static final int DEFAULT_MAX_TICKS = 100;
+
+        public Entry(String name, Consumer<GameTestHelper> body) {
+            this(name, body, DEFAULT_MAX_TICKS);
+        }
     }
 
     public static void equipAndUnequip(GameTestHelper helper) {
@@ -184,14 +202,30 @@ public final class CosmeticGameTests {
     public static void creativeTabContainsItems(GameTestHelper helper) {
         CreativeModeTabs.tryRebuildTabContents(FeatureFlags.DEFAULT_FLAGS, true, helper.getLevel().registryAccess());
         CreativeModeTab tab = FemboyItems.TAB.get();
-        helper.assertTrue(CreativeModeTabs.allTabs().contains(tab), "femboymod tab is registered");
-        helper.assertTrue(tab.contains(new ItemStack(FemboyItems.CAT_EARS.get())), "Cat Ears are in the femboymod tab");
-        long modItems = BuiltInRegistries.ITEM.stream()
-                .filter(item -> BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(FemboyApi.MOD_ID)).count();
-        long plainInTab = tab.getDisplayItems().stream()
-                .filter(stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(FemboyApi.MOD_ID))
-                .filter(stack -> !stack.has(FemboyComponents.COLORWAY.get())).count();
-        helper.assertValueEqual(plainInTab, modItems, "every femboymod item is in the tab once");
+        List<CreativeModeTab> tabs = List.of(tab, FemboyItems.ROOM_TAB.get(), FemboyItems.SNACKS_TAB.get(),
+                FemboyItems.MATERIALS_TAB.get(), FemboyItems.MOBS_TAB.get());
+        helper.assertTrue(CreativeModeTabs.allTabs().containsAll(tabs), "femboymod tabs are registered");
+        // each item where a player would look for it
+        helper.assertTrue(tab.contains(new ItemStack(FemboyItems.CAT_EARS.get())), "Cat Ears in the outfits tab");
+        helper.assertTrue(tab.contains(new ItemStack(FemboyItems.LOOKBOOK.get())), "the Lookbook in the outfits tab");
+        helper.assertTrue(tabs.get(1).contains(new ItemStack(dev.eliasnvx.femboymod.block.FemboyBlocks.BEAN_BAG.get())),
+                "the Bean Bag in the room tab");
+        helper.assertTrue(tabs.get(2).contains(new ItemStack(FemboyItems.BYTE_ENERGY_PINK.get())), "Byte Energy in the snacks tab");
+        helper.assertTrue(tabs.get(3).contains(new ItemStack(FemboyItems.ROSE_QUARTZ.get())), "rose quartz in the materials tab");
+        helper.assertTrue(tabs.get(4).contains(new ItemStack(FemboyItems.PINK_CREEPER_SPAWN_EGG.get())), "spawn eggs in the mobs tab");
+        helper.assertTrue(tabs.get(4).contains(new ItemStack(FemboyItems.PET_BOW.get())), "pet outfits in the mobs tab");
+        // every item exactly once over all tabs (plain stacks; colorway and dye color presets come on top)
+        java.util.Map<Item, Integer> seen = new java.util.HashMap<>();
+        for (CreativeModeTab each : tabs) {
+            each.getDisplayItems().stream()
+                    .filter(stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(FemboyApi.MOD_ID))
+                    .filter(stack -> !stack.has(FemboyComponents.COLORWAY.get()) && !stack.has(DataComponents.BLOCK_STATE))
+                    .forEach(stack -> seen.merge(stack.getItem(), 1, Integer::sum));
+        }
+        BuiltInRegistries.ITEM.stream()
+                .filter(item -> BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(FemboyApi.MOD_ID))
+                .forEach(item -> helper.assertValueEqual(seen.getOrDefault(item, 0), 1,
+                        "tabs showing " + BuiltInRegistries.ITEM.getKey(item)));
         long stripedSocks = tab.getDisplayItems().stream()
                 .filter(stack -> stack.is(FemboyItems.PROGRAMMING_SOCKS.get()))
                 .filter(stack -> stack.has(FemboyComponents.COLORWAY.get()) && stack.get(FemboyComponents.COLORWAY.get()).stripeCount() == 2)

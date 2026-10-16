@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -44,11 +45,23 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
     private static final int CLOSE_UP_WIDTH = 1920;
     private static final int CLOSE_UP_HEIGHT = 1080;
     private static final int DEFAULT_FOV = 70;
+    private static final String SHOWCASE_TAG = "femboymod_showcase";
+    /** How far ahead a pet stands for its close-up. */
+    private static final double PET_DISTANCE = 2.0;
+    /** Three-quarter view: facing the camera, turned a little. */
+    private static final float PET_CLOSE_UP_YAW = 150.0F;
+    /** The player's hands while a costume is shown with empty hands. */
+    private static final ItemStack[] STASHED_HANDS = {ItemStack.EMPTY, ItemStack.EMPTY};
 
     @Override
     public void runTest(ClientGameTestContext context) {
+        if (MapModsClientTest.xaeroLoaded()) {
+            // closing a singleplayer world deadlocks the test framework while Xaero's map is loaded (compat_maps runs)
+            return;
+        }
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
             world.getConnection().waitForChunksRender();
+            world.getServer().runCommand("clear @p femboymod:lookbook"); // the first-join book, not wanted in shots
             world.getServer().runCommand("time set noon");
             world.getServer().runCommand("weather clear");
             world.getServer().runOnServer(server -> {
@@ -289,6 +302,138 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.waitTicks(SETTLE_TICKS / 2);
             closeUp(context, "femboymod_closeup_armor_forced_visible");
             world.getServer().runCommand("gamerule femboymod:allow_hidden_armor true");
+            // 0.2.0: shoes over socks (golden boots still on, hidden), every style, with cat paw gloves
+            for (var shoe : List.of(FemboyItems.SNEAKERS, FemboyItems.CANVAS_HIGH_TOPS, FemboyItems.PLATFORM_SNEAKERS,
+                    FemboyItems.BUNNY_SLIPPERS)) {
+                world.getServer().runOnServer(server -> {
+                    ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                    CosmeticsManager.set(player, FemboySlots.FEET, new ItemStack(shoe.get()));
+                    CosmeticsManager.set(player, FemboySlots.HANDS, new ItemStack(FemboyItems.CAT_PAW_GLOVES.get()));
+                });
+                context.waitTicks(SETTLE_TICKS / 2);
+                fullBody(context, "femboymod_feet_" + shoe.getId().getPath());
+            }
+            // Mirror three blocks ahead, glass toward the player: the live reflection, seen in first person and from behind
+            world.getServer().runCommand("execute at @p align xz run tp @p ~0.5 ~ ~0.5 0 0");
+            world.getServer().runCommand("execute at @p run setblock ~ ~ ~3 femboymod:mirror[facing=north,half=lower]");
+            world.getServer().runCommand("execute at @p run setblock ~ ~1 ~3 femboymod:mirror[facing=north,half=upper]");
+            world.getServer().runCommand("execute at @p run setblock ~2 ~ ~3 femboymod:gilded_mirror[facing=north,half=lower]");
+            world.getServer().runCommand("execute at @p run setblock ~2 ~1 ~3 femboymod:gilded_mirror[facing=north,half=upper]");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            context.waitTicks(SETTLE_TICKS);
+            fullBody(context, "femboymod_mirror_first_person");
+            // at night, two steps back and walking toward the glass: the legs swing mid-stride, far past the bounding
+            // box, and nothing of them may disappear behind the reflected floor or the back panel. Relative positions
+            // go through "execute at": a bare "tp @p ~ ~ ~" is relative to the world spawn, not the player
+            world.getServer().runOnServer(server -> rememberPosition(server.getPlayerList().getPlayers().getFirst()));
+            world.getServer().runCommand("time set midnight");
+            world.getServer().runCommand("execute as @p at @s run tp @s ~ ~ ~-2 0 8");
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.runOnClient(mc -> {
+                mc.options.fov().set(DEFAULT_FOV);
+                if (!mc.gui.hud.isHidden()) {
+                    mc.gui.hud.toggle();
+                }
+            });
+            context.getInput().holdKey(options -> options.keyUp);
+            context.waitTicks(WALK_TICKS);
+            context.takeScreenshot(TestScreenshotOptions.of("femboymod_mirror_night_walking").withSize(CLOSE_UP_WIDTH, CLOSE_UP_HEIGHT));
+            context.getInput().releaseKey(options -> options.keyUp);
+            context.runOnClient(mc -> {
+                mc.options.fov().set(ZOOM_FOV);
+                mc.gui.hud.toggle();
+            });
+            world.getServer().runCommand("time set noon");
+            world.getServer().runOnServer(server -> returnToRememberedPosition(server.getPlayerList().getPlayers().getFirst()));
+            world.getServer().runCommand("execute as @p at @s run tp @s ~ ~ ~ 0 0");
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+            context.waitTicks(SETTLE_TICKS / 2);
+            fullBody(context, "femboymod_mirror_behind");
+            world.getServer().runCommand("execute as @p at @s run tp @s ~ ~ ~ 25 5");
+            context.waitTicks(SETTLE_TICKS / 2);
+            fullBody(context, "femboymod_mirror_behind_angle");
+            // off to the side and closer: half of the reflection is past the glass's edge and must be cut there,
+            // nothing drawn over the frame or the grass beside it
+            world.getServer().runCommand("execute as @p at @s run tp @s ~0.55 ~ ~1.2 12 10");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            context.waitTicks(SETTLE_TICKS / 2);
+            fullBody(context, "femboymod_mirror_edge_first_person");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+            context.waitTicks(SETTLE_TICKS / 2);
+            fullBody(context, "femboymod_mirror_edge_behind");
+            world.getServer().runCommand("execute as @p at @s run tp @s ~-0.55 ~ ~-1.2 0 0");
+            // 0.2.0: tamed pets in outfits between the player and the mirrors (backs to us, faces in the reflection);
+            // +x is on the screen's left when facing south
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                spawnPet(player, EntityTypes.CAT, 1.3, 2.2, 0.0F, FemboyItems.PET_BOW.get(), FemboyItems.BELL_COLLAR.get());
+                spawnPet(player, EntityTypes.WOLF, 0.0, 2.2, 0.0F, FemboyItems.MINI_WITCH_HAT.get(), FemboyItems.PET_BANDANA.get());
+                spawnPet(player, EntityTypes.PARROT, -1.2, 2.2, 0.0F, FemboyItems.PET_BOW.get(), FemboyItems.BELL_COLLAR.get());
+            });
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            world.getServer().runCommand("execute as @p at @s run tp @s ~ ~ ~ 0 15");
+            context.waitTicks(SETTLE_TICKS);
+            fullBody(context, "femboymod_pets_mirror");
+            world.getServer().runOnServer(server -> clearShowcase(server.getPlayerList().getPlayers().getFirst()));
+            // each pet alone, facing the camera
+            petCloseUp(world, context, EntityTypes.CAT, FemboyItems.PET_BOW.get(), FemboyItems.BELL_COLLAR.get(), 36, "femboymod_pet_cat");
+            petCloseUp(world, context, EntityTypes.CAT, FemboyItems.MINI_WITCH_HAT.get(), FemboyItems.PET_BANDANA.get(), 36, "femboymod_pet_cat_hat");
+            petCloseUp(world, context, EntityTypes.WOLF, FemboyItems.MINI_WITCH_HAT.get(), FemboyItems.PET_BANDANA.get(), 32, "femboymod_pet_wolf");
+            petCloseUp(world, context, EntityTypes.WOLF, FemboyItems.PET_BOW.get(), FemboyItems.BELL_COLLAR.get(), 32, "femboymod_pet_wolf_bow");
+            petCloseUp(world, context, EntityTypes.PARROT, FemboyItems.PET_BOW.get(), FemboyItems.BELL_COLLAR.get(), 31, "femboymod_pet_parrot");
+            world.getServer().runCommand("tp @p ~ ~ ~ 0 0");
+            world.getServer().runOnServer(server -> clearShowcase(server.getPlayerList().getPlayers().getFirst()));
+            // Halloween costume on its own (hands empty), away from the mirrors so the camera has room
+            world.getServer().runCommand("tp @p ~ ~ ~-6 180 10");
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                stashHands(player);
+                for (Identifier slot : CosmeticsManager.orderedSlots()) {
+                    CosmeticsManager.set(player, slot, ItemStack.EMPTY);
+                }
+                CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.WITCH_HAT.get()));
+                CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.PUMPKIN_HOODIE.get()));
+                CosmeticsManager.set(player, FemboySlots.WAIST, new ItemStack(FemboyItems.CANDY_PAIL.get()));
+            });
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            context.waitTicks(SETTLE_TICKS);
+            closeUp(context, "femboymod_halloween_pumpkin");
+            fullBody(context, "femboymod_halloween_pumpkin_full");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+            context.waitTicks(SETTLE_TICKS / 2);
+            closeUp(context, "femboymod_halloween_pumpkin_back");
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                CosmeticsManager.set(player, FemboySlots.OUTFIT_TOP, new ItemStack(FemboyItems.GHOST_SHEET.get()));
+                CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, ItemStack.EMPTY);
+            });
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            context.waitTicks(SETTLE_TICKS / 2);
+            fullBody(context, "femboymod_halloween_ghost");
+            closeUp(context, "femboymod_halloween_ghost_close");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_first_person_ghost_sleeve");
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                wearFullSet(player);
+                restoreHands(player);
+            });
+            // Sock Goblin with stolen socks, rubber ducks in profile (one duckling)
+            world.getServer().runCommand("summon femboymod:sock_goblin ~-0.8 ~ ~-2.2 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f],Tags:[\"femboymod_showcase\"],equipment:{mainhand:{id:\"femboymod:programming_socks\",count:1}}}");
+            world.getServer().runCommand("summon femboymod:rubber_duck ~0.6 ~ ~-2.0 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f],Tags:[\"femboymod_showcase\"]}");
+            world.getServer().runCommand("summon femboymod:rubber_duck ~0.9 ~ ~-1.3 {NoAI:1b,PersistenceRequired:1b,Rotation:[-70f,0f],Age:-24000,Tags:[\"femboymod_showcase\"]}");
+            world.getServer().runCommand("tp @p ~ ~ ~ 180 32");
+            context.waitTicks(SETTLE_TICKS);
+            closeUp(context, "femboymod_sock_goblin_and_ducks");
+            world.getServer().runOnServer(server -> clearShowcase(server.getPlayerList().getPlayers().getFirst()));
+            world.getServer().runCommand("tp @p ~ ~ ~6 0 0");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+            world.getServer().runCommand("tp @p ~ ~ ~ 0 0");
+            world.getServer().runCommand("execute at @p run fill ~ ~ ~3 ~2 ~1 ~3 minecraft:air");
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.FEET, ItemStack.EMPTY));
             // v1.1 clothing: headphones, heart glasses, crop sweater, belt chains, arm warmers (armor off)
             world.getServer().runCommand("item replace entity @p armor.head with minecraft:air");
             world.getServer().runCommand("item replace entity @p armor.chest with minecraft:air");
@@ -440,9 +585,40 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             closeUp(context, "femboymod_closeup_pendant_visor");
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
             world.getServer().runCommand("tp @p ~ ~ ~ 20 10");
-            // Photo Mode: selfie with frame and watermark (saved to screenshots/)
+            // Photo Mode: selfie with frame and watermark (saved to screenshots/), printed as a photo item (costs paper)
+            world.getServer().runCommand("give @p minecraft:paper 4");
             context.runOnClient(mc -> dev.eliasnvx.femboymod.client.PhotoMode.start());
             context.waitTicks(SETTLE_TICKS * 2);
+            // the photo: in hand, in an item frame on a wall, and held up close
+            world.getServer().runOnServer(server -> {
+                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+                    if (player.getInventory().getItem(slot).is(FemboyItems.PHOTO.get())) {
+                        ItemStack photo = player.getInventory().getItem(slot).copy();
+                        player.getInventory().setItem(slot, ItemStack.EMPTY);
+                        player.getInventory().setItem(player.getInventory().getSelectedSlot(), photo);
+                        net.minecraft.core.BlockPos wall = player.blockPosition().relative(player.getDirection(), 2);
+                        player.level().setBlock(wall, net.minecraft.world.level.block.Blocks.SMOOTH_QUARTZ.defaultBlockState(), 3);
+                        net.minecraft.world.entity.decoration.ItemFrame frame = new net.minecraft.world.entity.decoration.ItemFrame(
+                                player.level(), wall.relative(player.getDirection().getOpposite()), player.getDirection().getOpposite());
+                        frame.setItem(photo.copy());
+                        player.level().addFreshEntity(frame);
+                        break;
+                    }
+                }
+            });
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            context.waitTicks(SETTLE_TICKS * 2);
+            context.takeScreenshot("femboymod_photo_in_hand");
+            context.runOnClient(mc -> {
+                var photo = mc.player.getMainHandItem().get(dev.eliasnvx.femboymod.registry.FemboyComponents.PHOTO.get());
+                if (photo != null) {
+                    mc.gui.setScreen(new dev.eliasnvx.femboymod.client.photo.PhotoViewScreen(photo));
+                }
+            });
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_photo_view");
+            context.setScreen(() -> null);
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 
             // Ears with a visible helmet: they sit on top of it
@@ -497,6 +673,17 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.waitTicks(SETTLE_TICKS / 2);
             context.takeScreenshot("femboymod_outfit_screen");
             context.runOnClient(mc -> mc.player.closeContainer());
+            // Lookbook: the first page, then a crafted piece and a traded one
+            context.setScreen(() -> new dev.eliasnvx.femboymod.client.LookbookScreen(null));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_lookbook");
+            context.setScreen(() -> new dev.eliasnvx.femboymod.client.LookbookScreen(null, FemboyItems.CANVAS_BACKPACK.get()));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_lookbook_backpack");
+            context.setScreen(() -> new dev.eliasnvx.femboymod.client.LookbookScreen(null, FemboyItems.PROGRAMMING_SOCKS.get()));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_lookbook_socks");
+            context.setScreen(() -> null);
             world.getServer().runOnServer(server -> CosmeticsManager.setHidden(server.getPlayerList().getPlayers().getFirst(),
                     FemboySlots.TAIL, false));
             world.getServer().runCommand("gamemode creative @p");
@@ -513,6 +700,10 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
             context.waitTicks(SETTLE_TICKS / 2);
             context.takeScreenshot("femboymod_first_person_sleeve");
+            world.getServer().runOnServer(server -> CosmeticsManager.set(server.getPlayerList().getPlayers().getFirst(),
+                    FemboySlots.HANDS, new ItemStack(FemboyItems.CAT_PAW_GLOVES.get())));
+            context.waitTicks(SETTLE_TICKS / 2);
+            context.takeScreenshot("femboymod_first_person_paw");
 
             // Cat Ears: hostile mobs within 16 blocks glow for the wearer.
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
@@ -558,6 +749,95 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
     }
 
     /** Full-HD shot without HUD and toasts, so texture detail can be judged. */
+    /** Whole player at the normal field of view (shoes are out of frame in a close-up), HUD hidden. */
+    private static void fullBody(ClientGameTestContext context, String name) {
+        context.runOnClient(mc -> {
+            mc.options.fov().set(DEFAULT_FOV);
+            mc.gui.toastManager().clear();
+            if (!mc.gui.hud.isHidden()) {
+                mc.gui.hud.toggle();
+            }
+        });
+        context.waitTicks(SETTLE_TICKS / 4);
+        context.takeScreenshot(TestScreenshotOptions.of(name).withSize(CLOSE_UP_WIDTH, CLOSE_UP_HEIGHT));
+        context.runOnClient(mc -> {
+            mc.options.fov().set(ZOOM_FOV);
+            mc.gui.hud.toggle();
+        });
+        context.waitTicks(SETTLE_TICKS / 4);
+    }
+
+    /** A tamed, still pet of the player's in the showcase, wearing outfit pieces. */
+    private static void spawnPet(ServerPlayer owner, net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.TamableAnimal> type,
+                                 double dx, double dz, float yaw, net.minecraft.world.item.Item head, net.minecraft.world.item.Item neck) {
+        var pet = type.create(owner.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        if (pet == null) {
+            return;
+        }
+        pet.snapTo(owner.getX() + dx, owner.getY(), owner.getZ() + dz, yaw, 0.0F);
+        pet.setYHeadRot(yaw);
+        pet.setYBodyRot(yaw);
+        pet.setNoAi(true);
+        pet.setPersistenceRequired();
+        pet.tame(owner);
+        pet.setOrderedToSit(false);
+        pet.addTag(SHOWCASE_TAG);
+        dev.eliasnvx.femboymod.pet.PetOutfits.putOn(owner, pet, dev.eliasnvx.femboymod.pet.PetOutfitItem.Slot.HEAD, new ItemStack(head));
+        dev.eliasnvx.femboymod.pet.PetOutfits.putOn(owner, pet, dev.eliasnvx.femboymod.pet.PetOutfitItem.Slot.NECK, new ItemStack(neck));
+        boolean added = owner.level().addFreshEntity(pet);
+        FemboyMod.LOGGER.info("showcase pet {} at {} added={}", type.toShortString(), pet.position(), added);
+    }
+
+    /** One pet {@link #PET_DISTANCE} ahead, turned to the camera, close-up at the pitch that centers its head. */
+    private static void petCloseUp(TestSingleplayerContext world, ClientGameTestContext context,
+                                   net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.TamableAnimal> type,
+                                   net.minecraft.world.item.Item head, net.minecraft.world.item.Item neck, int pitch, String name) {
+        world.getServer().runOnServer(server -> {
+            ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+            spawnPet(player, type, 0.0, PET_DISTANCE, PET_CLOSE_UP_YAW, head, neck);
+        });
+        world.getServer().runCommand("tp @p ~ ~ ~ 0 " + pitch);
+        context.waitTicks(SETTLE_TICKS / 2);
+        closeUp(context, name);
+        world.getServer().runOnServer(server -> clearShowcase(server.getPlayerList().getPlayers().getFirst()));
+    }
+
+    private static final double[] REMEMBERED = new double[3];
+
+    private static void rememberPosition(ServerPlayer player) {
+        REMEMBERED[0] = player.getX();
+        REMEMBERED[1] = player.getY();
+        REMEMBERED[2] = player.getZ();
+    }
+
+    private static void returnToRememberedPosition(ServerPlayer player) {
+        player.teleportTo(REMEMBERED[0], REMEMBERED[1], REMEMBERED[2]);
+    }
+
+    private static void stashHands(ServerPlayer player) {
+        STASHED_HANDS[0] = player.getMainHandItem().copy();
+        STASHED_HANDS[1] = player.getOffhandItem().copy();
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, ItemStack.EMPTY);
+    }
+
+    private static void restoreHands(ServerPlayer player) {
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, STASHED_HANDS[0]);
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, STASHED_HANDS[1]);
+    }
+
+    /** Removes the showcase mobs without killing them (no drops). */
+    private static void clearShowcase(ServerPlayer player) {
+        List<net.minecraft.world.entity.Entity> showcase = new java.util.ArrayList<>();
+        for (var entity : player.level().getAllEntities()) {
+            if (entity.entityTags().contains(SHOWCASE_TAG)) {
+                showcase.add(entity);
+            }
+        }
+        FemboyMod.LOGGER.info("showcase cleared: {}", showcase.stream().map(e -> e.getType().toShortString()).toList());
+        showcase.forEach(net.minecraft.world.entity.Entity::discard);
+    }
+
     private static void closeUp(ClientGameTestContext context, String name) {
         context.runOnClient(mc -> {
             mc.options.fov().set(CLOSE_UP_FOV);
