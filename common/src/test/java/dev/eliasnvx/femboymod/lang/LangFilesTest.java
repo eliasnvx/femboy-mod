@@ -27,7 +27,7 @@ class LangFilesTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn"})
+    @ValueSource(strings = {"ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn", "pl_pl", "tr_tr", "ko_kr", "it_it", "uk_ua"})
     void sameKeysAsEnglish(String lang) throws IOException {
         JsonObject english = read("en_us");
         JsonObject other = read(lang);
@@ -35,7 +35,7 @@ class LangFilesTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn"})
+    @ValueSource(strings = {"ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn", "pl_pl", "tr_tr", "ko_kr", "it_it", "uk_ua"})
     void samePlaceholdersAsEnglish(String lang) throws IOException {
         JsonObject english = read("en_us");
         JsonObject other = read(lang);
@@ -54,7 +54,7 @@ class LangFilesTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"en_us", "ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn"})
+    @ValueSource(strings = {"en_us", "ru_ru", "es_es", "de_de", "fr_fr", "pt_br", "nl_nl", "sv_se", "ja_jp", "zh_cn", "pl_pl", "tr_tr", "ko_kr", "it_it", "uk_ua"})
     void noEmptyValues(String lang) throws IOException {
         JsonObject json = read(lang);
         Set<String> empty = new TreeSet<>();

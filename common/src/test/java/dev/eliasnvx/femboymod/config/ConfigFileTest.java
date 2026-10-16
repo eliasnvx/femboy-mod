@@ -42,6 +42,18 @@ class ConfigFileTest {
     }
 
     @Test
+    void hudCornerAutoAvoidsATopLeftMinimap() throws Exception {
+        Path file = dir.resolve("c.json");
+        Files.writeString(file, "{\"femboy_level_panel_corner\": \"top_right\"}");
+        ClientConfig loaded = new ConfigFile<>(file, ClientConfig.CODEC, ClientConfig.DEFAULTS).load();
+        assertEquals(ClientConfig.HudCorner.TOP_RIGHT, loaded.hudCorner());
+        assertEquals(ClientConfig.HudCorner.TOP_RIGHT, loaded.hudCorner().resolve(true), "a chosen corner stays");
+        assertEquals(ClientConfig.HudCorner.AUTO, ClientConfig.DEFAULTS.hudCorner());
+        assertEquals(ClientConfig.HudCorner.TOP_LEFT, ClientConfig.HudCorner.AUTO.resolve(false));
+        assertEquals(ClientConfig.HudCorner.BOTTOM_RIGHT, ClientConfig.HudCorner.AUTO.resolve(true));
+    }
+
+    @Test
     void brokenFileFallsBackAndKeepsBackup() throws Exception {
         Path file = dir.resolve("s.json");
         Files.writeString(file, "{ keep_cosmetics_on_death: yes please");
