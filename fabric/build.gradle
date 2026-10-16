@@ -31,6 +31,33 @@ dependencies {
         runtimeOnly "maven.modrinth:sodium:${rootProject.sodium_fabric_version}"
         runtimeOnly "maven.modrinth:iris:${rootProject.iris_fabric_version}"
     }
+    // Map mods smoke test: ./gradlew :fabric:runClientGameTest -Pcompat_maps=true (MapModsClientTest)
+    if (project.findProperty("compat_maps") == "true") {
+        runtimeOnly "maven.modrinth:xaeros-world-map:${rootProject.xaero_worldmap_fabric_version}"
+        runtimeOnly "maven.modrinth:xaeros-minimap:${rootProject.xaero_minimap_fabric_version}"
+        runtimeOnly "maven.modrinth:journeymap:${rootProject.journeymap_fabric_version}"
+    }
+    // Model/skin mods smoke test: ./gradlew :fabric:runClientGameTest -Pcompat_models=true (CompatModelsClientTest);
+    // or a comma list of etf, emf (needs etf), skinlayers, firstperson, emotecraft to load only some of them
+    def compatModels = (project.findProperty("compat_models") ?: "").toString()
+    def modelMods = compatModels == "true" ? ["etf", "emf", "skinlayers", "firstperson", "emotecraft"] : compatModels.tokenize(",")
+    if (modelMods.contains("emf")) {
+        runtimeOnly "maven.modrinth:entity-model-features:${rootProject.emf_fabric_version}"
+    }
+    if (modelMods.contains("etf")) {
+        runtimeOnly "maven.modrinth:entitytexturefeatures:${rootProject.etf_fabric_version}"
+    }
+    if (modelMods.contains("skinlayers")) {
+        runtimeOnly "maven.modrinth:3dskinlayers:${rootProject.skinlayers_fabric_version}"
+    }
+    if (modelMods.contains("firstperson")) {
+        runtimeOnly "maven.modrinth:first-person-model:${rootProject.firstperson_fabric_version}"
+        runtimeOnly "maven.modrinth:not-enough-animations:${rootProject.notenoughanimations_fabric_version}"
+    }
+    if (modelMods.contains("emotecraft")) {
+        runtimeOnly "maven.modrinth:emotecraft:${rootProject.emotecraft_fabric_version}"
+        runtimeOnly "maven.modrinth:player-animation-library:${rootProject.playeranimationlib_fabric_version}"
+    }
     // JEI compat check (SPEC §9): ./gradlew :fabric:runClient -Pcompat_jei=true
     if (project.findProperty("compat_jei") == "true") {
         runtimeOnly "mezz.jei:jei-${rootProject.minecraft_version}-fabric:${rootProject.jei_version}"

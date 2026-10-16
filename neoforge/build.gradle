@@ -22,6 +22,12 @@ dependencies {
     common(project(path: ":common")) { transitive false }
     shadowBundle(project(path: ":api", configuration: "transformProductionNeoForge")) { transitive false }
     shadowBundle(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
+
+    // Slot mod (SPEC §4.3): wear our cosmetics in its slots. Compile only; -Pcompat_slots=true adds Curios to the dev runtime
+    compileOnly("maven.modrinth:curios:${rootProject.curios_neoforge_version}") { transitive false }
+    if (project.findProperty("compat_slots") == "true") {
+        runtimeOnly "maven.modrinth:curios:${rootProject.curios_neoforge_version}"
+    }
 }
 
 // Server GameTests (SPEC §13): shared bodies in common/.../gametest, registered by FemboyGameTestsNeoForge.
