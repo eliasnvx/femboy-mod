@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "P": "minecraft:packed_ice",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "III",
+    "IPI",
+    "IRI"
+  ],
+  "result": {
+    "id": "femboymod:mini_fridge"
+  }
+}

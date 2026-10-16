@@ -31,7 +31,7 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
     public static final int TOP = 18;
     public static final int LEFT_X = 8;
     public static final int RIGHT_X = WIDTH - 8 - 16;
-    public static final int COLUMN_SLOTS = 5;
+    public static final int COLUMN_SLOTS = 6;
     /** The doll's window and the info box between the two slot columns. */
     public static final int DOLL_X = 28;
     public static final int DOLL_W = 62;
@@ -48,7 +48,7 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
     private static final List<Identifier> LEFT = List.of(FemboySlots.HEAD_ACCESSORY, FemboySlots.FACE, FemboySlots.NECK,
             FemboySlots.OUTFIT_TOP, FemboySlots.HANDS);
     private static final List<Identifier> RIGHT = List.of(FemboySlots.BACK, FemboySlots.TAIL, FemboySlots.OUTFIT_BOTTOM,
-            FemboySlots.WAIST, FemboySlots.LEGS_OVERLAY);
+            FemboySlots.WAIST, FemboySlots.LEGS_OVERLAY, FemboySlots.FEET);
 
     public static final int APPLY_BUTTON = 0;
     public static final int SAVE_BUTTON = WardrobePresets.COUNT;
@@ -76,8 +76,11 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
         }
         left.sort(Comparator.comparingInt(i -> LEFT.indexOf(cosmetics.slotId(i))));
         right.sort(Comparator.comparingInt(i -> RIGHT.indexOf(cosmetics.slotId(i))));
+        while (left.size() < COLUMN_SLOTS && !extra.isEmpty()) {
+            left.add(extra.removeFirst()); // addon slots fill the free spots in the columns first
+        }
         while (right.size() < COLUMN_SLOTS && !extra.isEmpty()) {
-            right.add(extra.removeFirst()); // first addon slot fills the free spot on the right
+            right.add(extra.removeFirst());
         }
         this.extraRows = (extra.size() + MAX_EXTRA_PER_ROW - 1) / MAX_EXTRA_PER_ROW;
 

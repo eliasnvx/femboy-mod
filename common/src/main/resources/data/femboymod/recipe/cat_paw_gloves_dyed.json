@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_dye",
+  "dye": "#minecraft:dyes",
+  "group": "femboymod_dyed",
+  "result": {
+    "id": "femboymod:cat_paw_gloves"
+  },
+  "target": "femboymod:cat_paw_gloves"
+}

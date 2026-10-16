@@ -35,6 +35,7 @@ public final class BuiltinCosmeticRenderers {
     private static final int SKIRT_DARK = 0x3A3A48;
     private static final int SOCK_PINK = 0xF5A9B8;
     private static final int SOCK_WHITE = 0xFFFFFF;
+    private static final int SNEAKER_PINK = 0xF7B8D2;
     private static final int FISHNET_BLACK = 0x2A2A2A;
     private static final int CHOKER_BLACK = 0x2A2A33;
 
@@ -58,6 +59,12 @@ public final class BuiltinCosmeticRenderers {
     private static final int HEADPHONES_PINK = 0xF7A8CC;
     private static final int NEON_CYAN = 0x7CF7FF;
     private static final int SHADES_LENS = 0x121218;
+    /** Halloween defaults; the first-person sleeves use the same ones. */
+    static final int WITCH_PURPLE = 0x5B3A8C;
+    static final int PUMPKIN_ORANGE = 0xF08A24;
+    static final int SHEET_WHITE = 0xF2F2F6;
+    private static final int STEM_GREEN = 0x5E9E2E;
+    private static final int CANDY_PINK = 0xFF7EB6;
 
     /** Accent = main mixed toward white (>0) or black (<0) by this amount. */
     private static final float LIGHTER = 0.45F;
@@ -106,6 +113,24 @@ public final class BuiltinCosmeticRenderers {
         registry.register(id("striped_mittens"), models -> new GroupedRenderer(
                 models, CosmeticModels.MITTENS, Groups.GroupModelFactory.PLAIN, KNIT, SOCK_PINK, DARKER, BOW_PINK)
                 .withDefaultSecondary(SOCK_WHITE));
+        registry.register(id("sneakers"), models -> new GroupedRenderer(
+                models, CosmeticModels.SNEAKERS, Groups.GroupModelFactory.PLAIN, FABRIC, SNEAKER_PINK, DARKER, CORD_WHITE));
+        registry.register(id("canvas_high_tops"), models -> new GroupedRenderer(
+                models, CosmeticModels.CANVAS_HIGH_TOPS, Groups.GroupModelFactory.PLAIN, FABRIC, LAVENDER, DARKER, CORD_WHITE));
+        registry.register(id("platform_sneakers"), models -> new GroupedRenderer(
+                models, CosmeticModels.PLATFORM_SNEAKERS, Groups.GroupModelFactory.PLAIN, FABRIC, PINK, DARKER, CORD_WHITE));
+        registry.register(id("bunny_slippers"), models -> new GroupedRenderer(
+                models, CosmeticModels.BUNNY_SLIPPERS, Groups.GroupModelFactory.PLAIN, FUR, FUR_WHITE, DARKER, BOW_PINK));
+        registry.register(id("cat_paw_gloves"), models -> new GroupedRenderer(
+                models, CosmeticModels.CAT_PAW_GLOVES, Groups.GroupModelFactory.PLAIN, FUR, FUR_WHITE, DARKER, BOW_PINK));
+        registry.register(id("witch_hat"), models -> new GroupedRenderer(
+                models, CosmeticModels.WITCH_HAT, Groups.GroupModelFactory.PLAIN, FABRIC, WITCH_PURPLE, LIGHTER, CORD_WHITE));
+        registry.register(id("pumpkin_hoodie"), models -> new GroupedRenderer(
+                models, CosmeticModels.PUMPKIN_HOODIE, CosmeticModels.HoodieModel::new, KNIT, PUMPKIN_ORANGE, DARKER, STEM_GREEN));
+        registry.register(id("ghost_sheet"), models -> new GroupedRenderer(
+                models, CosmeticModels.GHOST_SHEET, Groups.GroupModelFactory.PLAIN, FABRIC, SHEET_WHITE, DARKER, CORD_WHITE));
+        registry.register(id("candy_pail"), models -> new GroupedRenderer(
+                models, CosmeticModels.CANDY_PAIL, Groups.GroupModelFactory.PLAIN, FABRIC, PUMPKIN_ORANGE, DARKER, CANDY_PINK));
         registry.register(id("fishnet_tights"), models -> new GroupedRenderer(
                 models, CosmeticModels.FISHNET, Groups.GroupModelFactory.PLAIN, FISHNET, FISHNET_BLACK, DARKER, BOW_PINK));
         registry.register(id("uwu_choker"), models -> new GroupedRenderer(
@@ -173,7 +198,7 @@ public final class BuiltinCosmeticRenderers {
     }
 
     /** Mixes a color toward white ({@code amount > 0}) or black ({@code amount < 0}). */
-    static int shade(int rgb, float amount) {
+    public static int shade(int rgb, float amount) {
         int target = amount >= 0 ? 0xFFFFFF : 0x000000;
         float t = Math.abs(amount);
         int r = (int) (ARGB.red(rgb) + (ARGB.red(target) - ARGB.red(rgb)) * t);

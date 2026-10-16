@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": "minecraft:string",
+    "G": "minecraft:glowstone_dust"
+  },
+  "pattern": [
+    "SGS"
+  ],
+  "result": {
+    "id": "femboymod:fairy_lights",
+    "count": 2
+  }
+}

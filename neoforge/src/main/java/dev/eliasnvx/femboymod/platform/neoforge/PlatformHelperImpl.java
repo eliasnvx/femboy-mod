@@ -6,6 +6,7 @@ import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.RegisterFemboyAddon;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
+import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
@@ -21,7 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
+import net.neoforged.neoforge.registries.NewDatapackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforgespi.language.IModFileInfo;
@@ -47,6 +48,8 @@ public final class PlatformHelperImpl {
     private static final Supplier<AttachmentType<CaffeineLog>> CAFFEINE = ATTACHMENTS.register("caffeine",
             () -> AttachmentType.builder(() -> CaffeineLog.EMPTY).serialize(CaffeineLog.CODEC.fieldOf("drinks")).build());
 
+    private static final Supplier<AttachmentType<Long>> TREAT_DAY = ATTACHMENTS.register("treat_day",
+            () -> AttachmentType.builder(() -> -1L).serialize(com.mojang.serialization.Codec.LONG.fieldOf("day")).build());
     private static final Supplier<AttachmentType<WardrobePresets>> PRESETS = ATTACHMENTS.register("wardrobe_presets",
             () -> AttachmentType.builder(() -> WardrobePresets.EMPTY).serialize(WardrobePresets.CODEC.fieldOf("presets")).copyOnDeath().build());
     private static final Supplier<AttachmentType<ProfileData>> PROFILE = ATTACHMENTS.register("profile",
@@ -60,16 +63,17 @@ public final class PlatformHelperImpl {
     public static void init(IEventBus modBus) {
         ATTACHMENTS.register(modBus);
         POIS.register(modBus);
-        modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-            event.dataPackRegistry(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC, ColorwayPattern.CODEC);
-            event.dataPackRegistry(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC, CosmeticStats.CODEC);
-            event.dataPackRegistry(SetBonus.REGISTRY_KEY, SetBonus.CODEC, SetBonus.CODEC);
-            event.dataPackRegistry(DripRules.REGISTRY_KEY, DripRules.CODEC, DripRules.CODEC);
-            event.dataPackRegistry(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
-            event.dataPackRegistry(dev.eliasnvx.femboymod.food.BubbleTeaFlavor.REGISTRY_KEY, dev.eliasnvx.femboymod.food.BubbleTeaFlavor.CODEC);
-            event.dataPackRegistry(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
-            event.dataPackRegistry(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
-            event.dataPackRegistry(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
+        modBus.addListener((NewDatapackRegistryEvent event) -> {
+            event.worldRegistry(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC, ColorwayPattern.CODEC);
+            event.worldRegistry(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC, CosmeticStats.CODEC);
+            event.worldRegistry(LookbookEntry.REGISTRY_KEY, LookbookEntry.CODEC, LookbookEntry.CODEC);
+            event.worldRegistry(SetBonus.REGISTRY_KEY, SetBonus.CODEC, SetBonus.CODEC);
+            event.worldRegistry(DripRules.REGISTRY_KEY, DripRules.CODEC, DripRules.CODEC);
+            event.worldRegistry(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
+            event.worldRegistry(dev.eliasnvx.femboymod.food.BubbleTeaFlavor.REGISTRY_KEY, dev.eliasnvx.femboymod.food.BubbleTeaFlavor.CODEC);
+            event.worldRegistry(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
+            event.worldRegistry(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
+            event.worldRegistry(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
         });
     }
 
@@ -124,6 +128,14 @@ public final class PlatformHelperImpl {
         player.setData(PROFILE, profile);
     }
 
+    public static long getLastTreatDay(net.minecraft.world.entity.Entity entity) {
+        return entity.getData(TREAT_DAY);
+    }
+
+    public static void setLastTreatDay(net.minecraft.world.entity.Entity entity, long day) {
+        entity.setData(TREAT_DAY, day);
+    }
+
     public static CaffeineLog getCaffeineLog(Player player) {
         return player.getData(CAFFEINE);
     }
@@ -144,5 +156,7 @@ public final class PlatformHelperImpl {
     public static void registerPoi() {
         POIS.register(FemboyBlocks.THRIFTER_POI.identifier().getPath(), () -> new PoiType(
                 java.util.Set.copyOf(FemboyBlocks.CLOTHING_RACK.get().getStateDefinition().getPossibleStates()), 1, 1));
+        POIS.register(FemboyBlocks.LAUNDRY_BASKET_POI.identifier().getPath(), () -> new PoiType(
+                java.util.Set.copyOf(FemboyBlocks.LAUNDRY_BASKET.get().getStateDefinition().getPossibleStates()), 0, 1));
     }
 }

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:white_wool",
+    "minecraft:white_wool",
+    "minecraft:pink_dye",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:cat_paw_gloves"
+  }
+}

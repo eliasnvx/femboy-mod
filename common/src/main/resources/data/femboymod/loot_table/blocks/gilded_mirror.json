@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "femboymod:gilded_mirror",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "femboymod:gilded_mirror",
+            "state": {
+              "half": "lower"
+            }
+          }
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "femboymod:blocks/gilded_mirror"
+}

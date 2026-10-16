@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "femboymod_neon",
+  "ingredients": [
+    "femboymod:bunny_slippers",
+    "femboymod:neon_quartz",
+    "femboymod:neon_quartz"
+  ],
+  "result": {
+    "id": "femboymod:bunny_slippers",
+    "components": {
+      "femboymod:colorway": {
+        "base_color": "#FFFFFF",
+        "pattern": "femboymod:neon"
+      }
+    }
+  }
+}

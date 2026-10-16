@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "femboymod:lava_lamp",
+          "modifier": [
+            {
+              "type": "minecraft:copy_state",
+              "block": "femboymod:lava_lamp",
+              "properties": [
+                "color"
+              ]
+            }
+          ]
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "femboymod:blocks/lava_lamp"
+}

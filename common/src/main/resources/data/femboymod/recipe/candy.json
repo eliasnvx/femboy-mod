@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:sugar",
+    "minecraft:paper",
+    "minecraft:pink_dye"
+  ],
+  "result": {
+    "id": "femboymod:candy",
+    "count": 3
+  }
+}

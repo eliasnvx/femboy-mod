@@ -18,5 +18,8 @@ public final class FemboyNetwork {
         NetworkManager.registerC2S(ToggleCosmeticHiddenPayload.TYPE, ToggleCosmeticHiddenPayload.STREAM_CODEC, ToggleCosmeticHiddenPayload::handle);
         NetworkManager.registerC2S(CreativeCosmeticSetPayload.TYPE, CreativeCosmeticSetPayload.STREAM_CODEC, CreativeCosmeticSetPayload::handle);
         NetworkManager.registerC2S(CosmeticPanelClickPayload.TYPE, CosmeticPanelClickPayload.STREAM_CODEC, CosmeticPanelClickPayload::handle);
+        NetworkManager.registerC2S(PhotoPayloads.Upload.TYPE, PhotoPayloads.Upload.STREAM_CODEC, PhotoPayloads.Upload::handle);
+        NetworkManager.registerC2S(PhotoPayloads.Request.TYPE, PhotoPayloads.Request.STREAM_CODEC, PhotoPayloads.Request::handle);
+        NetworkManager.registerS2C(PhotoPayloads.Picture.TYPE, PhotoPayloads.Picture.STREAM_CODEC, PhotoPayloads.Picture::handle);
     }
 }

@@ -1,0 +1,15 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:purple_wool",
+          "count": 2
+        },
+        "minecraft:black_wool",
+        "minecraft:gold_nugget"
+      ]
+    }
+  ]
+}

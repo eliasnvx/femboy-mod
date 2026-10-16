@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:light_blue_wool",
+    "minecraft:white_dye"
+  ],
+  "result": {
+    "id": "femboymod:pet_bandana"
+  }
+}

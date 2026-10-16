@@ -43,7 +43,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
 
     private static final int DOLL_BACKGROUND = 0xFF1D1A22;
     private static final int INFO_BACKGROUND = 0xFFE9DDE6;
-    private static final int DOLL_SCALE = 34;
+    private static final int DOLL_SCALE = 40;
     private static final float DOLL_Y_OFFSET = 0.0625F;
     private static final int INFO_PADDING = 4;
     private static final int LINE = 10;
@@ -58,7 +58,9 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
     private static final int STATS_GAP = 4;
     /** Armor toggles under the coupon button: one slot per armor piece. */
     private static final int ARMOR_ROW_GAP = 4;
-    private static final int STATS_H = 2 * LINE + PRESET_BUTTON_H + ARMOR_ROW_GAP + FemboyGui.SLOT + 6;
+    /** Lookbook button under the coupon button. */
+    private static final int BUTTON_ROW = PRESET_BUTTON_H + 2;
+    private static final int STATS_H = 2 * LINE + PRESET_BUTTON_H + BUTTON_ROW + ARMOR_ROW_GAP + FemboyGui.SLOT + 6;
     private static final String[] ARMOR_SPRITES = {"container/slot/helmet", "container/slot/chestplate",
             "container/slot/leggings", "container/slot/boots"};
     private static final int ARMOR_SHOWN_TEXT = 0xFFFFFFFF;
@@ -93,6 +95,11 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
                 .bounds(x, couponY, COUPON_W, PRESET_BUTTON_H)
                 .tooltip(Tooltip.create(Component.translatable("gui.femboymod.outfit.coupon.tooltip", cost)))
                 .build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.femboymod.outfit.lookbook"),
+                        b -> Minecraft.getInstance().gui.setScreen(new LookbookScreen(this)))
+                .bounds(x, couponY + BUTTON_ROW, COUPON_W, PRESET_BUTTON_H)
+                .tooltip(Tooltip.create(Component.translatable("gui.femboymod.outfit.lookbook.tooltip")))
+                .build());
     }
 
     /** Top-left of the armor toggle for {@code index} (0 head .. 3 feet), relative to the screen origin. */
@@ -101,7 +108,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
     }
 
     private static int armorY() {
-        return presetsBottom() + STATS_GAP + 2 * LINE + PRESET_BUTTON_H + ARMOR_ROW_GAP;
+        return presetsBottom() + STATS_GAP + 2 * LINE + PRESET_BUTTON_H + BUTTON_ROW + ARMOR_ROW_GAP;
     }
 
     private int hoveredArmor(double mouseX, double mouseY) {

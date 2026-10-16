@@ -28,6 +28,8 @@ public final class FemboyGameRules {
     /** Cosmetics stay on when the player dies (like keepInventory, only for cosmetic slots). */
     public static final RegistrySupplier<GameRule<Boolean>> KEEP_COSMETICS = bool("keep_cosmetics", GameRuleCategory.DROPS, false);
     /** Players may hide their armor under the outfit; off = armor is always drawn (PvP servers). */
+    /** Sock Goblins steal socks (off: they just giggle and wander). */
+    public static final RegistrySupplier<GameRule<Boolean>> SOCK_GOBLIN_THEFT = bool("sock_goblin_theft", GameRuleCategory.MOBS, true);
     public static final RegistrySupplier<GameRule<Boolean>> ALLOW_HIDDEN_ARMOR = bool("allow_hidden_armor", GameRuleCategory.PLAYER, true);
     /**
      * PvP: percent more damage per Drip tier the attacker is above the victim (and less when below).

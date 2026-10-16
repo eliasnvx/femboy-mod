@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_dye",
+  "dye": "#minecraft:dyes",
+  "group": "femboymod_dyed",
+  "result": {
+    "id": "femboymod:pet_bandana"
+  },
+  "target": "femboymod:pet_bandana"
+}

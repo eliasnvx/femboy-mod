@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "femboymod:sneakers",
+    "minecraft:quartz_slab",
+    "minecraft:quartz_slab"
+  ],
+  "result": {
+    "id": "femboymod:platform_sneakers"
+  }
+}

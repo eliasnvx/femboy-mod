@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "N": "minecraft:iron_nugget",
+    "G": "minecraft:glass_pane",
+    "M": "minecraft:magma_cream",
+    "I": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    " N ",
+    "GMG",
+    " I "
+  ],
+  "result": {
+    "id": "femboymod:lava_lamp"
+  }
+}

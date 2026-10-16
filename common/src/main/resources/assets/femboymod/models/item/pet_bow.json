@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/pet_bow",
+    "layer1": "femboymod:item/pet_bow_detail"
+  }
+}

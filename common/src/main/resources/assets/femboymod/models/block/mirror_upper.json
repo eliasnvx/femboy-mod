@@ -1,0 +1,7 @@
+{
+  "parent": "femboymod:block/mirror_template_upper",
+  "textures": {
+    "frame": "femboymod:block/mirror_frame",
+    "back": "femboymod:block/mirror_back"
+  }
+}

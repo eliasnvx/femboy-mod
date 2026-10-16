@@ -1,0 +1,15 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:iron_chain",
+          "count": 2
+        },
+        "minecraft:leather",
+        "minecraft:gold_nugget"
+      ]
+    }
+  ]
+}

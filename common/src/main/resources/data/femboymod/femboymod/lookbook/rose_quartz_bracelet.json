@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:gold_nugget",
+          "count": 7
+        },
+        "femboymod:rose_quartz"
+      ]
+    }
+  ]
+}

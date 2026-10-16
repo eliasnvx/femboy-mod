@@ -65,7 +65,7 @@ public final class WornEvaluator {
     }
 
     public static synchronized Evaluation evaluate(Player player) {
-        CosmeticInventory inventory = CosmeticsManager.get(player);
+        CosmeticInventory inventory = CosmeticsManager.worn(player);
         RegistryAccess registries = player.level().registryAccess();
         // Server: the femboymod:set_bonuses game rule can switch sets off per world (clients follow the server's effects)
         boolean setsAllowed = FemboyConfig.common().setBonusesEnabled() && !(player.level() instanceof ServerLevel serverLevel

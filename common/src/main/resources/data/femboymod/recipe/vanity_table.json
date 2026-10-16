@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "M": "femboymod:mirror",
+    "P": "#minecraft:planks"
+  },
+  "pattern": [
+    " M ",
+    "PPP",
+    "P P"
+  ],
+  "result": {
+    "id": "femboymod:vanity_table"
+  }
+}

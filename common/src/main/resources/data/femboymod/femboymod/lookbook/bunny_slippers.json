@@ -1,0 +1,26 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:white_wool",
+          "count": 2
+        },
+        "minecraft:rabbit_hide",
+        "minecraft:pink_dye"
+      ]
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "femboymod:style_coupon",
+          "count": 3
+        }
+      ],
+      "from": "femboymod:cosplayer",
+      "note": "lookbook.femboymod.note.colorway"
+    }
+  ]
+}

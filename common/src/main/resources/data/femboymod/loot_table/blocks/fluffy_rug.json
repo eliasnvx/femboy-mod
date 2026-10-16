@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "femboymod:fluffy_rug",
+          "modifier": [
+            {
+              "type": "minecraft:copy_state",
+              "block": "femboymod:fluffy_rug",
+              "properties": [
+                "color"
+              ]
+            }
+          ]
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "femboymod:blocks/fluffy_rug"
+}

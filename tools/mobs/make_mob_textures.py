@@ -292,7 +292,77 @@ def caffeinated_zombie_eyes():
     return img
 
 
-TEXTURES = {"bug.png": bug, "caffeinated_zombie.png": caffeinated_zombie, "caffeinated_zombie_eyes.png": caffeinated_zombie_eyes, "hissy_cat_eyes.png": hissy_cat_eyes, "fashion_critic.png": fashion_critic, "cosplayer.png": cosplayer}
+def sock_goblin():
+    """Sock Goblin (64x32): mint skin, lavender cap, big dark eyes, long ears with pink insides, a patched brown
+    tunic, and mismatched striped socks (pink on the right leg, blue on the left)."""
+    rng = random.Random(11)
+    img = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
+    skin, cap, tunic = hexc("#8FD6A8"), hexc("#C8A2E8"), hexc("#8A6A4A")
+    dark, white, pink, blue, blush = hexc("#2A2328"), hexc("#FFF6F8"), hexc("#FF8FB8"), hexc("#7EC8F0"), hexc("#F7A8C0")
+    box(img, 0, 0, 6, 5, 5, skin, rng)                     # head
+    for name, (x0, y0, w, h) in faces(0, 0, 6, 5, 5).items():
+        if name == "up":
+            fill(img, (x0, y0, w, h), cap, rng, (0.95, 1.0, 1.05))
+        elif name != "down":
+            fill(img, (x0, y0, w, 1), cap, rng, (0.95, 1.0))  # cap brim around the head
+    fx, fy, _, _ = faces(0, 0, 6, 5, 5)["north"]
+    for ex in (1, 4):                                       # big eyes with a highlight
+        img.putpixel((fx + ex, fy + 2), dark)
+        img.putpixel((fx + ex, fy + 3), dark)
+        img.putpixel((fx + ex, fy + 2), white)
+    img.putpixel((fx + 0, fy + 3), blush)
+    img.putpixel((fx + 5, fy + 3), blush)
+    img.putpixel((fx + 2, fy + 4), dark)                    # grin
+    img.putpixel((fx + 3, fy + 4), dark)
+    box(img, 22, 0, 1, 2, 1, shade(skin, 0.85), rng)        # nose
+    for v in (10, 13):                                      # ears, pink inside on the front
+        box(img, 0, v, 4, 2, 1, skin, rng)
+        x0, y0, w, h = faces(0, v, 4, 2, 1)["north"]
+        fill(img, (x0 + 1, y0, w - 1, 1), pink)
+    box(img, 0, 16, 5, 5, 3, tunic, rng)                    # tunic with a pink patch
+    x0, y0, _, _ = faces(0, 16, 5, 5, 3)["north"]
+    fill(img, (x0 + 1, y0 + 1, 2, 2), pink)
+    img.putpixel((x0 + 3, y0 + 3), shade(tunic, 0.7))
+    for u in (16, 24):                                      # arms, darker hands
+        box(img, u, 16, 2, 5, 2, skin, rng)
+        for name, (x0, y0, w, h) in faces(u, 16, 2, 5, 2).items():
+            if name not in ("up", "down"):
+                fill(img, (x0, y0 + h - 1, w, 1), shade(skin, 0.85))
+    for u, sock in ((0, pink), (8, blue)):                  # legs: striped socks
+        for name, (x0, y0, w, h) in faces(u, 24, 2, 4, 2).items():
+            for y in range(y0, y0 + h):
+                color = sock if (y - y0) % 2 == 0 else white
+                fill(img, (x0, y, w, 1), color, rng, (0.95, 1.0))
+    return img
+
+
+def rubber_duck():
+    """Rubber Duck (32x32): bright yellow with a lighter belly, darker wings, orange beak and feet, dot eyes, blush."""
+    rng = random.Random(5)
+    img = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
+    yellow, wing, orange = hexc("#FFD84A"), hexc("#E8B324"), hexc("#FF8C1A")
+    dark, blush = hexc("#2A2328"), hexc("#FFA3B5")
+    box(img, 0, 0, 5, 4, 6, yellow, rng, (0.97, 1.0, 1.03))   # body
+    x0, y0, w, h = faces(0, 0, 5, 4, 6)["down"]
+    fill(img, (x0, y0, w, h), shade(yellow, 1.08))
+    box(img, 16, 10, 3, 2, 1, yellow, rng)                    # tail
+    box(img, 0, 18, 1, 2, 3, wing, rng)                       # wings
+    box(img, 0, 10, 4, 4, 4, yellow, rng, (0.97, 1.0, 1.03))  # head
+    fx, fy, _, _ = faces(0, 10, 4, 4, 4)["north"]
+    img.putpixel((fx + 0, fy + 1), dark)
+    img.putpixel((fx + 3, fy + 1), dark)
+    img.putpixel((fx + 0, fy + 2), blush)
+    img.putpixel((fx + 3, fy + 2), blush)
+    for side in ("west", "east"):
+        sx, sy, _, _ = faces(0, 10, 4, 4, 4)[side]
+        img.putpixel((sx + 1, sy + 1), dark)
+    box(img, 16, 14, 2, 1, 2, orange, rng)                    # beak
+    box(img, 10, 18, 1, 1, 2, orange, rng)                    # feet
+    return img
+
+
+TEXTURES = {"bug.png": bug, "caffeinated_zombie.png": caffeinated_zombie, "caffeinated_zombie_eyes.png": caffeinated_zombie_eyes, "hissy_cat_eyes.png": hissy_cat_eyes, "fashion_critic.png": fashion_critic, "cosplayer.png": cosplayer,
+            "sock_goblin.png": sock_goblin, "rubber_duck.png": rubber_duck}
 
 
 def main():

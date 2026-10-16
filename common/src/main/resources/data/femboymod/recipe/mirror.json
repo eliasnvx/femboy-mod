@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "P": "minecraft:birch_planks",
+    "G": "minecraft:glass",
+    "I": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    "PGP",
+    "PGP",
+    "PIP"
+  ],
+  "result": {
+    "id": "femboymod:mirror"
+  }
+}

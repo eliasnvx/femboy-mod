@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:string",
+    "minecraft:pink_wool"
+  ],
+  "result": {
+    "id": "femboymod:pet_bow"
+  }
+}

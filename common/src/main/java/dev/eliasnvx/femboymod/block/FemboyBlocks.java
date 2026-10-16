@@ -40,6 +40,10 @@ public final class FemboyBlocks {
             BlockBehaviour.Properties.of().strength(1.5F).sound(SoundType.WOOD).noOcclusion());
     public static final RegistrySupplier<Block> WARDROBE = block("wardrobe", WardrobeBlock::new,
             BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.WOOD));
+    public static final RegistrySupplier<Block> MIRROR = block("mirror", MirrorBlock::new,
+            BlockBehaviour.Properties.of().strength(1.5F).sound(SoundType.GLASS).noOcclusion());
+    public static final RegistrySupplier<Block> GILDED_MIRROR = block("gilded_mirror", MirrorBlock::new,
+            BlockBehaviour.Properties.of().strength(1.5F).sound(SoundType.GLASS).noOcclusion());
     public static final RegistrySupplier<Block> SHARK_PLUSH = plush("shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5));
     public static final RegistrySupplier<Block> CAT_PLUSH = plush("cat_plush", Block.box(3.5, 0.0, 4.5, 14.0, 13.5, 11.5));
     public static final RegistrySupplier<Block> CREEPER_PLUSH = plush("creeper_plush", Block.box(4.0, 0.0, 4.0, 12.0, 13.0, 12.0));
@@ -107,10 +111,40 @@ public final class FemboyBlocks {
             BlockBehaviour.Properties.of().strength(0.3F).sound(SoundType.GLASS).noOcclusion().noCollision()
                     .lightLevel(state -> LedStripBlock.LIGHT));
 
+    // Cozy interior (0.2.0)
+    public static final RegistrySupplier<Block> BEAN_BAG = block("bean_bag", BeanBagBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.8F).sound(SoundType.WOOL).noOcclusion());
+    public static final RegistrySupplier<Block> FLUFFY_RUG = block("fluffy_rug", FluffyRugBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.1F).sound(SoundType.WOOL).noOcclusion().ignitedByLava());
+    public static final RegistrySupplier<Block> FAIRY_LIGHTS = block("fairy_lights", FairyLightsBlock::new,
+            BlockBehaviour.Properties.of().strength(0.2F).sound(SoundType.GLASS).noOcclusion().noCollision()
+                    .lightLevel(state -> FairyLightsBlock.LIGHT));
+    public static final RegistrySupplier<Block> LAVA_LAMP = block("lava_lamp", LavaLampBlock::new,
+            BlockBehaviour.Properties.of().strength(0.6F).sound(SoundType.GLASS).noOcclusion()
+                    .lightLevel(state -> state.getValue(LavaLampBlock.LIT) ? LavaLampBlock.LIGHT : 0));
+    public static final RegistrySupplier<Block> PET_BED = block("pet_bed", PetBedBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.5F).sound(SoundType.WOOL).noOcclusion());
+    public static final RegistrySupplier<Block> LAUNDRY_BASKET = block("laundry_basket", LaundryBasketBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(0.8F).sound(SoundType.BAMBOO_WOOD).noOcclusion());
+    public static final RegistrySupplier<Block> MINI_FRIDGE = block("mini_fridge", MiniFridgeBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(2.0F).sound(SoundType.METAL).noOcclusion());
+    public static final RegistrySupplier<Block> VANITY_TABLE = block("vanity_table", VanityTableBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5F).sound(SoundType.WOOD).noOcclusion());
+
     public static final RegistrySupplier<BlockEntityType<ClothingRackBlockEntity>> CLOTHING_RACK_ENTITY = BLOCK_ENTITIES.register(
             "clothing_rack", () -> new BlockEntityType<>(ClothingRackBlockEntity::new, Set.of(CLOTHING_RACK.get())));
+    public static final RegistrySupplier<BlockEntityType<MirrorBlockEntity>> MIRROR_ENTITY = BLOCK_ENTITIES.register(
+            "mirror", () -> new BlockEntityType<>(MirrorBlockEntity::new, Set.of(MIRROR.get(), GILDED_MIRROR.get(), VANITY_TABLE.get())));
     public static final RegistrySupplier<BlockEntityType<WardrobeBlockEntity>> WARDROBE_ENTITY = BLOCK_ENTITIES.register(
             "wardrobe", () -> new BlockEntityType<>(WardrobeBlockEntity::new, Set.of(WARDROBE.get())));
+
+    public static final RegistrySupplier<BlockEntityType<LaundryBasketBlockEntity>> LAUNDRY_BASKET_ENTITY = BLOCK_ENTITIES.register(
+            "laundry_basket", () -> new BlockEntityType<>(LaundryBasketBlockEntity::new, Set.of(LAUNDRY_BASKET.get())));
+    public static final RegistrySupplier<BlockEntityType<MiniFridgeBlockEntity>> MINI_FRIDGE_ENTITY = BLOCK_ENTITIES.register(
+            "mini_fridge", () -> new BlockEntityType<>(MiniFridgeBlockEntity::new, Set.of(MINI_FRIDGE.get())));
+
+    /** Laundry baskets are points of interest so Sock Goblins find them (registered per loader with the Thrifter's). */
+    public static final ResourceKey<PoiType> LAUNDRY_BASKET_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, id("laundry_basket"));
 
     /** The clothing rack is the Thrifter's job site (POI registered per loader, see PlatformHelper#registerPoi). */
     public static final ResourceKey<PoiType> THRIFTER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, id("thrifter"));
@@ -150,6 +184,12 @@ public final class FemboyBlocks {
     private static RegistrySupplier<Block> plush(String name, VoxelShape northShape) {
         return block(name, props -> new PlushBlock(props, northShape),
                 BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.WOOL).noOcclusion());
+    }
+
+    /** The cozy interior pieces (0.2.0); their items get a how-to tooltip ({@code tooltip.femboymod.<name>}). */
+    public static boolean isInterior(Block block) {
+        return block == BEAN_BAG.get() || block == FLUFFY_RUG.get() || block == FAIRY_LIGHTS.get() || block == LAVA_LAMP.get()
+                || block == PET_BED.get() || block == LAUNDRY_BASKET.get() || block == MINI_FRIDGE.get() || block == VANITY_TABLE.get();
     }
 
     /** Called from FemboyMod.init after the block register. */

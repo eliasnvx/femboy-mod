@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "femboymod:lost_sock",
+    "femboymod:lost_sock"
+  ],
+  "result": {
+    "id": "femboymod:programming_socks"
+  }
+}
