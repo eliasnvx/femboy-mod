@@ -1,5 +1,10 @@
 package dev.eliasnvx.femboymod.registry;
 
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.effect.MobEffectInstance;
+import dev.eliasnvx.femboymod.pet.PetOutfitItem;
+import dev.eliasnvx.femboymod.item.LookbookItem;
 import dev.eliasnvx.femboymod.item.PhoneItem;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.food.FoodProperties;
@@ -41,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class FemboyItems {
 
@@ -78,6 +84,27 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> CYBER_VISOR = cosmetic("cyber_visor", FemboySlots.FACE);
     /** Chunky black sunglasses; the Fashion Critic can't argue with them (#femboymod:critic_approved). */
     public static final RegistrySupplier<Item> DARK_SHADES = cosmetic("dark_shades", FemboySlots.FACE);
+    // 0.2.0: the feet slot (over socks) and paw gloves
+    public static final RegistrySupplier<Item> SNEAKERS = cosmetic("sneakers", FemboySlots.FEET);
+    public static final RegistrySupplier<Item> CANVAS_HIGH_TOPS = cosmetic("canvas_high_tops", FemboySlots.FEET);
+    public static final RegistrySupplier<Item> PLATFORM_SNEAKERS = cosmetic("platform_sneakers", FemboySlots.FEET);
+    public static final RegistrySupplier<Item> BUNNY_SLIPPERS = cosmetic("bunny_slippers", FemboySlots.FEET);
+    public static final RegistrySupplier<Item> CAT_PAW_GLOVES = cosmetic("cat_paw_gloves", FemboySlots.HANDS);
+    // 0.2.0 Halloween costume (#femboymod:halloween_costume, trick-or-treat) and its candy
+    public static final RegistrySupplier<Item> WITCH_HAT = cosmetic("witch_hat", FemboySlots.HEAD_ACCESSORY);
+    public static final RegistrySupplier<Item> PUMPKIN_HOODIE = cosmetic("pumpkin_hoodie", FemboySlots.OUTFIT_TOP);
+    public static final RegistrySupplier<Item> GHOST_SHEET = cosmetic("ghost_sheet", FemboySlots.OUTFIT_TOP);
+    public static final RegistrySupplier<Item> CANDY_PAIL = cosmetic("candy_pail", FemboySlots.WAIST);
+    /** Eaten fast; a short sugar rush. Villagers hand it out to costumed players in the Halloween season. */
+    public static final RegistrySupplier<Item> CANDY = register("candy", props -> new Item(props
+            .food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.1F).alwaysEdible().build(),
+                    Consumables.defaultFood().consumeSeconds(0.6F).onConsume(new ApplyStatusEffectsConsumeEffect(
+                            new MobEffectInstance(MobEffects.SPEED, FemboyItems.CANDY_RUSH_TICKS, 0))).build())));
+    // 0.2.0 pet outfits for tamed cats, wolves and parrots (PetOutfits)
+    public static final RegistrySupplier<Item> PET_BOW = petOutfit("pet_bow", PetOutfitItem.Slot.HEAD);
+    public static final RegistrySupplier<Item> MINI_WITCH_HAT = petOutfit("mini_witch_hat", PetOutfitItem.Slot.HEAD);
+    public static final RegistrySupplier<Item> BELL_COLLAR = petOutfit("bell_collar", PetOutfitItem.Slot.NECK);
+    public static final RegistrySupplier<Item> PET_BANDANA = petOutfit("pet_bandana", PetOutfitItem.Slot.NECK);
 
     // SPEC §5.3: backpacks (worn in the back slot) and charms
     public static final RegistrySupplier<Item> CANVAS_BACKPACK = backpack("canvas_backpack", 1, false);
@@ -104,6 +131,10 @@ public final class FemboyItems {
 
     /** Photo Mode (SPEC v1.1): selfie with a frame and watermark. */
     public static final RegistrySupplier<Item> PHONE = register("phone", props -> new PhoneItem(props.stacksTo(1)));
+    /** Guide book: every cosmetic, where to get it, what you've collected. */
+    public static final RegistrySupplier<Item> LOOKBOOK = register("lookbook", props -> new LookbookItem(props.stacksTo(1)));
+    /** A printed selfie: the picture lives on the server, the item carries its id. */
+    public static final RegistrySupplier<Item> PHOTO = register("photo", props -> new dev.eliasnvx.femboymod.item.PhotoItem(props.stacksTo(16)));
 
     // SPEC v1.1: food. Nutrition like comparable vanilla food; buffs are data-driven (bubble_tea_flavor)
     public static final RegistrySupplier<Item> BUBBLE_TEA = register("bubble_tea", props -> new BubbleTeaItem(props.stacksTo(FemboyItems.DRINK_STACK)
@@ -137,6 +168,10 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> STRAY_CAT_SPAWN_EGG = spawnEgg("stray_cat_spawn_egg", FemboyEntities.STRAY_CAT_KEY);
     public static final RegistrySupplier<Item> COSPLAYER_SPAWN_EGG = spawnEgg("cosplayer_spawn_egg", FemboyEntities.COSPLAYER_KEY);
     public static final RegistrySupplier<Item> FASHION_CRITIC_SPAWN_EGG = spawnEgg("fashion_critic_spawn_egg", FemboyEntities.FASHION_CRITIC_KEY);
+    public static final RegistrySupplier<Item> SOCK_GOBLIN_SPAWN_EGG = spawnEgg("sock_goblin_spawn_egg", FemboyEntities.SOCK_GOBLIN_KEY);
+    public static final RegistrySupplier<Item> RUBBER_DUCK_SPAWN_EGG = spawnEgg("rubber_duck_spawn_egg", FemboyEntities.RUBBER_DUCK_KEY);
+    /** Dropped by Sock Goblins; two make a pair of Programming Socks. */
+    public static final RegistrySupplier<Item> LOST_SOCK = register("lost_sock", props -> new Item(props));
 
     /** Hair clip shapes (SPEC §5.1: "10 forms"); all share the hair_clip renderer. */
     public static final List<String> HAIR_CLIP_SHAPES = List.of(
@@ -146,15 +181,31 @@ public final class FemboyItems {
                     Optional.of(Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "hair_clip")))))
             .toList();
 
-    public static final RegistrySupplier<CreativeModeTab> TAB = TABS.register("main", () -> CreativeTabRegistry.create(builder -> builder
-            .title(Component.translatable("itemGroup.femboymod"))
-            .icon(() -> new ItemStack(CAT_EARS.get()))
-            .displayItems(CreativeTabContents::fill)));
+    // Creative tabs (ids in api FemboyCreativeTabs), in menu order; what goes where: CreativeTabContents
+    public static final RegistrySupplier<CreativeModeTab> TAB = tab(CreativeTabContents.Tab.OUTFITS, "itemGroup.femboymod",
+            () -> new ItemStack(CAT_EARS.get()));
+    public static final RegistrySupplier<CreativeModeTab> ROOM_TAB = tab(CreativeTabContents.Tab.ROOM, "itemGroup.femboymod.room",
+            () -> new ItemStack(dev.eliasnvx.femboymod.block.FemboyBlocks.BEAN_BAG.get()));
+    public static final RegistrySupplier<CreativeModeTab> SNACKS_TAB = tab(CreativeTabContents.Tab.SNACKS, "itemGroup.femboymod.snacks",
+            () -> new ItemStack(BYTE_ENERGY_PINK.get()));
+    public static final RegistrySupplier<CreativeModeTab> MATERIALS_TAB = tab(CreativeTabContents.Tab.MATERIALS,
+            "itemGroup.femboymod.materials", () -> new ItemStack(ROSE_QUARTZ.get()));
+    public static final RegistrySupplier<CreativeModeTab> MOBS_TAB = tab(CreativeTabContents.Tab.MOBS, "itemGroup.femboymod.mobs",
+            () -> new ItemStack(PINK_CREEPER_SPAWN_EGG.get()));
 
     private FemboyItems() {
     }
 
     private static final int DRINK_STACK = 16;
+    /** Candy's sugar rush: Speed I for 5 seconds. */
+    private static final int CANDY_RUSH_TICKS = 100;
+
+    private static RegistrySupplier<CreativeModeTab> tab(CreativeTabContents.Tab tab, String title, Supplier<ItemStack> icon) {
+        return TABS.register(tab.id, () -> CreativeTabRegistry.create(builder -> builder
+                .title(Component.translatable(title))
+                .icon(icon)
+                .displayItems((parameters, output) -> CreativeTabContents.fill(tab, parameters, output))));
+    }
 
     /** Block item for a block registered elsewhere (FemboyBlocks). */
     public static RegistrySupplier<Item> blockItem(String name, RegistrySupplier<Block> block) {
@@ -188,6 +239,10 @@ public final class FemboyItems {
             }
             return new BackpackItem(props);
         });
+    }
+
+    private static RegistrySupplier<Item> petOutfit(String name, PetOutfitItem.Slot slot) {
+        return register(name, props -> new PetOutfitItem(props, slot));
     }
 
     private static RegistrySupplier<Item> cosmetic(String name, Identifier slot) {

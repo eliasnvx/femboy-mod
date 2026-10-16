@@ -33,6 +33,7 @@ public final class CosmeticsEvents {
         PlayerEvent.PLAYER_JOIN.register(player -> {
             CosmeticsSyncPayload.sendToTrackingAndSelf(player);
             ProfileSyncPayload.sendAll(player);
+            ProfileHooks.onJoin(player);
         });
         PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, reason) -> {
             CosmeticEffectsManager.forget(player);
@@ -40,6 +41,7 @@ public final class CosmeticsEvents {
             ProfileSyncPayload.sendAll(player);
         });
         PlayerEvent.PLAYER_QUIT.register(CosmeticEffectsManager::stop);
+        PlayerEvent.PLAYER_QUIT.register(dev.eliasnvx.femboymod.photo.PhotoService::forget);
         TickEvent.PLAYER_POST.register(player -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 CosmeticEffectsManager.tick(serverPlayer);

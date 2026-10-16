@@ -3,6 +3,8 @@ package dev.eliasnvx.femboymod.energy;
 import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
 import dev.eliasnvx.femboymod.api.event.profile.EnergyDrinkEvent;
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
+import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
@@ -25,7 +27,8 @@ public final class EnergyDrinks {
         if (drink == null) {
             return;
         }
-        drink.effects().forEach(buff -> drinker.addEffect(buff.instance()));
+        float bonus = can.has(FemboyComponents.CHILLED.get()) ? 1.0F + FemboyConfig.common().furniture().chilledBonus() : 1.0F;
+        drink.effects().forEach(buff -> drinker.addEffect(longer(buff.instance(), bonus)));
         int duration = drink.longestDuration();
         MobEffectInstance current = drinker.getEffect(FemboyEffects.CAFFEINATED.asHolder());
         if (current == null || current.getDuration() < duration) {
@@ -48,6 +51,15 @@ public final class EnergyDrinks {
             }
             FemboyMod.api().events().post(new EnergyDrinkEvent(player, can, log.count()));
         }
+    }
+
+    /** The effect with its duration scaled (chilled cans); infinite effects stay infinite. */
+    static MobEffectInstance longer(MobEffectInstance effect, float factor) {
+        if (factor == 1.0F || effect.isInfiniteDuration()) {
+            return effect;
+        }
+        return new MobEffectInstance(effect.getEffect(), Math.round(effect.getDuration() * factor), effect.getAmplifier(),
+                effect.isAmbient(), effect.isVisible(), effect.showIcon());
     }
 
     static void crash(ServerLevel level, LivingEntity entity) {

@@ -9,6 +9,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import dev.eliasnvx.femboymod.backpack.BackpackSpec;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.component.ItemContainerContents;
 
 import java.util.function.Supplier;
@@ -38,12 +39,25 @@ public final class FemboyComponents {
                     .networkSynchronized(BackpackSpec.STREAM_CODEC)
                     .build());
 
+    /** Printed photo: picture id and author. */
+    public static final RegistrySupplier<DataComponentType<dev.eliasnvx.femboymod.photo.PhotoData>> PHOTO = REGISTER.register("photo",
+            () -> DataComponentType.<dev.eliasnvx.femboymod.photo.PhotoData>builder()
+                    .persistent(dev.eliasnvx.femboymod.photo.PhotoData.CODEC)
+                    .networkSynchronized(dev.eliasnvx.femboymod.photo.PhotoData.STREAM_CODEC)
+                    .build());
     /** Charms on a backpack; same format as vanilla container contents. */
     public static final RegistrySupplier<DataComponentType<ItemContainerContents>> CHARMS = REGISTER.register("charms",
             () -> DataComponentType.<ItemContainerContents>builder()
                     .persistent(ItemContainerContents.CODEC)
                     .networkSynchronized(ItemContainerContents.STREAM_CODEC)
                     .cacheEncoding()
+                    .build());
+
+    /** A drink cooled in a Mini Fridge: Byte Energy buffs last longer (config {@code furniture.chilled_bonus}). */
+    public static final RegistrySupplier<DataComponentType<Unit>> CHILLED = REGISTER.register("chilled",
+            () -> DataComponentType.<Unit>builder()
+                    .persistent(Unit.CODEC)
+                    .networkSynchronized(Unit.STREAM_CODEC)
                     .build());
 
     public static final FemboyDataComponents API = new FemboyDataComponents() {

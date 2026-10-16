@@ -1,0 +1,100 @@
+{
+  "variants": {
+    "color=white,lit=true": {
+      "model": "femboymod:block/lava_lamp_white"
+    },
+    "color=white,lit=false": {
+      "model": "femboymod:block/lava_lamp_white_off"
+    },
+    "color=orange,lit=true": {
+      "model": "femboymod:block/lava_lamp_orange"
+    },
+    "color=orange,lit=false": {
+      "model": "femboymod:block/lava_lamp_orange_off"
+    },
+    "color=magenta,lit=true": {
+      "model": "femboymod:block/lava_lamp_magenta"
+    },
+    "color=magenta,lit=false": {
+      "model": "femboymod:block/lava_lamp_magenta_off"
+    },
+    "color=light_blue,lit=true": {
+      "model": "femboymod:block/lava_lamp_light_blue"
+    },
+    "color=light_blue,lit=false": {
+      "model": "femboymod:block/lava_lamp_light_blue_off"
+    },
+    "color=yellow,lit=true": {
+      "model": "femboymod:block/lava_lamp_yellow"
+    },
+    "color=yellow,lit=false": {
+      "model": "femboymod:block/lava_lamp_yellow_off"
+    },
+    "color=lime,lit=true": {
+      "model": "femboymod:block/lava_lamp_lime"
+    },
+    "color=lime,lit=false": {
+      "model": "femboymod:block/lava_lamp_lime_off"
+    },
+    "color=pink,lit=true": {
+      "model": "femboymod:block/lava_lamp_pink"
+    },
+    "color=pink,lit=false": {
+      "model": "femboymod:block/lava_lamp_pink_off"
+    },
+    "color=gray,lit=true": {
+      "model": "femboymod:block/lava_lamp_gray"
+    },
+    "color=gray,lit=false": {
+      "model": "femboymod:block/lava_lamp_gray_off"
+    },
+    "color=light_gray,lit=true": {
+      "model": "femboymod:block/lava_lamp_light_gray"
+    },
+    "color=light_gray,lit=false": {
+      "model": "femboymod:block/lava_lamp_light_gray_off"
+    },
+    "color=cyan,lit=true": {
+      "model": "femboymod:block/lava_lamp_cyan"
+    },
+    "color=cyan,lit=false": {
+      "model": "femboymod:block/lava_lamp_cyan_off"
+    },
+    "color=purple,lit=true": {
+      "model": "femboymod:block/lava_lamp_purple"
+    },
+    "color=purple,lit=false": {
+      "model": "femboymod:block/lava_lamp_purple_off"
+    },
+    "color=blue,lit=true": {
+      "model": "femboymod:block/lava_lamp_blue"
+    },
+    "color=blue,lit=false": {
+      "model": "femboymod:block/lava_lamp_blue_off"
+    },
+    "color=brown,lit=true": {
+      "model": "femboymod:block/lava_lamp_brown"
+    },
+    "color=brown,lit=false": {
+      "model": "femboymod:block/lava_lamp_brown_off"
+    },
+    "color=green,lit=true": {
+      "model": "femboymod:block/lava_lamp_green"
+    },
+    "color=green,lit=false": {
+      "model": "femboymod:block/lava_lamp_green_off"
+    },
+    "color=red,lit=true": {
+      "model": "femboymod:block/lava_lamp_red"
+    },
+    "color=red,lit=false": {
+      "model": "femboymod:block/lava_lamp_red_off"
+    },
+    "color=black,lit=true": {
+      "model": "femboymod:block/lava_lamp_black"
+    },
+    "color=black,lit=false": {
+      "model": "femboymod:block/lava_lamp_black_off"
+    }
+  }
+}

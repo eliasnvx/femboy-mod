@@ -27,6 +27,10 @@ public final class EmoteClient {
     private static final float WAVE_SWING = 0.35F;
     private static final float BOUNCE_SPEED = 0.008F;
     private static final float BOUNCE = 0.08F;
+    /** Headpat: the hand reaches forward over the other's head and pats twice. */
+    private static final float PAT_REACH = -2.05F;
+    private static final float PAT_SPEED = 0.025F;
+    private static final float PAT_DIP = 0.22F;
     /** Arms ease into the pose over this many milliseconds. */
     private static final float BLEND_MILLIS = 200.0F;
 
@@ -72,6 +76,10 @@ public final class EmoteClient {
                 float bounce = Mth.sin(elapsed * BOUNCE_SPEED) * BOUNCE;
                 set(model.rightArm, -2.2F + bounce, -0.35F, 0.55F, blend);
                 set(model.leftArm, -0.3F, 0.0F, -0.1F, blend);
+            }
+            case HEADPAT -> {
+                float pat = Math.abs(Mth.sin(elapsed * PAT_SPEED)) * PAT_DIP;
+                set(model.rightArm, PAT_REACH + pat, -0.15F, 0.0F, blend);
             }
             case HEART_HANDS -> {
                 float bounce = Mth.sin(elapsed * BOUNCE_SPEED) * BOUNCE;

@@ -1,0 +1,18 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:iron_nugget",
+          "count": 2
+        },
+        "minecraft:black_dye",
+        {
+          "id": "minecraft:tinted_glass",
+          "count": 2
+        }
+      ]
+    }
+  ]
+}

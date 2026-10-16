@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "femboymod:item/photo",
+    "model": {
+      "type": "femboymod:photo"
+    }
+  }
+}

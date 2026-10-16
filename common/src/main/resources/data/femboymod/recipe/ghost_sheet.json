@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:white_wool",
+    "minecraft:white_wool",
+    "minecraft:white_wool",
+    "minecraft:white_wool",
+    "minecraft:black_dye"
+  ],
+  "result": {
+    "id": "femboymod:ghost_sheet"
+  }
+}

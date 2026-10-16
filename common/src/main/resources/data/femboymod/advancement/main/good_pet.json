@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "id": "femboymod:pet_bow"
+    },
+    "title": {
+      "translate": "advancements.femboymod.good_pet.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.good_pet.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "headpat_pet",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:white_wool",
+    "minecraft:white_wool",
+    "minecraft:rabbit_hide",
+    "minecraft:pink_dye"
+  ],
+  "result": {
+    "id": "femboymod:bunny_slippers"
+  }
+}

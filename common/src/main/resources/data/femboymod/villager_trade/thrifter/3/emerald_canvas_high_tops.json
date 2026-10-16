@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 10
+  },
+  "gives": {
+    "id": "femboymod:canvas_high_tops"
+  },
+  "max_uses": 6,
+  "xp": 10,
+  "reputation_discount": 0.05
+}

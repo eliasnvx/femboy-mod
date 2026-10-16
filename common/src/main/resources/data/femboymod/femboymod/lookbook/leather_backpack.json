@@ -1,0 +1,11 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        "femboymod:canvas_backpack",
+        "minecraft:leather"
+      ]
+    }
+  ]
+}

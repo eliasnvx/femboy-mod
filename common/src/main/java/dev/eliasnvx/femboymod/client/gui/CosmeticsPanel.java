@@ -29,7 +29,7 @@ public final class CosmeticsPanel extends AbstractWidget {
 
     private static final int PADDING = 5;
     private static final int HEADER = 14;
-    private static final int ROWS = 5;
+    private static final int ROWS = 6;
     private static final int GAP = 2;
 
     private final AbstractContainerScreen<?> screen;

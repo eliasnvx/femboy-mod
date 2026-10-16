@@ -1,0 +1,27 @@
+{
+  "sources": [
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "minecraft:emerald",
+          "count": 10
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 3
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "minecraft:emerald",
+          "count": 16
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 5,
+      "note": "lookbook.femboymod.note.colorway"
+    }
+  ]
+}

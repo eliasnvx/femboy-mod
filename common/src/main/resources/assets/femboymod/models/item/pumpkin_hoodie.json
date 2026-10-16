@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/pumpkin_hoodie",
+    "layer1": "femboymod:item/pumpkin_hoodie_detail"
+  }
+}

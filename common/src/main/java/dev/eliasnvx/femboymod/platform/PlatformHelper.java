@@ -42,13 +42,24 @@ public final class PlatformHelper {
         throw new AssertionError();
     }
 
-    /** Registers the Thrifter's clothing-rack POI (Fabric needs PoiHelper to map block states). */
+    /** Registers the POIs: the Thrifter's clothing rack and laundry baskets (Fabric needs PoiHelper to map block states). */
     @ExpectPlatform
     public static void registerPoi() {
         throw new AssertionError();
     }
 
     /** Recent energy drinks (persistent, reset on death). Never null. */
+    /** Game day a villager last gave out Halloween candy (-1 = never); saved with the villager. */
+    @ExpectPlatform
+    public static long getLastTreatDay(net.minecraft.world.entity.Entity entity) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static void setLastTreatDay(net.minecraft.world.entity.Entity entity, long day) {
+        throw new AssertionError();
+    }
+
     @ExpectPlatform
     public static dev.eliasnvx.femboymod.energy.CaffeineLog getCaffeineLog(Player player) {
         throw new AssertionError();

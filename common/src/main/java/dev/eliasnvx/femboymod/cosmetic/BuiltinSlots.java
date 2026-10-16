@@ -36,6 +36,8 @@ public final class BuiltinSlots {
         registry.register(FemboySlots.OUTFIT_BOTTOM, slot(order += STEP, FemboySlots.OUTFIT_BOTTOM, EquipmentSlot.LEGS));
         registry.register(FemboySlots.WAIST, slot(order += STEP, FemboySlots.WAIST));
         registry.register(FemboySlots.LEGS_OVERLAY, slot(order += STEP, FemboySlots.LEGS_OVERLAY, EquipmentSlot.LEGS, EquipmentSlot.FEET));
+        // added in 0.2.0: between socks and tail without moving the later slots (addon slots keep their place)
+        registry.register(FemboySlots.FEET, slot(order + STEP / 2, FemboySlots.FEET, EquipmentSlot.FEET));
         registry.register(FemboySlots.TAIL, slot(order += STEP, FemboySlots.TAIL));
         registry.register(FemboySlots.BACK, slot(order += STEP, FemboySlots.BACK));
     }

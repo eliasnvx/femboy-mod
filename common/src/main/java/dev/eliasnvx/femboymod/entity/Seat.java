@@ -3,7 +3,7 @@ package dev.eliasnvx.femboymod.entity;
 import dev.eliasnvx.femboymod.api.profile.FemboyProfileFields;
 import dev.eliasnvx.femboymod.api.event.profile.SetupRatedEvent;
 import dev.eliasnvx.femboymod.FemboyMod;
-import dev.eliasnvx.femboymod.block.GamerChairBlock;
+import dev.eliasnvx.femboymod.block.SeatBlock;
 import dev.eliasnvx.femboymod.block.SetupRating;
 import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
@@ -24,9 +24,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Invisible seat for the Gamer Chair. It disappears when its rider stands up or the chair is gone,
- * and slowly heals a sitting player (config {@code furniture.chair_heal_*}). A better setup around the chair
- * ({@link SetupRating}) heals faster.
+ * Invisible seat for the Gamer Chair and the Bean Bag ({@link SeatBlock}). It disappears when its rider stands up or
+ * the seat block is gone, and slowly heals a sitting player (config {@code furniture.chair_heal_*}). A better setup
+ * around the seat ({@link SetupRating}) heals faster.
  */
 public class Seat extends Entity {
 
@@ -41,7 +41,7 @@ public class Seat extends Entity {
         noPhysics = true;
     }
 
-    /** Seats a player on the chair at {@code pos}; returns false if someone already sits there. */
+    /** Seats a player on the seat block at {@code pos}; returns false if someone already sits there. */
     public static boolean sit(ServerLevel level, BlockPos pos, Player player, double seatHeight) {
         if (!level.getEntitiesOfClass(Seat.class, new AABB(pos)).isEmpty()) {
             return false;
@@ -87,7 +87,7 @@ public class Seat extends Entity {
         if (!(level() instanceof ServerLevel level)) {
             return;
         }
-        if (getPassengers().isEmpty() || !(level().getBlockState(blockPosition()).getBlock() instanceof GamerChairBlock)) {
+        if (getPassengers().isEmpty() || !(level().getBlockState(blockPosition()).getBlock() instanceof SeatBlock)) {
             ejectPassengers();
             discard();
             return;

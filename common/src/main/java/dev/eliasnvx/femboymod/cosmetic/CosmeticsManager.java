@@ -2,6 +2,8 @@ package dev.eliasnvx.femboymod.cosmetic;
 
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
+import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
+import dev.eliasnvx.femboymod.compat.ExternalSlots;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticChangedEvent;
@@ -20,6 +22,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.List;
 
 /** Server-authoritative access to cosmetic slots. The client only mirrors synced state. */
@@ -59,6 +65,60 @@ public final class CosmeticsManager {
 
     public static CosmeticInventory get(LivingEntity entity) {
         return entity instanceof Player player ? PlatformHelper.getCosmetics(player) : CosmeticInventory.EMPTY;
+    }
+
+    /** What {@link #worn} merged last time for a player; kept while nothing changes so caches downstream hold. */
+    private record WornCache(int tick, CosmeticInventory own, Set<Identifier> extra, CosmeticInventory merged) {
+    }
+
+    private static final Map<Player, WornCache> WORN = new WeakHashMap<>();
+
+    /**
+     * The outfit as it is worn: {@link #get} plus cosmetics in other mods' slots ({@link ExternalSlots}) for slots
+     * that are empty here. Backpacks only count in our back slot (they open, upgrade and dupe-check from it).
+     * Edit the outfit with {@link #get}/{@link #set}; read it for looks and stats with this. Evaluated at most once
+     * per tick per player; returns the same instance while nothing changes.
+     */
+    public static synchronized CosmeticInventory worn(LivingEntity entity) {
+        CosmeticInventory own = get(entity);
+        if (!(entity instanceof Player player) || !ExternalSlots.any()) {
+            return own;
+        }
+        WornCache cached = WORN.get(player);
+        if (cached != null && cached.tick() == player.tickCount && cached.own() == own) {
+            return cached.merged();
+        }
+        Map<Identifier, ItemStack> extra = new LinkedHashMap<>();
+        ExternalSlots.forEach(player, stack -> {
+            Identifier slot = stack.isEmpty() ? null : slotOf(stack);
+            if (slot != null && !FemboySlots.BACK.equals(slot) && own.get(slot).isEmpty() && !extra.containsKey(slot)) {
+                extra.put(slot, stack);
+            }
+        });
+        CosmeticInventory merged;
+        if (cached != null && cached.own() == own && unchanged(cached, extra)) {
+            merged = cached.merged();
+        } else {
+            merged = own;
+            for (Map.Entry<Identifier, ItemStack> entry : extra.entrySet()) {
+                merged = merged.with(entry.getKey(), entry.getValue().copy());
+            }
+        }
+        WORN.put(player, new WornCache(player.tickCount, own, Set.copyOf(extra.keySet()), merged));
+        return merged;
+    }
+
+    /** Whether the other mods' slots still hold what the cached merge copied; by value, as their stacks may change in place. */
+    private static boolean unchanged(WornCache cached, Map<Identifier, ItemStack> extra) {
+        if (!cached.extra().equals(extra.keySet())) {
+            return false;
+        }
+        for (Map.Entry<Identifier, ItemStack> entry : extra.entrySet()) {
+            if (!ItemStack.matches(cached.merged().get(entry.getKey()), entry.getValue())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** The slot an item is worn in, or null if the item is not a cosmetic or its slot is unknown. */

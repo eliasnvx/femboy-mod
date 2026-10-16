@@ -5,6 +5,7 @@ import dev.eliasnvx.femboymod.addon.AddonLoader.DiscoveredAddon;
 import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
+import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
@@ -46,6 +47,10 @@ public final class PlatformHelperImpl {
             Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "profile"),
             builder -> builder.initializer(() -> ProfileData.EMPTY).persistent(ProfileData.CODEC).copyOnDeath());
 
+    private static final AttachmentType<Long> TREAT_DAY = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "treat_day"),
+            builder -> builder.initializer(() -> -1L).persistent(com.mojang.serialization.Codec.LONG));
+
     private PlatformHelperImpl() {
     }
 
@@ -53,6 +58,7 @@ public final class PlatformHelperImpl {
     public static void init() {
         DynamicRegistries.registerSynced(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC);
         DynamicRegistries.registerSynced(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC);
+        DynamicRegistries.registerSynced(LookbookEntry.REGISTRY_KEY, LookbookEntry.CODEC);
         DynamicRegistries.registerSynced(SetBonus.REGISTRY_KEY, SetBonus.CODEC);
         DynamicRegistries.registerSynced(DripRules.REGISTRY_KEY, DripRules.CODEC);
         DynamicRegistries.register(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
@@ -92,6 +98,14 @@ public final class PlatformHelperImpl {
         player.setAttached(PROFILE, profile);
     }
 
+    public static long getLastTreatDay(net.minecraft.world.entity.Entity entity) {
+        return entity.getAttachedOrElse(TREAT_DAY, -1L);
+    }
+
+    public static void setLastTreatDay(net.minecraft.world.entity.Entity entity, long day) {
+        entity.setAttached(TREAT_DAY, day);
+    }
+
     public static CaffeineLog getCaffeineLog(Player player) {
         return player.getAttachedOrElse(CAFFEINE, CaffeineLog.EMPTY);
     }
@@ -111,5 +125,7 @@ public final class PlatformHelperImpl {
     public static void registerPoi() {
         net.fabricmc.fabric.api.object.builder.v1.world.poi.PoiHelper.register(FemboyBlocks.THRIFTER_POI.identifier(), 1, 1,
                 FemboyBlocks.CLOTHING_RACK.get());
+        net.fabricmc.fabric.api.object.builder.v1.world.poi.PoiHelper.register(FemboyBlocks.LAUNDRY_BASKET_POI.identifier(), 0, 1,
+                FemboyBlocks.LAUNDRY_BASKET.get());
     }
 }

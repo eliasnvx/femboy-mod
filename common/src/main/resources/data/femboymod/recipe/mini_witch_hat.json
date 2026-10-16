@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:purple_wool",
+    "minecraft:black_wool",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:mini_witch_hat"
+  }
+}

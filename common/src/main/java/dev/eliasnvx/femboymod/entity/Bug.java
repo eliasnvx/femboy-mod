@@ -1,9 +1,9 @@
 package dev.eliasnvx.femboymod.entity;
 
 import dev.eliasnvx.femboymod.config.CommonConfig;
+import dev.eliasnvx.femboymod.registry.FemboySounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -30,6 +30,8 @@ public class Bug extends Monster {
     private static final float LEAP_HEIGHT = 0.3F;
     private static final double CHASE_SPEED = 1.2;
     private static final float LOOK_DISTANCE = 8.0F;
+    /** Its tiny clicks are quiet already; vanilla plays steps at 0.15 for the silverfish it used to borrow. */
+    private static final float STEP_VOLUME = 0.5F;
 
     public Bug(EntityType<? extends Bug> type, Level level) {
         super(type, level);
@@ -55,21 +57,21 @@ public class Bug extends Monster {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.SILVERFISH_AMBIENT;
+        return FemboySounds.BUG_AMBIENT.get();
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.SILVERFISH_HURT;
+        return FemboySounds.BUG_HURT.get();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.SILVERFISH_DEATH;
+        return FemboySounds.BUG_DEATH.get();
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        playSound(SoundEvents.SILVERFISH_STEP, 0.15F, 1.4F);
+        playSound(FemboySounds.BUG_STEP.get(), STEP_VOLUME, 1.0F);
     }
 }

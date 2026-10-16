@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:gold_nugget",
+          "count": 5
+        },
+        "femboymod:moonstone"
+      ]
+    }
+  ]
+}

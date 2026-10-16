@@ -33,6 +33,9 @@ public final class FirstPersonSleeves {
     /** Same defaults as the arm_warmers and nail_polish renderers. */
     private static final int WARMER_COLOR = 0xC8A2E8;
     private static final int NAIL_COLOR = 0xF291BE;
+    /** Same defaults as the cat_paw_gloves renderer (white fur, pink pads). */
+    private static final int PAW_COLOR = 0xFFF6F8;
+    private static final int PAW_PAD_COLOR = 0xFF8FB8;
     private static final RenderType TYPE = RenderTypes.entityCutout(
             Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/cosmetic/knit.png"));
 
@@ -55,11 +58,11 @@ public final class FirstPersonSleeves {
             bakedFrom = models;
         }
         String side = arm == model.rightArm ? "right" : "left";
-        var worn = CosmeticsManager.get(player);
+        var worn = CosmeticsManager.worn(player);
         ItemStack top = worn.get(FemboySlots.OUTFIT_TOP);
-        if (top.is(FemboyTags.HOODIES) && !worn.isHidden(FemboySlots.OUTFIT_TOP)) {
+        if (top.is(FemboyTags.SLEEVED_TOPS) && !worn.isHidden(FemboySlots.OUTFIT_TOP)) {
             Colorway colorway = Colorways.effective(top).orElse(null);
-            int main = colorway == null ? DEFAULT_COLOR : colorway.stripeColor(0, ColorwayClock.ticks());
+            int main = colorway == null ? defaultTopColor(top) : colorway.stripeColor(0, ColorwayClock.ticks());
             part(root, side + "_sleeve", arm, pose, collector, light, main);
             part(root, side + "_cuff", arm, pose, collector, light, BuiltinCosmeticRenderers.shade(main, CUFF_SHADE));
         }
@@ -80,11 +83,26 @@ public final class FirstPersonSleeves {
             part(mittens, side + "_warmer_stripes", arm, pose, collector, light, stripe);
             part(mittens, side + "_warmer_cuff", arm, pose, collector, light, BuiltinCosmeticRenderers.shade(main, CUFF_SHADE));
         }
+        if (hands.is(FemboyItems.CAT_PAW_GLOVES.get()) && !worn.isHidden(FemboySlots.HANDS)) {
+            Colorway colorway = Colorways.effective(hands).orElse(null);
+            int main = colorway == null ? PAW_COLOR : colorway.stripeColor(0, ColorwayClock.ticks());
+            part(mittens, side + "_paw", arm, pose, collector, light, main);
+            part(mittens, side + "_paw_cuff", arm, pose, collector, light, BuiltinCosmeticRenderers.shade(main, CUFF_SHADE));
+            part(mittens, side + "_paw_pads", arm, pose, collector, light, PAW_PAD_COLOR);
+        }
         if (hands.is(FemboyItems.NAIL_POLISH.get()) && !worn.isHidden(FemboySlots.HANDS)) {
             Colorway colorway = Colorways.effective(hands).orElse(null);
             part(mittens, side + "_nails", arm, pose, collector, light,
                     colorway == null ? NAIL_COLOR : colorway.stripeColor(0, ColorwayClock.ticks()));
         }
+    }
+
+    /** Undyed color of a hoodie-like top, as its renderer draws it. */
+    private static int defaultTopColor(ItemStack top) {
+        if (top.is(FemboyItems.PUMPKIN_HOODIE.get())) {
+            return BuiltinCosmeticRenderers.PUMPKIN_ORANGE;
+        }
+        return top.is(FemboyItems.GHOST_SHEET.get()) ? BuiltinCosmeticRenderers.SHEET_WHITE : DEFAULT_COLOR;
     }
 
     private static void part(ModelPart parts, String name, ModelPart arm, PoseStack pose, SubmitNodeCollector collector, int light, int color) {

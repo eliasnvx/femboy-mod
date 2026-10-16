@@ -31,6 +31,11 @@ public final class ConfigScreen extends Screen {
         ClientConfig c = FemboyConfig.client();
         addToggle(x, y, "show_others_cosmetics", c.showOthersCosmetics(), v -> FemboyConfig.setClient(FemboyConfig.client().withShowOthersCosmetics(v)));
         addToggle(x, y += ROW, "drip_hud", c.dripHud(), v -> FemboyConfig.setClient(FemboyConfig.client().withDripHud(v)));
+        addRenderableWidget(CycleButton.<ClientConfig.HudCorner>builder(
+                        corner -> Component.translatable("config.femboymod.drip_hud_corner." + corner.getSerializedName()), c.hudCorner())
+                .withValues(ClientConfig.HudCorner.values())
+                .create(x, y += ROW, WIDTH, 20, Component.translatable("config.femboymod.drip_hud_corner"),
+                        (button, value) -> FemboyConfig.setClient(FemboyConfig.client().withHudCorner(value))));
         addToggle(x, y += ROW, "uwu_chat", c.uwuChat(), v -> FemboyConfig.setClient(FemboyConfig.client().withUwuChat(v)));
         addToggle(x, y += ROW, "nya_sound", c.nyaSound(), v -> FemboyConfig.setClient(FemboyConfig.client().withNyaSound(v)));
         addToggle(x, y += ROW, "rgb_animations", c.rgbAnimations(), v -> FemboyConfig.setClient(FemboyConfig.client().withRgbAnimations(v)));

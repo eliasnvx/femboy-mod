@@ -1,0 +1,29 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:gold_nugget",
+          "count": 2
+        },
+        {
+          "id": "femboymod:rose_quartz",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "femboymod:style_coupon",
+          "count": 3
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 3,
+      "note": "lookbook.femboymod.note.colorway"
+    }
+  ]
+}

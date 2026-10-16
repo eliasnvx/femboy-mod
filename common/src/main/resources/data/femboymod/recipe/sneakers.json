@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:leather",
+    "minecraft:leather",
+    "minecraft:white_wool",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:sneakers"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": "minecraft:bamboo",
+    "S": "minecraft:string"
+  },
+  "pattern": [
+    "BSB",
+    "B B",
+    "BBB"
+  ],
+  "result": {
+    "id": "femboymod:laundry_basket"
+  }
+}

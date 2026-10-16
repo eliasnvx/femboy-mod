@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:orange_wool",
+    "minecraft:orange_wool",
+    "minecraft:orange_wool",
+    "minecraft:carved_pumpkin",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:pumpkin_hoodie"
+  }
+}

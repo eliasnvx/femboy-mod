@@ -11,10 +11,12 @@ import java.util.List;
  * and drinks lives in data packs; this file holds switches, the Pink Creeper numbers and hostile mob spawning/stats.
  */
 public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabledSlots, boolean setBonusesEnabled,
-                           PinkCreeper pinkCreeper, Mobs mobs, Furniture furniture, StylePoints stylePoints, VibeCheck vibeCheck, Friends friends) {
+                           PinkCreeper pinkCreeper, Mobs mobs, Furniture furniture, StylePoints stylePoints, VibeCheck vibeCheck, Friends friends,
+                           boolean giveLookbook, Photos photos, Halloween halloween, RubberDucks rubberDucks) {
 
     public static final CommonConfig DEFAULTS = new CommonConfig(false, List.of(), true, PinkCreeper.DEFAULTS, Mobs.DEFAULTS,
-            Furniture.DEFAULTS, StylePoints.DEFAULTS, VibeCheck.DEFAULTS, Friends.DEFAULTS);
+            Furniture.DEFAULTS, StylePoints.DEFAULTS, VibeCheck.DEFAULTS, Friends.DEFAULTS, true, Photos.DEFAULTS,
+            Halloween.DEFAULTS, RubberDucks.DEFAULTS);
 
     public static final Codec<CommonConfig> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.BOOL.fieldOf("keep_cosmetics_on_death").orElse(DEFAULTS.keepCosmeticsOnDeath).forGetter(CommonConfig::keepCosmeticsOnDeath),
@@ -25,15 +27,67 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
             Furniture.CODEC.fieldOf("furniture").orElse(Furniture.DEFAULTS).forGetter(CommonConfig::furniture),
             StylePoints.CODEC.fieldOf("style_points").orElse(StylePoints.DEFAULTS).forGetter(CommonConfig::stylePoints),
             VibeCheck.CODEC.fieldOf("vibe_check").orElse(VibeCheck.DEFAULTS).forGetter(CommonConfig::vibeCheck),
-            Friends.CODEC.fieldOf("friends").orElse(Friends.DEFAULTS).forGetter(CommonConfig::friends)
+            Friends.CODEC.fieldOf("friends").orElse(Friends.DEFAULTS).forGetter(CommonConfig::friends),
+            Codec.BOOL.fieldOf("give_lookbook_on_first_join").orElse(DEFAULTS.giveLookbook).forGetter(CommonConfig::giveLookbook),
+            Photos.CODEC.fieldOf("photos").orElse(Photos.DEFAULTS).forGetter(CommonConfig::photos),
+            Halloween.CODEC.fieldOf("halloween").orElse(Halloween.DEFAULTS).forGetter(CommonConfig::halloween),
+            RubberDucks.CODEC.fieldOf("rubber_ducks").orElse(RubberDucks.DEFAULTS).forGetter(CommonConfig::rubberDucks)
     ).apply(i, CommonConfig::new));
+
+    /** When villagers give candy to costumed players: in the real Halloween season (auto), always, or never. */
+    public enum Season {
+        AUTO, ALWAYS, NEVER;
+
+        public static final Codec<Season> CODEC = Codec.STRING.xmap(
+                name -> Season.valueOf(name.toUpperCase(java.util.Locale.ROOT)), season -> season.name().toLowerCase(java.util.Locale.ROOT));
+    }
+
+    /**
+     * Trick-or-treat: the season, and how much candy a villager gives (once per villager per game day).
+     */
+    public record Halloween(Season season, int candyMin, int candyMax) {
+        public static final Halloween DEFAULTS = new Halloween(Season.AUTO, 1, 3);
+        public static final Codec<Halloween> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Season.CODEC.fieldOf("season").orElse(DEFAULTS.season).forGetter(Halloween::season),
+                Codec.intRange(0, 64).fieldOf("candy_min").orElse(DEFAULTS.candyMin).forGetter(Halloween::candyMin),
+                Codec.intRange(0, 64).fieldOf("candy_max").orElse(DEFAULTS.candyMax).forGetter(Halloween::candyMax)
+        ).apply(i, Halloween::new));
+    }
+
+    /**
+     * Rubber ducks: spawning on river banks and beaches and the taming chance per seed. Their debugging sessions use
+     * the Rubber Duck block's numbers ({@code furniture.duck_*}).
+     */
+    public record RubberDucks(int spawnWeight, int minGroup, int maxGroup, float tameChance) {
+        public static final RubberDucks DEFAULTS = new RubberDucks(6, 2, 4, 0.33F);
+        public static final Codec<RubberDucks> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.intRange(0, 1000).fieldOf("spawn_weight").orElse(DEFAULTS.spawnWeight).forGetter(RubberDucks::spawnWeight),
+                Codec.intRange(1, 16).fieldOf("min_group").orElse(DEFAULTS.minGroup).forGetter(RubberDucks::minGroup),
+                Codec.intRange(1, 16).fieldOf("max_group").orElse(DEFAULTS.maxGroup).forGetter(RubberDucks::maxGroup),
+                Codec.floatRange(0, 1).fieldOf("tame_chance").orElse(DEFAULTS.tameChance).forGetter(RubberDucks::tameChance)
+        ).apply(i, RubberDucks::new));
+    }
+
+    /**
+     * Printed selfies (Phone): on/off, paper per photo (0 = free), ticks between two prints per player, and how many
+     * photo requests a player may send per second (pictures are fetched when photo items come into view).
+     */
+    public record Photos(boolean enabled, int paperCost, int cooldownTicks, int requestsPerSecond) {
+        public static final Photos DEFAULTS = new Photos(true, 1, 100, 20);
+        public static final Codec<Photos> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.BOOL.fieldOf("enabled").orElse(DEFAULTS.enabled).forGetter(Photos::enabled),
+                Codec.intRange(0, 64).fieldOf("paper_cost").orElse(DEFAULTS.paperCost).forGetter(Photos::paperCost),
+                Codec.intRange(0, 72000).fieldOf("cooldown_ticks").orElse(DEFAULTS.cooldownTicks).forGetter(Photos::cooldownTicks),
+                Codec.intRange(1, 1000).fieldOf("requests_per_second").orElse(DEFAULTS.requestsPerSecond).forGetter(Photos::requestsPerSecond)
+        ).apply(i, Photos::new));
+    }
 
     public CommonConfig {
         disabledSlots = List.copyOf(disabledSlots);
     }
 
     /**
-     * SPEC v1.2 "Friends": the stray cat and the wandering cosplayer.
+     * SPEC v1.2 "Friends": the stray cat, the wandering cosplayer and headpats.
      *
      * @param strayCatSpawnWeight   weight in {@code #femboymod:stray_cat_spawns} (0 disables natural spawning)
      * @param strayCatGiftChance    chance per morning that a tamed stray cat brings its owner a gift
@@ -41,11 +95,18 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
      * @param cosplayerCheckInterval ticks between attempts to send a cosplayer to a random player
      * @param cosplayerChance       chance per attempt (at most one cosplayer is around at a time)
      * @param cosplayerStayTicks    how long a cosplayer stays before leaving
+     * @param headpatCooldownTicks  ticks before the same player can give the next headpat
+     * @param cozyTicks             how long Cozy lasts after a headpat
+     * @param cozyHealInterval      ticks between heals while Cozy (0: Cozy doesn't heal)
+     * @param cozyHealAmount        health per heal while Cozy (half-hearts)
+     * @param petHeadpatHeal        health a patted tamed pet gets back at once (half-hearts)
      */
     public record Friends(int strayCatSpawnWeight, float strayCatGiftChance, double strayCatGiftRange,
-                          int cosplayerCheckInterval, float cosplayerChance, int cosplayerStayTicks) {
+                          int cosplayerCheckInterval, float cosplayerChance, int cosplayerStayTicks,
+                          int headpatCooldownTicks, int cozyTicks, int cozyHealInterval, float cozyHealAmount,
+                          float petHeadpatHeal) {
 
-        public static final Friends DEFAULTS = new Friends(6, 0.7F, 16.0, 24000, 0.25F, 36000);
+        public static final Friends DEFAULTS = new Friends(6, 0.7F, 16.0, 24000, 0.25F, 36000, 10, 200, 60, 1.0F, 1.0F);
 
         public static final Codec<Friends> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.intRange(0, 1000).fieldOf("stray_cat_spawn_weight").orElse(DEFAULTS.strayCatSpawnWeight).forGetter(Friends::strayCatSpawnWeight),
@@ -53,7 +114,12 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
                 Codec.doubleRange(1, 64).fieldOf("stray_cat_gift_range").orElse(DEFAULTS.strayCatGiftRange).forGetter(Friends::strayCatGiftRange),
                 Codec.intRange(0, 720000).fieldOf("cosplayer_check_interval").orElse(DEFAULTS.cosplayerCheckInterval).forGetter(Friends::cosplayerCheckInterval),
                 Codec.floatRange(0, 1).fieldOf("cosplayer_chance").orElse(DEFAULTS.cosplayerChance).forGetter(Friends::cosplayerChance),
-                Codec.intRange(1200, 720000).fieldOf("cosplayer_stay_ticks").orElse(DEFAULTS.cosplayerStayTicks).forGetter(Friends::cosplayerStayTicks)
+                Codec.intRange(1200, 720000).fieldOf("cosplayer_stay_ticks").orElse(DEFAULTS.cosplayerStayTicks).forGetter(Friends::cosplayerStayTicks),
+                Codec.intRange(0, 1200).fieldOf("headpat_cooldown_ticks").orElse(DEFAULTS.headpatCooldownTicks).forGetter(Friends::headpatCooldownTicks),
+                Codec.intRange(0, 72000).fieldOf("cozy_ticks").orElse(DEFAULTS.cozyTicks).forGetter(Friends::cozyTicks),
+                Codec.intRange(0, 72000).fieldOf("cozy_heal_interval").orElse(DEFAULTS.cozyHealInterval).forGetter(Friends::cozyHealInterval),
+                Codec.floatRange(0, 20).fieldOf("cozy_heal_amount").orElse(DEFAULTS.cozyHealAmount).forGetter(Friends::cozyHealAmount),
+                Codec.floatRange(0, 20).fieldOf("pet_headpat_heal").orElse(DEFAULTS.petHeadpatHeal).forGetter(Friends::petHeadpatHeal)
         ).apply(i, Friends::new));
     }
 
@@ -118,12 +184,18 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
      * @param insightDuration   ticks of Insight from the rubber duck
      * @param duckExperience    experience points from a debugging session with the duck
      * @param terminalBtwCooldown ticks between the Terminal's chat reminders for the same player
+     * @param petBedHealInterval ticks between heals for a tamed pet resting on a Pet Bed (0 disables it)
+     * @param petBedHealAmount   health a resting pet gets back per heal (half-hearts)
+     * @param fridgeChillTicks   ticks a drink stays in a Mini Fridge before it is chilled
+     * @param chilledBonus       how much longer a chilled Byte Energy's buffs last (0.5 = +50%)
      */
     public record Furniture(int chairHealInterval, float chairHealAmount, boolean ledRainbow, int setupRadius,
                             float setupHealBonus, int duckCooldown, int insightDuration, int duckExperience,
-                            int terminalBtwCooldown) {
+                            int terminalBtwCooldown, int petBedHealInterval, float petBedHealAmount,
+                            int fridgeChillTicks, float chilledBonus) {
 
-        public static final Furniture DEFAULTS = new Furniture(100, 1.0F, true, 4, 0.25F, 1200, 600, 3, 6000);
+        public static final Furniture DEFAULTS = new Furniture(100, 1.0F, true, 4, 0.25F, 1200, 600, 3, 6000,
+                60, 1.0F, 1200, 0.5F);
 
         public static final Codec<Furniture> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.intRange(0, 72000).fieldOf("chair_heal_interval").orElse(DEFAULTS.chairHealInterval).forGetter(Furniture::chairHealInterval),
@@ -134,7 +206,11 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
                 Codec.intRange(0, 72000).fieldOf("duck_cooldown").orElse(DEFAULTS.duckCooldown).forGetter(Furniture::duckCooldown),
                 Codec.intRange(0, 72000).fieldOf("insight_duration").orElse(DEFAULTS.insightDuration).forGetter(Furniture::insightDuration),
                 Codec.intRange(0, 1000).fieldOf("duck_experience").orElse(DEFAULTS.duckExperience).forGetter(Furniture::duckExperience),
-                Codec.intRange(0, 720000).fieldOf("terminal_btw_cooldown").orElse(DEFAULTS.terminalBtwCooldown).forGetter(Furniture::terminalBtwCooldown)
+                Codec.intRange(0, 720000).fieldOf("terminal_btw_cooldown").orElse(DEFAULTS.terminalBtwCooldown).forGetter(Furniture::terminalBtwCooldown),
+                Codec.intRange(0, 72000).fieldOf("pet_bed_heal_interval").orElse(DEFAULTS.petBedHealInterval).forGetter(Furniture::petBedHealInterval),
+                Codec.floatRange(0, 20).fieldOf("pet_bed_heal_amount").orElse(DEFAULTS.petBedHealAmount).forGetter(Furniture::petBedHealAmount),
+                Codec.intRange(1, 72000).fieldOf("fridge_chill_ticks").orElse(DEFAULTS.fridgeChillTicks).forGetter(Furniture::fridgeChillTicks),
+                Codec.floatRange(0, 10).fieldOf("chilled_bonus").orElse(DEFAULTS.chilledBonus).forGetter(Furniture::chilledBonus)
         ).apply(i, Furniture::new));
     }
 
@@ -185,21 +261,23 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
     }
 
     /** Hostile meme mobs: bugs, the caffeinated zombie, the hissy cat and the Fashion Critic mini-boss. */
-    public record Mobs(Mob bug, Mob caffeinatedZombie, Mob hissyCat, Mob fashionCritic, CriticReview criticReview) {
+    public record Mobs(Mob bug, Mob caffeinatedZombie, Mob hissyCat, Mob fashionCritic, CriticReview criticReview, Mob sockGoblin) {
 
         public static final Mobs DEFAULTS = new Mobs(
                 new Mob(40, 3, 5, 6.0, 2.0, 0.32),
                 new Mob(20, 1, 2, 20.0, 3.0, 0.3),
                 new Mob(15, 1, 1, 10.0, 3.0, 0.38),
                 new Mob(1, 1, 1, 80.0, 7.0, 0.3),
-                CriticReview.DEFAULTS);
+                CriticReview.DEFAULTS,
+                new Mob(10, 1, 1, 10.0, 0.0, 0.34));
 
         public static final Codec<Mobs> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Mob.codec(DEFAULTS.bug).fieldOf("bug").orElse(DEFAULTS.bug).forGetter(Mobs::bug),
                 Mob.codec(DEFAULTS.caffeinatedZombie).fieldOf("caffeinated_zombie").orElse(DEFAULTS.caffeinatedZombie).forGetter(Mobs::caffeinatedZombie),
                 Mob.codec(DEFAULTS.hissyCat).fieldOf("hissy_cat").orElse(DEFAULTS.hissyCat).forGetter(Mobs::hissyCat),
                 Mob.codec(DEFAULTS.fashionCritic).fieldOf("fashion_critic").orElse(DEFAULTS.fashionCritic).forGetter(Mobs::fashionCritic),
-                CriticReview.CODEC.fieldOf("critic_review").orElse(DEFAULTS.criticReview).forGetter(Mobs::criticReview)
+                CriticReview.CODEC.fieldOf("critic_review").orElse(DEFAULTS.criticReview).forGetter(Mobs::criticReview),
+                Mob.codec(DEFAULTS.sockGoblin).fieldOf("sock_goblin").orElse(DEFAULTS.sockGoblin).forGetter(Mobs::sockGoblin)
         ).apply(i, Mobs::new));
     }
 
