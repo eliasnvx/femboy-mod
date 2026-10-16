@@ -6,6 +6,7 @@ import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.RegisterFemboyAddon;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
+import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
@@ -47,6 +48,9 @@ public final class PlatformHelperImpl {
     private static final Supplier<AttachmentType<CaffeineLog>> CAFFEINE = ATTACHMENTS.register("caffeine",
             () -> AttachmentType.builder(() -> CaffeineLog.EMPTY).serialize(CaffeineLog.CODEC.fieldOf("drinks").codec()).build());
 
+    private static final Supplier<AttachmentType<Long>> TREAT_DAY = ATTACHMENTS.register("treat_day",
+            () -> AttachmentType.builder(() -> -1L).serialize(com.mojang.serialization.Codec.LONG.fieldOf("day").codec()).build());
+
     private static final Supplier<AttachmentType<WardrobePresets>> PRESETS = ATTACHMENTS.register("wardrobe_presets",
             () -> AttachmentType.builder(() -> WardrobePresets.EMPTY).serialize(WardrobePresets.CODEC.fieldOf("presets").codec()).copyOnDeath().build());
     private static final Supplier<AttachmentType<ProfileData>> PROFILE = ATTACHMENTS.register("profile",
@@ -63,6 +67,7 @@ public final class PlatformHelperImpl {
         modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
             event.dataPackRegistry(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC, ColorwayPattern.CODEC);
             event.dataPackRegistry(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC, CosmeticStats.CODEC);
+            event.dataPackRegistry(LookbookEntry.REGISTRY_KEY, LookbookEntry.CODEC, LookbookEntry.CODEC);
             event.dataPackRegistry(SetBonus.REGISTRY_KEY, SetBonus.CODEC, SetBonus.CODEC);
             event.dataPackRegistry(DripRules.REGISTRY_KEY, DripRules.CODEC, DripRules.CODEC);
             event.dataPackRegistry(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
@@ -124,6 +129,14 @@ public final class PlatformHelperImpl {
         player.setData(PROFILE, profile);
     }
 
+    public static long getLastTreatDay(net.minecraft.world.entity.Entity entity) {
+        return entity.getData(TREAT_DAY);
+    }
+
+    public static void setLastTreatDay(net.minecraft.world.entity.Entity entity, long day) {
+        entity.setData(TREAT_DAY, day);
+    }
+
     public static CaffeineLog getCaffeineLog(Player player) {
         return player.getData(CAFFEINE);
     }
@@ -144,5 +157,7 @@ public final class PlatformHelperImpl {
     public static void registerPoi() {
         POIS.register(FemboyBlocks.THRIFTER_POI.location().getPath(), () -> new PoiType(
                 java.util.Set.copyOf(FemboyBlocks.CLOTHING_RACK.get().getStateDefinition().getPossibleStates()), 1, 1));
+        POIS.register(FemboyBlocks.LAUNDRY_BASKET_POI.location().getPath(), () -> new PoiType(
+                java.util.Set.copyOf(FemboyBlocks.LAUNDRY_BASKET.get().getStateDefinition().getPossibleStates()), 0, 1));
     }
 }

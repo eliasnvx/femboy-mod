@@ -22,7 +22,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /** Gamer Chair (SPEC v1.1): right-click to sit; sitting slowly heals (config {@code furniture}). */
-public class GamerChairBlock extends HorizontalDirectionalBlock {
+public class GamerChairBlock extends HorizontalDirectionalBlock implements SeatBlock {
 
     public static final MapCodec<GamerChairBlock> CODEC = simpleCodec(GamerChairBlock::new);
 
@@ -58,6 +58,11 @@ public class GamerChairBlock extends HorizontalDirectionalBlock {
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return shapes.get(state.getValue(FACING));
+    }
+
+    @Override
+    public double seatHeight() {
+        return SEAT_HEIGHT;
     }
 
     @Override

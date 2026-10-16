@@ -1,6 +1,8 @@
 package dev.eliasnvx.femboymod.client;
 
+import dev.architectury.platform.Platform;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
+import dev.eliasnvx.femboymod.config.ClientConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.drip.WornEvaluator;
 import java.util.List;
@@ -23,6 +25,9 @@ import net.minecraft.world.entity.player.Player;
 public final class DripHud {
 
     private static final int MARGIN = 4;
+    /** Minimaps that sit in the top left corner by default; the AUTO corner moves the panel out of their way. */
+    private static final boolean TOP_LEFT_MINIMAP = Platform.isModLoaded("xaerominimap")
+            || Platform.isModLoaded("xaerominimapfair");
     private static final int PAD = 5;
     private static final int MIN_WIDTH = 64;
     private static final int LINE = 9;
@@ -68,7 +73,7 @@ public final class DripHud {
     public static void render(GuiGraphics g, DeltaTracker delta) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
-        if (!FemboyConfig.client().dripHud() || player == null || minecraft.getDebugOverlay().showDebugScreen()) {
+        if (!FemboyConfig.client().dripHud() || player == null || minecraft.options.hideGui || minecraft.getDebugOverlay().showDebugScreen()) {
             return;
         }
         if (player.tickCount != lastTick) {
@@ -129,10 +134,11 @@ public final class DripHud {
     }
 
     private static void draw(GuiGraphics g, Font font) {
-        int x = MARGIN;
-        int y = MARGIN;
         boolean hasSet = sets.size() > 0;
         int height = PAD + LINE + 1 + BAR_H + (hasSet ? 2 + LINE : 0) + PAD;
+        ClientConfig.HudCorner corner = FemboyConfig.client().hudCorner().resolve(TOP_LEFT_MINIMAP);
+        int x = corner.right() ? g.guiWidth() - width - MARGIN : MARGIN;
+        int y = corner.bottom() ? g.guiHeight() - height - MARGIN : MARGIN;
         frame(g, x, y, width, height);
 
         int cx = x + PAD;

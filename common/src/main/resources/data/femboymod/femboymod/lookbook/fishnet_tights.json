@@ -1,0 +1,15 @@
+{
+  "sources": [
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "minecraft:emerald",
+          "count": 9
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 4
+    }
+  ]
+}

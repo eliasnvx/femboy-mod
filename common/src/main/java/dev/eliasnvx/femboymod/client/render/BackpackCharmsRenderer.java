@@ -52,6 +52,9 @@ final class BackpackCharmsRenderer {
         VertexConsumer buffer = ctx.bufferSource().getBuffer(type);
         int light = ctx.light();
         int overlay = ctx.overlay();
+        if (!ctx.parentModel().body.visible) {
+            return; // hidden with the body (Figura avatars)
+        }
         pose.pushPose();
         ctx.parentModel().body.translateAndRotate(pose);
         int i = 0;

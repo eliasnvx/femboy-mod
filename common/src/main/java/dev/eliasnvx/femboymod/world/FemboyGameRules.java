@@ -20,6 +20,8 @@ public final class FemboyGameRules {
     public static final GameRules.Key<GameRules.BooleanValue> SET_BONUSES = bool("set_bonuses", GameRules.Category.PLAYER, true);
     /** Cosmetics stay on when the player dies (like keepInventory, only for cosmetic slots). */
     public static final GameRules.Key<GameRules.BooleanValue> KEEP_COSMETICS = bool("keep_cosmetics", GameRules.Category.DROPS, false);
+    /** Sock Goblins steal socks (off: they just giggle and wander). */
+    public static final GameRules.Key<GameRules.BooleanValue> SOCK_GOBLIN_THEFT = bool("sock_goblin_theft", GameRules.Category.MOBS, true);
     /** Players may hide their armor under the outfit; off = armor is always drawn (PvP servers). */
     public static final GameRules.Key<GameRules.BooleanValue> ALLOW_HIDDEN_ARMOR = bool("allow_hidden_armor", GameRules.Category.PLAYER, true);
 

@@ -23,6 +23,9 @@ public final class FemboyNetwork {
         registerC2S(ToggleCosmeticHiddenPayload.TYPE, ToggleCosmeticHiddenPayload.STREAM_CODEC, ToggleCosmeticHiddenPayload::handle);
         registerC2S(CreativeCosmeticSetPayload.TYPE, CreativeCosmeticSetPayload.STREAM_CODEC, CreativeCosmeticSetPayload::handle);
         registerC2S(CosmeticPanelClickPayload.TYPE, CosmeticPanelClickPayload.STREAM_CODEC, CosmeticPanelClickPayload::handle);
+        registerC2S(PhotoPayloads.Upload.TYPE, PhotoPayloads.Upload.STREAM_CODEC, PhotoPayloads.Upload::handle);
+        registerC2S(PhotoPayloads.Request.TYPE, PhotoPayloads.Request.STREAM_CODEC, PhotoPayloads.Request::handle);
+        registerS2C(PhotoPayloads.Picture.TYPE, PhotoPayloads.Picture.STREAM_CODEC, PhotoPayloads.Picture::handle);
     }
 
     /** Architectury 13: C2S receivers are registered on both sides (the client only needs the type). */

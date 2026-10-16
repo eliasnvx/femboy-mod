@@ -32,6 +32,9 @@ public final class ChevronPanel {
     void submit(CosmeticRenderContext ctx, Colorway colorway) {
         PoseStack pose = ctx.poseStack();
         VertexConsumer buffer = ctx.bufferSource().getBuffer(type);
+        if (!ctx.parentModel().body.visible) {
+            return; // hidden with the body (Figura avatars)
+        }
         pose.pushPose();
         ctx.parentModel().body.translateAndRotate(pose);
         for (int row = 0; row < CosmeticModels.PANEL_ROWS; row++) {

@@ -6,9 +6,9 @@ import net.minecraft.util.StringRepresentable;
 
 /** Client-only options ({@code config/femboymod-client.json}, SPEC §10). */
 public record ClientConfig(boolean showOthersCosmetics, boolean dripHud, boolean nyaSound, boolean rgbAnimations,
-                           Physics physics, boolean uwuChat) {
+                           Physics physics, boolean uwuChat, HudCorner hudCorner) {
 
-    public static final ClientConfig DEFAULTS = new ClientConfig(true, true, false, true, Physics.FULL, true);
+    public static final ClientConfig DEFAULTS = new ClientConfig(true, true, false, true, Physics.FULL, true, HudCorner.AUTO);
 
     public static final Codec<ClientConfig> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.BOOL.fieldOf("show_others_cosmetics").orElse(DEFAULTS.showOthersCosmetics).forGetter(ClientConfig::showOthersCosmetics),
@@ -16,15 +16,53 @@ public record ClientConfig(boolean showOthersCosmetics, boolean dripHud, boolean
             Codec.BOOL.fieldOf("nya_sound").orElse(DEFAULTS.nyaSound).forGetter(ClientConfig::nyaSound),
             Codec.BOOL.fieldOf("rgb_animations").orElse(DEFAULTS.rgbAnimations).forGetter(ClientConfig::rgbAnimations),
             Physics.CODEC.fieldOf("tail_skirt_physics").orElse(DEFAULTS.physics).forGetter(ClientConfig::physics),
-            Codec.BOOL.fieldOf("uwu_chat").orElse(DEFAULTS.uwuChat).forGetter(ClientConfig::uwuChat)
+            Codec.BOOL.fieldOf("uwu_chat").orElse(DEFAULTS.uwuChat).forGetter(ClientConfig::uwuChat),
+            HudCorner.CODEC.fieldOf("femboy_level_panel_corner").orElse(DEFAULTS.hudCorner).forGetter(ClientConfig::hudCorner)
     ).apply(i, ClientConfig::new));
 
-    public ClientConfig withShowOthersCosmetics(boolean v) { return new ClientConfig(v, dripHud, nyaSound, rgbAnimations, physics, uwuChat); }
-    public ClientConfig withDripHud(boolean v) { return new ClientConfig(showOthersCosmetics, v, nyaSound, rgbAnimations, physics, uwuChat); }
-    public ClientConfig withNyaSound(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, v, rgbAnimations, physics, uwuChat); }
-    public ClientConfig withRgbAnimations(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, v, physics, uwuChat); }
-    public ClientConfig withPhysics(Physics v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, v, uwuChat); }
-    public ClientConfig withUwuChat(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, v); }
+    public ClientConfig withShowOthersCosmetics(boolean v) { return new ClientConfig(v, dripHud, nyaSound, rgbAnimations, physics, uwuChat, hudCorner); }
+    public ClientConfig withDripHud(boolean v) { return new ClientConfig(showOthersCosmetics, v, nyaSound, rgbAnimations, physics, uwuChat, hudCorner); }
+    public ClientConfig withNyaSound(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, v, rgbAnimations, physics, uwuChat, hudCorner); }
+    public ClientConfig withRgbAnimations(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, v, physics, uwuChat, hudCorner); }
+    public ClientConfig withPhysics(Physics v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, v, uwuChat, hudCorner); }
+    public ClientConfig withUwuChat(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, v, hudCorner); }
+    public ClientConfig withHudCorner(HudCorner v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, uwuChat, v); }
+
+    /**
+     * Where the Femboy Level panel sits. {@link #AUTO} is the top left corner, or the bottom right one when a minimap
+     * that lives in the top left corner is installed (Xaero's Minimap).
+     */
+    public enum HudCorner implements StringRepresentable {
+        AUTO("auto"), TOP_LEFT("top_left"), TOP_RIGHT("top_right"), BOTTOM_LEFT("bottom_left"), BOTTOM_RIGHT("bottom_right");
+
+        public static final Codec<HudCorner> CODEC = StringRepresentable.fromEnum(HudCorner::values);
+        private final String name;
+
+        HudCorner(String name) {
+            this.name = name;
+        }
+
+        /** @return the actual corner; {@link #AUTO} becomes {@link #TOP_LEFT}, or {@link #BOTTOM_RIGHT} if that is taken */
+        public HudCorner resolve(boolean topLeftTaken) {
+            if (this != AUTO) {
+                return this;
+            }
+            return topLeftTaken ? BOTTOM_RIGHT : TOP_LEFT;
+        }
+
+        public boolean right() {
+            return this == TOP_RIGHT || this == BOTTOM_RIGHT;
+        }
+
+        public boolean bottom() {
+            return this == BOTTOM_LEFT || this == BOTTOM_RIGHT;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
+    }
 
     /** Tail/skirt procedural animation quality. */
     public enum Physics implements StringRepresentable {

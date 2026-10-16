@@ -1,6 +1,7 @@
 package dev.eliasnvx.femboymod.recipe;
 
 import dev.architectury.event.events.common.LifecycleEvent;
+import dev.eliasnvx.femboymod.pet.PetOutfitItem;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -28,7 +29,8 @@ final class CauldronWashing {
     private static void addWaterInteractions() {
         Map<Item, CauldronInteraction> water = CauldronInteraction.WATER.map();
         for (Item item : BuiltInRegistries.ITEM) {
-            if (item.components().has(FemboyComponents.COSMETIC.get())) {
+            // pet outfits are dyeable too (#femboymod:dyeable_cosmetics in 26.3)
+            if (item.components().has(FemboyComponents.COSMETIC.get()) || item instanceof PetOutfitItem) {
                 water.putIfAbsent(item, CauldronInteraction.DYED_ITEM);
             }
         }

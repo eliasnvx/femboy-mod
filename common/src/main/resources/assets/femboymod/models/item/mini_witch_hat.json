@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/mini_witch_hat",
+    "layer1": "femboymod:item/mini_witch_hat_detail"
+  }
+}

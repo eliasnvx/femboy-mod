@@ -181,7 +181,10 @@ public final class BuiltinEffects {
         }
     }
 
-    /** Plays a sound every {@code distance} blocks walked (the UwU choker's bell). */
+    /**
+     * Plays a sound while walking: whenever the distance walked passes a multiple of {@code distance} (in vanilla's
+     * step units, where 1 is one footstep, so 1 lands on every vanilla step). The UwU choker's bell, the shoes' steps.
+     */
     public record StepSoundEffect(Holder<SoundEvent> sound, float distance, float volume, float pitch) implements CosmeticEffect {
 
         public static final MapCodec<StepSoundEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -207,13 +210,12 @@ public final class BuiltinEffects {
         @Override
         public void tick(ServerPlayer player, EffectSource source) {
             float last = LAST.getOrDefault(player, player.moveDist);
-            if (!player.onGround() || player.isPassenger() || player.isShiftKeyDown()) {
-                LAST.put(player, player.moveDist);
+            LAST.put(player, player.moveDist);
+            if (!player.onGround() || player.isPassenger() || player.isShiftKeyDown() || player.isInWater()) {
                 return;
             }
-            if (player.moveDist - last >= distance) {
+            if (Math.floor(player.moveDist / distance) > Math.floor(last / distance)) {
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundSource.PLAYERS, volume, pitch);
-                LAST.put(player, player.moveDist);
             }
         }
 

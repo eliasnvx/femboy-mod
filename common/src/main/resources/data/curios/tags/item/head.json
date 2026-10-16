@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "#femboymod:slot/head_accessory",
+      "required": false
+    },
+    {
+      "id": "#femboymod:slot/face",
+      "required": false
+    }
+  ]
+}

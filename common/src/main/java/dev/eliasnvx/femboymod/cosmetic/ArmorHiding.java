@@ -75,7 +75,7 @@ public final class ArmorHiding {
 
     /** {@link #mask} cached per player until the outfit or the rule changes (called every frame while rendering). */
     public static synchronized int cachedMask(Player player) {
-        CosmeticInventory inventory = CosmeticsManager.get(player);
+        CosmeticInventory inventory = CosmeticsManager.worn(player);
         boolean allowed = allowedOnClient;
         Cached cached = CACHE.get(player);
         if (cached == null || cached.inventory() != inventory || cached.allowed() != allowed) {

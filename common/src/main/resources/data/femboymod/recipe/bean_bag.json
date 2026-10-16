@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "S": {
+      "item": "minecraft:wheat_seeds"
+    }
+  },
+  "pattern": [
+    " W ",
+    "WSW",
+    "WWW"
+  ],
+  "result": {
+    "id": "femboymod:bean_bag"
+  }
+}

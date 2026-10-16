@@ -1,0 +1,148 @@
+{
+  "variants": {
+    "color=white,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_white"
+    },
+    "color=white,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_white"
+    },
+    "color=white,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_white"
+    },
+    "color=orange,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_orange"
+    },
+    "color=orange,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_orange"
+    },
+    "color=orange,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_orange"
+    },
+    "color=magenta,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_magenta"
+    },
+    "color=magenta,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_magenta"
+    },
+    "color=magenta,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_magenta"
+    },
+    "color=light_blue,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_light_blue"
+    },
+    "color=light_blue,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_light_blue"
+    },
+    "color=light_blue,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_light_blue"
+    },
+    "color=yellow,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_yellow"
+    },
+    "color=yellow,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_yellow"
+    },
+    "color=yellow,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_yellow"
+    },
+    "color=lime,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_lime"
+    },
+    "color=lime,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_lime"
+    },
+    "color=lime,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_lime"
+    },
+    "color=pink,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_pink"
+    },
+    "color=pink,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_pink"
+    },
+    "color=pink,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_pink"
+    },
+    "color=gray,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_gray"
+    },
+    "color=gray,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_gray"
+    },
+    "color=gray,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_gray"
+    },
+    "color=light_gray,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_light_gray"
+    },
+    "color=light_gray,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_light_gray"
+    },
+    "color=light_gray,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_light_gray"
+    },
+    "color=cyan,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_cyan"
+    },
+    "color=cyan,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_cyan"
+    },
+    "color=cyan,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_cyan"
+    },
+    "color=purple,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_purple"
+    },
+    "color=purple,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_purple"
+    },
+    "color=purple,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_purple"
+    },
+    "color=blue,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_blue"
+    },
+    "color=blue,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_blue"
+    },
+    "color=blue,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_blue"
+    },
+    "color=brown,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_brown"
+    },
+    "color=brown,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_brown"
+    },
+    "color=brown,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_brown"
+    },
+    "color=green,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_green"
+    },
+    "color=green,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_green"
+    },
+    "color=green,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_green"
+    },
+    "color=red,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_red"
+    },
+    "color=red,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_red"
+    },
+    "color=red,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_red"
+    },
+    "color=black,shape=square": {
+      "model": "femboymod:block/fluffy_rug_square_black"
+    },
+    "color=black,shape=round": {
+      "model": "femboymod:block/fluffy_rug_round_black"
+    },
+    "color=black,shape=heart": {
+      "model": "femboymod:block/fluffy_rug_heart_black"
+    }
+  }
+}

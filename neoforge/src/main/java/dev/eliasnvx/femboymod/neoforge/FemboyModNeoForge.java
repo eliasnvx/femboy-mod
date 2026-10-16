@@ -15,6 +15,13 @@ public final class FemboyModNeoForge {
     public FemboyModNeoForge(IEventBus modBus) {
         PlatformHelperImpl.init(modBus);
         FemboyMod.init();
+        // slot mods (soft dependencies): their slots can hold our cosmetics
+        if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
+            dev.eliasnvx.femboymod.compat.curios.CuriosSlots.register();
+        }
+        if (net.neoforged.fml.ModList.get().isLoaded("accessories")) {
+            dev.eliasnvx.femboymod.compat.accessories.AccessoriesSlots.register();
+        }
         FemboyGameTestsNeoForge.register(modBus);
         // Architectury 13 has no start-tracking event: sync cosmetics of players coming into view
         NeoForge.EVENT_BUS.addListener((PlayerEvent.StartTracking event) -> {

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/canvas_high_tops",
+    "layer1": "femboymod:item/canvas_high_tops_detail"
+  }
+}
