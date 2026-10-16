@@ -41,6 +41,7 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
         }
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
             world.getConnection().waitForChunksRender();
+            world.getServer().runCommand("clear @p femboymod:lookbook"); // the first-join book, not wanted in shots
             cmd(world, "time set noon");
             cmd(world, "weather clear");
             cmd(world, "gamerule advance_time false");

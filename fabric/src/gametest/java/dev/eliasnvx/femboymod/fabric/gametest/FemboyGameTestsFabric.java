@@ -3,8 +3,15 @@ package dev.eliasnvx.femboymod.fabric.gametest;
 import dev.eliasnvx.femboymod.gametest.BackpackGameTests;
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
 import dev.eliasnvx.femboymod.gametest.DecorGameTests;
+import dev.eliasnvx.femboymod.gametest.ExternalSlotsGameTests;
+import dev.eliasnvx.femboymod.gametest.FeetSlotGameTests;
+import dev.eliasnvx.femboymod.gametest.FriendsGameTests;
+import dev.eliasnvx.femboymod.gametest.InteriorGameTests;
+import dev.eliasnvx.femboymod.gametest.LookbookGameTests;
+import dev.eliasnvx.femboymod.gametest.MirrorGameTests;
 import dev.eliasnvx.femboymod.gametest.MobGameTests;
 import dev.eliasnvx.femboymod.gametest.PanelGameTests;
+import dev.eliasnvx.femboymod.gametest.PhotoGameTests;
 import dev.eliasnvx.femboymod.gametest.ProfileGameTests;
 import dev.eliasnvx.femboymod.gametest.WorldGameTests;
 import dev.eliasnvx.femboymod.gametest.WearableGameTests;
@@ -125,6 +132,56 @@ public final class FemboyGameTestsFabric {
     @GameTest
     public void fashionCriticsKeepTheirDistanceAndTimeOut(GameTestHelper helper) {
         MobGameTests.fashionCriticsKeepTheirDistanceAndTimeOut(helper);
+    }
+
+    @GameTest
+    public void lookbookCoversEveryCosmetic(GameTestHelper helper) {
+        LookbookGameTests.lookbookCoversEveryCosmetic(helper);
+    }
+
+    @GameTest
+    public void lookbookGivenOnceOnFirstJoin(GameTestHelper helper) {
+        LookbookGameTests.lookbookGivenOnceOnFirstJoin(helper);
+    }
+
+    @GameTest
+    public void feetPiecesWearAndAddDrip(GameTestHelper helper) {
+        FeetSlotGameTests.feetPiecesWearAndAddDrip(helper);
+    }
+
+    @GameTest
+    public void shoesHideBoots(GameTestHelper helper) {
+        FeetSlotGameTests.shoesHideBoots(helper);
+    }
+
+    @GameTest
+    public void platformSneakersStepUp(GameTestHelper helper) {
+        FeetSlotGameTests.platformSneakersStepUp(helper);
+    }
+
+    @GameTest
+    public void mirrorHalvesBreakTogether(GameTestHelper helper) {
+        MirrorGameTests.mirrorHalvesBreakTogether(helper);
+    }
+
+    @GameTest
+    public void mirrorOpensTheOutfitScreen(GameTestHelper helper) {
+        MirrorGameTests.mirrorOpensTheOutfitScreen(helper);
+    }
+
+    @GameTest
+    public void photoPrintCostsPaper(GameTestHelper helper) {
+        PhotoGameTests.photoPrintCostsPaper(helper);
+    }
+
+    @GameTest
+    public void photoNeedsPaperAndWaits(GameTestHelper helper) {
+        PhotoGameTests.photoNeedsPaperAndWaits(helper);
+    }
+
+    @GameTest
+    public void photoStoredAndLoaded(GameTestHelper helper) {
+        PhotoGameTests.photoStoredAndLoaded(helper);
     }
 
     @GameTest
@@ -328,8 +385,138 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void externalSlotsCountAsWorn(GameTestHelper helper) {
+        ExternalSlotsGameTests.externalSlotsCountAsWorn(helper);
+    }
+
+    @GameTest
+    public void halloweenPiecesWearAndAddDrip(GameTestHelper helper) {
+        FriendsGameTests.halloweenPiecesWearAndAddDrip(helper);
+    }
+
+    @GameTest
+    public void trickOrTreatOncePerVillagerPerDay(GameTestHelper helper) {
+        FriendsGameTests.trickOrTreatOncePerVillagerPerDay(helper);
+    }
+
+    @GameTest
+    public void petOutfitsOnAndOff(GameTestHelper helper) {
+        FriendsGameTests.petOutfitsOnAndOff(helper);
+    }
+
+    @GameTest
+    public void petOutfitsOnlyForTheOwner(GameTestHelper helper) {
+        FriendsGameTests.petOutfitsOnlyForTheOwner(helper);
+    }
+
+    @GameTest
+    public void petOutfitsDropOnceOnDeath(GameTestHelper helper) {
+        FriendsGameTests.petOutfitsDropOnceOnDeath(helper);
+    }
+
+    @GameTest
+    public void sockGoblinStealsOnePair(GameTestHelper helper) {
+        FriendsGameTests.sockGoblinStealsOnePair(helper);
+    }
+
+    @GameTest
+    public void sockGoblinDropsLootOnce(GameTestHelper helper) {
+        FriendsGameTests.sockGoblinDropsLootOnce(helper);
+    }
+
+    @GameTest
+    public void rubberDuckDebugsItsOwner(GameTestHelper helper) {
+        FriendsGameTests.rubberDuckDebugsItsOwner(helper);
+    }
+
+    @GameTest(maxTicks = 200)
+    public void newMobsRunTheirAi(GameTestHelper helper) {
+        FriendsGameTests.newMobsRunTheirAi(helper);
+    }
+
+    @GameTest(maxTicks = 200)
+    public void rubberDuckFloatsHigh(GameTestHelper helper) {
+        FriendsGameTests.rubberDuckFloatsHigh(helper);
+    }
+
+    @GameTest
+    public void beanBagSeatsAndDyes(GameTestHelper helper) {
+        InteriorGameTests.beanBagSeatsAndDyes(helper);
+    }
+
+    @GameTest
+    public void dyedFurnitureDropsItsColor(GameTestHelper helper) {
+        InteriorGameTests.dyedFurnitureDropsItsColor(helper);
+    }
+
+    @GameTest
+    public void fluffyRugShapesAndSupport(GameTestHelper helper) {
+        InteriorGameTests.fluffyRugShapesAndSupport(helper);
+    }
+
+    @GameTest
+    public void fairyLightsNeedAWall(GameTestHelper helper) {
+        InteriorGameTests.fairyLightsNeedAWall(helper);
+    }
+
+    @GameTest
+    public void lavaLampSwitchesAndDyes(GameTestHelper helper) {
+        InteriorGameTests.lavaLampSwitchesAndDyes(helper);
+    }
+
+    @GameTest(maxTicks = 600)
+    public void petBedCatLiesDownAndHeals(GameTestHelper helper) {
+        InteriorGameTests.petBedCatLiesDownAndHeals(helper);
+    }
+
+    @GameTest(maxTicks = 600)
+    public void petBedDogSitsAndHeals(GameTestHelper helper) {
+        InteriorGameTests.petBedDogSitsAndHeals(helper);
+    }
+
+    @GameTest(maxTicks = 600)
+    public void petBedsOnePetEach(GameTestHelper helper) {
+        InteriorGameTests.petBedsOnePetEach(helper);
+    }
+
+    @GameTest
+    public void laundryBasketTakesOnlyClothes(GameTestHelper helper) {
+        InteriorGameTests.laundryBasketTakesOnlyClothes(helper);
+    }
+
+    @GameTest
+    public void laundryBasketContentsDropOnce(GameTestHelper helper) {
+        InteriorGameTests.laundryBasketContentsDropOnce(helper);
+    }
+
+    @GameTest(maxTicks = 400)
+    public void sockGoblinRaidsTheBasketFirst(GameTestHelper helper) {
+        InteriorGameTests.sockGoblinRaidsTheBasketFirst(helper);
+    }
+
+    @GameTest
+    public void miniFridgeChillsByteEnergy(GameTestHelper helper) {
+        InteriorGameTests.miniFridgeChillsByteEnergy(helper);
+    }
+
+    @GameTest
+    public void vanityTableIsAMirror(GameTestHelper helper) {
+        InteriorGameTests.vanityTableIsAMirror(helper);
+    }
+
+    @GameTest
+    public void headpatAPet(GameTestHelper helper) {
+        FriendsGameTests.headpatAPet(helper);
+    }
+
+    @GameTest
+    public void headpatAPlayer(GameTestHelper helper) {
+        FriendsGameTests.headpatAPlayer(helper);
+    }
+
+    @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 62, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 98, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }
