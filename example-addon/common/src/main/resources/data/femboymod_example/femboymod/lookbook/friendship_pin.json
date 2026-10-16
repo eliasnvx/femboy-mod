@@ -1,0 +1,18 @@
+{
+  "sources": [
+    {
+      "kind": "trade",
+      "from": "femboymod:cosplayer",
+      "items": [
+        {
+          "id": "femboymod:style_coupon",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "kind": "note",
+      "note": "lookbook.femboymod_example.friendship_pin"
+    }
+  ]
+}
