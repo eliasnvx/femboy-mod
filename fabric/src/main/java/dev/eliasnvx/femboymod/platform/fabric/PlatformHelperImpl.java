@@ -5,6 +5,7 @@ import dev.eliasnvx.femboymod.addon.AddonLoader.DiscoveredAddon;
 import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
+import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
@@ -53,6 +54,12 @@ public final class PlatformHelperImpl {
             .copyOnDeath()
             .buildAndRegister(new ResourceLocation(FemboyMod.MOD_ID, "profile"));
 
+    /** Halloween: the game day a villager last gave out candy (saved with the villager, see TrickOrTreat). */
+    private static final AttachmentType<Long> TREAT_DAY = AttachmentRegistry.<Long>builder()
+            .initializer(() -> -1L)
+            .persistent(com.mojang.serialization.Codec.LONG)
+            .buildAndRegister(new ResourceLocation(FemboyMod.MOD_ID, "treat_day"));
+
     private PlatformHelperImpl() {
     }
 
@@ -60,6 +67,7 @@ public final class PlatformHelperImpl {
     public static void init() {
         DynamicRegistries.registerSynced(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC);
         DynamicRegistries.registerSynced(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC);
+        DynamicRegistries.registerSynced(LookbookEntry.REGISTRY_KEY, LookbookEntry.CODEC);
         DynamicRegistries.registerSynced(SetBonus.REGISTRY_KEY, SetBonus.CODEC);
         DynamicRegistries.registerSynced(DripRules.REGISTRY_KEY, DripRules.CODEC);
         DynamicRegistries.register(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
@@ -99,6 +107,14 @@ public final class PlatformHelperImpl {
         player.setAttached(PROFILE, profile);
     }
 
+    public static long getLastTreatDay(net.minecraft.world.entity.Entity entity) {
+        return entity.getAttachedOrElse(TREAT_DAY, -1L);
+    }
+
+    public static void setLastTreatDay(net.minecraft.world.entity.Entity entity, long day) {
+        entity.setAttached(TREAT_DAY, day);
+    }
+
     public static CaffeineLog getCaffeineLog(Player player) {
         return player.getAttachedOrElse(CAFFEINE, CaffeineLog.EMPTY);
     }
@@ -115,9 +131,16 @@ public final class PlatformHelperImpl {
         player.setAttached(PRESETS, presets);
     }
 
+    /** Fabric registers the photo's renderer from the client entrypoint (BuiltinItemRendererRegistry). */
+    public static dev.eliasnvx.femboymod.item.PhotoItem createPhotoItem(net.minecraft.world.item.Item.Properties properties) {
+        return new dev.eliasnvx.femboymod.item.PhotoItem(properties);
+    }
+
     public static void registerPoi() {
         net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper.register(FemboyBlocks.THRIFTER_POI.location(), 1, 1,
                 FemboyBlocks.CLOTHING_RACK.get());
+        net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper.register(FemboyBlocks.LAUNDRY_BASKET_POI.location(), 0, 1,
+                FemboyBlocks.LAUNDRY_BASKET.get());
     }
 
     public static boolean canReceive(net.minecraft.server.level.ServerPlayer player, net.minecraft.resources.ResourceLocation id) {

@@ -69,13 +69,13 @@ public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, bo
 
     /** Receiver (client side). Uses only common classes; registered on the client only (see FemboyNetwork). */
     public static void handle(CosmeticsSyncPayload payload, NetworkManager.PacketContext context) {
-        context.queue(() -> {
+        context.queue(() -> EarlySyncs.withPlayer(context, self -> {
             ArmorHiding.setAllowedOnClient(payload.armorHidingAllowed());
-            Entity entity = context.getPlayer().level().getEntity(payload.entityId());
+            Entity entity = self.getId() == payload.entityId() ? self : self.level().getEntity(payload.entityId());
             if (entity instanceof Player player) {
                 PlatformHelper.setCosmetics(player, payload.cosmetics());
             }
-        });
+        }));
     }
 
     /** Players without femboymod (vanilla clients on a modded server) cannot decode the payload. */

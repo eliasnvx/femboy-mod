@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        "minecraft:white_wool",
+        "minecraft:carrot",
+        "femboymod:glitch_shard",
+        "minecraft:string"
+      ]
+    }
+  ]
+}

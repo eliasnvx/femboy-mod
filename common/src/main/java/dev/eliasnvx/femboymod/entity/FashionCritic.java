@@ -157,7 +157,7 @@ public class FashionCritic extends Monster {
     }
 
     private static boolean wearsApproved(ServerPlayer player) {
-        var worn = CosmeticsManager.get(player);
+        var worn = CosmeticsManager.worn(player);
         for (var entry : worn.all().entrySet()) {
             if (!worn.isHidden(entry.getKey()) && entry.getValue().is(FemboyTags.CRITIC_APPROVED)) {
                 return true;

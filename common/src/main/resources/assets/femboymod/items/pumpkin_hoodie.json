@@ -1,0 +1,17 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/pumpkin_hoodie",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 15764004,
+        "stripe": 0
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      }
+    ]
+  }
+}

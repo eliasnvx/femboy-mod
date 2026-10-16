@@ -1083,6 +1083,18 @@ def effect_icons():
             put(img, [(round(x0 + (x1 - x0) * i / 8), round(y0 + (y1 - y0) * i / 8))], hexc("#B0E0FF"))
     outline(img, ink)
     save(img, "textures", "mob_effect", "jitter.png")
+    # Cozy: a soft pink heart with a little hand patting it from above
+    img = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+    heart, shine, hand = hexc("#FF9FC8"), hexc("#FFD6E8"), hexc("#F6D2B8")
+    rows = ["..XXX...XXX..", ".XXXXX.XXXXX.", "XXXXXXXXXXXXX", "XXXXXXXXXXXXX", ".XXXXXXXXXXX.",
+            "..XXXXXXXXX..", "...XXXXXXX...", "....XXXXX....", ".....XXX.....", "......X......"]
+    for y, row in enumerate(rows):
+        put(img, [(2 + x, 7 + y) for x, c in enumerate(row) if c == "X"], heart)
+    put(img, [(4, 9), (5, 8), (4, 10)], shine)
+    put(img, rect(6, 1, 6, 3), hand)  # the patting hand, fingers down
+    put(img, [(6, 4), (8, 4), (10, 4)], hand)
+    outline(img, ink)
+    save(img, "textures", "mob_effect", "cozy.png")
 
 
 def photo_watermark():

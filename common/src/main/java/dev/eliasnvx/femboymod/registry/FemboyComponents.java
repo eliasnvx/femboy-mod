@@ -23,6 +23,13 @@ public final class FemboyComponents {
     public static final NbtItemData<ItemList> CHARMS = data("charms", ItemList.CODEC);
     /** Items inside a backpack (1.21 used the vanilla container component). */
     public static final NbtItemData<ItemList> CONTENTS = data("contents", ItemList.CODEC);
+    /** Printed photo: picture id and author. */
+    public static final NbtItemData<dev.eliasnvx.femboymod.photo.PhotoData> PHOTO = data("photo", dev.eliasnvx.femboymod.photo.PhotoData.CODEC);
+    /**
+     * A drink cooled in a Mini Fridge: Byte Energy buffs last longer (config {@code furniture.chilled_bonus}). 1.21.1
+     * has a unit component; here a boolean flag ({@code femboymod:chilled: 1b}): only {@code has} matters.
+     */
+    public static final NbtItemData<Boolean> CHILLED = data("chilled", com.mojang.serialization.Codec.BOOL);
 
     public static final FemboyDataComponents API = new FemboyDataComponents() {
         @Override

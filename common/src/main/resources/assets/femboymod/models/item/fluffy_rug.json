@@ -1,0 +1,101 @@
+{
+  "parent": "femboymod:block/fluffy_rug_round_pink",
+  "overrides": [
+    {
+      "predicate": {
+        "femboymod:color": 0.0
+      },
+      "model": "femboymod:block/fluffy_rug_round_white"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.0625
+      },
+      "model": "femboymod:block/fluffy_rug_round_orange"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.125
+      },
+      "model": "femboymod:block/fluffy_rug_round_magenta"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.1875
+      },
+      "model": "femboymod:block/fluffy_rug_round_light_blue"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.25
+      },
+      "model": "femboymod:block/fluffy_rug_round_yellow"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.3125
+      },
+      "model": "femboymod:block/fluffy_rug_round_lime"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.375
+      },
+      "model": "femboymod:block/fluffy_rug_round_pink"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.4375
+      },
+      "model": "femboymod:block/fluffy_rug_round_gray"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.5
+      },
+      "model": "femboymod:block/fluffy_rug_round_light_gray"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.5625
+      },
+      "model": "femboymod:block/fluffy_rug_round_cyan"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.625
+      },
+      "model": "femboymod:block/fluffy_rug_round_purple"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.6875
+      },
+      "model": "femboymod:block/fluffy_rug_round_blue"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.75
+      },
+      "model": "femboymod:block/fluffy_rug_round_brown"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.8125
+      },
+      "model": "femboymod:block/fluffy_rug_round_green"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.875
+      },
+      "model": "femboymod:block/fluffy_rug_round_red"
+    },
+    {
+      "predicate": {
+        "femboymod:color": 0.9375
+      },
+      "model": "femboymod:block/fluffy_rug_round_black"
+    }
+  ]
+}

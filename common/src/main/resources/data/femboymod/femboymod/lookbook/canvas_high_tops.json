@@ -1,0 +1,29 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:white_wool",
+          "count": 2
+        },
+        {
+          "id": "minecraft:string",
+          "count": 2
+        },
+        "minecraft:leather"
+      ]
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "minecraft:emerald",
+          "count": 10
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 3
+    }
+  ]
+}

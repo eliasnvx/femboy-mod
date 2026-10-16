@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/cat_paw_gloves",
+    "layer1": "femboymod:item/cat_paw_gloves_detail"
+  }
+}

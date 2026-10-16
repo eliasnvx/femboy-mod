@@ -1,0 +1,17 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/ghost_sheet",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 15921910,
+        "stripe": 0
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      }
+    ]
+  }
+}

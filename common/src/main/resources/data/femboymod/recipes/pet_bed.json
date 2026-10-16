@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "C": {
+      "tag": "minecraft:wool_carpets"
+    }
+  },
+  "pattern": [
+    "W W",
+    "WCW"
+  ],
+  "result": {
+    "item": "femboymod:pet_bed"
+  }
+}

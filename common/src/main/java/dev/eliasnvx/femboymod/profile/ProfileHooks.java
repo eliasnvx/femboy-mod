@@ -19,6 +19,8 @@ import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import dev.eliasnvx.femboymod.registry.FemboyItems;
 
 /** Fills the player profile from game events and hands out Style Points (config {@code style_points}). */
 public final class ProfileHooks {
@@ -38,6 +40,8 @@ public final class ProfileHooks {
     /** Game time of the last "btw" from a Terminal; -1 = never. */
     /** Game day of the last Vibe Check that paid Style Points; -1 = never. */
     public static final ProfileField<Long> VIBE_LAST_DAY = ProfileField.of(id("vibe_last_day"), Codec.LONG, -1L, false);
+    /** Whether the player already got the Lookbook on joining. */
+    public static final ProfileField<Boolean> LOOKBOOK_GIVEN = ProfileField.of(id("lookbook_given"), Codec.BOOL, false, false);
     public static final ProfileField<Long> TERMINAL_LAST_BTW = ProfileField.of(id("terminal_last_btw"), Codec.LONG, -1L, false);
 
     private ProfileHooks() {
@@ -55,6 +59,18 @@ public final class ProfileHooks {
         registry.register(DUCK_LAST_INSIGHT.id(), DUCK_LAST_INSIGHT);
         registry.register(TERMINAL_LAST_BTW.id(), TERMINAL_LAST_BTW);
         registry.register(VIBE_LAST_DAY.id(), VIBE_LAST_DAY);
+        registry.register(LOOKBOOK_GIVEN.id(), LOOKBOOK_GIVEN);
+    }
+
+    /** First join: hands out the Lookbook once per player (config {@code give_lookbook_on_first_join}). */
+    public static void onJoin(ServerPlayer player) {
+        PlayerProfile profile = FemboyMod.api().getProfile(player);
+        if (!FemboyConfig.common().giveLookbook() || profile.get(LOOKBOOK_GIVEN)) {
+            return;
+        }
+        profile.set(LOOKBOOK_GIVEN, true);
+        // drops it if the inventory is full
+        player.getInventory().placeItemBackInInventory(new ItemStack(FemboyItems.LOOKBOOK.get()));
     }
 
     public static void register(FemboyEventBus events) {

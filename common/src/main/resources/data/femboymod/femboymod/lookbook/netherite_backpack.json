@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "kind": "smithing",
+      "items": [
+        "minecraft:netherite_upgrade_smithing_template",
+        "femboymod:leather_backpack",
+        "minecraft:netherite_ingot"
+      ]
+    }
+  ]
+}

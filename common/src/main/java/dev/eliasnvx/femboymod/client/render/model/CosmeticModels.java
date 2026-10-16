@@ -51,6 +51,14 @@ public final class CosmeticModels {
     private static final float HOODIE_BODY_INFLATE = 0.42F;
     private static final CubeDeformation HOODIE_HEM_INFLATE = new CubeDeformation(0.5F);
     private static final float HOODIE_ARM_INFLATE = 0.38F;
+    /** Size of one "pixel" of the Pumpkin Hoodie's carved face. */
+    private static final float PUMPKIN_FACE_PIXEL = 0.6F;
+    /** How far each step of the witch hat's cone leans back (radians). */
+    private static final float WITCH_HAT_BEND = 0.18F;
+    private static final float SHEET_HEAD_INFLATE = 0.7F;
+    private static final float SHEET_BODY_INFLATE = 0.9F;
+    private static final float SHEET_ARM_INFLATE = 0.75F;
+    private static final int SHEET_TATTERS = 5;
     private static final CubeDeformation HOODIE_CUFF_INFLATE = new CubeDeformation(0.46F);
     /** Hood shell distance from the head (above the hat layer, 0.5) and its fabric thickness. */
     private static final float HOOD_OFFSET = 0.55F;
@@ -121,6 +129,16 @@ public final class CosmeticModels {
     public static final ModelLayerLocation HOODIE_CHEST_PANEL = layer("hoodie_chest_panel");
     /** Sleeves drawn over the first-person hand; same geometry as the hoodie's sleeves. */
     public static final ModelLayerLocation HOODIE_FIRST_PERSON = layer("hoodie_first_person");
+    public static final ModelLayerLocation SNEAKERS = layer("sneakers");
+    public static final ModelLayerLocation CANVAS_HIGH_TOPS = layer("canvas_high_tops");
+    public static final ModelLayerLocation PLATFORM_SNEAKERS = layer("platform_sneakers");
+    public static final ModelLayerLocation BUNNY_SLIPPERS = layer("bunny_slippers");
+    public static final ModelLayerLocation CAT_PAW_GLOVES = layer("cat_paw_gloves");
+    // 0.2.0 Halloween
+    public static final ModelLayerLocation WITCH_HAT = layer("witch_hat");
+    public static final ModelLayerLocation PUMPKIN_HOODIE = layer("pumpkin_hoodie");
+    public static final ModelLayerLocation GHOST_SHEET = layer("ghost_sheet");
+    public static final ModelLayerLocation CANDY_PAIL = layer("candy_pail");
     public static final ModelLayerLocation BACKPACK = layer("backpack");
     /** Charm hangers on the backpack's side; static relative to the body. */
     public static final ModelLayerLocation BACKPACK_CHARMS = layer("backpack_charms");
@@ -161,8 +179,9 @@ public final class CosmeticModels {
         layers.put(SKIRT, CosmeticModels::skirt);
         layers.put(MITTENS, CosmeticModels::mittens);
         layers.put(MITTENS_FIRST_PERSON, CosmeticModels::mittensFirstPerson);
-        layers.put(HOODIE, () -> hoodie(false));
-        layers.put(CAT_EAR_HOODIE, () -> hoodie(true));
+        layers.put(HOODIE, () -> hoodie(false, false));
+        layers.put(CAT_EAR_HOODIE, () -> hoodie(true, false));
+        layers.put(PUMPKIN_HOODIE, () -> hoodie(false, true));
         layers.put(CHOKER, CosmeticModels::choker);
         layers.put(EARRINGS, CosmeticModels::earrings);
         layers.put(MOONSTONE_PENDANT, CosmeticModels::moonstonePendant);
@@ -177,6 +196,14 @@ public final class CosmeticModels {
         layers.put(BRACELET, CosmeticModels::bracelet);
         layers.put(HOODIE_CHEST_PANEL, CosmeticModels::hoodieChestPanel);
         layers.put(HOODIE_FIRST_PERSON, CosmeticModels::hoodieFirstPerson);
+        layers.put(SNEAKERS, () -> shoes(Shoe.SNEAKERS));
+        layers.put(CANVAS_HIGH_TOPS, () -> shoes(Shoe.HIGH_TOPS));
+        layers.put(PLATFORM_SNEAKERS, () -> shoes(Shoe.PLATFORM));
+        layers.put(BUNNY_SLIPPERS, CosmeticModels::bunnySlippers);
+        layers.put(CAT_PAW_GLOVES, CosmeticModels::catPawGloves);
+        layers.put(WITCH_HAT, CosmeticModels::witchHat);
+        layers.put(GHOST_SHEET, CosmeticModels::ghostSheet);
+        layers.put(CANDY_PAIL, CosmeticModels::candyPail);
         layers.put(BACKPACK, CosmeticModels::backpack);
         layers.put(BACKPACK_CHARMS, CosmeticModels::backpackCharms);
         HAIR_CLIPS.forEach((shape, location) -> layers.put(location, () -> hairClip(shape)));
@@ -420,6 +447,18 @@ public final class CosmeticModels {
                     .addBox(x0, WARMER_TOP - 1.0F, -2.0F, 4, 1.2F, 4, MITTEN_CUFF_INFLATE)
                     .addBox(x0, WARMER_BOTTOM - 0.4F, -2.0F, 4, 1.0F, 4, MITTEN_CUFF_INFLATE), PartPose.ZERO);
 
+            // cat paw gloves: fluffy shell, cuff and pads
+            float front = -2.0F - PAW_INFLATE - 0.1F;
+            root.addOrReplaceChild(side + "_paw", CubeListBuilder.create().texOffs(0, 0)
+                    .addBox(x0, PAW_TOP, -2.0F, 4, LEG_BOTTOM - PAW_TOP, 4, new CubeDeformation(PAW_INFLATE)), PartPose.ZERO);
+            root.addOrReplaceChild(side + "_paw_cuff", CubeListBuilder.create().texOffs(16, 16)
+                    .addBox(x0, PAW_TOP - 0.8F, -2.0F, 4, 1.2F, 4, PAW_CUFF_INFLATE), PartPose.ZERO);
+            CubeListBuilder pads = CubeListBuilder.create().texOffs(0, 0).addBox(x0 + 1.0F, 9.7F, front, 2.0F, 1.5F, 0.1F);
+            for (int i = 0; i < 4; i++) {
+                pads.addBox(x0 + 0.3F + i * 0.9F, 8.5F, front, 0.6F, 0.6F, 0.1F);
+            }
+            root.addOrReplaceChild(side + "_paw_pads", pads, PartPose.ZERO);
+
             // nail polish: painted fingertips
             CubeListBuilder nails = CubeListBuilder.create().texOffs(0, 0);
             for (int i = 0; i < 4; i++) {
@@ -449,6 +488,119 @@ public final class CosmeticModels {
             b.build();
         }
         return layerOf(mesh);
+    }
+
+    // ------------------------------------------------------------------ shoes (feet slot), over socks
+
+    /** Shoe shell distance from the leg: above socks (0.32) and their cuffs and toe caps (0.45). */
+    private static final float SHOE_INFLATE = 0.55F;
+    private static final CubeDeformation SHOE_TRIM = new CubeDeformation(0.6F);
+    /** Soles stick out a bit more than the upper; their lower half is under the ground. */
+    private static final CubeDeformation SOLE_INFLATE = new CubeDeformation(0.62F);
+    private static final CubeDeformation PLATFORM_INFLATE = new CubeDeformation(0.7F);
+    private static final float LEG_BOTTOM = 12.0F;
+    /** Front face of the shoe's upper and how far the toe sticks out in front of it. */
+    private static final float SHOE_FRONT = -2.0F - SHOE_INFLATE;
+    private static final float TOE_LENGTH = 1.0F;
+
+    /** Shoe styles sharing one builder: where the upper starts and how thick the sole is. */
+    private enum Shoe {
+        SNEAKERS(9.0F, 0.9F, 2, false),
+        HIGH_TOPS(5.0F, 0.9F, 5, true),
+        PLATFORM(8.0F, 2.2F, 2, false);
+
+        final float upperTop;
+        final float sole;
+        final int laces;
+        final boolean ankleCap;
+
+        Shoe(float upperTop, float sole, int laces, boolean ankleCap) {
+            this.upperTop = upperTop;
+            this.sole = sole;
+            this.laces = laces;
+            this.ankleCap = ankleCap;
+        }
+    }
+
+    /** Sneakers, canvas high-tops and platforms: dyed upper (MAIN), collar (ACCENT), white sole, laces and toe (DETAIL). */
+    private static LayerDefinition shoes(Shoe shoe) {
+        MeshDefinition mesh = emptyPlayerMesh();
+        for (String leg : new String[]{"left_leg", "right_leg"}) {
+            boolean left = leg.equals("left_leg");
+            Groups.Builder b = new Groups.Builder(mesh.getRoot().getChild(leg));
+            float soleTop = LEG_BOTTOM - shoe.sole;
+            b.box(MAIN, -2.0F, shoe.upperTop, -2.0F, 4, soleTop - shoe.upperTop, 4, new CubeDeformation(SHOE_INFLATE));
+            b.box(MAIN, -2.0F, soleTop - 1.4F, -2.0F - TOE_LENGTH, 4, 1.4F, TOE_LENGTH, new CubeDeformation(SHOE_INFLATE)); // toe
+            b.box(ACCENT, -2.0F, shoe.upperTop - 0.4F, -2.0F, 4, 0.6F, 4, SHOE_TRIM);                                // collar
+            b.box(DETAIL, -2.0F, soleTop, -2.0F - TOE_LENGTH, 4, shoe.sole, 4 + TOE_LENGTH,
+                    shoe == Shoe.PLATFORM ? PLATFORM_INFLATE : SOLE_INFLATE);
+            if (shoe == Shoe.PLATFORM) {
+                b.box(ACCENT, -2.0F, soleTop + shoe.sole / 2, -2.0F - TOE_LENGTH, 4, 0.3F, 4 + TOE_LENGTH,
+                        new CubeDeformation(0.72F));                                                               // sole stripe
+            }
+            if (shoe == Shoe.HIGH_TOPS) {
+                b.box(DETAIL, -2.0F, soleTop - 1.6F, -2.0F - TOE_LENGTH, 4, 1.6F, 1.2F, SHOE_TRIM);                // rubber toe cap
+            }
+            float laceStep = (soleTop - 1.6F - shoe.upperTop) / (shoe.laces + 1);
+            for (int i = 1; i <= shoe.laces; i++) {
+                b.box(DETAIL, -1.3F, shoe.upperTop + i * laceStep, SHOE_FRONT - 0.1F, 2.6F, 0.3F, 0.1F);
+            }
+            float outer = left ? 2.0F + SHOE_INFLATE : -2.0F - SHOE_INFLATE - 0.1F;
+            if (shoe.ankleCap) {
+                b.box(DETAIL, outer, shoe.upperTop + 1.0F, -0.7F, 0.1F, 1.4F, 1.4F);                                // round ankle patch
+            } else {
+                b.box(ACCENT, outer, soleTop - 1.5F, -1.6F, 0.1F, 0.6F, 3.2F);                                       // side stripe
+            }
+            b.build();
+        }
+        return layerOf(mesh);
+    }
+
+    /** Fluffy slippers with bunny ears and a little face on the toe. */
+    private static LayerDefinition bunnySlippers() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        for (String leg : new String[]{"left_leg", "right_leg"}) {
+            Groups.Builder b = new Groups.Builder(mesh.getRoot().getChild(leg));
+            b.box(MAIN, -2.0F, 9.2F, -2.0F, 4, LEG_BOTTOM - 9.2F, 4, new CubeDeformation(0.8F));                    // fluffy shell
+            b.box(MAIN, -1.8F, 9.8F, -3.6F, 3.6F, 2.2F, 1.6F, new CubeDeformation(0.6F));                           // round toe
+            float face = -3.6F - 0.6F - 0.1F;
+            for (float x : new float[]{-1.6F, 0.7F}) {
+                b.box(MAIN, x, 6.4F, -3.2F, 0.9F, 2.8F, 0.5F);                                                         // ears
+                b.box(DETAIL, x + 0.2F, 6.8F, -3.3F, 0.5F, 2.0F, 0.1F);                                               // pink inside
+            }
+            b.box(DARK, -1.3F, 10.1F, face, 0.5F, 0.5F, 0.1F);                                                        // eyes
+            b.box(DARK, 0.8F, 10.1F, face, 0.5F, 0.5F, 0.1F);
+            b.box(DETAIL, -0.25F, 10.9F, face, 0.5F, 0.4F, 0.1F);                                                     // nose
+            b.build();
+        }
+        return layerOf(mesh);
+    }
+
+    // cat paw gloves: from mid forearm, pink toe beans and pad on the front
+    private static final float PAW_TOP = 6.0F;
+    private static final float PAW_INFLATE = 0.62F;
+    private static final CubeDeformation PAW_CUFF_INFLATE = new CubeDeformation(0.78F);
+
+    /** Fluffy paw gloves on both hands. */
+    private static LayerDefinition catPawGloves() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        for (String arm : new String[]{"right_arm", "left_arm"}) {
+            float x0 = arm.equals("right_arm") ? -3.0F : -1.0F;
+            Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild(arm), "paw", PartPose.ZERO));
+            pawParts(b, x0);
+            b.build();
+        }
+        return layerOf(mesh);
+    }
+
+    private static void pawParts(Groups.Builder b, float x0) {
+        b.box(MAIN, x0, PAW_TOP, -2.0F, 4, LEG_BOTTOM - PAW_TOP, 4, new CubeDeformation(PAW_INFLATE));
+        b.box(ACCENT, x0, PAW_TOP - 0.8F, -2.0F, 4, 1.2F, 4, PAW_CUFF_INFLATE);                                      // fluffy cuff
+        float front = -2.0F - PAW_INFLATE - 0.1F;
+        b.box(DETAIL, x0 + 1.0F, 9.7F, front, 2.0F, 1.5F, 0.1F);                                                      // big pad
+        for (int i = 0; i < 4; i++) {
+            b.box(DETAIL, x0 + 0.3F + i * 0.9F, 8.5F, front, 0.6F, 0.6F, 0.1F);                                      // toe beans
+        }
     }
 
     // ------------------------------------------------------------------ skirt
@@ -498,7 +650,12 @@ public final class CosmeticModels {
 
     // ------------------------------------------------------------------ hoodie
 
-    private static LayerDefinition hoodie(boolean hoodUp) {
+    /**
+     * @param hoodUp  hood up with cat ears instead of lying on the shoulders
+     * @param pumpkin the Pumpkin Hoodie: a carved jack-o'-lantern face on the chest and a stem on the hood instead
+     *                of the drawstrings
+     */
+    private static LayerDefinition hoodie(boolean hoodUp, boolean pumpkin) {
         MeshDefinition mesh = emptyPlayerMesh();
         PartDefinition root = mesh.getRoot();
         Groups.Builder body = new Groups.Builder(pivot(root.getChild("body"), "hoodie", PartPose.ZERO)).bandRange(0.0F, 12.0F);
@@ -513,10 +670,16 @@ public final class CosmeticModels {
             body.box(MAIN, 3.9F, -1.8F, -0.6F, 0.8F, 3.0F, 2.6F);
             body.box(ACCENT, -4.3F, -2.6F, 3.4F, 8.6F, 0.5F, 0.4F);
         }
-        // drawstrings with aglets
-        for (float x : new float[]{-2.1F, 1.7F}) {
-            body.box(DETAIL, x, 0.2F, -2.75F, 0.4F, 4.2F, 0.3F);
-            body.box(DARK, x - 0.05F, 4.4F, -2.8F, 0.5F, 0.8F, 0.4F);
+        if (pumpkin) {
+            pumpkinFace(body);
+            body.box(DETAIL, -0.5F, -3.6F, 2.2F, 1.0F, 1.4F, 1.0F);                  // stem on the hood
+            body.box(DETAIL, 0.4F, -3.9F, 2.4F, 1.2F, 0.5F, 0.6F);
+        } else {
+            // drawstrings with aglets
+            for (float x : new float[]{-2.1F, 1.7F}) {
+                body.box(DETAIL, x, 0.2F, -2.75F, 0.4F, 4.2F, 0.3F);
+                body.box(DARK, x - 0.05F, 4.4F, -2.8F, 0.5F, 0.8F, 0.4F);
+            }
         }
         body.build();
 
@@ -533,6 +696,112 @@ public final class CosmeticModels {
         if (hoodUp) {
             catEarHood(root.getChild("head"));
         }
+        return layerOf(mesh);
+    }
+
+    /** Triangle eyes, a nose and a toothy grin, carved into the chest above the pocket. */
+    private static void pumpkinFace(Groups.Builder body) {
+        float z = -2.75F;
+        float d = 0.3F;
+        float px = PUMPKIN_FACE_PIXEL;
+        for (int side = -1; side <= 1; side += 2) {
+            float cx = side * 1.9F;
+            body.box(DARK, cx - px / 2, 1.4F, z, px, px, d);
+            body.box(DARK, cx - px * 1.15F, 1.4F + px, z, px * 2.3F, px, d);
+            body.box(DARK, cx - px * 1.8F, 1.4F + 2 * px, z, px * 3.6F, px, d);
+        }
+        body.box(DARK, -px * 0.7F, 3.6F, z, px * 1.4F, px, d);                       // nose
+        float mouth = 4.6F;
+        body.box(DARK, -3.0F, mouth, z, px, px, d);                                   // corners turn up
+        body.box(DARK, 3.0F - px, mouth, z, px, px, d);
+        body.box(DARK, -2.4F, mouth + px, z, 1.3F, px, d);                          // upper lip with two teeth gaps
+        body.box(DARK, -0.7F, mouth + px, z, 1.4F, px, d);
+        body.box(DARK, 1.1F, mouth + px, z, 1.3F, px, d);
+        body.box(DARK, -2.2F, mouth + 2 * px, z, 1.8F, px, d);                       // lower lip, one tooth up
+        body.box(DARK, 0.4F, mouth + 2 * px, z, 1.8F, px, d);
+    }
+
+    /** Pointed witch hat: wide brim, a band with a gold buckle, the cone bending back in two steps. */
+    private static LayerDefinition witchHat() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        PartDefinition head = mesh.getRoot().getChild("head");
+        Groups.Builder hat = new Groups.Builder(pivot(head, "witch_hat", PartPose.ZERO));
+        hat.box(MAIN, -6.5F, -8.7F, -6.5F, 13, 0.7F, 13);                           // brim
+        hat.box(MAIN, -4.2F, -11.2F, -4.2F, 8.4F, 2.5F, 8.4F);                      // crown
+        hat.box(ACCENT, -4.35F, -10.0F, -4.35F, 8.7F, 1.1F, 8.7F);                  // band
+        hat.box(METAL, -1.0F, -10.2F, -4.65F, 2.0F, 1.5F, 0.3F);                    // buckle
+        hat.box(DARK, -0.45F, -9.85F, -4.7F, 0.9F, 0.8F, 0.1F);
+        hat.build();
+        PartDefinition middle = pivot(head, "witch_hat_middle",
+                PartPose.offsetAndRotation(0.0F, -11.2F, 0.3F, -WITCH_HAT_BEND, 0.0F, 0.0F));
+        Groups.Builder m = new Groups.Builder(middle);
+        m.box(MAIN, -3.0F, -3.0F, -3.0F, 6, 3, 6);
+        m.box(MAIN, -2.0F, -5.5F, -2.0F, 4, 2.5F, 4);
+        m.build();
+        PartDefinition tip = pivot(middle, "witch_hat_tip",
+                PartPose.offsetAndRotation(0.0F, -5.5F, 0.3F, -WITCH_HAT_BEND * 2.5F, 0.0F, 0.0F));
+        Groups.Builder t = new Groups.Builder(tip);
+        t.box(MAIN, -1.1F, -2.5F, -1.1F, 2.2F, 2.5F, 2.2F);
+        t.box(MAIN, -0.5F, -4.0F, -0.5F, 1.0F, 1.5F, 1.0F);
+        t.build();
+        return layerOf(mesh);
+    }
+
+    /**
+     * A sheet over the head and down to the knees with two dark eye holes, floppy sleeves over the arms; the
+     * drape below the waist is wide enough for the legs to swing inside.
+     */
+    private static LayerDefinition ghostSheet() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        PartDefinition root = mesh.getRoot();
+        Groups.Builder head = new Groups.Builder(pivot(root.getChild("head"), "sheet", PartPose.ZERO));
+        head.box(MAIN, -4.0F, -8.0F, -4.0F, 8, 8, 8, new CubeDeformation(SHEET_HEAD_INFLATE));
+        float face = -4.0F - SHEET_HEAD_INFLATE - 0.05F;
+        for (float x : new float[]{-2.7F, 1.1F}) {
+            head.box(DARK, x, -5.6F, face, 1.6F, 2.0F, 0.1F);                       // oval eye holes
+            head.box(DARK, x + 0.3F, -6.0F, face, 1.0F, 0.4F, 0.1F);
+            head.box(DARK, x + 0.3F, -3.6F, face, 1.0F, 0.4F, 0.1F);
+        }
+        head.build();
+        Groups.Builder body = new Groups.Builder(pivot(root.getChild("body"), "sheet", PartPose.ZERO));
+        body.box(MAIN, -4.0F, 0.0F, -2.0F, 8, 12, 4, new CubeDeformation(SHEET_BODY_INFLATE));
+        body.box(MAIN, -5.0F, 12.0F, -3.0F, 10, 4.0F, 6);                            // drape
+        body.box(ACCENT, -5.05F, 15.2F, -3.05F, 10.1F, 0.8F, 6.1F);                  // hem
+        for (int i = 0; i < SHEET_TATTERS; i++) {                                     // ragged edge, front and back
+            float x = -4.8F + i * 2.0F;
+            body.box(ACCENT, x, 16.0F, -3.05F, 1.2F, 0.9F, 0.4F);
+            body.box(ACCENT, x + 0.8F, 16.0F, 2.65F, 1.2F, 0.9F, 0.4F);
+        }
+        body.build();
+        for (String arm : new String[]{"right_arm", "left_arm"}) {
+            float x0 = arm.equals("right_arm") ? -3.0F : -1.0F;
+            Groups.Builder sleeve = new Groups.Builder(pivot(root.getChild(arm), "sleeve", PartPose.ZERO));
+            sleeve.box(MAIN, x0, -2.0F, -2.0F, 4, 9.5F, 4, new CubeDeformation(SHEET_ARM_INFLATE));
+            sleeve.box(MAIN, x0 - 0.6F, 7.5F, -2.6F, 5.2F, 2.8F, 5.2F);              // floppy end over the hand
+            sleeve.build();
+        }
+        return layerOf(mesh);
+    }
+
+    /** A jack-o'-lantern candy pail on a thin strap, hanging in front of the right hip, with candy on top. */
+    private static LayerDefinition candyPail() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        Groups.Builder b = new Groups.Builder(pivot(mesh.getRoot().getChild("body"), "candy_pail", PartPose.ZERO));
+        b.box(DARK, -4.0F, 10.4F, -2.0F, 8, 0.7F, 4, BELT_INFLATE);                  // strap
+        float x = -3.8F;
+        float y = 11.6F;
+        float z = -5.6F;
+        b.box(MAIN, x, y, z, 3.2F, 2.8F, 3.0F);                                       // pumpkin
+        b.box(ACCENT, x + 1.4F, y - 0.05F, z - 0.05F, 0.4F, 2.9F, 3.1F);              // rib
+        b.box(DARK, x + 0.45F, y + 0.6F, z - 0.1F, 0.6F, 0.6F, 0.1F);                // eyes
+        b.box(DARK, x + 2.15F, y + 0.6F, z - 0.1F, 0.6F, 0.6F, 0.1F);
+        b.box(DARK, x + 0.6F, y + 1.6F, z - 0.1F, 2.0F, 0.5F, 0.1F);                 // grin
+        b.box(DARK, x + 0.3F, y - 1.6F, z + 1.35F, 0.3F, 1.6F, 0.3F);                // handle up to the strap
+        b.box(DARK, x + 2.6F, y - 1.6F, z + 1.35F, 0.3F, 1.6F, 0.3F);
+        b.box(DARK, x + 0.3F, y - 1.9F, z + 1.35F, 2.6F, 0.3F, 0.3F);
+        b.box(DETAIL, x + 0.4F, y - 0.6F, z + 0.4F, 1.1F, 0.7F, 1.0F);               // candy
+        b.box(METAL, x + 1.7F, y - 0.5F, z + 1.4F, 1.0F, 0.6F, 1.0F);
+        b.build();
         return layerOf(mesh);
     }
 
@@ -945,6 +1214,13 @@ public final class CosmeticModels {
         @SuppressWarnings("unchecked")
         public final void pose(HumanoidModel<?> parent, LivingEntity entity, float partialTick) {
             ((HumanoidModel<LivingEntity>) parent).copyPropertiesTo(this);
+            // a body part another mod hid (a Figura avatar with its own model) hides what is worn on it
+            head.visible = parent.head.visible;
+            body.visible = parent.body.visible;
+            rightArm.visible = parent.rightArm.visible;
+            leftArm.visible = parent.leftArm.visible;
+            rightLeg.visible = parent.rightLeg.visible;
+            leftLeg.visible = parent.leftLeg.visible;
             animate(entity, partialTick);
         }
 

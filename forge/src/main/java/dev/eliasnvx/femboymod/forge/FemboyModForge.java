@@ -22,6 +22,13 @@ public final class FemboyModForge {
         EventBuses.registerModEventBus(FemboyMod.MOD_ID, modBus);
         PlatformHelperImpl.init(modBus);
         FemboyMod.init();
+        // slot mods (soft dependencies): their slots can hold our cosmetics
+        if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) {
+            dev.eliasnvx.femboymod.compat.curios.CuriosSlots.register();
+        }
+        if (net.minecraftforge.fml.ModList.get().isLoaded("accessories")) {
+            dev.eliasnvx.femboymod.compat.accessories.AccessoriesSlots.register();
+        }
         FemboyGameTestsForge.register(modBus);
         // Architectury 9 has no start-tracking event: sync cosmetics of players coming into view
         MinecraftForge.EVENT_BUS.addListener((PlayerEvent.StartTracking event) -> {

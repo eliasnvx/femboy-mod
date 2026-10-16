@@ -1,0 +1,110 @@
+package dev.eliasnvx.femboymod.block;
+
+import dev.eliasnvx.femboymod.config.FemboyConfig;
+import dev.eliasnvx.femboymod.menu.FurnitureStorageMenu;
+import dev.eliasnvx.femboymod.registry.FemboyComponents;
+import dev.eliasnvx.femboymod.registry.FemboyMenus;
+import dev.eliasnvx.femboymod.registry.FemboyTags;
+import java.util.Arrays;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+
+/**
+ * Mini Fridge storage: drinks and snacks ({@code #femboymod:fridge_food}). A chillable item that sits in one slot for
+ * {@code furniture.fridge_chill_ticks} gets chilled ({@link FemboyComponents#CHILLED}: chilled Byte Energy buffs last
+ * longer). Each slot's timer restarts when its contents change.
+ */
+public class MiniFridgeBlockEntity extends FurnitureStorageBlockEntity {
+
+    private static final String CHILL_TICKS = "chill_ticks";
+
+    private final int[] chillTicks = new int[SIZE];
+
+    public MiniFridgeBlockEntity(BlockPos pos, BlockState state) {
+        super(FemboyBlocks.MINI_FRIDGE_ENTITY.get(), pos, state);
+    }
+
+    public static void serverTick(Level level, BlockPos pos, BlockState state, MiniFridgeBlockEntity fridge) {
+        fridge.chill(FemboyConfig.common().furniture().fridgeChillTicks());
+    }
+
+    /** One tick of chilling: every warm chillable stack gets a tick closer to cold. */
+    public void chill(int ticksToChill) {
+        boolean changed = false;
+        for (int slot = 0; slot < SIZE; slot++) {
+            ItemStack stack = getItem(slot);
+            if (stack.isEmpty() || !stack.is(FemboyTags.CHILLABLE) || FemboyComponents.CHILLED.has(stack)) {
+                chillTicks[slot] = 0;
+                continue;
+            }
+            if (++chillTicks[slot] >= ticksToChill) {
+                FemboyComponents.CHILLED.set(stack, Boolean.TRUE);
+                chillTicks[slot] = 0;
+                changed = true;
+            }
+        }
+        if (changed) {
+            setChanged();
+        }
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        super.setItem(slot, stack);
+        chillTicks[slot] = 0;
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int count) {
+        chillTicks[slot] = 0;
+        return super.removeItem(slot, count);
+    }
+
+    @Override
+    protected Component getDefaultName() {
+        return Component.translatable("container.femboymod.mini_fridge");
+    }
+
+    @Override
+    protected TagKey<Item> accepts() {
+        return FemboyTags.FRIDGE_FOOD;
+    }
+
+    @Override
+    protected MenuType<FurnitureStorageMenu> menuType() {
+        return FemboyMenus.MINI_FRIDGE.get();
+    }
+
+    @Override
+    protected SoundEvent openSound() {
+        return SoundEvents.IRON_DOOR_OPEN;
+    }
+
+    @Override
+    protected SoundEvent closeSound() {
+        return SoundEvents.IRON_DOOR_CLOSE;
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        Arrays.fill(chillTicks, 0);
+        int[] saved = tag.getIntArray(CHILL_TICKS); // empty when missing
+        System.arraycopy(saved, 0, chillTicks, 0, Math.min(saved.length, SIZE));
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putIntArray(CHILL_TICKS, chillTicks);
+    }
+}

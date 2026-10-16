@@ -81,5 +81,291 @@
       }
     ],
     "subtitle": "subtitles.femboymod.nya"
+  },
+  "step.sneakers": {
+    "sounds": [
+      {
+        "name": "minecraft:block/honeyblock/step1",
+        "pitch": 1.7,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/honeyblock/step2",
+        "pitch": 1.7,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/honeyblock/step3",
+        "pitch": 1.7,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/honeyblock/step4",
+        "pitch": 1.7,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/honeyblock/step5",
+        "pitch": 1.7,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.femboymod.step.sneakers"
+  },
+  "step.high_tops": {
+    "sounds": [
+      {
+        "name": "minecraft:step/cloth1",
+        "pitch": 0.85,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:step/cloth2",
+        "pitch": 0.85,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:step/cloth3",
+        "pitch": 0.85,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:step/cloth4",
+        "pitch": 0.85,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.femboymod.step.high_tops"
+  },
+  "step.platform": {
+    "sounds": [
+      {
+        "name": "minecraft:block/bamboo_wood/step1",
+        "pitch": 0.75,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/bamboo_wood/step2",
+        "pitch": 0.75,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/bamboo_wood/step3",
+        "pitch": 0.75,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/bamboo_wood/step4",
+        "pitch": 0.75,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/bamboo_wood/step5",
+        "pitch": 0.75,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/bamboo_wood/step6",
+        "pitch": 0.75,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.femboymod.step.platform"
+  },
+  "step.slippers": {
+    "sounds": [
+      {
+        "name": "minecraft:block/moss/step1",
+        "pitch": 1.35,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/moss/step2",
+        "pitch": 1.35,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/moss/step3",
+        "pitch": 1.35,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/moss/step4",
+        "pitch": 1.35,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/moss/step5",
+        "pitch": 1.35,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:block/moss/step6",
+        "pitch": 1.35,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.femboymod.step.slippers"
+  },
+  "sock_goblin.giggle": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/villager/idle1",
+        "pitch": 1.75,
+        "volume": 0.7
+      },
+      {
+        "name": "minecraft:mob/villager/idle2",
+        "pitch": 1.75,
+        "volume": 0.7
+      },
+      {
+        "name": "minecraft:mob/villager/idle3",
+        "pitch": 1.75,
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.femboymod.sock_goblin.giggle"
+  },
+  "sock_goblin.hurt": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/villager/hit1",
+        "pitch": 1.75,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/villager/hit2",
+        "pitch": 1.75,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/villager/hit3",
+        "pitch": 1.75,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/villager/hit4",
+        "pitch": 1.75,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.femboymod.sock_goblin.hurt"
+  },
+  "sock_goblin.death": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/villager/death",
+        "pitch": 1.75,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.femboymod.sock_goblin.death"
+  },
+  "sock_goblin.steal": {
+    "sounds": [
+      {
+        "name": "minecraft:random/pop",
+        "pitch": 1.0,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.femboymod.sock_goblin.steal"
+  },
+  "rubber_duck.quack": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/chicken/say1",
+        "pitch": 1.55,
+        "volume": 0.8
+      },
+      {
+        "name": "minecraft:mob/chicken/say2",
+        "pitch": 1.55,
+        "volume": 0.8
+      },
+      {
+        "name": "minecraft:mob/chicken/say3",
+        "pitch": 1.55,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.femboymod.rubber_duck.quack"
+  },
+  "rubber_duck.squeak": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/bat/idle1",
+        "pitch": 2.0,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/bat/idle2",
+        "pitch": 2.0,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/bat/idle3",
+        "pitch": 2.0,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:mob/bat/idle4",
+        "pitch": 2.0,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.femboymod.rubber_duck.squeak"
+  },
+  "rubber_duck.death": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/chicken/hurt1",
+        "pitch": 1.5,
+        "volume": 1.0
+      },
+      {
+        "name": "minecraft:mob/chicken/hurt2",
+        "pitch": 1.5,
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.femboymod.rubber_duck.death"
+  },
+  "bug.ambient": {
+    "sounds": [
+      "femboymod:mob/bug/ambient1",
+      "femboymod:mob/bug/ambient2",
+      "femboymod:mob/bug/ambient3"
+    ],
+    "subtitle": "subtitles.femboymod.bug.ambient"
+  },
+  "bug.hurt": {
+    "sounds": [
+      "femboymod:mob/bug/hurt1",
+      "femboymod:mob/bug/hurt2"
+    ],
+    "subtitle": "subtitles.femboymod.bug.hurt"
+  },
+  "bug.death": {
+    "sounds": [
+      "femboymod:mob/bug/death"
+    ],
+    "subtitle": "subtitles.femboymod.bug.death"
+  },
+  "bug.step": {
+    "sounds": [
+      "femboymod:mob/bug/step1",
+      "femboymod:mob/bug/step2",
+      "femboymod:mob/bug/step3"
+    ]
+  },
+  "headpat": {
+    "sounds": [
+      "femboymod:social/headpat1",
+      "femboymod:social/headpat2",
+      "femboymod:social/headpat3"
+    ],
+    "subtitle": "subtitles.femboymod.headpat"
   }
 }

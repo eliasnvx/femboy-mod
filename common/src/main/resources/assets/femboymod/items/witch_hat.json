@@ -1,0 +1,17 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "femboymod:item/witch_hat",
+    "tints": [
+      {
+        "type": "femboymod:colorway",
+        "default": 5978764,
+        "stripe": 0
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      }
+    ]
+  }
+}

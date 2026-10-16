@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "minecraft:white_wool",
+          "count": 4
+        },
+        "minecraft:black_dye"
+      ]
+    }
+  ]
+}

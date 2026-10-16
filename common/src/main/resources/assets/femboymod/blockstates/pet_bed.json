@@ -1,0 +1,244 @@
+{
+  "variants": {
+    "color=white,facing=north": {
+      "model": "femboymod:block/pet_bed_white"
+    },
+    "color=orange,facing=north": {
+      "model": "femboymod:block/pet_bed_orange"
+    },
+    "color=magenta,facing=north": {
+      "model": "femboymod:block/pet_bed_magenta"
+    },
+    "color=light_blue,facing=north": {
+      "model": "femboymod:block/pet_bed_light_blue"
+    },
+    "color=yellow,facing=north": {
+      "model": "femboymod:block/pet_bed_yellow"
+    },
+    "color=lime,facing=north": {
+      "model": "femboymod:block/pet_bed_lime"
+    },
+    "color=pink,facing=north": {
+      "model": "femboymod:block/pet_bed_pink"
+    },
+    "color=gray,facing=north": {
+      "model": "femboymod:block/pet_bed_gray"
+    },
+    "color=light_gray,facing=north": {
+      "model": "femboymod:block/pet_bed_light_gray"
+    },
+    "color=cyan,facing=north": {
+      "model": "femboymod:block/pet_bed_cyan"
+    },
+    "color=purple,facing=north": {
+      "model": "femboymod:block/pet_bed_purple"
+    },
+    "color=blue,facing=north": {
+      "model": "femboymod:block/pet_bed_blue"
+    },
+    "color=brown,facing=north": {
+      "model": "femboymod:block/pet_bed_brown"
+    },
+    "color=green,facing=north": {
+      "model": "femboymod:block/pet_bed_green"
+    },
+    "color=red,facing=north": {
+      "model": "femboymod:block/pet_bed_red"
+    },
+    "color=black,facing=north": {
+      "model": "femboymod:block/pet_bed_black"
+    },
+    "color=white,facing=east": {
+      "model": "femboymod:block/pet_bed_white",
+      "y": 90
+    },
+    "color=orange,facing=east": {
+      "model": "femboymod:block/pet_bed_orange",
+      "y": 90
+    },
+    "color=magenta,facing=east": {
+      "model": "femboymod:block/pet_bed_magenta",
+      "y": 90
+    },
+    "color=light_blue,facing=east": {
+      "model": "femboymod:block/pet_bed_light_blue",
+      "y": 90
+    },
+    "color=yellow,facing=east": {
+      "model": "femboymod:block/pet_bed_yellow",
+      "y": 90
+    },
+    "color=lime,facing=east": {
+      "model": "femboymod:block/pet_bed_lime",
+      "y": 90
+    },
+    "color=pink,facing=east": {
+      "model": "femboymod:block/pet_bed_pink",
+      "y": 90
+    },
+    "color=gray,facing=east": {
+      "model": "femboymod:block/pet_bed_gray",
+      "y": 90
+    },
+    "color=light_gray,facing=east": {
+      "model": "femboymod:block/pet_bed_light_gray",
+      "y": 90
+    },
+    "color=cyan,facing=east": {
+      "model": "femboymod:block/pet_bed_cyan",
+      "y": 90
+    },
+    "color=purple,facing=east": {
+      "model": "femboymod:block/pet_bed_purple",
+      "y": 90
+    },
+    "color=blue,facing=east": {
+      "model": "femboymod:block/pet_bed_blue",
+      "y": 90
+    },
+    "color=brown,facing=east": {
+      "model": "femboymod:block/pet_bed_brown",
+      "y": 90
+    },
+    "color=green,facing=east": {
+      "model": "femboymod:block/pet_bed_green",
+      "y": 90
+    },
+    "color=red,facing=east": {
+      "model": "femboymod:block/pet_bed_red",
+      "y": 90
+    },
+    "color=black,facing=east": {
+      "model": "femboymod:block/pet_bed_black",
+      "y": 90
+    },
+    "color=white,facing=south": {
+      "model": "femboymod:block/pet_bed_white",
+      "y": 180
+    },
+    "color=orange,facing=south": {
+      "model": "femboymod:block/pet_bed_orange",
+      "y": 180
+    },
+    "color=magenta,facing=south": {
+      "model": "femboymod:block/pet_bed_magenta",
+      "y": 180
+    },
+    "color=light_blue,facing=south": {
+      "model": "femboymod:block/pet_bed_light_blue",
+      "y": 180
+    },
+    "color=yellow,facing=south": {
+      "model": "femboymod:block/pet_bed_yellow",
+      "y": 180
+    },
+    "color=lime,facing=south": {
+      "model": "femboymod:block/pet_bed_lime",
+      "y": 180
+    },
+    "color=pink,facing=south": {
+      "model": "femboymod:block/pet_bed_pink",
+      "y": 180
+    },
+    "color=gray,facing=south": {
+      "model": "femboymod:block/pet_bed_gray",
+      "y": 180
+    },
+    "color=light_gray,facing=south": {
+      "model": "femboymod:block/pet_bed_light_gray",
+      "y": 180
+    },
+    "color=cyan,facing=south": {
+      "model": "femboymod:block/pet_bed_cyan",
+      "y": 180
+    },
+    "color=purple,facing=south": {
+      "model": "femboymod:block/pet_bed_purple",
+      "y": 180
+    },
+    "color=blue,facing=south": {
+      "model": "femboymod:block/pet_bed_blue",
+      "y": 180
+    },
+    "color=brown,facing=south": {
+      "model": "femboymod:block/pet_bed_brown",
+      "y": 180
+    },
+    "color=green,facing=south": {
+      "model": "femboymod:block/pet_bed_green",
+      "y": 180
+    },
+    "color=red,facing=south": {
+      "model": "femboymod:block/pet_bed_red",
+      "y": 180
+    },
+    "color=black,facing=south": {
+      "model": "femboymod:block/pet_bed_black",
+      "y": 180
+    },
+    "color=white,facing=west": {
+      "model": "femboymod:block/pet_bed_white",
+      "y": 270
+    },
+    "color=orange,facing=west": {
+      "model": "femboymod:block/pet_bed_orange",
+      "y": 270
+    },
+    "color=magenta,facing=west": {
+      "model": "femboymod:block/pet_bed_magenta",
+      "y": 270
+    },
+    "color=light_blue,facing=west": {
+      "model": "femboymod:block/pet_bed_light_blue",
+      "y": 270
+    },
+    "color=yellow,facing=west": {
+      "model": "femboymod:block/pet_bed_yellow",
+      "y": 270
+    },
+    "color=lime,facing=west": {
+      "model": "femboymod:block/pet_bed_lime",
+      "y": 270
+    },
+    "color=pink,facing=west": {
+      "model": "femboymod:block/pet_bed_pink",
+      "y": 270
+    },
+    "color=gray,facing=west": {
+      "model": "femboymod:block/pet_bed_gray",
+      "y": 270
+    },
+    "color=light_gray,facing=west": {
+      "model": "femboymod:block/pet_bed_light_gray",
+      "y": 270
+    },
+    "color=cyan,facing=west": {
+      "model": "femboymod:block/pet_bed_cyan",
+      "y": 270
+    },
+    "color=purple,facing=west": {
+      "model": "femboymod:block/pet_bed_purple",
+      "y": 270
+    },
+    "color=blue,facing=west": {
+      "model": "femboymod:block/pet_bed_blue",
+      "y": 270
+    },
+    "color=brown,facing=west": {
+      "model": "femboymod:block/pet_bed_brown",
+      "y": 270
+    },
+    "color=green,facing=west": {
+      "model": "femboymod:block/pet_bed_green",
+      "y": 270
+    },
+    "color=red,facing=west": {
+      "model": "femboymod:block/pet_bed_red",
+      "y": 270
+    },
+    "color=black,facing=west": {
+      "model": "femboymod:block/pet_bed_black",
+      "y": 270
+    }
+  }
+}

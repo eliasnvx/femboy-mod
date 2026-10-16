@@ -27,6 +27,9 @@ public final class FemboyNetwork {
         registerC2S(ToggleCosmeticHiddenPayload.ID, ToggleCosmeticHiddenPayload::read, ToggleCosmeticHiddenPayload::handle);
         registerC2S(CreativeCosmeticSetPayload.ID, CreativeCosmeticSetPayload::read, CreativeCosmeticSetPayload::handle);
         registerC2S(CosmeticPanelClickPayload.ID, CosmeticPanelClickPayload::read, CosmeticPanelClickPayload::handle);
+        registerC2S(PhotoPayloads.Upload.ID, PhotoPayloads.Upload::read, PhotoPayloads.Upload::handle);
+        registerC2S(PhotoPayloads.Request.ID, PhotoPayloads.Request::read, PhotoPayloads.Request::handle);
+        registerS2C(PhotoPayloads.Picture.ID, PhotoPayloads.Picture::read, PhotoPayloads.Picture::handle);
     }
 
     /** Client only: sends {@code packet} to the server. */
