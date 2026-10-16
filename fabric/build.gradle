@@ -15,6 +15,11 @@ configurations {
 
 repositories {
     maven { url "https://maven.terraformersmc.com/" }
+    // Cardinal Components (Trinkets' API types), compile only
+    exclusiveContent {
+        forRepository { maven { url "https://maven.ladysnake.org/releases" } }
+        filter { includeGroup "dev.onyxstudios.cardinal-components-api" }
+    }
 }
 
 dependencies {
@@ -25,11 +30,25 @@ dependencies {
     modImplementation "dev.architectury:architectury-fabric:${rootProject.architectury_api_version}"
     modImplementation "software.bernie.geckolib:geckolib-fabric-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
+    // Slot mods (SPEC §4.3): wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds Trinkets to the dev runtime
+    modCompileOnly("maven.modrinth:trinkets:${rootProject.trinkets_fabric_version}") { transitive false }
+    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}") { transitive false }
+    modCompileOnly("maven.modrinth:accessories:${rootProject.accessories_fabric_version}") { transitive false }
+    if (project.findProperty("compat_slots") == "true") {
+        modRuntimeOnly "maven.modrinth:trinkets:${rootProject.trinkets_fabric_version}"
+        modRuntimeOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}"
+        modRuntimeOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${rootProject.cca_version}"
+    }
+
     // Compat smoke test (SPEC §9): ./gradlew :fabric:runClientGameTest -Pcompat_render=true
     // loads Sodium + Iris into the dev runtime only. Never a compile dependency.
     if (project.findProperty("compat_render") == "true") {
         modRuntimeOnly "maven.modrinth:sodium:${rootProject.sodium_fabric_version}"
         modRuntimeOnly "maven.modrinth:iris:${rootProject.iris_fabric_version}"
+    }
+    // Figura compat check (no Figura for 26.x): ./gradlew :fabric:runCompatClient -Pcompat_figura=true (CompatHarness)
+    if (project.findProperty("compat_figura") == "true") {
+        modRuntimeOnly "maven.modrinth:figura:${rootProject.figura_fabric_version}"
     }
     // JEI compat check (SPEC §9): ./gradlew :fabric:runClient -Pcompat_jei=true
     if (project.findProperty("compat_jei") == "true") {
@@ -53,6 +72,54 @@ fabricApi {
         enableClientGameTests = false // 1.21.1 Fabric API has no client GameTest API (fabric-client-gametest-api-v1)
         eula = true // dev/CI test server only; accepted by the author on 2026-09-25
     }
+}
+
+// Compat screenshots: 1.20.1 has no client GameTest API, so CompatHarness (src/gametest) drives the client itself.
+// ./gradlew :fabric:runCompatClient [-Pcompat_figura=true]; files in build/run/compatClient/screenshots
+loom {
+    runs {
+        compatClient {
+            client()
+            name "Compat Client"
+            source sourceSets.gametest
+            runDir "build/run/compatClient"
+            property "femboymod.compat_harness", "true"
+            // -Pharness_scene=pets|halloween|mobs|interior|mirror picks another CompatHarness scene
+            property "femboymod.harness_scene", project.findProperty("harness_scene") ?: "compat"
+            programArgs "--width", "1600", "--height", "900"
+        }
+    }
+}
+
+// The same harness in a production-like client (intermediary jars, as players run it), for mods that don't start in dev
+// (Figura's accessors clash with Mojang names): ./gradlew :fabric:runProdCompatClient [-Pcompat_figura=true];
+// files in build/run/prodCompatClient/screenshots
+configurations {
+    prodCompatMods { transitive = false }
+}
+dependencies {
+    prodCompatMods "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    prodCompatMods "dev.architectury:architectury-fabric:${rootProject.architectury_api_version}"
+    prodCompatMods "software.bernie.geckolib:geckolib-fabric-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+    if (project.findProperty("compat_figura") == "true") {
+        prodCompatMods "maven.modrinth:figura:${rootProject.figura_fabric_version}"
+    }
+}
+def compatHarnessJar = tasks.register("compatHarnessJar", Jar) {
+    from sourceSets.gametest.output
+    archiveClassifier = "compat-harness-dev"
+}
+def remapCompatHarnessJar = tasks.register("remapCompatHarnessJar", net.fabricmc.loom.task.RemapJarTask) {
+    inputFile = compatHarnessJar.flatMap { it.archiveFile }
+    archiveClassifier = "compat-harness"
+}
+tasks.register("runProdCompatClient", net.fabricmc.loom.task.prod.ClientProductionRunTask) {
+    mods.from(remapJar, remapCompatHarnessJar, configurations.prodCompatMods)
+    jvmArgs.add("-Dfemboymod.compat_harness=true")
+    // -Pharness_scene=pets|halloween|mobs|interior|mirror picks another CompatHarness scene
+    jvmArgs.add("-Dfemboymod.harness_scene=${project.findProperty("harness_scene") ?: "compat"}")
+    programArgs.addAll("--width", "1600", "--height", "900")
+    runDir = layout.buildDirectory.dir("run/prodCompatClient")
 }
 
 shadowJar {
