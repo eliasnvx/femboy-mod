@@ -3,6 +3,7 @@ package dev.eliasnvx.femboymod.energy;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import net.minecraft.core.registries.Registries;
@@ -22,6 +23,7 @@ public final class FemboyEffects {
     private static final int CAFFEINE_COLOR = 0xF07AB0;
     private static final int JITTER_COLOR = 0xB0E0FF;
     private static final int INSIGHT_COLOR = 0xFFD84A;
+    private static final int COZY_COLOR = 0xFFB7D5;
     /** Insight (rubber duck debugging): the fix is obvious now, so you dig a bit faster. */
     private static final double INSIGHT_BREAK_SPEED = 0.2;
     /** Jitter: slightly slower attacks. No visual screen effect at all (photosensitivity, SPEC §5.2). */
@@ -37,6 +39,9 @@ public final class FemboyEffects {
      * (EmulatedAttributes#blockBreakSpeed, see {@link #insightMultipliedBase}).
      */
     public static final RegistrySupplier<MobEffect> INSIGHT = REGISTER.register("insight", Insight::new);
+
+    /** Cozy (headpats): warm and safe, slowly heals (config {@code friends.cozy_heal_*}). */
+    public static final RegistrySupplier<MobEffect> COZY = REGISTER.register("cozy", Cozy::new);
 
     private FemboyEffects() {
     }
@@ -61,6 +66,26 @@ public final class FemboyEffects {
     /** 1.20.1 effect modifiers are keyed by a UUID string; derive a stable one from the name. */
     private static String modifierUuid(String name) {
         return UUID.nameUUIDFromBytes((FemboyMod.MOD_ID + ":" + name).getBytes(StandardCharsets.UTF_8)).toString();
+    }
+
+    static final class Cozy extends MobEffect {
+        Cozy() {
+            super(MobEffectCategory.BENEFICIAL, COZY_COLOR);
+        }
+
+        @Override
+        public boolean isDurationEffectTick(int remainingDuration, int amplifier) {
+            int interval = FemboyConfig.common().friends().cozyHealInterval();
+            return interval > 0 && remainingDuration % interval == 0;
+        }
+
+        @Override
+        public void applyEffectTick(LivingEntity entity, int amplifier) {
+            // 26.3 only ticks effects on the server; 1.20.1 ticks them on the client too, so heal on the server only
+            if (!entity.level().isClientSide() && entity.getHealth() < entity.getMaxHealth()) {
+                entity.heal(FemboyConfig.common().friends().cozyHealAmount());
+            }
+        }
     }
 
     /** Tracks an energy drink's buff; on its very last tick the crash hits (SPEC §5.2). */

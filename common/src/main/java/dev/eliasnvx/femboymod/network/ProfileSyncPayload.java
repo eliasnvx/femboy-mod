@@ -30,8 +30,8 @@ public record ProfileSyncPayload(CompoundTag values) implements FemboyPacket {
     }
 
     public static void handle(ProfileSyncPayload payload, NetworkManager.PacketContext context) {
-        context.queue(() -> PlatformHelper.setProfile(context.getPlayer(),
-                PlatformHelper.getProfile(context.getPlayer()).merge(payload.values())));
+        context.queue(() -> EarlySyncs.withPlayer(context, self ->
+                PlatformHelper.setProfile(self, PlatformHelper.getProfile(self).merge(payload.values()))));
     }
 
     public static void send(ServerPlayer player, CompoundTag values) {

@@ -7,12 +7,15 @@ import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.RegisterFemboyAddon;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
+import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.block.FemboyBlocks;
 import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import dev.eliasnvx.femboymod.energy.CaffeineLog;
 import dev.eliasnvx.femboymod.profile.ProfileData;
@@ -48,6 +51,12 @@ public final class PlatformHelperImpl {
 
 
     private static final Type ADDON_ANNOTATION = Type.getType(RegisterFemboyAddon.class);
+    /**
+     * Halloween: the game day a villager last gave out candy. 1.21.1 (NeoForge) used an attachment
+     * ({@code femboymod:treat_day}); Forge 47 keeps such per-entity values in the entity's persistent data, saved with it.
+     */
+    private static final String TREAT_DAY_KEY = FemboyMod.MOD_ID + ":treat_day";
+    private static final long NEVER_TREATED = -1L;
     private static final DeferredRegister<PoiType> POIS = DeferredRegister.create(Registries.POINT_OF_INTEREST_TYPE, FemboyMod.MOD_ID);
 
     private PlatformHelperImpl() {
@@ -67,6 +76,7 @@ public final class PlatformHelperImpl {
         modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
             event.dataPackRegistry(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC, ColorwayPattern.CODEC);
             event.dataPackRegistry(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC, CosmeticStats.CODEC);
+            event.dataPackRegistry(LookbookEntry.REGISTRY_KEY, LookbookEntry.CODEC, LookbookEntry.CODEC);
             event.dataPackRegistry(SetBonus.REGISTRY_KEY, SetBonus.CODEC, SetBonus.CODEC);
             event.dataPackRegistry(DripRules.REGISTRY_KEY, DripRules.CODEC, DripRules.CODEC);
             event.dataPackRegistry(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
@@ -168,6 +178,15 @@ public final class PlatformHelperImpl {
         update(player, d -> d.profile = profile);
     }
 
+    public static long getLastTreatDay(Entity entity) {
+        CompoundTag data = entity.getPersistentData();
+        return data.contains(TREAT_DAY_KEY, Tag.TAG_LONG) ? data.getLong(TREAT_DAY_KEY) : NEVER_TREATED;
+    }
+
+    public static void setLastTreatDay(Entity entity, long day) {
+        entity.getPersistentData().putLong(TREAT_DAY_KEY, day);
+    }
+
     public static CaffeineLog getCaffeineLog(Player player) {
         return data(player, CaffeineLog.EMPTY, d -> d.caffeine);
     }
@@ -184,10 +203,25 @@ public final class PlatformHelperImpl {
         update(player, d -> d.presets = presets);
     }
 
+    /**
+     * Forge 47 has no event to give an existing item a custom renderer: the photo item hands its extensions out
+     * itself (the item model extends builtin/entity). Called on both sides; the renderer is only built on the client.
+     */
+    public static dev.eliasnvx.femboymod.item.PhotoItem createPhotoItem(net.minecraft.world.item.Item.Properties properties) {
+        return new dev.eliasnvx.femboymod.item.PhotoItem(properties) {
+            @Override
+            public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
+                consumer.accept(new dev.eliasnvx.femboymod.forge.PhotoItemExtensions());
+            }
+        };
+    }
+
     /** Forge maps POI block states itself when the POI registry is baked (GameData). */
     public static void registerPoi() {
         POIS.register(FemboyBlocks.THRIFTER_POI.location().getPath(), () -> new PoiType(
                 Set.copyOf(FemboyBlocks.CLOTHING_RACK.get().getStateDefinition().getPossibleStates()), 1, 1));
+        POIS.register(FemboyBlocks.LAUNDRY_BASKET_POI.location().getPath(), () -> new PoiType(
+                Set.copyOf(FemboyBlocks.LAUNDRY_BASKET.get().getStateDefinition().getPossibleStates()), 0, 1));
     }
 
     /** Reads one value; a player without the capability (removed, caps invalidated) reads as {@code fallback}. */

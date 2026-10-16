@@ -41,8 +41,9 @@ public final class EmotePayloads {
 
         public static void handle(Play payload, NetworkManager.PacketContext context) {
             context.queue(() -> {
-                if (context.getPlayer() instanceof ServerPlayer player && !player.isSpectator() && player.isAlive()) {
-                    play(player, Emote.byId(payload.emote()));
+                Emote emote = Emote.byId(payload.emote());
+                if (context.getPlayer() instanceof ServerPlayer player && !player.isSpectator() && player.isAlive() && emote.inWheel()) {
+                    play(player, emote);
                 }
             });
         }

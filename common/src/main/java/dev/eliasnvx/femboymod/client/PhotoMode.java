@@ -2,6 +2,9 @@ package dev.eliasnvx.femboymod.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.network.FemboyNetwork;
+import dev.eliasnvx.femboymod.network.PhotoPayloads;
+import dev.eliasnvx.femboymod.photo.PhotoCodec;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -19,7 +22,8 @@ import net.minecraft.Util;
 /**
  * Photo Mode (SPEC v1.1): the Phone flips the camera to a selfie, hides the HUD for a moment, grabs the frame and
  * turns it into an instant-camera print: a square shot in a rounded cream card with a wide bottom margin carrying the
- * mod's watermark, on a soft shadow. Saved to {@code screenshots/}. No flash effect.
+ * mod's watermark, on a soft shadow. Saved to {@code screenshots/}. No flash effect. The server also prints it as a
+ * photo item (paper permitting).
  */
 public final class PhotoMode {
 
@@ -89,6 +93,7 @@ public final class PhotoMode {
 
     private static void save(Minecraft minecraft, NativeImage shot) {
         NativeImage image = print(minecraft, shot);
+        upload(shot);
         shot.close();
         File dir = new File(minecraft.gameDirectory, Screenshot.SCREENSHOT_DIR);
         File file = new File(dir, "femboymod_selfie_" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".png");
@@ -103,6 +108,43 @@ public final class PhotoMode {
                 FemboyMod.LOGGER.warn("Couldn't save selfie", e);
             }
         });
+    }
+
+    /**
+     * Sends the centre square, shrunk to {@link PhotoCodec#SIZE} (area average), to be printed as a photo item. The
+     * server decides whether it prints (paper, cooldown); the screenshot is saved either way.
+     */
+    private static void upload(NativeImage shot) {
+        if (Minecraft.getInstance().getConnection() == null) {
+            return;
+        }
+        int side = Math.min(shot.getWidth(), shot.getHeight());
+        int srcX = (shot.getWidth() - side) / 2;
+        int srcY = (shot.getHeight() - side) / 2;
+        int size = PhotoCodec.SIZE;
+        int[] pixels = new int[size * size];
+        for (int y = 0; y < size; y++) {
+            int y0 = srcY + y * side / size;
+            int y1 = Math.max(y0 + 1, srcY + (y + 1) * side / size);
+            for (int x = 0; x < size; x++) {
+                int x0 = srcX + x * side / size;
+                int x1 = Math.max(x0 + 1, srcX + (x + 1) * side / size);
+                long r = 0;
+                long g = 0;
+                long b = 0;
+                for (int sy = y0; sy < y1; sy++) {
+                    for (int sx = x0; sx < x1; sx++) {
+                        int c = argb(shot, sx, sy);
+                        r += c >> 16 & 0xFF;
+                        g += c >> 8 & 0xFF;
+                        b += c & 0xFF;
+                    }
+                }
+                long n = (long) (x1 - x0) * (y1 - y0);
+                pixels[y * size + x] = 0xFF000000 | (int) (r / n) << 16 | (int) (g / n) << 8 | (int) (b / n);
+            }
+        }
+        FemboyNetwork.sendToServer(new PhotoPayloads.Upload(PhotoCodec.encode(pixels)));
     }
 
     /** NativeImage pixels here are ABGR; the colours and the print math are ARGB. Swapping red and blue goes both ways. */

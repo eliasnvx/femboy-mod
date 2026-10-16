@@ -1,0 +1,26 @@
+{
+  "sources": [
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "minecraft:emerald",
+          "count": 9
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 3
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "femboymod:style_coupon",
+          "count": 2
+        }
+      ],
+      "from": "femboymod:cosplayer",
+      "note": "lookbook.femboymod.note.colorway"
+    }
+  ]
+}

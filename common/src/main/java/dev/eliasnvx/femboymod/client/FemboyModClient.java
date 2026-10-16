@@ -79,7 +79,10 @@ public final class FemboyModClient {
 
         FemboyMenus.BACKPACK.listen(type -> MenuRegistry.registerScreenFactory(type, BackpackScreen::new));
         FemboyMenus.WARDROBE.listen(type -> MenuRegistry.registerScreenFactory(type, WardrobeScreen::new));
+        FemboyMenus.LAUNDRY_BASKET.listen(type -> MenuRegistry.registerScreenFactory(type, FurnitureStorageScreen::new));
+        FemboyMenus.MINI_FRIDGE.listen(type -> MenuRegistry.registerScreenFactory(type, FurnitureStorageScreen::new));
         FemboyBlocks.CLOTHING_RACK_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, ClothingRackRenderer::new));
+        FemboyBlocks.MIRROR_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, dev.eliasnvx.femboymod.client.render.MirrorRenderer::new));
         ClientTickEvent.CLIENT_POST.register(NyaSound::tick);
         KeyMappingRegistry.register(OPEN_COSMETICS);
         KeyMappingRegistry.register(EMOTES);
@@ -114,16 +117,24 @@ public final class FemboyModClient {
 
         ClientTooltipEvent.ITEM.register(FemboyModClient::appendTooltip);
         ItemTints.register();
+        FurnitureColorProperty.register();
         ClientGuiEvent.RENDER_HUD.register(DripHud::render);
 
         FemboyConfig.loadClient();
         FemboyClientApiImpl clientApi = new FemboyClientApiImpl();
         FemboyClientApiHolder.install(clientApi);
         CosmeticModels.registerLayers();
+        dev.architectury.registry.client.level.entity.EntityModelLayerRegistry.register(
+                dev.eliasnvx.femboymod.client.render.MirrorRenderer.GLASS_LAYER, dev.eliasnvx.femboymod.client.render.MirrorRenderer::glassLayer);
+        dev.eliasnvx.femboymod.client.render.pet.PetOutfitModels.registerLayers();
         PinkCreeperRenderer.registerLayers();
         EntityRendererRegistry.register(FemboyEntities.PINK_CREEPER, PinkCreeperRenderer::new);
         BugRenderer.registerLayers();
         EntityRendererRegistry.register(FemboyEntities.BUG, BugRenderer::new);
+        dev.eliasnvx.femboymod.client.render.entity.SockGoblinRenderer.registerLayers();
+        EntityRendererRegistry.register(FemboyEntities.SOCK_GOBLIN, dev.eliasnvx.femboymod.client.render.entity.SockGoblinRenderer::new);
+        dev.eliasnvx.femboymod.client.render.entity.RubberDuckRenderer.registerLayers();
+        EntityRendererRegistry.register(FemboyEntities.RUBBER_DUCK, dev.eliasnvx.femboymod.client.render.entity.RubberDuckRenderer::new);
         EntityRendererRegistry.register(FemboyEntities.SEAT, NoopRenderer::new);
         EntityRendererRegistry.register(FemboyEntities.COSPLAYER, dev.eliasnvx.femboymod.client.render.entity.CosplayerRenderer::new);
         EntityRendererRegistry.register(FemboyEntities.STRAY_CAT, dev.eliasnvx.femboymod.client.render.entity.StrayCatRenderer::new);
@@ -139,6 +150,20 @@ public final class FemboyModClient {
         ClientTickEvent.CLIENT_POST.register(GlowHostilesClient::tick);
         ClientTickEvent.CLIENT_POST.register(PhotoMode::tick);
         dev.eliasnvx.femboymod.item.PhoneItem.onClientUse = PhotoMode::start;
+        dev.eliasnvx.femboymod.item.LookbookItem.onClientUse = () -> Minecraft.getInstance().setScreen(new LookbookScreen(null));
+        dev.eliasnvx.femboymod.item.PhotoItem.onClientUse = photo ->
+                Minecraft.getInstance().setScreen(new dev.eliasnvx.femboymod.client.photo.PhotoViewScreen(photo));
+        dev.eliasnvx.femboymod.network.PhotoPayloads.Picture.onClient = dev.eliasnvx.femboymod.client.photo.PhotoTextures::accept;
+        ClientTickEvent.CLIENT_POST.register(mc -> dev.eliasnvx.femboymod.client.photo.PhotoTextures.tick());
+        dev.architectury.event.events.client.ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player ->
+                dev.eliasnvx.femboymod.client.photo.PhotoTextures.clear());
+        // join syncs that came before the player existed (1.20.1 Fabric), see EarlySyncs
+        ClientTickEvent.CLIENT_POST.register(mc -> {
+            if (mc.player != null) {
+                dev.eliasnvx.femboymod.network.EarlySyncs.flush(mc.player);
+            }
+        });
+        dev.architectury.event.events.client.ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player -> dev.eliasnvx.femboymod.network.EarlySyncs.clear());
         ClientTickEvent.CLIENT_POST.register(dev.eliasnvx.femboymod.client.render.HeadphonesLight::tick);
 
         AddonLoader.initClient(clientApi);
@@ -151,6 +176,27 @@ public final class FemboyModClient {
     }
 
     private static void appendTooltip(ItemStack stack, List<Component> lines, net.minecraft.world.item.TooltipFlag flag) {
+        dev.eliasnvx.femboymod.photo.PhotoData photo = FemboyComponents.PHOTO.get(stack);
+        if (photo != null) {
+            lines.add(Component.translatable("item.femboymod.photo.author", photo.author()).withStyle(ChatFormatting.GRAY));
+        }
+        if (stack.getItem() instanceof dev.eliasnvx.femboymod.pet.PetOutfitItem) {
+            lines.add(Component.translatable("tooltip.femboymod.pet_outfit").withStyle(ChatFormatting.GRAY));
+        }
+        if (stack.is(dev.eliasnvx.femboymod.registry.FemboyItems.LOST_SOCK.get())) {
+            lines.add(Component.translatable("tooltip.femboymod.lost_sock").withStyle(ChatFormatting.GRAY));
+        }
+        if (stack.is(dev.eliasnvx.femboymod.registry.FemboyTags.HALLOWEEN_COSTUME)) {
+            lines.add(Component.translatable("tooltip.femboymod.trick_or_treat").withStyle(ChatFormatting.GOLD));
+        }
+        if (FemboyComponents.CHILLED.has(stack)) {
+            lines.add(Component.translatable("tooltip.femboymod.chilled").withStyle(ChatFormatting.AQUA));
+        }
+        if (stack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem
+                && dev.eliasnvx.femboymod.block.FemboyBlocks.isInterior(blockItem.getBlock())) {
+            lines.add(Component.translatable("tooltip." + blockItem.getBlock().getDescriptionId().substring("block.".length()))
+                    .withStyle(ChatFormatting.GRAY));
+        }
         Cosmetic cosmetic = FemboyComponents.COSMETIC.get(stack);
         if (cosmetic != null) {
             int drip = dripOf(stack);

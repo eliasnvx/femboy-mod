@@ -17,7 +17,8 @@ import java.util.List;
  */
 public final class FemboyGameTestsForge {
 
-    private static final int MAX_TICKS = 100;
+    /** Only for the Curios check; the shared tests bring their own ({@link CosmeticGameTests.Entry#maxTicks()}). */
+    private static final int MAX_TICKS = CosmeticGameTests.Entry.DEFAULT_MAX_TICKS;
     private static final long SETUP_TICKS = 0L;
     /** 8x8x8 of air in {@code data/femboymod/structures/empty.nbt}, the same size as Fabric's empty template. */
     private static final String EMPTY_STRUCTURE = new ResourceLocation(FemboyMod.MOD_ID, "empty").toString();
@@ -35,9 +36,14 @@ public final class FemboyGameTestsForge {
     /** One test function per shared test, all in the {@code femboymod} batch. */
     @GameTestGenerator
     public static List<TestFunction> tests() {
+        if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) {
+            // -Pcompat_slots=true: only the Curios check; Curios can't sync to the shared tests' mock players
+            return List.of(new TestFunction(FemboyMod.MOD_ID, FemboyMod.MOD_ID + ".curios_slots_count_as_worn", EMPTY_STRUCTURE,
+                    MAX_TICKS, SETUP_TICKS, true, dev.eliasnvx.femboymod.compat.curios.CuriosGameTest::cosmeticsInCuriosSlotsCount));
+        }
         return CosmeticGameTests.all().stream()
                 .map(entry -> new TestFunction(FemboyMod.MOD_ID, FemboyMod.MOD_ID + "." + entry.name(), EMPTY_STRUCTURE,
-                        MAX_TICKS, SETUP_TICKS, true, entry.body()))
+                        entry.maxTicks(), SETUP_TICKS, true, entry.body()))
                 .toList();
     }
 }

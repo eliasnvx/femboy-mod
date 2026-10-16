@@ -1,0 +1,25 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        "femboymod:sneakers",
+        {
+          "id": "minecraft:quartz_slab",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "minecraft:emerald",
+          "count": 14
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 4
+    }
+  ]
+}

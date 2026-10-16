@@ -32,7 +32,7 @@ public final class UwuChat implements ChatTransformer {
     public String transform(String message) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null || rules.isEmpty() || !dev.eliasnvx.femboymod.config.FemboyConfig.client().uwuChat()
-                || !CosmeticsManager.get(player).get(FemboySlots.NECK).is(FemboyItems.UWU_CHOKER.get())) {
+                || !CosmeticsManager.worn(player).get(FemboySlots.NECK).is(FemboyItems.UWU_CHOKER.get())) {
             return message;
         }
         String language = UwuTransformer.pickLanguage(message, Minecraft.getInstance().getLanguageManager().getSelected(), rules);

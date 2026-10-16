@@ -52,9 +52,32 @@ public final class PlatformHelper {
         throw new AssertionError();
     }
 
-    /** Registers the Thrifter's clothing-rack POI (Fabric needs PoiHelper to map block states). */
+    /**
+     * Builds the printed photo item. Fabric registers its custom renderer separately (BuiltinItemRendererRegistry);
+     * Forge 47 can only attach one to the item itself ({@code Item#initializeClient}), so it returns a subclass.
+     */
+    @ExpectPlatform
+    public static dev.eliasnvx.femboymod.item.PhotoItem createPhotoItem(net.minecraft.world.item.Item.Properties properties) {
+        throw new AssertionError();
+    }
+
+    /** Registers the POIs: the Thrifter's clothing rack, the laundry basket (Fabric needs PoiHelper to map block states). */
     @ExpectPlatform
     public static void registerPoi() {
+        throw new AssertionError();
+    }
+
+    /**
+     * Game day a villager last gave out Halloween candy (-1 = never); saved with the villager. Fabric: a persistent
+     * attachment; Forge 47: the entity's persistent data.
+     */
+    @ExpectPlatform
+    public static long getLastTreatDay(net.minecraft.world.entity.Entity entity) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static void setLastTreatDay(net.minecraft.world.entity.Entity entity, long day) {
         throw new AssertionError();
     }
 

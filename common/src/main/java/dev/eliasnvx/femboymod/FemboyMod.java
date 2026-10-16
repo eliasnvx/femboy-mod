@@ -59,6 +59,9 @@ public final class FemboyMod {
                 dev.eliasnvx.femboymod.item.RegistryAccessContext.setServer(server.registryAccess()));
         dev.architectury.event.events.common.LifecycleEvent.SERVER_STOPPED.register(server ->
                 dev.eliasnvx.femboymod.item.RegistryAccessContext.setServer(null));
+        // printed photos belong to the world that stopped
+        dev.architectury.event.events.common.LifecycleEvent.SERVER_STOPPED.register(server ->
+                dev.eliasnvx.femboymod.photo.PhotoStore.clearCache());
         FemboyEffects.REGISTER.register();
         FemboyTriggers.REGISTER.register();
         FemboyEntities.init();
@@ -78,6 +81,9 @@ public final class FemboyMod {
 
         FemboyNetwork.register();
         CosmeticsEvents.register();
+        dev.eliasnvx.femboymod.pet.PetOutfits.init();
+        dev.eliasnvx.femboymod.halloween.TrickOrTreat.init();
+        dev.eliasnvx.femboymod.social.Headpats.init();
         CommandRegistrationEvent.EVENT.register(FemboyCommands::register);
 
         AdvancementHooks.register(api.events());

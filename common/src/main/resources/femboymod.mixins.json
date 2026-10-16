@@ -10,7 +10,11 @@
     "client.ClientPacketListenerChatMixin",
     "client.AbstractContainerScreenAccessor",
     "client.SoundEngineMuffleMixin",
-    "client.PlayerModelEmoteMixin"
+    "client.PlayerModelEmoteMixin",
+    "client.LocalPlayerSneakMixin",
+    "client.PlayerRendererNameTagMixin",
+    "client.LivingEntityRendererNameTagMixin",
+    "client.AgeableListModelAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -23,6 +27,7 @@
     "BlockStateDestroyProgressMixin",
     "LivingEntityAttributesMixin",
     "RecipeResultNbtMixin",
-    "ServerGamePacketListenerAccessor"
+    "ServerGamePacketListenerAccessor",
+    "PetBedGoalsMixin"
   ]
 }

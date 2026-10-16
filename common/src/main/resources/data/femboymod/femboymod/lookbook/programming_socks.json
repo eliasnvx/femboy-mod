@@ -1,0 +1,47 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        {
+          "id": "femboymod:lost_sock",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "minecraft:emerald",
+          "count": 7
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 2
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "femboymod:style_coupon",
+          "count": 5
+        }
+      ],
+      "from": "femboymod:thrifter",
+      "level": 5,
+      "note": "lookbook.femboymod.note.colorway"
+    },
+    {
+      "kind": "trade",
+      "items": [
+        {
+          "id": "femboymod:style_coupon",
+          "count": 3
+        }
+      ],
+      "from": "femboymod:cosplayer",
+      "note": "lookbook.femboymod.note.colorway"
+    }
+  ]
+}

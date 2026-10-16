@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        "minecraft:brown_wool",
+        "minecraft:honeycomb",
+        "femboymod:glitch_shard",
+        "minecraft:string"
+      ]
+    }
+  ]
+}

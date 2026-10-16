@@ -198,6 +198,7 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         private void follow(BakedGeoModel model, String boneName, ModelPart part, float offsetX, float offsetY) {
             GeoBone bone = model.getBone(boneName).orElse(null);
             if (bone != null) {
+                bone.setHidden(!part.visible); // hidden with the body part (Figura avatars), like the code models
                 RenderUtils.matchModelPartRot(part, bone);
                 bone.updatePosition(part.x + offsetX, offsetY - part.y, part.z);
             }

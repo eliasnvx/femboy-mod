@@ -39,6 +39,10 @@ public final class FemboyTriggers {
     public static final String DUCK_DEBUGGING = "duck_debugging";
     /** A Vibe Check Scanner rated the player (value = score). */
     public static final String VIBE_CHECK = "vibe_check";
+    /** Gave another player a headpat. */
+    public static final String HEADPAT_PLAYER = "headpat_player";
+    /** Gave a tamed pet a headpat. */
+    public static final String HEADPAT_PET = "headpat_pet";
 
     public static final ResourceLocation EVENT_ID = new ResourceLocation(FemboyMod.MOD_ID, "event");
     private static final String EVENT_KEY = "event";

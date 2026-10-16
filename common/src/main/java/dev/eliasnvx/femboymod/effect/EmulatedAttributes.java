@@ -17,9 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Attributes that cosmetic JSON uses but Minecraft 1.20.1 does not have (they came with 1.20.5-1.21). The
  * {@code femboymod:attribute} effect keeps their 1.21.1 ids; their value is computed here from what the player
  * wears, the way 1.21.1 would compute the attribute, and applied by mixins (LivingEntityAttributesMixin,
- * BlockStateDestroyProgressMixin). Worn cosmetics and their stats are synced, so both sides get the same value:
- * the client needs it for digging and jumping, the server for falling and breath.
- * {@code player.sneaking_speed} is not emulated (the sneak slowdown is hard-coded in the client's LocalPlayer).
+ * BlockStateDestroyProgressMixin, LocalPlayerSneakMixin). Worn cosmetics and their stats are synced, so both sides
+ * get the same value: the client needs it for digging, jumping, stepping up, walking on slow blocks and sneaking,
+ * the server for falling, breath and checking moves.
  */
 public final class EmulatedAttributes {
 
@@ -31,13 +31,22 @@ public final class EmulatedAttributes {
     public static final ResourceLocation JUMP_STRENGTH = new ResourceLocation("generic.jump_strength");
     /** 1.21.1 {@code generic.oxygen_bonus}, base 0 (works like Respiration levels). */
     public static final ResourceLocation OXYGEN_BONUS = new ResourceLocation("generic.oxygen_bonus");
+    /** 1.21.1 {@code generic.step_height}, base 0.6 blocks (the player's vanilla step height). */
+    public static final ResourceLocation STEP_HEIGHT = new ResourceLocation("generic.step_height");
+    /** 1.21.1 {@code generic.movement_efficiency}, base 0: how little slow blocks (soul sand, honey) slow you. */
+    public static final ResourceLocation MOVEMENT_EFFICIENCY = new ResourceLocation("generic.movement_efficiency");
+    /** 1.21.1 {@code player.sneaking_speed}, base 0.3 (the sneak slowdown; Swift Sneak adds to it). */
+    public static final ResourceLocation SNEAKING_SPEED = new ResourceLocation("player.sneaking_speed");
 
     /** Vanilla 1.21.1 base values of the emulated attributes. */
     private static final Map<ResourceLocation, Double> BASE = Map.of(
             BLOCK_BREAK_SPEED, 1.0,
             SAFE_FALL_DISTANCE, 3.0,
             JUMP_STRENGTH, 0.42,
-            OXYGEN_BONUS, 0.0);
+            OXYGEN_BONUS, 0.0,
+            STEP_HEIGHT, 0.6,
+            MOVEMENT_EFFICIENCY, 0.0,
+            SNEAKING_SPEED, 0.3);
 
     private static final Set<ResourceLocation> WARNED = ConcurrentHashMap.newKeySet();
 

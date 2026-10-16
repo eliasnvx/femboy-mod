@@ -1,0 +1,18 @@
+{
+  "pieces": [
+    "femboymod:witch_hat",
+    "#femboymod:halloween_tops",
+    "femboymod:candy_pail"
+  ],
+  "effects": [
+    {
+      "effect": {
+        "type": "femboymod:glow_hostiles",
+        "radius": 16.0
+      },
+      "when": {
+        "type": "femboymod:night"
+      }
+    }
+  ]
+}

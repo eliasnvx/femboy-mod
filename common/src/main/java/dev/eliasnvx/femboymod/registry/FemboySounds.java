@@ -21,6 +21,25 @@ public final class FemboySounds {
     public static final RegistrySupplier<SoundEvent> CAN_OPEN = event("can.open");
     public static final RegistrySupplier<SoundEvent> CONFETTI_POP = event("confetti.pop");
     public static final RegistrySupplier<SoundEvent> NYA = event("nya");
+    /** Footsteps of the shoes (cosmetic_stats step_sound effects). */
+    public static final RegistrySupplier<SoundEvent> STEP_SNEAKERS = event("step.sneakers");
+    public static final RegistrySupplier<SoundEvent> STEP_HIGH_TOPS = event("step.high_tops");
+    public static final RegistrySupplier<SoundEvent> STEP_PLATFORM = event("step.platform");
+    public static final RegistrySupplier<SoundEvent> STEP_SLIPPERS = event("step.slippers");
+    /** A soft pat-pat and a little sparkle (synthesized, tools/sounds/make_sounds.py). */
+    public static final RegistrySupplier<SoundEvent> HEADPAT = event("headpat");
+    // Bug: own synthesized sounds (tools/sounds/make_sounds.py)
+    public static final RegistrySupplier<SoundEvent> BUG_AMBIENT = event("bug.ambient");
+    public static final RegistrySupplier<SoundEvent> BUG_HURT = event("bug.hurt");
+    public static final RegistrySupplier<SoundEvent> BUG_DEATH = event("bug.death");
+    public static final RegistrySupplier<SoundEvent> BUG_STEP = event("bug.step");
+    public static final RegistrySupplier<SoundEvent> GOBLIN_GIGGLE = event("sock_goblin.giggle");
+    public static final RegistrySupplier<SoundEvent> GOBLIN_HURT = event("sock_goblin.hurt");
+    public static final RegistrySupplier<SoundEvent> GOBLIN_DEATH = event("sock_goblin.death");
+    public static final RegistrySupplier<SoundEvent> GOBLIN_STEAL = event("sock_goblin.steal");
+    public static final RegistrySupplier<SoundEvent> DUCK_QUACK = event("rubber_duck.quack");
+    public static final RegistrySupplier<SoundEvent> DUCK_SQUEAK = event("rubber_duck.squeak");
+    public static final RegistrySupplier<SoundEvent> DUCK_DEATH = event("rubber_duck.death");
 
     private FemboySounds() {
     }

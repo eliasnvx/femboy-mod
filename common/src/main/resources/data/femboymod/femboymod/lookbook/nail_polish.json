@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "kind": "crafting",
+      "items": [
+        "minecraft:glass_bottle",
+        "minecraft:pink_dye",
+        "minecraft:honeycomb"
+      ]
+    }
+  ]
+}
