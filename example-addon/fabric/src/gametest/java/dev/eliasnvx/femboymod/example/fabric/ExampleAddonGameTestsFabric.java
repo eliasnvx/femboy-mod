@@ -40,6 +40,11 @@ public final class ExampleAddonGameTestsFabric implements FabricGameTest {
     }
 
     @GameTest(template = EMPTY_STRUCTURE)
+    public void pinHasLookbookEntry(GameTestHelper helper) {
+        ExampleAddonGameTests.pinHasLookbookEntry(helper);
+    }
+
+    @GameTest(template = EMPTY_STRUCTURE)
     public void pinIsCharm(GameTestHelper helper) {
         ExampleAddonGameTests.pinIsCharm(helper);
     }
@@ -56,8 +61,8 @@ public final class ExampleAddonGameTestsFabric implements FabricGameTest {
 
     @GameTest(template = EMPTY_STRUCTURE)
     public void allTestsRegistered(GameTestHelper helper) {
-        if (ExampleAddonGameTests.ALL.size() != 9) {
-            throw new GameTestAssertException("Expected 9 shared tests wired into the Fabric glue, got " + ExampleAddonGameTests.ALL.size());
+        if (ExampleAddonGameTests.ALL.size() != 10) {
+            throw new GameTestAssertException("Expected 10 shared tests wired into the Fabric glue, got " + ExampleAddonGameTests.ALL.size());
         }
         helper.succeed();
     }

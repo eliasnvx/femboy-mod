@@ -5,6 +5,8 @@ import dev.eliasnvx.femboymod.api.backpack.CharmStats;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
 import dev.eliasnvx.femboymod.api.combat.DripDamage;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
+import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
+import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestAssertException;
@@ -33,7 +35,8 @@ public final class ExampleAddonGameTests {
             new Entry("friendship_set_bonus_loaded", ExampleAddonGameTests::friendshipSetBonusLoaded),
             new Entry("pin_is_charm", ExampleAddonGameTests::pinIsCharm),
             new Entry("drip_damage_rule_loaded", ExampleAddonGameTests::dripDamageRuleLoaded),
-            new Entry("profile_field_and_style_points", ExampleAddonGameTests::profileFieldAndStylePoints));
+            new Entry("profile_field_and_style_points", ExampleAddonGameTests::profileFieldAndStylePoints),
+            new Entry("pin_has_lookbook_entry", ExampleAddonGameTests::pinHasLookbookEntry));
 
     private ExampleAddonGameTests() {
     }
@@ -51,6 +54,9 @@ public final class ExampleAddonGameTests {
     public static void pinSlotRegistered(GameTestHelper helper) {
         helper.assertTrue(FemboyApi.get().cosmeticSlots().get(ExampleAddon.PIN_SLOT).isPresent(), "pin slot registered");
         helper.assertTrue(FemboyApi.get().cosmeticSlots().isFrozen(), "slot registry frozen after init");
+        int pinOrder = FemboyApi.get().cosmeticSlots().get(ExampleAddon.PIN_SLOT).orElseThrow().sortOrder();
+        int feetOrder = FemboyApi.get().cosmeticSlots().get(FemboySlots.FEET).orElseThrow().sortOrder();
+        helper.assertTrue(pinOrder > feetOrder, "the pin slot comes after the built-in feet slot");
         helper.succeed();
     }
 
@@ -123,6 +129,15 @@ public final class ExampleAddonGameTests {
                 .get(ResourceKey.create(DripDamage.REGISTRY_KEY, new ResourceLocation(ExampleAddon.MOD_ID, "phantoms")));
         helper.assertTrue(rule != null && rule.attackers().contains(EntityType.PHANTOM.builtInRegistryHolder()), "phantom rule loaded");
         assertValueEqual(helper, rule.multiplierFor(99), 0.75F, "tiers past the list use the last multiplier");
+        helper.succeed();
+    }
+
+    public static void pinHasLookbookEntry(GameTestHelper helper) {
+        LookbookEntry entry = helper.getLevel().registryAccess().registryOrThrow(LookbookEntry.REGISTRY_KEY)
+                .get(LookbookEntry.keyOf(ExampleAddon.friendshipPin.get()));
+        helper.assertTrue(entry != null && entry.sources().size() == 2, "lookbook entry with two sources");
+        helper.assertTrue(entry.sources().get(0).kind() == LookbookEntry.Kind.TRADE
+                && entry.sources().get(0).items().get(0).count() == 2, "trade source with its price");
         helper.succeed();
     }
 

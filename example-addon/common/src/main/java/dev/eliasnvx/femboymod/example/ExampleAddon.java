@@ -13,15 +13,15 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.FemboyApi;
 import dev.eliasnvx.femboymod.api.FemboyClientApi;
+import dev.eliasnvx.femboymod.api.FemboyCreativeTabs;
 import dev.eliasnvx.femboymod.api.RegisterFemboyAddon;
 import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticChangedEvent;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticUnequipEvent;
+import dev.eliasnvx.femboymod.api.event.social.HeadpatEvent;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +52,6 @@ public final class ExampleAddon implements FemboyAddon {
     /** Just after the built-in slots (which use multiples of 100). */
     private static final int PIN_SLOT_ORDER = 1000;
 
-    /** femboymod's creative tab, referenced by key so the addon does not touch femboymod internals. */
-    private static final ResourceKey<CreativeModeTab> FEMBOYMOD_TAB = ResourceKey.create(Registries.CREATIVE_MODE_TAB,
-            new ResourceLocation(FemboyApi.MOD_ID, "main"));
-
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(MOD_ID, Registries.ITEM);
 
     /**
@@ -78,11 +74,17 @@ public final class ExampleAddon implements FemboyAddon {
 
         RegistrySupplier<Item> pin = friendshipPin = ITEMS.register(id("friendship_pin"), () -> new Item(new Item.Properties()
                 .stacksTo(1)
-                .arch$tab(FEMBOYMOD_TAB)));
+                .arch$tab(FemboyCreativeTabs.OUTFITS))); // next to femboymod's outfits
         ITEMS.register();
         // 1.20.1 has no default components: every pin reads this cosmetic until one is stored on the stack
         pin.listen(item -> api.components().cosmetic().setDefault(item, new Cosmetic(PIN_SLOT, Optional.of(PIN_RENDERER))));
 
+        // headpats from someone wearing the friendship pin make the target Cozy twice as long
+        api.events().addListener(HeadpatEvent.class, event -> {
+            if (api.getCosmetics(event.patter()).get(PIN_SLOT).is(pin.get())) {
+                event.setCozyTicks(event.cozyTicks() * 2);
+            }
+        });
         api.events().addListener(CosmeticChangedEvent.class, event ->
                 LOGGER.info("{} changed slot {}: {} -> {}", event.entity().getName().getString(), event.slot(),
                         event.previous(), event.current()));
