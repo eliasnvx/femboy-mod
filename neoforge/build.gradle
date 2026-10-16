@@ -18,6 +18,13 @@ dependencies {
     modImplementation "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
     modImplementation "software.bernie.geckolib:geckolib-neoforge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
+    // Slot mods (SPEC §4.3): wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds Curios to the dev runtime
+    modCompileOnly("maven.modrinth:curios:${rootProject.curios_neoforge_version}") { transitive false }
+    modCompileOnly("maven.modrinth:accessories:${rootProject.accessories_neoforge_version}") { transitive false }
+    if (project.findProperty("compat_slots") == "true") {
+        modRuntimeOnly "maven.modrinth:curios:${rootProject.curios_neoforge_version}"
+    }
+
     common(project(path: ":api", configuration: "namedElements")) { transitive false }
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowBundle(project(path: ":api", configuration: "transformProductionNeoForge")) { transitive false }
