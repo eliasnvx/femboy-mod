@@ -37,6 +37,11 @@ public final class ExampleAddonGameTestsFabric {
     }
 
     @GameTest
+    public void pinHasLookbookEntry(GameTestHelper helper) {
+        ExampleAddonGameTests.pinHasLookbookEntry(helper);
+    }
+
+    @GameTest
     public void pinIsCharm(GameTestHelper helper) {
         ExampleAddonGameTests.pinIsCharm(helper);
     }
@@ -53,7 +58,7 @@ public final class ExampleAddonGameTestsFabric {
 
     @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(ExampleAddonGameTests.ALL.size(), 9, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(ExampleAddonGameTests.ALL.size(), 10, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

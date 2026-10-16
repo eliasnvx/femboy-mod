@@ -27,6 +27,9 @@ public final class FemboySlots {
     /** Belts and belt chains, worn over skirts and tops. */
     @org.jetbrains.annotations.ApiStatus.AvailableSince("0.1.0")
     public static final Identifier WAIST = id("waist");
+    /** Shoes and slippers, worn over socks; hides boots. */
+    @org.jetbrains.annotations.ApiStatus.AvailableSince("0.2.0")
+    public static final Identifier FEET = id("feet");
 
     private FemboySlots() {
     }
