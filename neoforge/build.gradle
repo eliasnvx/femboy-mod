@@ -13,6 +13,13 @@ configurations {
     developmentNeoForge.extendsFrom common
 }
 
+if (project.findProperty("compat_accessories") == "true" || project.findProperty("compat_aether") == "true") {
+    repositories {
+        maven { url "https://maven.wispforest.io/releases/" }
+        maven { url "https://maven.su5ed.dev/releases/" }
+    }
+}
+
 dependencies {
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
     modImplementation "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
@@ -21,6 +28,28 @@ dependencies {
     // Slot mods (SPEC §4.3): wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds Curios to the dev runtime
     modCompileOnly("maven.modrinth:curios:${rootProject.curios_neoforge_version}") { transitive false }
     modCompileOnly("maven.modrinth:accessories:${rootProject.accessories_neoforge_version}") { transitive false }
+    // Accessories / Aether (which brings Accessories) in the dev client: ./gradlew :neoforge:runClient -Pcompat_accessories=true
+    // or -Pcompat_aether=true. Client checks only (the crash of 0.2.0 was in the client constructor). Accessories comes from
+    // its own maven with its libraries (owo-lib, endec, Forgified Fabric API base): a real install unpacks them from the
+    // jar, the dev runtime doesn't
+    if (project.findProperty("compat_accessories") == "true" || project.findProperty("compat_aether") == "true") {
+        modRuntimeOnly "io.wispforest:accessories-neoforge:${rootProject.accessories_neoforge_maven_version}"
+        // plain libraries (no mod manifest) have to sit on the game's own classpath to be seen by the mods' mixins;
+        // versions as in that Accessories POM
+        for (lib in ["io.wispforest:endec:0.1.5.1", "io.wispforest.endec:gson:0.1.3.1", "io.wispforest.endec:jankson:0.1.3.1",
+                     "io.wispforest.endec:netty:0.1.2", "blue.endless:jankson:1.2.2"]) {
+            forgeRuntimeLibrary lib
+        }
+    }
+    if (project.findProperty("compat_aether") == "true") {
+        modRuntimeOnly("maven.modrinth:aether:${rootProject.aether_neoforge_version}") { transitive false }
+        // Aether's own library mods (Cumulus, Nitrogen) are nested in its jar
+        def aetherJar = configurations.detachedConfiguration(create("maven.modrinth:aether:${rootProject.aether_neoforge_version}"))
+                .tap { transitive = false }.singleFile
+        modRuntimeOnly files(zipTree(aetherJar).matching {
+            include "META-INF/jarjar/cumulus_menus-*.jar", "META-INF/jarjar/nitrogen_internals-*.jar"
+        }.files)
+    }
     if (project.findProperty("compat_slots") == "true") {
         modRuntimeOnly "maven.modrinth:curios:${rootProject.curios_neoforge_version}"
     }
