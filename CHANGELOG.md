@@ -3,7 +3,7 @@
 All notable changes to Femboy Mod. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/api/CHANGELOG.md`.
 
-## [Unreleased]
+## [0.2.1] - 2026-10-17
 ### Fixed
 - Forge: with Accessories installed, it could draw its default item models over our cosmetics worn in its slots (our "draw nothing" registration ran before our items existed)
 
