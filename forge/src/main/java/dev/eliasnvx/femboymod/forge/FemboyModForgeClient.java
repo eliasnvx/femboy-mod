@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /** Client-only setup, called from {@link FemboyModForge} on the physical client. */
@@ -25,7 +26,9 @@ final class FemboyModForgeClient {
     static void init(FMLJavaModLoadingContext context) {
         FemboyModClient.init();
         if (net.minecraftforge.fml.ModList.get().isLoaded("accessories")) {
-            dev.eliasnvx.femboymod.compat.accessories.AccessoriesSlots.registerClient();
+            // after registration: at construction the item registry holds only vanilla items, so none of ours would match
+            context.getModEventBus().addListener((FMLClientSetupEvent event) ->
+                    event.enqueueWork(dev.eliasnvx.femboymod.compat.accessories.AccessoriesSlots::registerClient));
         }
         context.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, parent) -> new ConfigScreen(parent)));
