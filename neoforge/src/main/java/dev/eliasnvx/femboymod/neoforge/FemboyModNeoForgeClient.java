@@ -23,6 +23,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -34,7 +35,9 @@ public final class FemboyModNeoForgeClient {
     public FemboyModNeoForgeClient(IEventBus modBus, ModContainer container) {
         FemboyModClient.init();
         if (net.neoforged.fml.ModList.get().isLoaded("accessories")) {
-            dev.eliasnvx.femboymod.compat.accessories.AccessoriesSlots.registerClient();
+            // after registration: the constructor runs before RegisterEvent, so our items and components aren't there yet
+            modBus.addListener((FMLClientSetupEvent event) ->
+                    event.enqueueWork(dev.eliasnvx.femboymod.compat.accessories.AccessoriesSlots::registerClient));
         }
         container.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> new ConfigScreen(parent));
         // Item colorway tints come from client/ItemTints (an ItemColor); 1.21.1 has no item tint sources.
