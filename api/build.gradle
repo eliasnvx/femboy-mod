@@ -1,4 +1,4 @@
-// Public API: interfaces, records, codecs, events. Must NOT depend on :common (SPEC §3.1).
+// Public API: interfaces, records, codecs, events. Must NOT depend on :common.
 architectury {
     common(rootProject.platforms.split(","))
 }
@@ -20,7 +20,7 @@ javadoc {
     options.addBooleanOption("Xdoclint:all,-missing", true)
 }
 
-// API jar for addon authors: dev.eliasnvx:femboymod-api:<api_version>+<mc> (SPEC §8.1, §14).
+// API jar for addon authors: dev.eliasnvx:femboymod-api:<api_version>+<mc>.
 // The repository comes from the environment (release workflow); locally: ./gradlew :api:publishToMavenLocal
 publishing {
     publications {

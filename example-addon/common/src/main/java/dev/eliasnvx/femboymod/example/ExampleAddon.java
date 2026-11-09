@@ -29,11 +29,12 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 /**
- * Reference addon that exercises the public API (SPEC §8.5). It is built in CI, so any
+ * Reference addon that exercises the public API. It is built in CI, so any
  * breaking API change fails the build here first.
  *
  * <p>Uses: a new cosmetic slot type, a new cosmetic item (data component) with its own renderer,
- * a custom effect and condition type ({@link ExampleEffects}), and two event listeners. Data pack side
+ * a custom effect and condition type ({@link ExampleEffects}), a cosmetic reaction source ({@link ExampleReactions})
+ * and two event listeners. Data pack side
  * ({@code data/femboymod_example/femboymod/}): colorway patterns ({@code colorway/candy.json}, shimmering
  * {@code colorway/candy_shimmer.json}), a set
  * bonus ({@code set_bonus/friendship.json}), charm stats for the pin ({@code charm/friendship_pin.json},
@@ -119,6 +120,7 @@ public final class ExampleAddon implements FemboyAddon {
     @Override
     public void onInitializeClient(FemboyClientApi api) {
         ExamplePinRenderer.register(api);
+        ExampleReactions.register(api);
         LOGGER.info("femboymod example addon client initialized");
     }
 

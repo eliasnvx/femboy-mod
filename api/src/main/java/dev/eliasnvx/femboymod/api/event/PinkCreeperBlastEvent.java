@@ -3,7 +3,7 @@ package dev.eliasnvx.femboymod.api.event;
 import net.minecraft.world.entity.Entity;
 
 /**
- * Posted on the logical server when a Pink Creeper bursts into confetti (SPEC §5.4). Listeners may
+ * Posted on the logical server when a Pink Creeper bursts into confetti. Listeners may
  * change the numbers or cancel the burst (the creeper still disappears). Blocks are never damaged.
  */
 public final class PinkCreeperBlastEvent implements CancellableEvent {

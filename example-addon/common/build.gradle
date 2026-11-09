@@ -1,4 +1,4 @@
-// Example addon (common). Depends ONLY on the public API - that is the point (SPEC §8.5).
+// Example addon (common). Depends ONLY on the public API - that is the point.
 architectury {
     common(rootProject.platforms.split(","))
 }
