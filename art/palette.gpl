@@ -1,7 +1,7 @@
 GIMP Palette
 Name: femboymod
 Columns: 8
-# Project palette (SPEC 11.2): 32 colours, hand-picked starter set in 3-4 tone ramps.
+# Project palette: 32 colours, hand-picked starter set in 3-4 tone ramps.
 # Outlines use the darker end of each ramp; there is no pure black on purpose.
  36  28  40	ink
  64  52  70	shadow grey

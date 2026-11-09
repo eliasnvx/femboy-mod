@@ -62,7 +62,7 @@ public final class FemboyModClient {
             "key.femboymod.backpack", InputConstants.Type.KEYSYM, InputConstants.KEY_B, KeyMapping.CATEGORY_INVENTORY);
 
 
-    /** Emote wheel (SPEC v1.2). */
+    /** Emote wheel. */
     public static final KeyMapping EMOTES = new KeyMapping(
             "key.femboymod.emotes", InputConstants.Type.KEYSYM, InputConstants.KEY_G, KeyMapping.CATEGORY_MULTIPLAYER);
 
@@ -78,6 +78,17 @@ public final class FemboyModClient {
         FemboyMenus.MINI_FRIDGE.listen(type -> MenuRegistry.registerScreenFactory(type, FurnitureStorageScreen::new));
         FemboyBlocks.CLOTHING_RACK_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, ClothingRackRenderer::new));
         FemboyBlocks.MIRROR_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, dev.eliasnvx.femboymod.client.render.MirrorRenderer::new));
+        // 26.3 picks the render layer from the textures; 1.21.1 needs it set per block, or transparent pixels draw black
+        for (var block : FemboyBlocks.BLOCKS) {
+            String name = block.getId().getPath();
+            if (dev.eliasnvx.femboymod.block.BlockRenderLayers.CUTOUT.contains(name)) {
+                block.listen(registered -> dev.architectury.registry.client.rendering.RenderTypeRegistry.register(
+                        net.minecraft.client.renderer.RenderType.cutout(), registered));
+            } else if (dev.eliasnvx.femboymod.block.BlockRenderLayers.CUTOUT_MIPPED.contains(name)) {
+                block.listen(registered -> dev.architectury.registry.client.rendering.RenderTypeRegistry.register(
+                        net.minecraft.client.renderer.RenderType.cutoutMipped(), registered));
+            }
+        }
         ClientTickEvent.CLIENT_POST.register(NyaSound::tick);
         KeyMappingRegistry.register(OPEN_COSMETICS);
         KeyMappingRegistry.register(EMOTES);
@@ -113,6 +124,8 @@ public final class FemboyModClient {
         ClientTooltipEvent.ITEM.register(FemboyModClient::appendTooltip);
         ItemTints.register();
         FurnitureColorProperty.register();
+        // ear tips first, so the Femboy Level panel stays on top of them
+        ClientGuiEvent.RENDER_HUD.register(dev.eliasnvx.femboymod.client.render.EarTipsHud::render);
         ClientGuiEvent.RENDER_HUD.register(DripHud::render);
 
         FemboyConfig.loadClient();
@@ -143,6 +156,7 @@ public final class FemboyModClient {
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new UwuChat.Loader(),
                 ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "uwu_chat_rules"));
         ClientTickEvent.CLIENT_POST.register(GlowHostilesClient::tick);
+        ClientTickEvent.CLIENT_PRE.register(SockSlideClient::tick);
         ClientTickEvent.CLIENT_POST.register(PhotoMode::tick);
         dev.eliasnvx.femboymod.item.PhoneItem.onClientUse = PhotoMode::start;
         dev.eliasnvx.femboymod.item.LookbookItem.onClientUse = () -> Minecraft.getInstance().setScreen(new LookbookScreen(null));
@@ -153,10 +167,29 @@ public final class FemboyModClient {
         dev.architectury.event.events.client.ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player ->
                 dev.eliasnvx.femboymod.client.photo.PhotoTextures.clear());
         ClientTickEvent.CLIENT_POST.register(dev.eliasnvx.femboymod.client.render.HeadphonesLight::tick);
+        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new dev.eliasnvx.femboymod.client.render.EarHearing.Loader(),
+                ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "hearing"));
+        ClientTickEvent.CLIENT_POST.register(dev.eliasnvx.femboymod.client.render.ReactiveCosmetics::tick);
+        dev.eliasnvx.femboymod.network.EarCuePayload.onClient = dev.eliasnvx.femboymod.client.render.ReactiveCosmetics::onCue;
+        dev.architectury.event.events.client.ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player ->
+                dev.eliasnvx.femboymod.client.render.ReactiveCosmetics.clear());
+        // the next server (or singleplayer) brings its own settings
+        dev.architectury.event.events.client.ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player ->
+                dev.eliasnvx.femboymod.config.ServerSettings.setClient(null));
+        // the server learns who may pat this player; again whenever the option changes (ConfigScreen)
+        dev.architectury.event.events.client.ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> sendHeadpatConsent());
 
         AddonLoader.initClient(clientApi);
         clientApi.freeze();
         FemboyMod.LOGGER.info("femboymod client initialized");
+    }
+
+    /** Tells the server this player's {@code headpats_from_players} option (when connected to one that has the mod). */
+    public static void sendHeadpatConsent() {
+        if (Minecraft.getInstance().getConnection() != null
+                && NetworkManager.canServerReceive(dev.eliasnvx.femboymod.network.HeadpatConsentPayload.TYPE)) {
+            NetworkManager.sendToServer(new dev.eliasnvx.femboymod.network.HeadpatConsentPayload(FemboyConfig.client().headpats()));
+        }
     }
 
     private static void requestCosmeticsScreen() {
@@ -168,6 +201,9 @@ public final class FemboyModClient {
         dev.eliasnvx.femboymod.photo.PhotoData photo = stack.get(FemboyComponents.PHOTO.get());
         if (photo != null) {
             lines.add(Component.translatable("item.femboymod.photo.author", photo.author()).withStyle(net.minecraft.ChatFormatting.GRAY));
+            if (dev.eliasnvx.femboymod.client.photo.PhotoTextures.faded(photo.id())) {
+                lines.add(Component.translatable("item.femboymod.photo.faded").withStyle(ChatFormatting.DARK_GRAY));
+            }
         }
         if (stack.getItem() instanceof dev.eliasnvx.femboymod.pet.PetOutfitItem) {
             lines.add(Component.translatable("tooltip.femboymod.pet_outfit").withStyle(ChatFormatting.GRAY));
@@ -182,7 +218,7 @@ public final class FemboyModClient {
             lines.add(Component.translatable("tooltip.femboymod.chilled").withStyle(ChatFormatting.AQUA));
         }
         if (stack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem
-                && dev.eliasnvx.femboymod.block.FemboyBlocks.isInterior(blockItem.getBlock())) {
+                && dev.eliasnvx.femboymod.block.FemboyBlocks.hasHowTo(blockItem.getBlock())) {
             lines.add(Component.translatable("tooltip." + blockItem.getBlock().getDescriptionId().substring("block.".length()))
                     .withStyle(ChatFormatting.GRAY));
         }
@@ -194,6 +230,9 @@ public final class FemboyModClient {
             }
             lines.add(Component.translatable("tooltip.femboymod.slot",
                     Component.translatable(CosmeticSlotType.translationKey(cosmetic.slot()))).withStyle(ChatFormatting.GRAY));
+            if (slides(stack)) {
+                lines.add(Component.translatable("tooltip.femboymod.slides").withStyle(ChatFormatting.GRAY));
+            }
         }
         Colorway colorway = dev.eliasnvx.femboymod.cosmetic.Colorways.effective(stack).orElse(null);
         if (colorway != null) {
@@ -213,6 +252,19 @@ public final class FemboyModClient {
         return level.registryAccess().registry(CosmeticStats.REGISTRY_KEY)
                 .flatMap(registry -> registry.getOptional(CosmeticStats.keyOf(stack.getItem())))
                 .map(CosmeticStats::drip).orElse(0);
+    }
+
+    /** The item's stats have a {@code femboymod:slide} effect (socks, tights). */
+    private static boolean slides(ItemStack stack) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) {
+            return false;
+        }
+        return level.registryAccess().registry(CosmeticStats.REGISTRY_KEY)
+                .flatMap(registry -> registry.getOptional(CosmeticStats.keyOf(stack.getItem())))
+                .map(stats -> stats.effects().stream()
+                        .anyMatch(effect -> effect.effect() instanceof dev.eliasnvx.femboymod.effect.BuiltinEffects.SlideEffect))
+                .orElse(false);
     }
 
     /** Minecraft instance accessor kept here so common code never touches it on a server. */

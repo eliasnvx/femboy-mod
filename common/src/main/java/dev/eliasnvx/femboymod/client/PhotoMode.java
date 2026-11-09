@@ -20,7 +20,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.Util;
 
 /**
- * Photo Mode (SPEC v1.1): the Phone flips the camera to a selfie, hides the HUD for a moment, grabs the frame and
+ * Photo Mode: the Phone flips the camera to a selfie, hides the HUD for a moment, grabs the frame and
  * turns it into an instant-camera print: a square shot in a rounded cream card with a wide bottom margin carrying the
  * mod's watermark, on a soft shadow. Saved to {@code screenshots/}. No flash effect. The server also prints it as a
  * photo item (paper permitting).

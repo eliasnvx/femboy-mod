@@ -21,7 +21,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-/** Gamer Chair (SPEC v1.1): right-click to sit; sitting slowly heals (config {@code furniture}). */
+/** Gamer Chair: right-click to sit; sitting slowly heals (config {@code furniture}). */
 public class GamerChairBlock extends HorizontalDirectionalBlock implements SeatBlock {
 
     public static final MapCodec<GamerChairBlock> CODEC = simpleCodec(GamerChairBlock::new);

@@ -24,9 +24,10 @@ public final class FemboyEffects {
     private static final int JITTER_COLOR = 0xB0E0FF;
     private static final int INSIGHT_COLOR = 0xFFD84A;
     private static final int COZY_COLOR = 0xFFB7D5;
+    private static final int CATNIP_COLOR = 0x8FD9A8;
     /** Insight (rubber duck debugging): the fix is obvious now, so you dig a bit faster. */
     private static final double INSIGHT_BREAK_SPEED = 0.2;
-    /** Jitter: slightly slower attacks. No visual screen effect at all (photosensitivity, SPEC §5.2). */
+    /** Jitter: slightly slower attacks. No visual screen effect at all (photosensitivity). */
     private static final double JITTER_ATTACK_SPEED = -0.15;
 
     public static final RegistrySupplier<MobEffect> CAFFEINATED = REGISTER.register("caffeinated", Caffeinated::new);
@@ -41,6 +42,12 @@ public final class FemboyEffects {
     /** Cozy (headpats): warm and safe, slowly heals (config {@code friends.cozy_heal_*}). */
     public static final RegistrySupplier<MobEffect> COZY = REGISTER.register("cozy", Cozy::new);
 
+    /**
+     * Catnip (cats, 0.3.0): the whole high in one effect, read by the cat's goals: zoomies, mischief, purring, then a
+     * quiet stretch when more catnip does nothing ({@link dev.eliasnvx.femboymod.entity.Catnip}). No effect of its own.
+     */
+    public static final RegistrySupplier<MobEffect> CATNIP = REGISTER.register("catnip", CatnipHigh::new);
+
     private FemboyEffects() {
     }
 
@@ -50,6 +57,12 @@ public final class FemboyEffects {
      */
     public static Holder<MobEffect> holder(RegistrySupplier<MobEffect> effect) {
         return BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect.get());
+    }
+
+    static final class CatnipHigh extends MobEffect {
+        CatnipHigh() {
+            super(MobEffectCategory.NEUTRAL, CATNIP_COLOR);
+        }
     }
 
     static final class Cozy extends MobEffect {
@@ -73,7 +86,7 @@ public final class FemboyEffects {
         }
     }
 
-    /** Tracks an energy drink's buff; on its very last tick the crash hits (SPEC §5.2). */
+    /** Tracks an energy drink's buff; on its very last tick the crash hits. */
     static final class Caffeinated extends MobEffect {
         Caffeinated() {
             super(MobEffectCategory.NEUTRAL, CAFFEINE_COLOR);

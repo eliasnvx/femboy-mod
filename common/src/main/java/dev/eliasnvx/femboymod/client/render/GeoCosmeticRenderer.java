@@ -3,9 +3,11 @@ package dev.eliasnvx.femboymod.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.api.client.CosmeticMotion;
 import dev.eliasnvx.femboymod.api.client.CosmeticRenderContext;
 import dev.eliasnvx.femboymod.api.client.CosmeticRenderer;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
+import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -18,6 +20,7 @@ import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.cache.GeckoLibCache;
@@ -33,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Renderer {@code femboymod:geo}: draws a Blockbench/GeckoLib model for a cosmetic item (SPEC §4.5).
+ * Renderer {@code femboymod:geo}: draws a Blockbench/GeckoLib model for a cosmetic item.
  *
  * <p>Convention for an item {@code <ns>:<path>} (used automatically when the model file exists, so it
  * overrides the built-in code model; works for addon items too). GeckoLib 4 (Minecraft 1.21.1) paths:
@@ -46,7 +49,9 @@ import java.util.Map;
  *     looping {@code idle} animation</li>
  * </ul>
  * Top-level bones named like GeckoLib armor ({@code armorHead}, {@code armorBody}, {@code armorLeftArm},
- * {@code armorRightArm}, {@code armorLeftLeg}, {@code armorRightLeg}) follow the player's body parts.
+ * {@code armorRightArm}, {@code armorLeftLeg}, {@code armorRightLeg}) follow the player's body parts. Bones named
+ * {@code left_ear} and {@code right_ear} (the left one on the model's -x side, like the built-in ears) react like the
+ * built-in ears (turning, flattening, drooping) on top of their animation.
  */
 public final class GeoCosmeticRenderer implements CosmeticRenderer {
 
@@ -57,6 +62,10 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
     private static final String MODEL_SUFFIX = ".geo.json";
     private static final String ANIMATION_DIR = "animations/cosmetic/";
     private static final String ANIMATION_SUFFIX = ".animation.json";
+    private static final String LEFT_EAR = "left_ear";
+    private static final String RIGHT_EAR = "right_ear";
+    /** Blockbench ears flop like the built-in cat ears. */
+    private static final float EAR_FLOP = 1.0F;
 
     private final ResourceLocation model;
     private final ResourceLocation animation;
@@ -101,12 +110,39 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         related.texture = tinted ? dyeableTexture : texture;
         related.overlay = ctx.overlay();
         related.parent = ctx.parentModel();
+        related.motion = ctx.motion();
         MultiBufferSource buffers = ctx.bufferSource();
         RenderType type = RenderType.entityCutoutNoCull(related.texture);
         VertexConsumer buffer = buffers.getBuffer(type);
         // A non-null buffer keeps GeckoLib on our buffer source (it falls back to the level's otherwise).
         renderer.render(ctx.poseStack(), animatable, buffers, type, buffer, ctx.light(), ctx.partialTick());
         related.parent = null;
+        related.motion = null;
+    }
+
+    /**
+     * Adds the ear reactions to a bone, on top of its animation. Geo rotations are ModelPart rotations with x and y
+     * negated ({@code RenderUtil#matchModelPartRot}). The ear's rest tilt is its z rotation from the file, and
+     * "outward" is the way it already leans; an upright ear uses {@code side}.
+     *
+     * <p>GeckoLib 4 keeps rotations on the shared baked bones between frames: an animated bone gets its keyframe
+     * value again every frame, an unanimated one is only reset to its rest pose when not marked as changed. So the
+     * reaction is added after the animation ({@code setCustomAnimations}) and the change marker is cleared again;
+     * otherwise an unanimated ear would keep the reaction and add it up frame after frame.
+     *
+     * @param side -1 for {@code left_ear}, 1 for {@code right_ear}: the outward direction of an upright ear
+     */
+    private static void react(@Nullable GeoBone ear, CosmeticMotion motion, int side) {
+        if (ear == null) {
+            return;
+        }
+        float rest = ear.getInitialSnapshot().getRotZ();
+        float outwardSign = rest != 0.0F ? Math.signum(rest) : side;
+        float outward = CosmeticModels.EarsModel.reactionOutward(motion, Math.abs(rest), EAR_FLOP);
+        ear.setRotZ(ear.getRotZ() + outwardSign * outward);
+        ear.setRotX(ear.getRotX() + CosmeticModels.EarsModel.reactionBack(motion, EAR_FLOP));
+        ear.setRotY(ear.getRotY() - CosmeticModels.EarsModel.reactionTurn(motion));
+        ear.resetStateChanges();
     }
 
     /** Per-draw data read by the model and renderer callbacks. */
@@ -116,6 +152,7 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         int overlay;
         ResourceLocation texture;
         @Nullable HumanoidModel<?> parent;
+        @Nullable CosmeticMotion motion;
         /** Last color handed to GeckoLib, reused while unchanged. */
         Color cachedColor = Color.WHITE;
     }
@@ -156,6 +193,16 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         @Override
         public ResourceLocation getAnimationResource(Animatable animatable) {
             return animation;
+        }
+
+        /** Runs right after the idle animation was applied to the bones: the ear reactions go on top of it. */
+        @Override
+        public void setCustomAnimations(Animatable animatable, long instanceId, AnimationState<Animatable> animationState) {
+            CosmeticMotion motion = related.motion;
+            if (motion != null) {
+                react(getAnimationProcessor().getBone(LEFT_EAR), motion, -1);
+                react(getAnimationProcessor().getBone(RIGHT_EAR), motion, 1);
+            }
         }
     }
 

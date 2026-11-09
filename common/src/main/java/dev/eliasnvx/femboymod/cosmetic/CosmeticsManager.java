@@ -5,6 +5,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.Cosmetic;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.compat.ExternalSlots;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
+import dev.eliasnvx.femboymod.config.ServerSettings;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticChangedEvent;
 import dev.eliasnvx.femboymod.api.event.cosmetic.CosmeticEquipEvent;
@@ -33,6 +34,8 @@ public final class CosmeticsManager {
 
     private static final float EQUIP_SOUND_VOLUME = 1.0F;
     private static final float EQUIP_SOUND_PITCH = 1.0F;
+    /** When each player last made the equip sound (game time): once a tick at most, however many slots changed. */
+    private static final Map<ServerPlayer, Long> EQUIP_SOUND_TICK = new WeakHashMap<>();
 
     private static SimpleApiRegistry<CosmeticSlotType> slotRegistry;
     private static List<ResourceLocation> orderedSlots = List.of();
@@ -91,7 +94,8 @@ public final class CosmeticsManager {
         Map<ResourceLocation, ItemStack> extra = new LinkedHashMap<>();
         ExternalSlots.forEach(player, stack -> {
             ResourceLocation slot = stack.isEmpty() ? null : slotOf(stack);
-            if (slot != null && !FemboySlots.BACK.equals(slot) && own.get(slot).isEmpty() && !extra.containsKey(slot)) {
+            if (slot != null && !FemboySlots.BACK.equals(slot) && own.get(slot).isEmpty() && !extra.containsKey(slot)
+                    && !ServerSettings.disabledSlots(player.level()).contains(slot)) { // a disabled slot stays off from other mods' slots too
                 extra.put(slot, stack);
             }
         });
@@ -132,7 +136,7 @@ public final class CosmeticsManager {
 
     /** Side-effect free check used by slots (both sides) and right-click equip. */
     public static boolean canEquip(LivingEntity entity, ResourceLocation slot, ItemStack stack) {
-        if (stack.isEmpty() || !slot.equals(slotOf(stack)) || FemboyConfig.common().disabledSlots().contains(slot)) {
+        if (stack.isEmpty() || !slot.equals(slotOf(stack)) || ServerSettings.disabledSlots(entity.level()).contains(slot)) {
             return false;
         }
         return !FemboyMod.api().events().post(new CosmeticEquipEvent(entity, slot, stack)).isCancelled();
@@ -153,13 +157,14 @@ public final class CosmeticsManager {
                     FemboyMod.api().events().post(new CosmeticUnequipEvent(player, slot, previous));
                 }
                 FemboyMod.api().events().post(new CosmeticChangedEvent(player, slot, previous, stack));
-                if (!stack.isEmpty()) {
-                    // Audible feedback; heard by the wearer and players nearby, like equipping armor.
+                if (!stack.isEmpty() && EQUIP_SOUND_TICK.getOrDefault(serverPlayer, -1L) != serverPlayer.level().getGameTime()) {
+                    // Audible feedback, heard by the wearer and players nearby like equipping armor; once a tick at most
+                    EQUIP_SOUND_TICK.put(serverPlayer, serverPlayer.level().getGameTime());
                     player.level().playSound(null, player, SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.PLAYERS,
                             EQUIP_SOUND_VOLUME, EQUIP_SOUND_PITCH);
                 }
             }
-            CosmeticsSyncPayload.sendToTrackingAndSelf(serverPlayer);
+            CosmeticsSyncPayload.markDirty(serverPlayer);
         }
     }
 
@@ -169,12 +174,12 @@ public final class CosmeticsManager {
     public static void setArmorVisibility(ServerPlayer player, net.minecraft.world.entity.EquipmentSlot armorSlot,
                                           dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility visibility) {
         PlatformHelper.setCosmetics(player, PlatformHelper.getCosmetics(player).withArmor(armorSlot, visibility));
-        CosmeticsSyncPayload.sendToTrackingAndSelf(player);
+        CosmeticsSyncPayload.markDirty(player);
     }
 
     public static void setHidden(ServerPlayer player, ResourceLocation slot, boolean hidden) {
         PlatformHelper.setCosmetics(player, PlatformHelper.getCosmetics(player).withHidden(slot, hidden));
-        CosmeticsSyncPayload.sendToTrackingAndSelf(player);
+        CosmeticsSyncPayload.markDirty(player);
     }
 
     public static List<ItemStack> clear(ServerPlayer player) {

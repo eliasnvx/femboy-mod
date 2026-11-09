@@ -18,6 +18,10 @@ import net.minecraft.world.item.ItemStack;
 /** Server logic of Byte Energy: buffs, crash, jitter. All numbers come from data packs. */
 public final class EnergyDrinks {
 
+    /** Players whose ears were told to twitch, until their caffeine is gone. Server thread only. */
+    private static final java.util.Set<java.util.UUID> JITTERING = new java.util.HashSet<>();
+    private static final int EAR_CUE_CHECK = 20;
+
     private EnergyDrinks() {
     }
 
@@ -49,8 +53,36 @@ public final class EnergyDrinks {
             if (log.count() > rules.jitterAfter()) {
                 rules.jitter().forEach(buff -> player.addEffect(buff.instance()));
             }
+            dev.eliasnvx.femboymod.network.EarCuePayload.send(player, dev.eliasnvx.femboymod.network.EarCuePayload.Cue.CAFFEINE,
+                    Math.max(duration, current == null ? 0 : current.getDuration()));
+            JITTERING.add(player.getUUID());
             FemboyMod.api().events().post(new EnergyDrinkEvent(player, can, log.count()));
         }
+    }
+
+    /**
+     * The twitching ears of a caffeinated player for someone who only now sees them (walked up, rejoined): the cue
+     * went out once, when they drank.
+     */
+    public static void resendEarCue(net.minecraft.server.level.ServerPlayer watcher, Player caffeinated) {
+        MobEffectInstance caffeine = caffeinated.getEffect(FemboyEffects.holder(FemboyEffects.CAFFEINATED));
+        if (caffeine != null) {
+            dev.eliasnvx.femboymod.network.EarCuePayload.sendTo(watcher, caffeinated,
+                    dev.eliasnvx.femboymod.network.EarCuePayload.Cue.CAFFEINE, caffeine.getDuration());
+        }
+    }
+
+    /** Stops the twitch for everyone once the caffeine is gone early (milk, death); checked once a second. */
+    public static void checkEarCue(net.minecraft.server.level.ServerPlayer player) {
+        if (player.tickCount % EAR_CUE_CHECK == 0 && JITTERING.contains(player.getUUID())
+                && !player.hasEffect(FemboyEffects.holder(FemboyEffects.CAFFEINATED))) {
+            JITTERING.remove(player.getUUID());
+            dev.eliasnvx.femboymod.network.EarCuePayload.send(player, dev.eliasnvx.femboymod.network.EarCuePayload.Cue.CAFFEINE, 0);
+        }
+    }
+
+    public static void forgetEarCue(net.minecraft.server.level.ServerPlayer player) {
+        JITTERING.remove(player.getUUID());
     }
 
     /** The effect with its duration scaled (chilled cans); infinite effects stay infinite. */

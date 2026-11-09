@@ -21,7 +21,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-/** Mechanical keyboard with a mouse (SPEC v1.1): right-click to clack the keys. */
+/** Mechanical keyboard with a mouse: right-click to clack the keys. */
 public class GamerKeyboardBlock extends HorizontalDirectionalBlock {
 
     public static final MapCodec<GamerKeyboardBlock> CODEC = simpleCodec(GamerKeyboardBlock::new);

@@ -3,9 +3,12 @@ package dev.eliasnvx.femboymod.effect;
 import com.mojang.serialization.MapCodec;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.effect.CosmeticCondition;
+import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.api.registry.ApiRegistry;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -20,6 +23,7 @@ public final class BuiltinConditions {
         registry.register(id("crouching"), Crouching.CODEC);
         registry.register(id("sprinting"), Sprinting.CODEC);
         registry.register(id("night"), Night.CODEC);
+        registry.register(id("no_shoes"), NoShoes.CODEC);
     }
 
     private static ResourceLocation id(String path) {
@@ -41,6 +45,23 @@ public final class BuiltinConditions {
             Level level = player.level();
             BlockPos pos = player.blockPosition();
             return level.getBiome(pos).value().coldEnoughToSnow(pos);
+        }
+    }
+
+    /** Nothing on the feet: the feet slot is empty and no boots are worn (hidden ones count, they're still on). */
+    public enum NoShoes implements CosmeticCondition {
+        INSTANCE;
+        public static final MapCodec<NoShoes> CODEC = MapCodec.unit(INSTANCE);
+
+        @Override
+        public MapCodec<NoShoes> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean test(Player player) {
+            return player.getItemBySlot(EquipmentSlot.FEET).isEmpty()
+                    && CosmeticsManager.worn(player).get(FemboySlots.FEET).isEmpty();
         }
     }
 

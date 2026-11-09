@@ -18,13 +18,20 @@ import net.minecraft.world.item.Items;
 
 /**
  * Server side of printed photos (config {@code photos}). A selfie upload costs paper, respects a cooldown and must
- * decode as a valid picture; the photo item only carries an id, the picture lives in {@link PhotoStore}. Picture
- * requests are rate limited per player.
+ * decode as a valid picture; the photo item only carries an id, the picture lives in {@link PhotoStore}, and
+ * {@link PhotoIndex} keeps the folder within its caps. Picture requests are rate limited per player.
+ *
+ * <p>Decoding (inflating up to 16 KB on the server thread) comes last: the cheap checks (cooldown, paper) go first,
+ * and an upload that fails to decode makes that player wait {@link #BAD_UPLOAD_WAIT} ticks, so a modified client
+ * can't make the server decode a flood of uploads.
  */
 public final class PhotoService {
 
     private static final int TICKS_PER_SECOND = 20;
+    /** After an upload that didn't decode, that player's uploads are ignored this long (anti-spam, not balance). */
+    static final int BAD_UPLOAD_WAIT = 20;
     private static final Map<UUID, Long> LAST_PRINT = new HashMap<>();
+    private static final Map<UUID, Long> LAST_BAD_UPLOAD = new HashMap<>();
     /** Requests per player in the current second: [second, count]. */
     private static final Map<UUID, long[]> REQUESTS = new HashMap<>();
 
@@ -41,32 +48,49 @@ public final class PhotoService {
         if (last != null && now - last < config.cooldownTicks()) {
             return; // the client shows the selfie anyway; just no second print
         }
-        if (PhotoCodec.decode(data).isEmpty()) {
+        Long bad = LAST_BAD_UPLOAD.get(player.getUUID());
+        if (bad != null && now - bad < BAD_UPLOAD_WAIT) {
             return;
         }
         boolean free = player.getAbilities().instabuild || config.paperCost() == 0;
-        if (!free && !takePaper(player.getInventory(), config.paperCost())) {
+        if (!free && !hasPaper(player.getInventory(), config.paperCost())) {
             player.displayClientMessage(Component.translatable("message.femboymod.photo.no_paper", config.paperCost()), true);
+            return; // checked before decoding: without paper nothing gets decoded
+        }
+        if (PhotoCodec.decode(data).isEmpty()) {
+            LAST_BAD_UPLOAD.put(player.getUUID(), now);
             return;
+        }
+        if (!free) {
+            takePaper(player.getInventory(), config.paperCost());
         }
         LAST_PRINT.put(player.getUUID(), now);
         UUID id = UUID.randomUUID();
-        PhotoStore.save(player.getServer(), id, data);
+        MinecraftServer server = player.server;
+        PhotoIndex index = PhotoIndex.get(server); // before saving: its first call lists the folder
+        PhotoStore.save(server, id, data);
+        for (UUID faded : index.add(id, player.getUUID(), config.maxPerPlayer(), config.maxTotal())) {
+            PhotoStore.delete(server, faded);
+        }
         ItemStack photo = new ItemStack(FemboyItems.PHOTO.get());
         photo.set(FemboyComponents.PHOTO.get(), new PhotoData(id, player.getGameProfile().getName()));
         player.getInventory().placeItemBackInInventory(photo); // drops it if the inventory is full
         player.displayClientMessage(Component.translatable("message.femboymod.photo.printed"), true);
     }
 
-    /** Takes {@code count} paper if the player has that much; otherwise takes nothing. */
-    static boolean takePaper(Inventory inventory, int count) {
+    static boolean hasPaper(Inventory inventory, int count) {
         int have = 0;
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             if (inventory.getItem(slot).is(Items.PAPER)) {
                 have += inventory.getItem(slot).getCount();
             }
         }
-        if (have < count) {
+        return have >= count;
+    }
+
+    /** Takes {@code count} paper if the player has that much; otherwise takes nothing. */
+    static boolean takePaper(Inventory inventory, int count) {
+        if (!hasPaper(inventory, count)) {
             return false;
         }
         int left = count;
@@ -93,6 +117,7 @@ public final class PhotoService {
             return; // the client asks again later
         }
         MinecraftServer server = player.getServer();
+        PhotoIndex.get(server).seen(id);
         PhotoStore.load(server, id).thenAccept(data -> server.execute(() -> {
             if (!player.hasDisconnected()) {
                 NetworkManager.sendToPlayer(player, new PhotoPayloads.Picture(id, data.orElse(new byte[0])));
@@ -102,6 +127,7 @@ public final class PhotoService {
 
     public static void forget(ServerPlayer player) {
         LAST_PRINT.remove(player.getUUID());
+        LAST_BAD_UPLOAD.remove(player.getUUID());
         REQUESTS.remove(player.getUUID());
     }
 }

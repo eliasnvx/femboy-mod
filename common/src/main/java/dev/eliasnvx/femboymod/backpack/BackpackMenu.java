@@ -25,7 +25,7 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import java.util.List;
 
 /**
- * Backpack menu (SPEC §5.3). Dupe safety (network-and-storage rules):
+ * Backpack menu. Dupe safety (network-and-storage rules):
  * <ul>
  *     <li>single source of truth: every change is written straight into the backpack item's component;</li>
  *     <li>{@link #stillValid}: the exact backpack stack (identity) must still be where it was opened from;</li>
@@ -165,7 +165,7 @@ public final class BackpackMenu extends AbstractContainerMenu {
                 if (data.worn()) {
                     // charms on the worn backpack change effects and what others see
                     WornEvaluator.invalidate(serverPlayer);
-                    CosmeticsSyncPayload.sendToTrackingAndSelf(serverPlayer);
+                    CosmeticsSyncPayload.markDirty(serverPlayer);
                 }
             }
         }

@@ -19,6 +19,14 @@ final class FemboyClientApiImpl implements FemboyClientApi {
     private final SimpleApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers =
             new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "chat_transformer"));
 
+    private final SimpleApiRegistry<dev.eliasnvx.femboymod.api.client.CosmeticReactionSource> reactionSources =
+            new SimpleApiRegistry<>(ResourceLocation.fromNamespaceAndPath(FemboyMod.MOD_ID, "cosmetic_reaction_source"));
+
+    @Override
+    public ApiRegistry<dev.eliasnvx.femboymod.api.client.CosmeticReactionSource> reactionSources() {
+        return reactionSources;
+    }
+
     @Override
     public ApiRegistry<dev.eliasnvx.femboymod.api.client.ChatTransformer> chatTransformers() {
         return chatTransformers;
@@ -42,5 +50,6 @@ final class FemboyClientApiImpl implements FemboyClientApi {
     void freeze() {
         renderers.freeze();
         chatTransformers.freeze();
+        reactionSources.freeze();
     }
 }

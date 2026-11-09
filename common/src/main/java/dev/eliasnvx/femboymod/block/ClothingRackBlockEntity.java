@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-/** Clothing Rack: shows up to 3 hanging items (SPEC §5.6); Thrifter's job site. Contents drop when broken. */
+/** Clothing Rack: shows up to 3 hanging items; Thrifter's job site. Contents drop when broken. */
 public class ClothingRackBlockEntity extends BlockEntity implements Container {
 
     public static final int SLOTS = 3;

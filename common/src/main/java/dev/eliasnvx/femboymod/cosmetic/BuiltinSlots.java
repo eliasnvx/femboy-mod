@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
-/** Registers the built-in slots of SPEC §4.3 in screen order. */
+/** Registers the built-in slots in screen order. */
 public final class BuiltinSlots {
 
     private static final int STEP = 100;

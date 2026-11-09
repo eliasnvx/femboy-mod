@@ -35,7 +35,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 
 /**
- * Wardrobe (SPEC §4.6): cosmetic slots around a player doll that follows the mouse, a Drip card with the
+ * Wardrobe: cosmetic slots around a player doll that follows the mouse, a Drip card with the
  * level, tier and a progress bar, the active set bonuses, and the player inventory below.
  */
 public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu> {
@@ -93,7 +93,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
                     .build());
         }
         int couponY = topPos + presetsBottom() + STATS_GAP + 2 * LINE;
-        int cost = FemboyConfig.common().stylePoints().couponCost();
+        int cost = dev.eliasnvx.femboymod.config.ServerSettings.client().couponCost(); // the server's price
         addRenderableWidget(Button.builder(Component.translatable("gui.femboymod.outfit.coupon"), b -> click(CosmeticsMenu.REDEEM_BUTTON))
                 .bounds(x, couponY, COUPON_W, PRESET_BUTTON_H)
                 .tooltip(Tooltip.create(Component.translatable("gui.femboymod.outfit.coupon.tooltip", cost)))
@@ -197,7 +197,7 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
         }
     }
 
-    /** Title, the Drip card and the active sets (SPEC §4.6). */
+    /** Title, the Drip card and the active sets. */
     @Override
     protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
         super.renderLabels(g, mouseX, mouseY);
