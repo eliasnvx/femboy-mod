@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Slots of other mods (Curios, Trinkets, Accessories; SPEC §4.3) that may hold our cosmetics. Each installed slot
+ * Slots of other mods (Curios, Trinkets, Accessories) that may hold our cosmetics. Each installed slot
  * mod registers a source from its {@code compat.<modid>} package; {@code CosmeticsManager#worn} merges what they
  * hold into the outfit, so a cosmetic counts and renders the same in their slot as in ours.
  */

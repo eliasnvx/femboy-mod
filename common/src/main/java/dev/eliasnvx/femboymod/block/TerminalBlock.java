@@ -30,7 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Terminal (SPEC v1.1): a retro computer that works as a crafting table. Now and then it reminds its user,
+ * Terminal: a retro computer that works as a crafting table. Now and then it reminds its user,
  * in chat, that they use Terminal btw (cooldown {@code furniture.terminal_btw_cooldown}). Counts as a screen for
  * the setup rating.
  */

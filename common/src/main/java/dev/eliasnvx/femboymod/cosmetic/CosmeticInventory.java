@@ -7,7 +7,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticsView;
+import dev.eliasnvx.femboymod.registry.FemboyComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
@@ -77,6 +80,38 @@ public record CosmeticInventory(Map<ResourceLocation, ItemStack> items, Set<Reso
             }
         });
         armor = java.util.Collections.unmodifiableMap(armorCopy);
+    }
+
+    /**
+     * What other players get to see: the same outfit without what's packed inside (a worn backpack's contents, a
+     * bundle's). Renderers only need the item, its colorway and charms; the contents are private and can be large.
+     */
+    public CosmeticInventory forOthers() {
+        Map<ResourceLocation, ItemStack> visible = new LinkedHashMap<>();
+        items.forEach((slot, stack) -> visible.put(slot, withoutContents(stack)));
+        return new CosmeticInventory(visible, hidden, armor);
+    }
+
+    /**
+     * Vanilla's item list: a bundle's, and a shulker box's under {@code BlockEntityTag}. With our backpack contents
+     * these are what 1.21.1 leaves out as the container and bundle contents components.
+     */
+    private static final String ITEMS = "Items";
+
+    private static ItemStack withoutContents(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        if (tag == null || !tag.contains(FemboyComponents.CONTENTS.key()) && !tag.contains(ITEMS)
+                && !tag.getCompound(BlockItem.BLOCK_ENTITY_TAG).contains(ITEMS)) {
+            return stack;
+        }
+        ItemStack copy = stack.copy();
+        CompoundTag copied = copy.getOrCreateTag();
+        copied.remove(FemboyComponents.CONTENTS.key());
+        copied.remove(ITEMS);
+        if (copied.contains(BlockItem.BLOCK_ENTITY_TAG)) {
+            copied.getCompound(BlockItem.BLOCK_ENTITY_TAG).remove(ITEMS);
+        }
+        return copy;
     }
 
     public CosmeticInventory withArmor(EquipmentSlot slot, ArmorVisibility visibility) {

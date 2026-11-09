@@ -5,12 +5,8 @@ import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.addon.AddonLoader.DiscoveredAddon;
 import dev.eliasnvx.femboymod.api.FemboyAddon;
 import dev.eliasnvx.femboymod.api.RegisterFemboyAddon;
-import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
-import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
-import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
-import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
-import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticsEvents;
 import dev.eliasnvx.femboymod.block.FemboyBlocks;
 import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import net.minecraft.core.registries.Registries;
@@ -21,12 +17,18 @@ import dev.eliasnvx.femboymod.energy.CaffeineLog;
 import dev.eliasnvx.femboymod.profile.ProfileData;
 import dev.eliasnvx.femboymod.energy.CaffeineRules;
 import dev.eliasnvx.femboymod.energy.EnergyDrink;
+import dev.eliasnvx.femboymod.network.SyncedRegistries;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
@@ -74,17 +76,27 @@ public final class PlatformHelperImpl {
         MinecraftForge.EVENT_BUS.addListener(PlatformHelperImpl::onClone);
         // Synced (network codec given) exactly where 1.21.1 synced them
         modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-            event.dataPackRegistry(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC, ColorwayPattern.CODEC);
-            event.dataPackRegistry(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC, CosmeticStats.CODEC);
-            event.dataPackRegistry(LookbookEntry.REGISTRY_KEY, LookbookEntry.CODEC, LookbookEntry.CODEC);
-            event.dataPackRegistry(SetBonus.REGISTRY_KEY, SetBonus.CODEC, SetBonus.CODEC);
-            event.dataPackRegistry(DripRules.REGISTRY_KEY, DripRules.CODEC, DripRules.CODEC);
+            SyncedRegistries.ALL.forEach(entry -> registerSynced(event, entry));
             event.dataPackRegistry(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
             event.dataPackRegistry(dev.eliasnvx.femboymod.food.BubbleTeaFlavor.REGISTRY_KEY, dev.eliasnvx.femboymod.food.BubbleTeaFlavor.CODEC);
             event.dataPackRegistry(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
             event.dataPackRegistry(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
-            event.dataPackRegistry(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
         });
+        // cosmetics join the death drops before anyone else looks at them: grave mods (which read and usually cancel
+        // this event) collect them with the inventory, and a cancelled death never gets here
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, (LivingDropsEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                for (ItemStack stack : CosmeticsEvents.takeDeathDrops(player)) {
+                    ItemEntity drop = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), stack);
+                    drop.setDefaultPickUpDelay();
+                    event.getDrops().add(drop);
+                }
+            }
+        });
+    }
+
+    private static <T> void registerSynced(DataPackRegistryEvent.NewRegistry event, SyncedRegistries.Entry<T> entry) {
+        event.dataPackRegistry(entry.key(), entry.codec(), entry.networkCodec());
     }
 
     /**
@@ -244,5 +256,10 @@ public final class PlatformHelperImpl {
         var channel = player.connection.connection.channel();
         return channel != null && channel.attr(FML_NETVERSION).get() != null
                 && !net.minecraftforge.network.NetworkHooks.isVanillaConnection(player.connection.connection);
+    }
+
+    /** Forge 47's mob griefing event (claim mods answer it); without a mob it reads the plain game rule. */
+    public static boolean canMobGrief(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.Entity mob) {
+        return net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(level, mob);
     }
 }

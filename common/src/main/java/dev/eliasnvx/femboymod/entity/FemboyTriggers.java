@@ -14,7 +14,7 @@ import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * One generic advancement trigger {@code femboymod:event} (SPEC §5.8):
+ * One generic advancement trigger {@code femboymod:event}:
  * {@code {"trigger": "femboymod:event", "conditions": {"event": "confetti_survivor", "min": 1}}}.
  * <p>
  * 1.20.1: there is no trigger registry; triggers go into {@link CriteriaTriggers#register} and read their
@@ -43,6 +43,16 @@ public final class FemboyTriggers {
     public static final String HEADPAT_PLAYER = "headpat_player";
     /** Gave a tamed pet a headpat. */
     public static final String HEADPAT_PET = "headpat_pet";
+    /** Coasted across a polished floor in socks. */
+    public static final String SOCK_DRIFT = "sock_drift";
+    /** Watched a cat push something off a table. */
+    public static final String CAT_MISCHIEF = "cat_mischief";
+    /** A Debug Flytrap ate a bug near the player. */
+    public static final String FLYTRAP_SNACK = "flytrap_snack";
+    /** Touched grass (or Potted Grass) with an empty hand. */
+    public static final String TOUCH_GRASS = "touch_grass";
+    /** Fed a cat catnip. */
+    public static final String CATNIP = "catnip";
 
     public static final ResourceLocation EVENT_ID = new ResourceLocation(FemboyMod.MOD_ID, "event");
     private static final String EVENT_KEY = "event";

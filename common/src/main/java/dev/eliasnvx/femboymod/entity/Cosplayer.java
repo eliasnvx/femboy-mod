@@ -9,7 +9,7 @@ import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 
 /**
- * Wandering Cosplayer (SPEC v1.2): a rare travelling trader in costume. Sells cosmetics in colorways found nowhere
+ * Wandering Cosplayer: a rare travelling trader in costume. Sells cosmetics in colorways found nowhere
  * else (trade set {@code cosplayer/exclusive}) plus a few everyday goodies ({@code cosplayer/common}), mostly for
  * Style Coupons. Behaves like the wandering trader: wanders around, leaves after a while.
  */

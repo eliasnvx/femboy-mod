@@ -84,6 +84,10 @@ public final class FemboyMod {
         dev.eliasnvx.femboymod.pet.PetOutfits.init();
         dev.eliasnvx.femboymod.halloween.TrickOrTreat.init();
         dev.eliasnvx.femboymod.social.Headpats.init();
+        dev.eliasnvx.femboymod.social.TouchGrass.init();
+        dev.eliasnvx.femboymod.cosmetic.PvpCombat.init();
+        dev.eliasnvx.femboymod.network.ServerSettingsPayload.init();
+        dev.eliasnvx.femboymod.entity.Catnip.init();
         CommandRegistrationEvent.EVENT.register(FemboyCommands::register);
 
         AdvancementHooks.register(api.events());

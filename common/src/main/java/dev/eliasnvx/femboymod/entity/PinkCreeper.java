@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 /**
- * Pink Creeper (SPEC §5.4): hisses like a creeper, but bursts into confetti and hearts. No block damage,
+ * Pink Creeper: hisses like a creeper, but bursts into confetti and hearts. No block damage,
  * players take 0 damage by default (config), everything nearby gets a playful push.
  * The vanilla explosion is replaced by {@code CreeperMixin} calling {@link #confettiBurst}.
  */

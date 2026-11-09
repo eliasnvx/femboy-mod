@@ -55,7 +55,7 @@ final class CreativeTabContents {
             "gamer_chair", "bean_bag", "pet_bed",
             "gamer_monitor", "gamer_keyboard", "terminal", "vibe_scanner",
             "led_strip", "neon_sign", "moonstone_lamp", "fairy_lights", "lava_lamp",
-            "fluffy_rug", "shark_plush", "cat_plush", "creeper_plush", "rubber_duck");
+            "fluffy_rug", "shark_plush", "cat_plush", "creeper_plush", "rubber_duck", "debug_flytrap", "catnip");
     /** Each material next to its ore and blocks. */
     private static final List<String> MATERIALS_ORDER = List.of(
             "rose_quartz_ore", "deepslate_rose_quartz_ore", "rose_quartz", "rose_quartz_block", "budding_rose_quartz",

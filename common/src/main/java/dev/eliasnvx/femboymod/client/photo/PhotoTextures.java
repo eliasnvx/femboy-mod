@@ -8,7 +8,9 @@ import dev.eliasnvx.femboymod.photo.PhotoCodec;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +19,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Client cache of photo pictures as textures ({@code femboymod:photo/<id>}). The first look at a photo asks the
  * server for it; until it arrives (or if the server has none) {@link #texture} returns null and the photo shows as
- * still developing. At most {@link #MAX_TEXTURES} stay loaded; the least recently drawn go first.
+ * still developing. At most {@link #MAX_TEXTURES} stay loaded; the least recently drawn go first, but never one
+ * drawn this tick or the last: with more photos in view than that, the extra ones stay developing instead of
+ * evicting each other every frame (and asking the server again and again).
  */
 public final class PhotoTextures {
 
@@ -29,9 +33,11 @@ public final class PhotoTextures {
         @Nullable ResourceLocation texture;
         boolean missing;
         long requestedAt;
+        long drawnAt;
     }
 
     private static final Map<UUID, Entry> ENTRIES = new LinkedHashMap<>(16, 0.75F, true);
+    private static final Set<UUID> FADED = ConcurrentHashMap.newKeySet();
     private static long ticks;
 
     private PhotoTextures() {
@@ -45,13 +51,16 @@ public final class PhotoTextures {
     public static @Nullable ResourceLocation texture(UUID id) {
         Entry entry = ENTRIES.get(id);
         if (entry == null) {
+            if (ENTRIES.size() >= MAX_TEXTURES && !evictOne()) {
+                return null; // all in view right now: this one waits, still developing
+            }
             entry = new Entry();
             ENTRIES.put(id, entry);
             request(id, entry);
-            evict();
         } else if (entry.texture == null && !entry.missing && ticks - entry.requestedAt > RETRY_TICKS) {
             request(id, entry);
         }
+        entry.drawnAt = ticks;
         return entry.texture;
     }
 
@@ -71,6 +80,7 @@ public final class PhotoTextures {
         int[] pixels = PhotoCodec.decode(data).orElse(null);
         if (pixels == null) {
             entry.missing = true;
+            FADED.add(id);
             return;
         }
         NativeImage image = new NativeImage(PhotoCodec.SIZE, PhotoCodec.SIZE, false);
@@ -87,15 +97,29 @@ public final class PhotoTextures {
         return argb & 0xFF00FF00 | (argb & 0xFF) << 16 | argb >> 16 & 0xFF;
     }
 
-    private static void evict() {
+    /**
+     * Whether the server said it has no picture for this photo (it faded, or the world lost it). Safe off the render
+     * thread (tooltips may be built elsewhere, e.g. for recipe viewer search).
+     */
+    public static boolean faded(UUID id) {
+        return FADED.contains(id);
+    }
+
+    /** Frees the least recently drawn entry, unless it was drawn this tick or the last. */
+    private static boolean evictOne() {
         Iterator<Map.Entry<UUID, Entry>> it = ENTRIES.entrySet().iterator();
-        while (ENTRIES.size() > MAX_TEXTURES && it.hasNext()) {
-            Entry eldest = it.next().getValue();
-            if (eldest.texture != null) {
-                Minecraft.getInstance().getTextureManager().release(eldest.texture);
-            }
-            it.remove();
+        if (!it.hasNext()) {
+            return true;
         }
+        Entry eldest = it.next().getValue();
+        if (ticks - eldest.drawnAt <= 1) {
+            return false;
+        }
+        if (eldest.texture != null) {
+            Minecraft.getInstance().getTextureManager().release(eldest.texture);
+        }
+        it.remove();
+        return true;
     }
 
     /** Leaving a world: pictures belong to that server. */
@@ -106,5 +130,6 @@ public final class PhotoTextures {
             }
         }
         ENTRIES.clear();
+        FADED.clear();
     }
 }

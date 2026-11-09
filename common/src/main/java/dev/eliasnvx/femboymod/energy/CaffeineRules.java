@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import java.util.List;
 
 /**
- * Crash and jitter tuning (SPEC §5.2), data pack registry {@code femboymod:caffeine}; entry {@code femboymod:default}.
+ * Crash and jitter tuning, data pack registry {@code femboymod:caffeine}; entry {@code femboymod:default}.
  *
  * @param crash         effects applied when the caffeine wears off
  * @param jitterWindow  window in ticks for counting cans

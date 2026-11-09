@@ -51,7 +51,7 @@ public final class FemboyItems {
     static final List<RegistrySupplier<Item>> TAB_ORDER = new ArrayList<>();
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(FemboyMod.MOD_ID, Registries.CREATIVE_MODE_TAB);
 
-    // SPEC §5.1. Balance lives in data/femboymod/femboymod/cosmetic_stats/<item>.json, not here.
+    // Cosmetics. Balance lives in data/femboymod/femboymod/cosmetic_stats/<item>.json, not here.
     public static final RegistrySupplier<Item> CAT_EARS = cosmetic("cat_ears", FemboySlots.HEAD_ACCESSORY);
     public static final RegistrySupplier<Item> TAIL = cosmetic("tail", FemboySlots.TAIL);
     public static final RegistrySupplier<Item> FOX_EARS = cosmetic("fox_ears", FemboySlots.HEAD_ACCESSORY);
@@ -66,7 +66,7 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> PROGRAMMING_SOCKS = cosmetic("programming_socks", FemboySlots.LEGS_OVERLAY);
     public static final RegistrySupplier<Item> FISHNET_TIGHTS = cosmetic("fishnet_tights", FemboySlots.LEGS_OVERLAY);
     public static final RegistrySupplier<Item> UWU_CHOKER = cosmetic("uwu_choker", FemboySlots.NECK);
-    // SPEC v1.1 clothing
+    // Clothing
     public static final RegistrySupplier<Item> CAT_EAR_HEADPHONES = cosmetic("cat_ear_headphones", FemboySlots.HEAD_ACCESSORY);
     public static final RegistrySupplier<Item> HEART_GLASSES = cosmetic("heart_glasses", FemboySlots.FACE);
     public static final RegistrySupplier<Item> ARM_WARMERS = cosmetic("arm_warmers", FemboySlots.HANDS);
@@ -99,7 +99,7 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> BELL_COLLAR = petOutfit("bell_collar", PetOutfitItem.Slot.NECK);
     public static final RegistrySupplier<Item> PET_BANDANA = petOutfit("pet_bandana", PetOutfitItem.Slot.NECK);
 
-    // SPEC §5.3: backpacks (worn in the back slot) and charms
+    // Backpacks (worn in the back slot) and charms
     public static final RegistrySupplier<Item> CANVAS_BACKPACK = backpack("canvas_backpack", 1, false);
     public static final RegistrySupplier<Item> LEATHER_BACKPACK = backpack("leather_backpack", 2, false);
     public static final RegistrySupplier<Item> NETHERITE_BACKPACK = backpack("netherite_backpack", 3, true);
@@ -107,10 +107,10 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> CAT_PAW_CHARM = register("cat_paw_charm", props -> new Item(props.stacksTo(1)));
     public static final RegistrySupplier<Item> HEART_PIN = register("heart_pin", props -> new Item(props.stacksTo(1)));
     public static final RegistrySupplier<Item> ENERGY_CAN_CHARM = register("energy_can_charm", props -> new Item(props.stacksTo(1)));
-    /** Pride flag badge (SPEC v1.1): a charm whose flag is its colorway pattern. */
+    /** Pride flag badge: a charm whose flag is its colorway pattern. */
     public static final RegistrySupplier<Item> PRIDE_BADGE = register("pride_badge", props -> new Item(props.stacksTo(1)));
 
-    // SPEC §5.2: Byte Energy (balance in data/femboymod/femboymod/energy_drink/*.json)
+    // Byte Energy (balance in data/femboymod/femboymod/energy_drink/*.json)
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(FemboyMod.MOD_ID, Registries.BLOCK);
     public static final RegistrySupplier<Block> EMPTY_ENERGY_CAN_BLOCK = BLOCKS.register("empty_energy_can", () -> new EmptyCanBlock(
             // DESTROY: a piston pops the can off and drops it (26.3: PushReaction.POPPED)
@@ -123,7 +123,7 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> BYTE_ENERGY_PURPLE = energyDrink("byte_energy_purple");
     public static final RegistrySupplier<Item> BYTE_ENERGY_RAINBOW = energyDrink("byte_energy_rainbow");
 
-    /** Photo Mode (SPEC v1.1): selfie with a frame and watermark. */
+    /** Photo Mode: selfie with a frame and watermark. */
     public static final RegistrySupplier<Item> PHONE = register("phone", props -> new PhoneItem(props.stacksTo(1)));
     /** Guide book: every cosmetic, where to get it, what you've collected. */
     public static final RegistrySupplier<Item> LOOKBOOK = register("lookbook", props -> new LookbookItem(props.stacksTo(1)));
@@ -134,7 +134,7 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> PHOTO = register("photo",
             props -> dev.eliasnvx.femboymod.platform.PlatformHelper.createPhotoItem(props.stacksTo(16)));
 
-    // SPEC v1.1: food. Nutrition like comparable vanilla food; buffs are data-driven (bubble_tea_flavor)
+    // Food. Nutrition like comparable vanilla food; buffs are data-driven (bubble_tea_flavor)
     public static final RegistrySupplier<Item> BUBBLE_TEA = register("bubble_tea", props -> new BubbleTeaItem(props.stacksTo(FemboyItems.DRINK_STACK)
             .food(new FoodProperties.Builder().nutrition(4).saturationMod(0.3F).alwaysEat().build()), () -> Items.GLASS_BOTTLE));
     public static final RegistrySupplier<Item> STRAWBERRY_MILK = register("strawberry_milk", props -> new StrawberryMilkItem(props.stacksTo(FemboyItems.DRINK_STACK)
@@ -144,7 +144,7 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> ONIGIRI = register("onigiri", props -> new Item(props
             .food(new FoodProperties.Builder().nutrition(6).saturationMod(0.7F).build())));
 
-    // SPEC §5.4: Pink Creeper drops and spawn egg
+    // Pink Creeper drops and spawn egg
     public static final RegistrySupplier<Item> GLITTER = register("glitter", props -> new Item(props));
     /** Bought with Style Points (Outfit screen), spent at the Thrifter; tradeable between players. */
     public static final RegistrySupplier<Item> STYLE_COUPON = register("style_coupon", props -> new Item(props));
@@ -169,7 +169,7 @@ public final class FemboyItems {
     /** Dropped by Sock Goblins; two make a pair of Programming Socks. */
     public static final RegistrySupplier<Item> LOST_SOCK = register("lost_sock", props -> new Item(props));
 
-    /** Hair clip shapes (SPEC §5.1: "10 forms"); all share the hair_clip renderer. */
+    /** Hair clip shapes; all share the hair_clip renderer. */
     public static final List<String> HAIR_CLIP_SHAPES = List.of(
             "heart", "star", "bow", "flower", "moon", "cherry", "bunny", "fish", "lightning", "butterfly");
     public static final List<RegistrySupplier<Item>> HAIR_CLIPS = HAIR_CLIP_SHAPES.stream()

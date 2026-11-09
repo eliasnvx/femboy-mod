@@ -9,6 +9,7 @@ import net.minecraftforge.event.RegisterGameTestsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.gametest.ForgeGameTestHooks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public final class FemboyGameTestsForge {
 
-    /** Only for the Curios check; the shared tests bring their own ({@link CosmeticGameTests.Entry#maxTicks()}). */
+    /** Only for the Forge-only checks; the shared tests bring their own ({@link CosmeticGameTests.Entry#maxTicks()}). */
     private static final int MAX_TICKS = CosmeticGameTests.Entry.DEFAULT_MAX_TICKS;
     private static final long SETUP_TICKS = 0L;
     /** 8x8x8 of air in {@code data/femboymod/structures/empty.nbt}, the same size as Fabric's empty template. */
@@ -41,9 +42,12 @@ public final class FemboyGameTestsForge {
             return List.of(new TestFunction(FemboyMod.MOD_ID, FemboyMod.MOD_ID + ".curios_slots_count_as_worn", EMPTY_STRUCTURE,
                     MAX_TICKS, SETUP_TICKS, true, dev.eliasnvx.femboymod.compat.curios.CuriosGameTest::cosmeticsInCuriosSlotsCount));
         }
-        return CosmeticGameTests.all().stream()
+        List<TestFunction> tests = new ArrayList<>(CosmeticGameTests.all().stream()
                 .map(entry -> new TestFunction(FemboyMod.MOD_ID, FemboyMod.MOD_ID + "." + entry.name(), EMPTY_STRUCTURE,
                         entry.maxTicks(), SETUP_TICKS, true, entry.body()))
-                .toList();
+                .toList());
+        tests.add(new TestFunction(FemboyMod.MOD_ID, FemboyMod.MOD_ID + ".grave_mods_collect_cosmetics", EMPTY_STRUCTURE,
+                MAX_TICKS, SETUP_TICKS, true, GraveDropsGameTest::graveModsCollectCosmetics));
+        return tests;
     }
 }

@@ -1,0 +1,6 @@
+{
+  "items": ["femboymod:wolf_ears"],
+  "radius": 16,
+  "notices_first": ["#minecraft:skeletons"],
+  "notices_first_radius": 24
+}

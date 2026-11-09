@@ -16,6 +16,15 @@
         "amount": 0.03,
         "operation": "add_multiplied_base"
       }
+    },
+    {
+      "effect": {
+        "type": "femboymod:slide",
+        "grip": 0.2
+      },
+      "when": {
+        "type": "femboymod:no_shoes"
+      }
     }
   ]
 }

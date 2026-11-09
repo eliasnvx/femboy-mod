@@ -91,6 +91,16 @@ public class SockGoblin extends Monster {
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
     }
 
+    /** Goblins wear socks too: on polished floors they slide (easier to catch indoors). */
+    @Override
+    public void aiStep() {
+        if (!level().isClientSide()) {
+            dev.eliasnvx.femboymod.effect.SockSlide.setGrip(this, dev.eliasnvx.femboymod.effect.SockSlide.onSlipperyFloor(this)
+                    ? dev.eliasnvx.femboymod.config.FemboyConfig.common().mobs().sockGoblinSlideGrip() : 1.0F);
+        }
+        super.aiStep();
+    }
+
     /** Holding someone's socks. */
     public boolean hasLoot() {
         return !getMainHandItem().isEmpty();

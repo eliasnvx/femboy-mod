@@ -3,12 +3,9 @@ package dev.eliasnvx.femboymod.platform.fabric;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.addon.AddonLoader.DiscoveredAddon;
 import dev.eliasnvx.femboymod.api.FemboyAddon;
-import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
-import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
-import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
-import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
-import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticsEvents;
+import dev.eliasnvx.femboymod.network.SyncedRegistries;
 import dev.eliasnvx.femboymod.block.FemboyBlocks;
 import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import dev.eliasnvx.femboymod.energy.CaffeineLog;
@@ -17,10 +14,12 @@ import dev.eliasnvx.femboymod.energy.CaffeineRules;
 import dev.eliasnvx.femboymod.energy.EnergyDrink;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -65,16 +64,23 @@ public final class PlatformHelperImpl {
 
     /** Registers loader-side content; must run before {@link FemboyMod#init()}. */
     public static void init() {
-        DynamicRegistries.registerSynced(ColorwayPattern.REGISTRY_KEY, ColorwayPattern.CODEC);
-        DynamicRegistries.registerSynced(CosmeticStats.REGISTRY_KEY, CosmeticStats.CODEC);
-        DynamicRegistries.registerSynced(LookbookEntry.REGISTRY_KEY, LookbookEntry.CODEC);
-        DynamicRegistries.registerSynced(SetBonus.REGISTRY_KEY, SetBonus.CODEC);
-        DynamicRegistries.registerSynced(DripRules.REGISTRY_KEY, DripRules.CODEC);
+        SyncedRegistries.ALL.forEach(PlatformHelperImpl::registerSynced);
         DynamicRegistries.register(EnergyDrink.REGISTRY_KEY, EnergyDrink.CODEC);
         DynamicRegistries.register(dev.eliasnvx.femboymod.food.BubbleTeaFlavor.REGISTRY_KEY, dev.eliasnvx.femboymod.food.BubbleTeaFlavor.CODEC);
         DynamicRegistries.register(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
         DynamicRegistries.register(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
-        DynamicRegistries.registerSynced(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
+        // right after the vanilla death loot (0.92 fires it in ServerPlayer#die after dropAllDeathLoot), and only for
+        // a death that happened: a death another mod cancels keeps the outfit. Fabric has no shared drops event, so
+        // grave mods only collect these if they support the mod.
+        ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+            if (entity instanceof ServerPlayer player) {
+                CosmeticsEvents.dropOnDeath(player);
+            }
+        });
+    }
+
+    private static <T> void registerSynced(SyncedRegistries.Entry<T> entry) {
+        DynamicRegistries.registerSynced(entry.key(), entry.codec(), entry.networkCodec());
     }
 
     public static List<DiscoveredAddon> discoverAddons() {
@@ -145,5 +151,9 @@ public final class PlatformHelperImpl {
 
     public static boolean canReceive(net.minecraft.server.level.ServerPlayer player, net.minecraft.resources.ResourceLocation id) {
         return dev.architectury.networking.NetworkManager.canPlayerReceive(player, id);
+    }
+
+    public static boolean canMobGrief(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.Entity mob) {
+        return level.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING);
     }
 }

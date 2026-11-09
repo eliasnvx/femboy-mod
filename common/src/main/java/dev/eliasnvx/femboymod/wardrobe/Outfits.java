@@ -46,6 +46,9 @@ public final class Outfits {
             if (ItemStack.isSameItemSameTags(wanted, worn) || (wanted.isEmpty() && worn.isEmpty())) {
                 continue;
             }
+            if (!wanted.isEmpty() && !CosmeticsManager.canEquip(player, slot, wanted)) {
+                continue; // a disabled slot, or an addon said no: same rules as putting it on by hand
+            }
             ItemStack found = wanted.isEmpty() ? ItemStack.EMPTY : take(wardrobe, wanted);
             if (!wanted.isEmpty() && found.isEmpty()) {
                 found = take(player.getInventory(), wanted);

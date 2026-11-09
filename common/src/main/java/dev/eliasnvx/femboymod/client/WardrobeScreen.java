@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-/** Wardrobe screen: storage + a side panel with 5 presets ("put on" / "save") and the Drip Level (SPEC §6.1). */
+/** Wardrobe screen: storage + a side panel with 5 presets ("put on" / "save") and the Drip Level. */
 public final class WardrobeScreen extends AbstractContainerScreen<WardrobeMenu> {
 
     private static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/container/generic_54.png");

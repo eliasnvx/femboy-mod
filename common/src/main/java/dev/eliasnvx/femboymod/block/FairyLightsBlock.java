@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Fairy Lights: a garland of small bulbs hung on a wall, sagging from edge to edge so neighbours join into one string.
- * Right-click cycles the bulbs: warm white, pink, pastel colors. Steady light, no blinking (SPEC §1.1).
+ * Right-click cycles the bulbs: warm white, pink, pastel colors. Steady light, no blinking.
  */
 public class FairyLightsBlock extends HorizontalDirectionalBlock {
 

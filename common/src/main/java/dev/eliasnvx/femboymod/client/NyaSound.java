@@ -9,7 +9,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 
-/** "Nya" when jumping in the full set (SPEC §5.7). Off by default; only you hear it. */
+/** "Nya" when jumping in the full set. Off by default; only you hear it. */
 public final class NyaSound {
 
     private static final ResourceLocation FULL_SET = new ResourceLocation(FemboyMod.MOD_ID, "full_femboy_mode");

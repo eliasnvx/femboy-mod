@@ -10,7 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-/** Right-click opens the backpack; sneak + right-click puts it on (back slot). SPEC §5.3. */
+/** Right-click opens the backpack; sneak + right-click puts it on (back slot). */
 public class BackpackItem extends Item implements DyeableLeatherItem {
 
     public BackpackItem(Properties properties) {

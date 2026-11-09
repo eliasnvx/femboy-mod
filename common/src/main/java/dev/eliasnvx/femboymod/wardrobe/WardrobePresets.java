@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * A player's saved outfits (SPEC §6.1): up to {@link #COUNT} presets, each a map slot → item (count 1).
+ * A player's saved outfits: up to {@link #COUNT} presets, each a map slot → item (count 1).
  * Stored as a player attachment (not in the wardrobe block), so presets work with any wardrobe.
  */
 public record WardrobePresets(Map<String, Map<ResourceLocation, ItemStack>> presets) {

@@ -14,6 +14,8 @@ public final class ModelColors {
 
     private static final int OPAQUE_ALPHA = 0xFF000000;
     private static final float CHANNEL_MAX = 255.0F;
+    private static final int ALPHA_SHIFT = 24;
+    private static final int RGB_MASK = 0xFFFFFF;
 
     private ModelColors() {
     }
@@ -21,6 +23,11 @@ public final class ModelColors {
     /** @return {@code rgb} with full alpha (1.21's {@code ARGB.opaque}) */
     public static int opaque(int rgb) {
         return rgb | OPAQUE_ALPHA;
+    }
+
+    /** @return {@code rgb} with the given alpha (0..255), 1.21's {@code ARGB32.color(alpha, rgb)} */
+    public static int withAlpha(int alpha, int rgb) {
+        return alpha << ALPHA_SHIFT | rgb & RGB_MASK;
     }
 
     public static void render(ModelPart part, PoseStack pose, VertexConsumer buffer, int light, int overlay, int argb) {

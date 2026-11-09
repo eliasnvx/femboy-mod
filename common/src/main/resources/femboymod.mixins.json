@@ -28,6 +28,8 @@
     "LivingEntityAttributesMixin",
     "RecipeResultNbtMixin",
     "ServerGamePacketListenerAccessor",
-    "PetBedGoalsMixin"
+    "PetBedGoalsMixin",
+    "LivingEntitySlideMixin",
+    "EntityMovementAccessor"
   ]
 }

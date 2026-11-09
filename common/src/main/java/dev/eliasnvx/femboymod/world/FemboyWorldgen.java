@@ -11,8 +11,8 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 /**
- * Ore generation. Vein sizes, counts and heights are data-driven
- * ({@code data/femboymod/worldgen/{feature,placed_feature}}); the biomes are the tags below.
+ * Ore and plant generation. Vein sizes, patch sizes, counts and heights are data-driven
+ * ({@code data/femboymod/worldgen/{configured_feature,placed_feature}}); the biomes are the tags below.
  */
 public final class FemboyWorldgen {
 
@@ -32,6 +32,13 @@ public final class FemboyWorldgen {
     /** Neon quartz: the Nether. */
     public static final TagKey<Biome> HAS_NEON_QUARTZ_ORE = biomeTag("has_neon_quartz_ore");
 
+    /** Debug Flytrap patches: swamps. Catnip patches: plains and meadows. */
+    public static final TagKey<Biome> HAS_DEBUG_FLYTRAP = biomeTag("has_debug_flytrap");
+    public static final TagKey<Biome> HAS_CATNIP = biomeTag("has_catnip");
+    /** 1.20.1 patches are {@code minecraft:random_patch} features (26.3 spells the same spread out as placements). */
+    public static final ResourceKey<PlacedFeature> PATCH_DEBUG_FLYTRAP = placed("patch_debug_flytrap");
+    public static final ResourceKey<PlacedFeature> PATCH_CATNIP = placed("patch_catnip");
+
     private FemboyWorldgen() {
     }
 
@@ -46,6 +53,10 @@ public final class FemboyWorldgen {
                 props.getGenerationProperties().addFeature(GenerationStep.Decoration.UNDERGROUND_DECORATION, ORE_NEON_QUARTZ));
         BiomeModifications.addProperties(ctx -> ctx.hasTag(HAS_ROSE_QUARTZ_GEODE), (ctx, props) ->
                 props.getGenerationProperties().addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS, ROSE_QUARTZ_GEODE));
+        BiomeModifications.addProperties(ctx -> ctx.hasTag(HAS_DEBUG_FLYTRAP), (ctx, props) ->
+                props.getGenerationProperties().addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, PATCH_DEBUG_FLYTRAP));
+        BiomeModifications.addProperties(ctx -> ctx.hasTag(HAS_CATNIP), (ctx, props) ->
+                props.getGenerationProperties().addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, PATCH_CATNIP));
     }
 
     private static TagKey<Biome> biomeTag(String name) {

@@ -11,10 +11,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /** Emotes: the player asks to play one (C2S); the server shows it to everyone tracking them and to themselves (S2C). */
 public final class EmotePayloads {
+
+    /** When each player's current wheel emote ends (game time). Server thread only; cleared on logout. */
+    private static final Map<UUID, Long> PLAYING_UNTIL = new HashMap<>();
 
     private static final int HEART_COUNT = 5;
 
@@ -43,7 +49,7 @@ public final class EmotePayloads {
             context.queue(() -> {
                 Emote emote = Emote.byId(payload.emote());
                 if (context.getPlayer() instanceof ServerPlayer player && !player.isSpectator() && player.isAlive() && emote.inWheel()) {
-                    play(player, emote);
+                    tryPlay(player, emote);
                 }
             });
         }
@@ -71,6 +77,25 @@ public final class EmotePayloads {
         public static void handle(Show payload, NetworkManager.PacketContext context) {
             context.queue(() -> EmoteClientHooks.onShow.accept(payload.entityId(), Emote.byId(payload.emote())));
         }
+    }
+
+    /**
+     * Server, from the wheel: plays the emote unless the player's last one is still playing. Every emote goes out to
+     * everyone around (heart hands with particles too), so a client spamming the packet is held to one at a time.
+     */
+    public static boolean tryPlay(ServerPlayer player, Emote emote) {
+        long now = player.level().getGameTime();
+        Long until = PLAYING_UNTIL.get(player.getUUID());
+        if (until != null && now < until) {
+            return false;
+        }
+        PLAYING_UNTIL.put(player.getUUID(), now + emote.durationTicks());
+        play(player, emote);
+        return true;
+    }
+
+    public static void forget(ServerPlayer player) {
+        PLAYING_UNTIL.remove(player.getUUID());
     }
 
     /** Server: broadcast the emote; heart hands also send up a few hearts. */
