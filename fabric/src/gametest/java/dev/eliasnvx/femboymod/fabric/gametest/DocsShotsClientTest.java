@@ -26,7 +26,7 @@ import net.minecraft.world.item.component.ItemContainerContents;
 /**
  * Screenshots for the README and the mod pages (docs/images). Skipped unless {@code FEMBOYMOD_DOCS_SHOTS=1}:
  * {@code FEMBOYMOD_DOCS_SHOTS=1 ./gradlew :fabric:runClientGameTest}, then {@code python3 tools/docs/make_readme_images.py}.
- * Real in-game renders only (no AI images on pages, AGENTS.md).
+ * Real in-game renders only.
  */
 public final class DocsShotsClientTest implements FabricClientGameTest {
 
@@ -211,7 +211,7 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
         }
     }
 
-    private static void cmd(TestSingleplayerContext world, String command) {
+    static void cmd(TestSingleplayerContext world, String command) {
         world.getServer().runCommand(command);
     }
 
@@ -236,11 +236,11 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
         context.runOnClient(mc -> mc.gui.hud.toggle());
     }
 
-    private interface Dresser {
+    interface Dresser {
         void dress(ServerPlayer player);
     }
 
-    private static void outfit(TestSingleplayerContext world, Dresser dresser) {
+    static void outfit(TestSingleplayerContext world, Dresser dresser) {
         world.getServer().runOnServer(server -> {
             ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
             for (var slot : CosmeticsManager.orderedSlots()) {
@@ -251,17 +251,17 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
         });
     }
 
-    private static void wear(ServerPlayer player, Identifier slot, ItemStack stack) {
+    static void wear(ServerPlayer player, Identifier slot, ItemStack stack) {
         CosmeticsManager.set(player, slot, stack);
     }
 
-    private static ItemStack colored(Item item, int rgb) {
+    static ItemStack colored(Item item, int rgb) {
         ItemStack stack = new ItemStack(item);
         stack.set(FemboyComponents.COLORWAY.get(), Colorway.solid(rgb));
         return stack;
     }
 
-    private static ItemStack patterned(MinecraftServer server, Item item, String pattern, int base) {
+    static ItemStack patterned(MinecraftServer server, Item item, String pattern, int base) {
         ItemStack stack = new ItemStack(item);
         server.registryAccess().lookupOrThrow(ColorwayPattern.REGISTRY_KEY)
                 .get(ResourceKey.create(ColorwayPattern.REGISTRY_KEY, Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, pattern)))
@@ -269,7 +269,7 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
         return stack;
     }
 
-    private static ItemStack backpack(MinecraftServer server) {
+    static ItemStack backpack(MinecraftServer server) {
         ItemStack backpack = colored(FemboyItems.CANVAS_BACKPACK.get(), 0xF4A6C8);
         ItemStack badge = patterned(server, FemboyItems.PRIDE_BADGE.get(), "pride_trans", 0xFFFFFF);
         backpack.set(FemboyComponents.CHARMS.get(), ItemContainerContents.fromItems(List.of(badge,
@@ -313,7 +313,7 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
     }
 
     /** Removes entities without death poofs or drops (tp below the world). */
-    private static void gone(TestSingleplayerContext world, String type) {
+    static void gone(TestSingleplayerContext world, String type) {
         cmd(world, "tp @e[type=" + type + "] ~ -200 ~");
         cmd(world, "kill @e[type=minecraft:item]");
     }

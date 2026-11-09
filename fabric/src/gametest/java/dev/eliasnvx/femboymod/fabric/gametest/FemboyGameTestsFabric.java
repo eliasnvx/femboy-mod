@@ -3,6 +3,10 @@ package dev.eliasnvx.femboymod.fabric.gametest;
 import dev.eliasnvx.femboymod.gametest.BackpackGameTests;
 import dev.eliasnvx.femboymod.gametest.CosmeticGameTests;
 import dev.eliasnvx.femboymod.gametest.DecorGameTests;
+import dev.eliasnvx.femboymod.gametest.SockSlideGameTests;
+import dev.eliasnvx.femboymod.gametest.CatMischiefGameTests;
+import dev.eliasnvx.femboymod.gametest.PlantGameTests;
+import dev.eliasnvx.femboymod.gametest.NetworkGameTests;
 import dev.eliasnvx.femboymod.gametest.ExternalSlotsGameTests;
 import dev.eliasnvx.femboymod.gametest.FeetSlotGameTests;
 import dev.eliasnvx.femboymod.gametest.FriendsGameTests;
@@ -42,6 +46,16 @@ public final class FemboyGameTestsFabric {
     @GameTest
     public void deathDropsCosmetics(GameTestHelper helper) {
         CosmeticGameTests.deathDropsCosmetics(helper);
+    }
+
+    @GameTest
+    public void realDeathDropsCosmetics(GameTestHelper helper) {
+        CosmeticGameTests.realDeathDropsCosmetics(helper);
+    }
+
+    @GameTest
+    public void cancelledDeathKeepsCosmetics(GameTestHelper helper) {
+        CosmeticGameTests.cancelledDeathKeepsCosmetics(helper);
     }
 
     @GameTest
@@ -157,6 +171,121 @@ public final class FemboyGameTestsFabric {
     @GameTest
     public void platformSneakersStepUp(GameTestHelper helper) {
         FeetSlotGameTests.platformSneakersStepUp(helper);
+    }
+
+    @GameTest
+    public void socksSlideOnlyWithoutShoes(GameTestHelper helper) {
+        SockSlideGameTests.socksSlideOnlyWithoutShoes(helper);
+    }
+
+    @GameTest
+    public void goblinsSlideOnPolishedFloors(GameTestHelper helper) {
+        SockSlideGameTests.goblinsSlideOnPolishedFloors(helper);
+    }
+
+    @GameTest
+    public void knockedPotComesOffAsItsDrops(GameTestHelper helper) {
+        CatMischiefGameTests.knockedPotComesOffAsItsDrops(helper);
+    }
+
+    @GameTest
+    public void catKnockableHasNoBlockEntities(GameTestHelper helper) {
+        CatMischiefGameTests.catKnockableHasNoBlockEntities(helper);
+    }
+
+    @GameTest
+    public void catMischiefNeedsTheGameRules(GameTestHelper helper) {
+        CatMischiefGameTests.catMischiefNeedsTheGameRules(helper);
+    }
+
+    @GameTest(maxTicks = 300)
+    public void catKnocksAPotOffTheTable(GameTestHelper helper) {
+        CatMischiefGameTests.catKnocksAPotOffTheTable(helper);
+    }
+
+    @GameTest(maxTicks = 60)
+    public void flytrapEatsABugAndGrows(GameTestHelper helper) {
+        PlantGameTests.flytrapEatsABugAndGrows(helper);
+    }
+
+    @GameTest
+    public void flytrapReachAndPrey(GameTestHelper helper) {
+        PlantGameTests.flytrapReachAndPrey(helper);
+    }
+
+    @GameTest
+    public void plantsGoIntoFlowerPots(GameTestHelper helper) {
+        PlantGameTests.plantsGoIntoFlowerPots(helper);
+    }
+
+    @GameTest
+    public void touchingGrassBuffsOnce(GameTestHelper helper) {
+        PlantGameTests.touchingGrassBuffsOnce(helper);
+    }
+
+    @GameTest
+    public void catnipPhasesZoomiesThenPurring(GameTestHelper helper) {
+        PlantGameTests.catnipPhasesZoomiesThenPurring(helper);
+    }
+
+    @GameTest
+    public void catnipFedTamesStrayCats(GameTestHelper helper) {
+        PlantGameTests.catnipFedTamesStrayCats(helper);
+    }
+
+    @GameTest
+    public void catnipHighCatsKnockMore(GameTestHelper helper) {
+        PlantGameTests.catnipHighCatsKnockMore(helper);
+    }
+
+    @GameTest
+    public void catnipSpreadsWithBoneMeal(GameTestHelper helper) {
+        PlantGameTests.catnipSpreadsWithBoneMeal(helper);
+    }
+
+    @GameTest
+    public void plantsAreRegisteredForWorldgen(GameTestHelper helper) {
+        PlantGameTests.plantsAreRegisteredForWorldgen(helper);
+    }
+
+    @GameTest
+    public void outfitChangesSyncOncePerTick(GameTestHelper helper) {
+        NetworkGameTests.outfitChangesSyncOncePerTick(helper);
+    }
+
+    @GameTest
+    public void othersSeeABackpackWithoutItsContents(GameTestHelper helper) {
+        NetworkGameTests.othersSeeABackpackWithoutItsContents(helper);
+    }
+
+    @GameTest
+    public void creativeCosmeticPacketIsChecked(GameTestHelper helper) {
+        NetworkGameTests.creativeCosmeticPacketIsChecked(helper);
+    }
+
+    @GameTest
+    public void emotesPlayOneAtATime(GameTestHelper helper) {
+        NetworkGameTests.emotesPlayOneAtATime(helper);
+    }
+
+    @GameTest
+    public void pvpFightsRevealHiddenArmor(GameTestHelper helper) {
+        NetworkGameTests.pvpFightsRevealHiddenArmor(helper);
+    }
+
+    @GameTest
+    public void serverSettingsFollowTheServer(GameTestHelper helper) {
+        NetworkGameTests.serverSettingsFollowTheServer(helper);
+    }
+
+    @GameTest
+    public void presetsRespectEquipRules(GameTestHelper helper) {
+        NetworkGameTests.presetsRespectEquipRules(helper);
+    }
+
+    @GameTest
+    public void shiftClickOffPostsUnequip(GameTestHelper helper) {
+        NetworkGameTests.shiftClickOffPostsUnequip(helper);
     }
 
     @GameTest
@@ -515,8 +644,18 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void headpatsNeedConsent(GameTestHelper helper) {
+        FriendsGameTests.headpatsNeedConsent(helper);
+    }
+
+    @GameTest
+    public void photoFolderStaysCapped(GameTestHelper helper) {
+        PhotoGameTests.photoFolderStaysCapped(helper);
+    }
+
+    @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 98, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 125, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

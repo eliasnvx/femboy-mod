@@ -24,6 +24,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.component.DataComponents;
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.EntityEvent;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -37,10 +40,13 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
- * Loader-independent GameTest bodies (SPEC §13). Registered by
+ * Loader-independent GameTest bodies. Registered by
  * {@code fabric/src/gametest} (Fabric) and {@code FemboyGameTestsNeoForge} (NeoForge).
  */
 public final class CosmeticGameTests {
@@ -51,6 +57,8 @@ public final class CosmeticGameTests {
             new Entry("right_click_equip_swaps", CosmeticGameTests::rightClickEquipSwaps),
             new Entry("quick_move_conserves_items", CosmeticGameTests::quickMoveConservesItems),
             new Entry("death_drops_cosmetics", CosmeticGameTests::deathDropsCosmetics),
+            new Entry("real_death_drops_cosmetics", CosmeticGameTests::realDeathDropsCosmetics),
+            new Entry("cancelled_death_keeps_cosmetics", CosmeticGameTests::cancelledDeathKeepsCosmetics),
             new Entry("attachment_codec_round_trip", CosmeticGameTests::attachmentCodecRoundTrip),
             new Entry("sync_payload_round_trip", CosmeticGameTests::syncPayloadRoundTrip),
             new Entry("colorway_patterns_loaded", CosmeticGameTests::colorwayPatternsLoaded),
@@ -79,6 +87,10 @@ public final class CosmeticGameTests {
         all.addAll(ExternalSlotsGameTests.ALL);
         all.addAll(FriendsGameTests.ALL);
         all.addAll(InteriorGameTests.ALL);
+        all.addAll(SockSlideGameTests.ALL);
+        all.addAll(CatMischiefGameTests.ALL);
+        all.addAll(PlantGameTests.ALL);
+        all.addAll(NetworkGameTests.ALL);
         return all;
     }
 
@@ -166,6 +178,56 @@ public final class CosmeticGameTests {
         });
     }
 
+    /** Players whose death the listener below cancels, as a revive mod would; it ignores everyone else. */
+    private static final Set<UUID> SPARED = ConcurrentHashMap.newKeySet();
+    private static boolean listening;
+
+    private static synchronized void listen() {
+        if (!listening) {
+            listening = true;
+            EntityEvent.LIVING_DEATH.register((entity, source) ->
+                    SPARED.contains(entity.getUUID()) ? EventResult.interruptFalse() : EventResult.pass());
+        }
+    }
+
+    private static List<ItemEntity> earsAround(GameTestHelper helper, ServerPlayer player) {
+        return helper.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(3),
+                item -> item.getItem().is(FemboyItems.CAT_EARS.get()));
+    }
+
+    /** A real death (through the loader hooks, not a direct call) drops what was worn, once. */
+    public static void realDeathDropsCosmetics(GameTestHelper helper) {
+        ServerPlayer player = InteriorGameTests.survivalPlayer(helper, "death_tester", new BlockPos(1, 1, 1));
+        try {
+            CosmeticsManager.set(player, HEAD, new ItemStack(FemboyItems.CAT_EARS.get()));
+            player.die(player.damageSources().genericKill());
+            helper.assertTrue(CosmeticsManager.get(player).isEmpty(), "the slots are empty after dying");
+            List<ItemEntity> drops = earsAround(helper, player);
+            helper.assertValueEqual(drops.size(), 1, "the ears dropped with the death loot");
+            drops.forEach(Entity::discard);
+            helper.succeed();
+        } finally {
+            helper.getLevel().getServer().getPlayerList().remove(player);
+        }
+    }
+
+    /** Another mod cancels the death (a revive mod): the outfit stays on, nothing drops. */
+    public static void cancelledDeathKeepsCosmetics(GameTestHelper helper) {
+        listen();
+        ServerPlayer player = InteriorGameTests.survivalPlayer(helper, "revive_tester", new BlockPos(1, 1, 1));
+        SPARED.add(player.getUUID());
+        try {
+            CosmeticsManager.set(player, HEAD, new ItemStack(FemboyItems.CAT_EARS.get()));
+            player.die(player.damageSources().genericKill());
+            helper.assertTrue(CosmeticsManager.get(player).get(HEAD).is(FemboyItems.CAT_EARS.get()), "the ears are still worn");
+            helper.assertTrue(earsAround(helper, player).isEmpty(), "and nothing dropped");
+            helper.succeed();
+        } finally {
+            SPARED.remove(player.getUUID());
+            helper.getLevel().getServer().getPlayerList().remove(player);
+        }
+    }
+
     public static void attachmentCodecRoundTrip(GameTestHelper helper) {
         CosmeticInventory inventory = sampleInventory(helper);
         var ops = helper.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE);
@@ -176,7 +238,7 @@ public final class CosmeticGameTests {
     }
 
     public static void syncPayloadRoundTrip(GameTestHelper helper) {
-        CosmeticsSyncPayload payload = new CosmeticsSyncPayload(42, sampleInventory(helper), false);
+        CosmeticsSyncPayload payload = new CosmeticsSyncPayload(42, sampleInventory(helper), false, true);
         RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), helper.getLevel().registryAccess());
         try {
             CosmeticsSyncPayload.STREAM_CODEC.encode(buf, payload);
@@ -184,6 +246,7 @@ public final class CosmeticGameTests {
             helper.assertValueEqual(decoded.entityId(), 42, "entity id");
             assertSame(helper, payload.cosmetics(), decoded.cosmetics());
             helper.assertFalse(decoded.armorHidingAllowed(), "armor hiding flag");
+            helper.assertTrue(decoded.armorRevealed(), "PvP reveal flag");
         } finally {
             buf.release();
         }

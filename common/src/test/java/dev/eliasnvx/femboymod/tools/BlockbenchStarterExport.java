@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 /**
  * Dev tool: exports every code cosmetic model ({@link CosmeticModels}) as a STARTING Blockbench/GeckoLib
  * model: {@code <item>.geo.json} plus a flat-colored texture, into {@code art/blockbench/<item>/}.
- * Nothing goes into {@code src/}: an artist polishes the files first (docs/art/blockbench.md, SPEC §11).
+ * Nothing goes into {@code src/}: an artist polishes the files first.
  *
  * <p>Run: {@code ./gradlew :common:exportBlockbenchStarters}. Conversion: Java model space (y down, neck
  * at y=0) to Bedrock (y up, neck at y=24): positions keep x and z, y becomes {@code 24 - y}; rotations

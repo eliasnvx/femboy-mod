@@ -33,7 +33,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 import java.util.function.Consumer;
 
-/** Phase 4 (SPEC §16): Pink Creeper, Thrifter + rack, wardrobe presets, advancements. */
+/** Pink Creeper, Thrifter + rack, wardrobe presets, advancements. */
 public final class WorldGameTests {
 
     public static final List<CosmeticGameTests.Entry> ALL = List.of(

@@ -22,6 +22,10 @@
       "dev.eliasnvx.femboymod.fabric.gametest.CreativeTabsClientTest",
       "dev.eliasnvx.femboymod.fabric.gametest.MapModsClientTest",
       "dev.eliasnvx.femboymod.fabric.gametest.PetsClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.EarsClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.SockSlideClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.CatsClientTest",
+      "dev.eliasnvx.femboymod.fabric.gametest.PlantsClientTest",
       "dev.eliasnvx.femboymod.fabric.gametest.RejoinClientTest"
     ]
   },
