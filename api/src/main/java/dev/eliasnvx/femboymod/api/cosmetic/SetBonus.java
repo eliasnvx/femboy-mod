@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * A cosmetic set, loaded from {@code data/<ns>/femboymod/set_bonus/<name>.json} (SPEC §4.2).
+ * A cosmetic set, loaded from {@code data/<ns>/femboymod/set_bonus/<name>.json}.
  * <pre>{@code
  * { "pieces": ["femboymod:cat_ears", "#femboymod:socks"],
  *   "required": 3,

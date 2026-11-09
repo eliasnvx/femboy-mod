@@ -125,7 +125,7 @@ public interface FemboyApi {
     Set<Identifier> getActiveSetBonuses(Player player);
 
     /**
-     * Returns the charms hanging on a backpack (SPEC §8.4).
+     * Returns the charms hanging on a backpack.
      *
      * @param backpack a backpack item stack
      * @return the non-empty charms, in slot order; empty if the item is not a backpack

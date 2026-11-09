@@ -2,6 +2,19 @@
 
 Format: Keep a Changelog. SemVer for the API is independent of the mod version.
 
+## [0.3.0] - 2026-11-10
+### Added
+- Reactive ears and tails (client, experimental): `CosmeticReactionSource` and `CosmeticReactions` (`api.client`), registry
+  `FemboyClientApi#reactionSources()`; `CosmeticMotion` got `earAlert`, `earYaw`, `earFlatten`, `droop`, `tailWag`,
+  `tailPuff`, `jitter` (default methods, 0 when nothing reacts)
+- Client resources `assets/<ns>/femboymod/hearing/*.json`: which worn items react and how far they hear
+- Effect type `femboymod:slide` (`grip`) and condition `femboymod:no_shoes` for `cosmetic_stats`; block tag `#femboymod:sock_slippery`
+- Tags: block `#femboymod:cat_knockable`, `#femboymod:catnip`, `#femboymod:touchable_grass`; item `#femboymod:catnip`; entity type `#femboymod:flytrap_prey`
+- Game rule `femboymod:cat_mischief`
+
+### Changed
+- On clients, other players' worn items no longer carry packed contents (`minecraft:container`, `minecraft:bundle_contents`): `getCosmetics(otherPlayer)` shows a backpack without what's inside. The player's own outfit is unchanged
+
 ## [0.2.0] - 2026-10-16
 ### Added
 - Data pack registry `LookbookEntry` (`lookbook`, synced): where to get a cosmetic, shown in the Lookbook
