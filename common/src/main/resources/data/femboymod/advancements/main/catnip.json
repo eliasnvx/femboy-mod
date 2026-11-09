@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/cat_mischief",
+  "display": {
+    "icon": {
+      "item": "femboymod:catnip"
+    },
+    "title": {
+      "translate": "advancements.femboymod.catnip.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.catnip.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "catnip",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

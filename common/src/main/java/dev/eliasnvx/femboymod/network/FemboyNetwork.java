@@ -20,6 +20,8 @@ public final class FemboyNetwork {
         registerS2C(CosmeticsSyncPayload.ID, CosmeticsSyncPayload::read, CosmeticsSyncPayload::handle);
         registerS2C(ProfileSyncPayload.ID, ProfileSyncPayload::read, ProfileSyncPayload::handle);
         registerS2C(EmotePayloads.Show.ID, EmotePayloads.Show::read, EmotePayloads.Show::handle);
+        registerS2C(EarCuePayload.ID, EarCuePayload::read, EarCuePayload::handle);
+        registerS2C(ServerSettingsPayload.ID, ServerSettingsPayload::read, ServerSettingsPayload::handle);
         registerC2S(EmotePayloads.Play.ID, EmotePayloads.Play::read, EmotePayloads.Play::handle);
         registerC2S(OpenBackpackPayload.ID, OpenBackpackPayload::read, OpenBackpackPayload::handle);
         registerC2S(OpenCosmeticsMenuPayload.ID, OpenCosmeticsMenuPayload::read, OpenCosmeticsMenuPayload::handle);
@@ -29,6 +31,7 @@ public final class FemboyNetwork {
         registerC2S(CosmeticPanelClickPayload.ID, CosmeticPanelClickPayload::read, CosmeticPanelClickPayload::handle);
         registerC2S(PhotoPayloads.Upload.ID, PhotoPayloads.Upload::read, PhotoPayloads.Upload::handle);
         registerC2S(PhotoPayloads.Request.ID, PhotoPayloads.Request::read, PhotoPayloads.Request::handle);
+        registerC2S(HeadpatConsentPayload.ID, HeadpatConsentPayload::read, HeadpatConsentPayload::handle);
         registerS2C(PhotoPayloads.Picture.ID, PhotoPayloads.Picture::read, PhotoPayloads.Picture::handle);
     }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Chibi plushie block models + UV-packed texture atlases (SPEC §5.6). PLACEHOLDER art, no AI.
+"""Chibi plushie block models + UV-packed texture atlases. PLACEHOLDER art, no AI.
 
 Each plush is a list of boxes in block units (0..16). Every face gets its own region in a texture atlas
 (TEXELS_PER_UNIT texels per unit, so faces are not stretched), painted with a soft fabric fill, darker seams

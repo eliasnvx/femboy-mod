@@ -24,6 +24,8 @@ public final class FemboyGameRules {
     public static final GameRules.Key<GameRules.BooleanValue> ALLOW_HIDDEN_ARMOR = bool("allow_hidden_armor", GameRules.Category.PLAYER, true);
     /** Sock Goblins steal socks (off: they just giggle and wander). */
     public static final GameRules.Key<GameRules.BooleanValue> SOCK_GOBLIN_THEFT = bool("sock_goblin_theft", GameRules.Category.MOBS, true);
+    /** Cats knock flower pots, candles and plushies off tables (also needs mob griefing). */
+    public static final GameRules.Key<GameRules.BooleanValue> CAT_MISCHIEF = bool("cat_mischief", GameRules.Category.MOBS, true);
 
     /** Range of {@link #DRIP_PVP_PERCENT}; 1.20.1 integer rules have no built-in bounds, so values are clamped. */
     public static final int DRIP_PVP_MIN = 0;

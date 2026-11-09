@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generates a STARTING Blockbench/GeckoLib model for femboymod:cat_ears from the code placeholder
 geometry (same masks, spacing and tilt as CosmeticModels.catEars()). Open the .geo.json in Blockbench
-(GeckoLib Animated Model / Bedrock), then polish the model and paint the texture by hand (SPEC §11).
+(GeckoLib Animated Model / Bedrock), then polish the model and paint the texture by hand.
 
 Coordinates: Java model space (y down, head pivot at neck) -> Bedrock (y up, neck at y=24).
 """

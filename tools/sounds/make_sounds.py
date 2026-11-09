@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """The mod's own sounds, synthesized from scratch (numpy), no samples, no AI:
 - the Bug mob: a glitchy little beetle that chitters like an insect and blips like a crashing program;
-- headpats: two soft pats and a small sparkle.
+- headpats: two soft pats and a small sparkle;
+- socks sliding on a polished floor: a soft fabric swish;
+- the Debug Flytrap: a quick snap shut, and a little gulp when it's done digesting.
 
-    .venv/bin/python tools/sounds/make_sounds.py            # WAV previews in build/sounds + mono OGG in assets
-    .venv/bin/python tools/sounds/make_sounds.py --wav-only # previews only
+    .venv/bin/python tools/sounds/make_sounds.py                     # WAV previews in build/sounds + mono OGG in assets
+    .venv/bin/python tools/sounds/make_sounds.py --wav-only          # previews only
+    .venv/bin/python tools/sounds/make_sounds.py --only block/flytrap # just the sounds under that path (the Vorbis
+                                                                      # encoder isn't byte-stable, so don't rewrite the rest)
 
 OGG needs `soundfile` (libsndfile with Vorbis) in the venv: `.venv/bin/pip install -r tools/sounds/requirements.txt`.
 ffmpeg's built-in Vorbis encoder only writes stereo, and Minecraft plays stereo sounds without distance falloff.
@@ -161,12 +165,52 @@ def pat(seed):
     return normalize(out, 0.45)
 
 
+def swish(seed):
+    """Socks on a wooden floor: soft filtered noise that swells and fades, a little brighter in the middle."""
+    rng = np.random.default_rng(seed)
+    seconds = rng.uniform(0.32, 0.4)
+    n = int(seconds * RATE)
+    noise = rng.normal(0, 1, n)
+    body = lowpass(noise, rng.uniform(1800, 2400)) - lowpass(noise, 250)
+    shape = np.sin(np.pi * np.linspace(0, 1, n)) ** 1.6
+    return normalize(body * shape, 0.3)
+
+
+def snap(seed):
+    """A flytrap snapping shut: a fast airy thwip falling in pitch, then a soft leafy clap."""
+    rng = np.random.default_rng(seed)
+    out = np.zeros(int(0.3 * RATE))
+    n = int(0.05 * RATE)
+    sweep = np.sin(2 * np.pi * np.cumsum(np.linspace(rng.uniform(1700, 2000), 600, n)) / RATE)
+    thwip = (sweep * 0.5 + lowpass(rng.normal(0, 1, n), 3000)) * env(n, 0.002, 0.015)
+    place(out, thwip, 0.0, 0.7)
+    m = int(0.08 * RATE)
+    clap = lowpass(rng.normal(0, 1, m), 1200) * np.exp(-np.arange(m) / (0.01 * RATE))
+    clap += np.sin(2 * np.pi * rng.uniform(210, 250) * t(0.08)) * np.exp(-t(0.08) / 0.025) * 0.7
+    place(out, clap, 0.045, 1.0)
+    return normalize(out, 0.5)
+
+
+def gulp(seed):
+    """Done digesting: a low bubbly gulp that rises, and a tiny second bloop."""
+    rng = np.random.default_rng(seed)
+    out = np.zeros(int(0.35 * RATE))
+    for at, lo, hi, seconds, gain in ((0.0, 150, 320, 0.12, 1.0), (0.16, 260, 420, 0.07, 0.45)):
+        n = int(seconds * RATE)
+        tone = np.sin(2 * np.pi * np.cumsum(np.linspace(lo * rng.uniform(0.95, 1.05), hi, n)) / RATE)
+        place(out, tone * env(n, 0.01, seconds / 3), at, gain)
+    return normalize(out, 0.4)
+
+
 SOUNDS = {
     "mob/bug/ambient1": lambda: ambient(1), "mob/bug/ambient2": lambda: ambient(2), "mob/bug/ambient3": lambda: ambient(3),
     "mob/bug/hurt1": lambda: hurt(4), "mob/bug/hurt2": lambda: hurt(5),
     "mob/bug/death": lambda: death(6),
     "mob/bug/step1": lambda: step(7), "mob/bug/step2": lambda: step(8), "mob/bug/step3": lambda: step(9),
     "social/headpat1": lambda: pat(10), "social/headpat2": lambda: pat(11), "social/headpat3": lambda: pat(12),
+    "sock/slide1": lambda: swish(13), "sock/slide2": lambda: swish(14), "sock/slide3": lambda: swish(15),
+    "block/flytrap/snap1": lambda: snap(16), "block/flytrap/snap2": lambda: snap(17),
+    "block/flytrap/gulp1": lambda: gulp(18), "block/flytrap/gulp2": lambda: gulp(19),
 }
 
 
@@ -182,10 +226,13 @@ def write_wav(path, x):
 
 def main():
     wav_only = "--wav-only" in sys.argv
+    only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else ""
     sf = None
     if not wav_only:
         import soundfile as sf  # noqa: F811 (only needed for OGG)
     for name, make in SOUNDS.items():
+        if not name.startswith(only):
+            continue
         x = make()
         write_wav(os.path.join(PREVIEW, name + ".wav"), x)
         if sf is not None:

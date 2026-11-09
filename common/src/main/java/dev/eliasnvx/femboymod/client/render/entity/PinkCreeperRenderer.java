@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Creeper;
 
-/** Pink Creeper: vanilla creeper model with our own pink texture and a bow on the head (SPEC §5.4). */
+/** Pink Creeper: vanilla creeper model with our own pink texture and a bow on the head. */
 public final class PinkCreeperRenderer extends CreeperRenderer {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(FemboyMod.MOD_ID, "textures/entity/pink_creeper.png");

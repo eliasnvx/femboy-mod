@@ -2,6 +2,8 @@ package dev.eliasnvx.femboymod.social;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.InteractionEvent;
+import dev.architectury.event.events.common.LifecycleEvent;
+import dev.architectury.event.events.common.PlayerEvent;
 import dev.eliasnvx.femboymod.FemboyMod;
 import dev.eliasnvx.femboymod.api.event.social.HeadpatEvent;
 import dev.eliasnvx.femboymod.config.CommonConfig;
@@ -10,12 +12,14 @@ import dev.eliasnvx.femboymod.emote.Emote;
 import dev.eliasnvx.femboymod.energy.FemboyEffects;
 import dev.eliasnvx.femboymod.entity.FemboyTriggers;
 import dev.eliasnvx.femboymod.entity.RubberDuck;
+import dev.eliasnvx.femboymod.network.EarCuePayload;
 import dev.eliasnvx.femboymod.network.EmotePayloads;
 import dev.eliasnvx.femboymod.registry.FemboySounds;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -29,7 +33,8 @@ import net.minecraft.world.entity.player.Player;
 /**
  * Headpats: sneak and right-click another player or a tamed pet with an empty hand. The patter's hand pats (an emote
  * everyone sees), hearts float up, the target becomes Cozy for a while (slow healing) and a pet also gets a little
- * health back at once. Rubber ducks keep their own sneak-click (sit). Addons can change or cancel it
+ * health back at once. Rubber ducks keep their own sneak-click (sit). Players choose who may pat them
+ * ({@link HeadpatConsent}); the patter is told when they don't want it. Addons can change or cancel it
  * ({@link HeadpatEvent}).
  */
 public final class Headpats {
@@ -37,14 +42,35 @@ public final class Headpats {
     private static final int HEARTS = 4;
     private static final double HEART_SPREAD = 0.25;
     private static final float PAT_VOLUME = 0.8F;
-    /** When the patter last gave a headpat (game time), so holding the button doesn't spam. Server thread only. */
+    /** The patted player's reactive tail wags this long at most (visual only). */
+    private static final int HEADPAT_WAG_TICKS = 100;
+    /** When the patter last gave a headpat (game time), so holding the button doesn't spam. Server thread only; cleared on logout. */
     private static final Map<UUID, Long> LAST_PAT = new HashMap<>();
+    /** Each player's {@link HeadpatConsent} as their client last said (everyone until it does). Cleared on logout. */
+    private static final Map<UUID, HeadpatConsent> CONSENT = new HashMap<>();
 
     private Headpats() {
     }
 
     public static void init() {
         InteractionEvent.INTERACT_ENTITY.register(Headpats::interact);
+        // game time is per world: a cooldown from another world (singleplayer, LAN host) must not carry over
+        PlayerEvent.PLAYER_QUIT.register(player -> {
+            LAST_PAT.remove(player.getUUID());
+            CONSENT.remove(player.getUUID());
+        });
+        LifecycleEvent.SERVER_STOPPED.register(server -> {
+            LAST_PAT.clear();
+            CONSENT.clear();
+        });
+    }
+
+    public static void setConsent(ServerPlayer player, HeadpatConsent consent) {
+        CONSENT.put(player.getUUID(), consent);
+    }
+
+    public static HeadpatConsent consent(Player player) {
+        return CONSENT.getOrDefault(player.getUUID(), HeadpatConsent.EVERYONE);
     }
 
     /** Sneaking, empty main hand, a pattable target; on the server, pats (when not on cooldown). */
@@ -67,12 +93,19 @@ public final class Headpats {
         return target instanceof TamableAnimal pet && pet.isTame() && pet.isAlive() && !(target instanceof RubberDuck);
     }
 
-    /** Gives the headpat (server). Returns false if it was on cooldown or a listener cancelled it. */
+    /**
+     * Gives the headpat (server). Returns false if it was on cooldown, the patted player doesn't want it or a listener
+     * cancelled it.
+     */
     public static boolean pat(ServerLevel level, ServerPlayer patter, LivingEntity target) {
         CommonConfig.Friends config = FemboyConfig.common().friends();
         long now = level.getGameTime();
         Long last = LAST_PAT.get(patter.getUUID());
         if (last != null && now - last < config.headpatCooldownTicks()) {
+            return false;
+        }
+        if (target instanceof Player patted && !consent(patted).allows(patted, patter)) {
+            patter.displayClientMessage(Component.translatable("message.femboymod.headpat.declined", patted.getDisplayName()), true);
             return false;
         }
         HeadpatEvent event = FemboyMod.api().events().post(new HeadpatEvent(patter, target, config.cozyTicks()));
@@ -87,6 +120,9 @@ public final class Headpats {
             pet.heal(config.petHeadpatHeal());
         }
         EmotePayloads.play(patter, Emote.HEADPAT);
+        if (target instanceof Player patted) {
+            EarCuePayload.send(patted, EarCuePayload.Cue.HEADPAT, Math.min(event.cozyTicks(), HEADPAT_WAG_TICKS));
+        }
         level.sendParticles(ParticleTypes.HEART, target.getX(), target.getEyeY() + HEART_SPREAD, target.getZ(), HEARTS,
                 HEART_SPREAD, HEART_SPREAD, HEART_SPREAD, 0.0);
         level.playSound(null, target.getX(), target.getY(), target.getZ(), FemboySounds.HEADPAT.get(), SoundSource.PLAYERS,

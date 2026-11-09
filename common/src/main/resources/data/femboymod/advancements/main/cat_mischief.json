@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/good_pet",
+  "display": {
+    "icon": {
+      "item": "minecraft:flower_pot"
+    },
+    "title": {
+      "translate": "advancements.femboymod.cat_mischief.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.cat_mischief.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "cat_mischief",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

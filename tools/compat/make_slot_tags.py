@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Item tags for wearing our cosmetics in other mods' slots (SPEC §4.3), from the registrations in FemboyItems.
+"""Item tags for wearing our cosmetics in other mods' slots, from the registrations in FemboyItems.
 
     python3 tools/compat/make_slot_tags.py
 

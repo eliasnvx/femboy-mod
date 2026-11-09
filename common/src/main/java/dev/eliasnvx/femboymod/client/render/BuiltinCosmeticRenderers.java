@@ -20,7 +20,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Renderers for the SPEC §5.1 items. Default colors match the item icons. */
+/** Renderers for the built-in items. Default colors match the item icons. */
 public final class BuiltinCosmeticRenderers {
 
     private static final ResourceLocation FUR = texture("fur");
@@ -85,16 +85,11 @@ public final class BuiltinCosmeticRenderers {
     }
 
     public static void register(ApiRegistry<CosmeticRenderer.Factory> registry) {
-        registry.register(id("cat_ears"), models -> new GroupedRenderer(
-                models, CosmeticModels.CAT_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.CAT), FUR, PINK, LIGHTER, FUR_WHITE));
-        registry.register(id("fox_ears"), models -> new GroupedRenderer(
-                models, CosmeticModels.FOX_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.FOX), FUR, FOX_ORANGE, LIGHTER, FUR_WHITE));
-        registry.register(id("bunny_ears"), models -> new GroupedRenderer(
-                models, CosmeticModels.BUNNY_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.BUNNY), FUR, FUR_WHITE, DARKER, BUNNY_PINK));
-        registry.register(id("bear_ears"), models -> new GroupedRenderer(
-                models, CosmeticModels.BEAR_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.BEAR), FUR, BEAR_BROWN, LIGHTER, BEAR_TAN));
-        registry.register(id("wolf_ears"), models -> new GroupedRenderer(
-                models, CosmeticModels.WOLF_EARS, CosmeticModels.EarsModel.factory(CosmeticModels.EarShape.WOLF), FUR, WOLF_GREY, LIGHTER, FUR_WHITE));
+        ears(registry, "cat_ears", CosmeticModels.CAT_EARS, CosmeticModels.EarShape.CAT, PINK, LIGHTER, FUR_WHITE);
+        ears(registry, "fox_ears", CosmeticModels.FOX_EARS, CosmeticModels.EarShape.FOX, FOX_ORANGE, LIGHTER, FUR_WHITE);
+        ears(registry, "bunny_ears", CosmeticModels.BUNNY_EARS, CosmeticModels.EarShape.BUNNY, FUR_WHITE, DARKER, BUNNY_PINK);
+        ears(registry, "bear_ears", CosmeticModels.BEAR_EARS, CosmeticModels.EarShape.BEAR, BEAR_BROWN, LIGHTER, BEAR_TAN);
+        ears(registry, "wolf_ears", CosmeticModels.WOLF_EARS, CosmeticModels.EarShape.WOLF, WOLF_GREY, LIGHTER, FUR_WHITE);
         registry.register(id("tail"), models -> new GroupedRenderer(
                 models, CosmeticModels.TAIL, CosmeticModels.TailModel::new, FUR, PINK, LIGHTER, FUR_WHITE));
         registry.register(id("oversized_hoodie"), models -> new GroupedRenderer(
@@ -180,7 +175,7 @@ public final class BuiltinCosmeticRenderers {
                     FABRIC, color, DARKER, CREEPER_GREEN);
             BackpackCharmsRenderer charms = new BackpackCharmsRenderer(models.bakeLayer(CosmeticModels.BACKPACK_CHARMS));
             return ctx -> {
-                // Elytra occupy the back (SPEC §4.5): hide the backpack while wearing a glider.
+                // Elytra occupy the back: hide the backpack while wearing a glider.
                 if (ctx.entity().getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof ElytraItem) {
                     return;
                 }
@@ -194,6 +189,24 @@ public final class BuiltinCosmeticRenderers {
     static void submit(CosmeticRenderContext ctx, CosmeticModels.GroupModel model, RenderType type, int rgb) {
         model.pose(ctx.parentModel(), ctx.entity(), ctx.partialTick());
         ModelColors.render(model, ctx.poseStack(), ctx.bufferSource().getBuffer(type), ctx.light(), ctx.overlay(), ModelColors.opaque(rgb));
+    }
+
+    /** How an ear renderer looks, for drawing the same ears elsewhere (first-person ear tips). */
+    public record EarLook(CosmeticModels.EarShape shape, int defaultMain, float accentShade, int detail) {
+    }
+
+    private static final Map<ResourceLocation, EarLook> EAR_LOOKS = new HashMap<>();
+
+    private static void ears(ApiRegistry<CosmeticRenderer.Factory> registry, String name, ModelLayerLocation layer,
+                             CosmeticModels.EarShape shape, int main, float accentShade, int detail) {
+        registry.register(id(name), models -> new GroupedRenderer(
+                models, layer, CosmeticModels.EarsModel.factory(shape), FUR, main, accentShade, detail));
+        EAR_LOOKS.put(id(name), new EarLook(shape, main, accentShade, detail));
+    }
+
+    /** The look of a built-in ear renderer, or null for any other renderer. */
+    public static @org.jetbrains.annotations.Nullable EarLook earLook(ResourceLocation renderer) {
+        return EAR_LOOKS.get(renderer);
     }
 
     /** Mixes a color toward white ({@code amount > 0}) or black ({@code amount < 0}). */

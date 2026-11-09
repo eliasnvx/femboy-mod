@@ -10,8 +10,10 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * C2S, creative only: put {@code stack} (or nothing) into a cosmetic slot. In the creative inventory the
- * cursor lives on the client, like vanilla's creative slot packet; creative players can create items anyway,
- * so the server only checks the game mode and that the item fits the slot.
+ * cursor lives on the client, like vanilla's creative slot packet. 1.20.1 reads packet stacks as they come (no
+ * validated codec yet), so {@link CosmeticPanelActions#creativeSet} checks the stack the way vanilla's creative slot
+ * handler does (game mode, enabled item, damage and count) and that the item fits the slot. Creative players can
+ * create items anyway.
  */
 public record CreativeCosmeticSetPayload(ResourceLocation slot, ItemStack stack) implements FemboyPacket {
 

@@ -1,0 +1,29 @@
+{
+  "parent": "femboymod:main/root",
+  "display": {
+    "icon": {
+      "item": "femboymod:debug_flytrap"
+    },
+    "title": {
+      "translate": "advancements.femboymod.flytrap_snack.title"
+    },
+    "description": {
+      "translate": "advancements.femboymod.flytrap_snack.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "femboymod:event",
+      "conditions": {
+        "event": "flytrap_snack",
+        "min": 1
+      }
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

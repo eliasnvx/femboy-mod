@@ -24,7 +24,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
-/** Plushies (SPEC §5.6): decorative; right-click squeaks. */
+/** Plushies: decorative; right-click squeaks. */
 public class PlushBlock extends HorizontalDirectionalBlock {
 
     private final Map<Direction, VoxelShape> shapes;

@@ -15,7 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * Compact "Femboy Level" panel in the top-left corner (SPEC §4.6, client config {@code femboy_level_panel}): the Drip
+ * Compact "Femboy Level" panel in the top-left corner (client config {@code femboy_level_panel}): the Drip
  * Level and tier name on one line, a thin bar over the whole range with a notch per tier, and the first active set.
  * <p>
  * The text is rebuilt only when the level, tier or sets change (checked once per client tick), so a frame only

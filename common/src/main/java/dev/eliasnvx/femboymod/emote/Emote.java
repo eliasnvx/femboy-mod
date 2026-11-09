@@ -1,6 +1,6 @@
 package dev.eliasnvx.femboymod.emote;
 
-/** Built-in emotes (SPEC v1.2): simple arm poses, synced to everyone who sees the player. */
+/** Built-in emotes: simple arm poses, synced to everyone who sees the player. */
 public enum Emote {
     WAVE(60, true),
     PEACE(60, true),

@@ -15,6 +15,15 @@
         "targets": "#femboymod:bugs",
         "multiplier": 1.5
       }
+    },
+    {
+      "effect": {
+        "type": "femboymod:slide",
+        "grip": 0.1
+      },
+      "when": {
+        "type": "femboymod:no_shoes"
+      }
     }
   ]
 }

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * JEI integration (SPEC §9, soft dependency): recipes are vanilla types JEI already shows; this adds
+ * JEI integration (soft dependency): recipes are vanilla types JEI already shows; this adds
  * info pages on how to wear, dye and combine our items. Loaded by JEI only (NeoForge: {@link JeiPlugin},
  * Fabric: the {@code jei_mod_plugin} entrypoint).
  */

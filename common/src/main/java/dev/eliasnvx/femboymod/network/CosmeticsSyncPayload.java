@@ -6,6 +6,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility;
 import dev.eliasnvx.femboymod.cosmetic.ArmorHiding;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
+import dev.eliasnvx.femboymod.cosmetic.PvpCombat;
 import dev.eliasnvx.femboymod.platform.PlatformHelper;
 import dev.eliasnvx.femboymod.world.FemboyGameRules;
 import net.minecraft.network.FriendlyByteBuf;
@@ -20,12 +21,18 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** S2C: full cosmetic state of one player. Sent on change, on tracking start and on join/respawn. */
-public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, boolean armorHidingAllowed) implements FemboyPacket {
+/**
+ * S2C: cosmetic state of one player: in full to the player themselves, without packed contents to everyone else
+ * ({@link CosmeticInventory#forOthers()}). Sent on join, respawn, dimension change and tracking start; changes are
+ * queued with {@link #markDirty} and go out once at the end of the tick, however many there were.
+ */
+public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, boolean armorHidingAllowed, boolean armorRevealed)
+        implements FemboyPacket {
 
     public static final ResourceLocation ID = new ResourceLocation(FemboyMod.MOD_ID, "cosmetics_sync");
 
@@ -39,12 +46,14 @@ public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, bo
         buf.writeVarInt(entityId);
         writeInventory(buf, cosmetics);
         buf.writeBoolean(armorHidingAllowed);
+        buf.writeBoolean(armorRevealed);
     }
 
     public static CosmeticsSyncPayload read(FriendlyByteBuf buf) {
         int entityId = buf.readVarInt();
         CosmeticInventory cosmetics = readInventory(buf);
-        return new CosmeticsSyncPayload(entityId, cosmetics, buf.readBoolean());
+        boolean armorHidingAllowed = buf.readBoolean();
+        return new CosmeticsSyncPayload(entityId, cosmetics, armorHidingAllowed, buf.readBoolean());
     }
 
     /** Items per slot, hidden slots, then armor visibility per armor slot (as the 1.21.1 stream codec did). */
@@ -62,9 +71,53 @@ public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, bo
         return new CosmeticInventory(items, hidden, armor);
     }
 
+    /** Players whose outfit changed this tick (identity: a respawn makes a new player object). Server thread only. */
+    private static final Set<ServerPlayer> DIRTY = new LinkedHashSet<>();
+
+    /** The full state, as the player themselves gets it. */
     public static CosmeticsSyncPayload of(Player player) {
+        return of(player, true);
+    }
+
+    /** The state about {@code player}; {@code forOwner} false leaves out what's packed inside worn items. */
+    public static CosmeticsSyncPayload of(Player player, boolean forOwner) {
         boolean allowed = !(player.level() instanceof ServerLevel level) || level.getGameRules().getBoolean(FemboyGameRules.ALLOW_HIDDEN_ARMOR);
-        return new CosmeticsSyncPayload(player.getId(), CosmeticsManager.get(player), allowed);
+        CosmeticInventory cosmetics = CosmeticsManager.get(player);
+        return new CosmeticsSyncPayload(player.getId(), forOwner ? cosmetics : cosmetics.forOthers(), allowed,
+                PvpCombat.revealsArmor(player));
+    }
+
+    /**
+     * Queues a sync for the end of this tick: any number of changes in one tick go out as one packet, so spamming
+     * toggles from a client can't multiply what everyone around receives.
+     */
+    public static void markDirty(ServerPlayer player) {
+        DIRTY.add(player);
+    }
+
+    public static boolean isDirty(ServerPlayer player) {
+        return DIRTY.contains(player);
+    }
+
+    /** End of the server tick: syncs every queued player that's still online. Returns how many were sent. */
+    public static int flushDirty() {
+        if (DIRTY.isEmpty()) {
+            return 0;
+        }
+        List<ServerPlayer> queued = List.copyOf(DIRTY);
+        DIRTY.clear();
+        int sent = 0;
+        for (ServerPlayer player : queued) {
+            if (!player.isRemoved() && !player.hasDisconnected()) {
+                sendToTrackingAndSelf(player);
+                sent++;
+            }
+        }
+        return sent;
+    }
+
+    public static void clearDirty() {
+        DIRTY.clear();
     }
 
     /** Receiver (client side). Uses only common classes; registered on the client only (see FemboyNetwork). */
@@ -74,6 +127,7 @@ public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, bo
             Entity entity = self.getId() == payload.entityId() ? self : self.level().getEntity(payload.entityId());
             if (entity instanceof Player player) {
                 PlatformHelper.setCosmetics(player, payload.cosmetics());
+                ArmorHiding.setRevealed(player, payload.armorRevealed());
             }
         }));
     }
@@ -85,24 +139,25 @@ public record CosmeticsSyncPayload(int entityId, CosmeticInventory cosmetics, bo
 
     public static void sendTo(ServerPlayer receiver, Player about) {
         if (canReceive(receiver)) {
-            FemboyNetwork.sendToPlayer(receiver, of(about));
+            FemboyNetwork.sendToPlayer(receiver, of(about, receiver == about));
         }
     }
 
+    /** Sends now: the full state to the player, the visible state to everyone tracking them. */
     public static void sendToTrackingAndSelf(ServerPlayer player) {
         // 1.20.1 has no filtered tracking broadcast; players in view of the chunk (the self included) are a superset
         // of the trackers, and the receiver ignores entity ids it does not know.
-        List<ServerPlayer> receivers = new ArrayList<>();
+        List<ServerPlayer> watchers = new ArrayList<>();
         for (ServerPlayer watcher : ((ServerLevel) player.level()).getChunkSource().chunkMap.getPlayers(player.chunkPosition(), false)) {
             if (watcher != player && canReceive(watcher)) {
-                receivers.add(watcher);
+                watchers.add(watcher);
             }
         }
-        if (canReceive(player)) {
-            receivers.add(player);
+        if (!watchers.isEmpty()) {
+            FemboyNetwork.sendToPlayers(watchers, of(player, false));
         }
-        if (!receivers.isEmpty()) {
-            FemboyNetwork.sendToPlayers(receivers, of(player));
+        if (canReceive(player)) {
+            FemboyNetwork.sendToPlayer(player, of(player, true));
         }
     }
 }
