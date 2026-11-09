@@ -27,6 +27,8 @@ import java.util.WeakHashMap;
  * Per-player render data, attached to the player's render state during extraction. One instance
  * per entity is reused across frames: the worn list is rebuilt only when the (immutable) cosmetic
  * inventory snapshot changes, and motion values are updated in place, so extraction does not allocate.
+ * Reactions (ears and tails) get their targets from {@link ReactiveCosmetics} on the client tick and are
+ * smoothed here per frame.
  */
 public final class CosmeticRenderData implements CosmeticMotion {
 
@@ -54,6 +56,21 @@ public final class CosmeticRenderData implements CosmeticMotion {
     /** Higher = snappier smoothing (per tick). */
     private static final float SMOOTHING = 0.25F;
     private static final float GOLDEN_ANGLE = 2.39996F;
+    /** How far ears turn toward what they noticed (radians); further and they'd be edge-on from the front. */
+    private static final float MAX_EAR_TURN = 1.0F;
+    /** Smoothing per tick of each reaction, when it grows / when it fades: flinches are quick, recovery is slow. */
+    private static final float ALERT_RISE = 0.35F;
+    private static final float ALERT_FALL = 0.08F;
+    private static final float EAR_TURN_RATE = 0.3F;
+    private static final float FLATTEN_RISE = 0.6F;
+    private static final float FLATTEN_FALL = 0.1F;
+    private static final float DROOP_RATE = 0.1F;
+    private static final float WAG_RISE = 0.2F;
+    private static final float WAG_FALL = 0.05F;
+    private static final float PUFF_RISE = 0.6F;
+    private static final float PUFF_FALL = 0.04F;
+    private static final float JITTER_RISE = 0.2F;
+    private static final float JITTER_FALL = 0.05F;
 
     public record Worn(Identifier slot, ItemStack stack, Identifier itemId, Identifier renderer, @Nullable Colorway colorway) {
     }
@@ -68,6 +85,27 @@ public final class CosmeticRenderData implements CosmeticMotion {
     private float lastAge = Float.NaN;
     private float lastBodyRot;
 
+    private @Nullable EarHearing hearing;
+    private int hearingGeneration = -1;
+    private CosmeticInventory hearingSource;
+    /** Reaction targets, set on the client tick; NaN yaw = nothing noticed. */
+    private float alertTarget;
+    private float noticeYaw = Float.NaN;
+    private float flattenTarget;
+    private float droopTarget;
+    private float wagTarget;
+    private float puffTarget;
+    private float jitterTarget;
+    /** Smoothed reactions. */
+    private float lastReactionAge = Float.NaN;
+    private float alert;
+    private float earYaw;
+    private float flatten;
+    private float droop;
+    private float wag;
+    private float puff;
+    private float jitter;
+
     private CosmeticRenderData(int entityId) {
         this.phase = (entityId * GOLDEN_ANGLE) % Mth.TWO_PI;
     }
@@ -77,15 +115,23 @@ public final class CosmeticRenderData implements CosmeticMotion {
         if (!(entity instanceof Player player)) {
             return null;
         }
+        CosmeticRenderData data = of(player);
+        if (data != null) {
+            data.updateMotion(state);
+        }
+        return data;
+    }
+
+    /** The player's data with an up-to-date worn list (created if needed), or null if nothing is worn. */
+    public static @Nullable CosmeticRenderData of(Player player) {
         CosmeticInventory inventory = CosmeticsManager.worn(player);
         if (inventory.isEmpty()) {
             return null;
         }
-        CosmeticRenderData data = CACHE.computeIfAbsent(entity, e -> new CosmeticRenderData(e.getId()));
+        CosmeticRenderData data = CACHE.computeIfAbsent(player, e -> new CosmeticRenderData(e.getId()));
         if (data.source != inventory) {
             data.rebuild(inventory);
         }
-        data.updateMotion(state);
         return data;
     }
 
@@ -121,6 +167,54 @@ public final class CosmeticRenderData implements CosmeticMotion {
         walkAmount += (Math.min(state.walkAnimationSpeed, 1.0F) - walkAmount) * alpha;
         lastAge = state.ageInTicks;
         lastBodyRot = state.bodyRot;
+        updateReactions(state.ageInTicks, state.bodyRot + state.yRot);
+    }
+
+    /** How this wearer's reactive cosmetics hear, or null if nothing worn reacts. */
+    public @Nullable EarHearing hearing() {
+        if (hearingSource != source || hearingGeneration != EarHearing.generation()) {
+            hearing = EarHearing.find(worn);
+            hearingSource = source;
+            hearingGeneration = EarHearing.generation();
+        }
+        return hearing;
+    }
+
+    /** New reaction targets from the client tick; {@code noticeYaw} is a world yaw, or NaN for none. */
+    void setReactionTargets(float alert, float noticeYaw, float flatten, float droop, float wag, float puff, float jitter) {
+        this.alertTarget = alert;
+        this.noticeYaw = noticeYaw;
+        this.flattenTarget = flatten;
+        this.droopTarget = droop;
+        this.wagTarget = wag;
+        this.puffTarget = puff;
+        this.jitterTarget = jitter;
+    }
+
+    /**
+     * Smooths the reactions toward their targets. Called per frame from extraction, and from the first-person ear
+     * tips for the local player (who isn't extracted in first person); a second call in the same frame does nothing.
+     *
+     * @param headYaw world yaw the wearer's head faces (degrees)
+     */
+    void updateReactions(float age, float headYaw) {
+        if (Float.isNaN(lastReactionAge)) {
+            lastReactionAge = age;
+            return;
+        }
+        float dt = age - lastReactionAge;
+        if (dt <= 0) {
+            return;
+        }
+        lastReactionAge = age;
+        float yawTarget = Float.isNaN(noticeYaw) ? 0.0F : ReactionMath.earYaw(noticeYaw, headYaw, MAX_EAR_TURN);
+        alert = ReactionMath.approach(alert, alertTarget, ALERT_RISE, ALERT_FALL, dt);
+        earYaw = ReactionMath.approach(earYaw, yawTarget, EAR_TURN_RATE, EAR_TURN_RATE, dt);
+        flatten = ReactionMath.approach(flatten, flattenTarget, FLATTEN_RISE, FLATTEN_FALL, dt);
+        droop = ReactionMath.approach(droop, droopTarget, DROOP_RATE, DROOP_RATE, dt);
+        wag = ReactionMath.approach(wag, wagTarget, WAG_RISE, WAG_FALL, dt);
+        puff = ReactionMath.approach(puff, puffTarget, PUFF_RISE, PUFF_FALL, dt);
+        jitter = ReactionMath.approach(jitter, jitterTarget, JITTER_RISE, JITTER_FALL, dt);
     }
 
     public List<Worn> worn() {
@@ -149,5 +243,44 @@ public final class CosmeticRenderData implements CosmeticMotion {
     @Override
     public float phase() {
         return phase;
+    }
+
+    private static boolean reactive() {
+        return FemboyConfig.client().reactiveCosmetics();
+    }
+
+    @Override
+    public float earAlert() {
+        return reactive() ? alert : 0.0F;
+    }
+
+    @Override
+    public float earYaw() {
+        return reactive() ? earYaw : 0.0F;
+    }
+
+    @Override
+    public float earFlatten() {
+        return reactive() ? flatten : 0.0F;
+    }
+
+    @Override
+    public float droop() {
+        return reactive() ? droop : 0.0F;
+    }
+
+    @Override
+    public float tailWag() {
+        return reactive() ? wag : 0.0F;
+    }
+
+    @Override
+    public float tailPuff() {
+        return reactive() ? puff : 0.0F;
+    }
+
+    @Override
+    public float jitter() {
+        return reactive() ? jitter : 0.0F;
     }
 }

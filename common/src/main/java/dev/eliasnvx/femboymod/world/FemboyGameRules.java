@@ -30,6 +30,8 @@ public final class FemboyGameRules {
     /** Players may hide their armor under the outfit; off = armor is always drawn (PvP servers). */
     /** Sock Goblins steal socks (off: they just giggle and wander). */
     public static final RegistrySupplier<GameRule<Boolean>> SOCK_GOBLIN_THEFT = bool("sock_goblin_theft", GameRuleCategory.MOBS, true);
+    /** Cats knock flower pots, candles and plushies off tables (also needs mob griefing). */
+    public static final RegistrySupplier<GameRule<Boolean>> CAT_MISCHIEF = bool("cat_mischief", GameRuleCategory.MOBS, true);
     public static final RegistrySupplier<GameRule<Boolean>> ALLOW_HIDDEN_ARMOR = bool("allow_hidden_armor", GameRuleCategory.PLAYER, true);
     /**
      * PvP: percent more damage per Drip tier the attacker is above the victim (and less when below).

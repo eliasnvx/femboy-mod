@@ -20,7 +20,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-/** Gamer Chair (SPEC v1.1): right-click to sit; sitting slowly heals (config {@code furniture}). */
+/** Gamer Chair: right-click to sit; sitting slowly heals (config {@code furniture}). */
 public class GamerChairBlock extends HorizontalDirectionalBlock implements SeatBlock {
 
     /** Seat surface height; the model's cushion top is at 8 px. */

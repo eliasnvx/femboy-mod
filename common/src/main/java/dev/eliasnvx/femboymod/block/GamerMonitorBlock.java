@@ -23,7 +23,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Pink PC monitor (SPEC v1.1): right-click turns it on or off. When on, the screen scrolls "code" (a slow,
+ * Pink PC monitor: right-click turns it on or off. When on, the screen scrolls "code" (a slow,
  * smooth texture animation) and gives off a little light.
  */
 public class GamerMonitorBlock extends HorizontalDirectionalBlock {

@@ -4,7 +4,9 @@ import net.minecraft.world.entity.player.Player;
 import java.util.WeakHashMap;
 import dev.eliasnvx.femboymod.api.cosmetic.ArmorVisibility;
 import dev.eliasnvx.femboymod.api.cosmetic.CosmeticSlotType;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
@@ -14,7 +16,8 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Which vanilla armor pieces are drawn on a player wearing cosmetics. Visual only: the armor still protects.
  * The server decides whether hiding is allowed (game rule {@code femboymod:allow_hidden_armor}) and sends the flag
- * with every cosmetics sync.
+ * with every cosmetics sync, along with whether this player is fighting another one right now ({@link PvpCombat}):
+ * then their armor shows no matter what.
  */
 public final class ArmorHiding {
 
@@ -32,6 +35,17 @@ public final class ArmorHiding {
 
     public static void setAllowedOnClient(boolean allowed) {
         allowedOnClient = allowed;
+    }
+
+    /** Players (client copies) whose armor shows because they're in a PvP fight. */
+    private static final Set<Player> REVEALED = Collections.newSetFromMap(new WeakHashMap<>());
+
+    public static synchronized void setRevealed(Player player, boolean revealed) {
+        if (revealed) {
+            REVEALED.add(player);
+        } else {
+            REVEALED.remove(player);
+        }
     }
 
     /** Whether {@code armorSlot} is hidden for this outfit. */
@@ -76,7 +90,7 @@ public final class ArmorHiding {
     /** {@link #mask} cached per player until the outfit or the rule changes (called every frame while rendering). */
     public static synchronized int cachedMask(Player player) {
         CosmeticInventory inventory = CosmeticsManager.worn(player);
-        boolean allowed = allowedOnClient;
+        boolean allowed = allowedOnClient && !REVEALED.contains(player);
         Cached cached = CACHE.get(player);
         if (cached == null || cached.inventory() != inventory || cached.allowed() != allowed) {
             cached = new Cached(inventory, allowed, mask(inventory, allowed));

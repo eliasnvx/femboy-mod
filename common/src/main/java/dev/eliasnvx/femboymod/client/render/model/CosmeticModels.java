@@ -41,7 +41,7 @@ import static dev.eliasnvx.femboymod.client.render.model.Groups.METAL;
 public final class CosmeticModels {
 
     private static final int TEXTURE_SIZE = 64;
-    /** Overlay inflation above the skin's own second layer (0.25) to avoid z-fighting (SPEC §4.5). */
+    /** Overlay inflation above the skin's own second layer (0.25) to avoid z-fighting. */
     private static final float SOCK_INFLATE = 0.32F;
     private static final float FISHNET_INFLATE = 0.29F;
     private static final CubeDeformation SOCK_CUFF_INFLATE = new CubeDeformation(0.45F);
@@ -226,8 +226,10 @@ public final class CosmeticModels {
      * @param tilt    outward tilt; a positive zRot leans the top toward +x, so the -x ear gets a negative angle
      * @param extraRightTilt added to the right ear only (a lopsided bunny ear)
      * @param twitch  how far the idle twitch flicks the ear (0 = no twitch)
+     * @param flop    how far the ear falls when drooping (long bunny ears flop, small bear ears barely move)
      */
-    public record EarShape(String[] mask, float pixel, float spacing, float tilt, float extraRightTilt, float twitch) {
+    public record EarShape(String[] mask, float pixel, float spacing, float tilt, float extraRightTilt, float twitch,
+                           float flop) {
 
         public static final EarShape CAT = new EarShape(new String[]{
                 "...MM...",
@@ -240,7 +242,7 @@ public final class CosmeticModels {
                 "MAAAAAAM",
                 "MAFAAFAM",
                 "MFFAAFFM",
-        }, 0.45F, 2.9F, 0.3F, 0.0F, 0.35F);
+        }, 0.45F, 2.9F, 0.3F, 0.0F, 0.35F, 1.0F);
 
         public static final EarShape FOX = new EarShape(new String[]{
                 "...DD...",
@@ -254,7 +256,7 @@ public final class CosmeticModels {
                 "MAFFFFAM",
                 "MFFFFFFM",
                 "MFFFFFFM",
-        }, 0.45F, 2.8F, 0.22F, 0.0F, 0.3F);
+        }, 0.45F, 2.8F, 0.22F, 0.0F, 0.3F, 1.0F);
 
         public static final EarShape BUNNY = new EarShape(new String[]{
                 "..MM..",
@@ -271,7 +273,7 @@ public final class CosmeticModels {
                 "MMFFMM",
                 ".MFFM.",
                 ".MMMM.",
-        }, 0.45F, 1.9F, 0.08F, 0.35F, 0.15F);
+        }, 0.45F, 1.9F, 0.08F, 0.35F, 0.15F, 1.6F);
 
         public static final EarShape BEAR = new EarShape(new String[]{
                 ".MMMM.",
@@ -279,7 +281,7 @@ public final class CosmeticModels {
                 "MAFFAM",
                 "MAFFAM",
                 "MMMMMM",
-        }, 0.5F, 3.2F, 0.0F, 0.0F, 0.1F);
+        }, 0.5F, 3.2F, 0.0F, 0.0F, 0.1F, 0.4F);
 
         public static final EarShape WOLF = new EarShape(new String[]{
                 "...MM...",
@@ -291,7 +293,7 @@ public final class CosmeticModels {
                 "MAFFFFAM",
                 "MAFFFFAM",
                 "MFFFFFFM",
-        }, 0.5F, 3.0F, 0.26F, 0.0F, 0.25F);
+        }, 0.5F, 3.0F, 0.26F, 0.0F, 0.25F, 1.0F);
     }
 
     private static LayerDefinition animalEars(EarShape shape) {
@@ -853,7 +855,7 @@ public final class CosmeticModels {
 
     // ------------------------------------------------------------------ backpack
 
-    /** Creeper face patch on the front pocket (SPEC §1.1: creeper is a Minecraft asset, fine to use). */
+    /** Creeper face patch on the front pocket (creeper is a Minecraft asset, fine to use). */
     private static final String[] CREEPER_FACE = {
             "GGGGGGGG",
             "GDDGGDDG",
@@ -1203,12 +1205,26 @@ public final class CosmeticModels {
         }
     }
 
-    /** Ears flick independently now and then; phase differs per player. */
-    /** Ears with idle twitches and a walk bounce; the shape gives base tilt and twitch strength. */
+    /**
+     * Ears with idle twitches (phase differs per player) and a walk bounce; the shape gives base tilt and twitch
+     * strength. They also react ({@link CosmeticMotion}): stand up and turn toward what they noticed, pin back
+     * sideways when scared, droop, and twitch faster when jittery.
+     */
     public static final class EarsModel extends GroupModel {
         private static final float TWITCH_SPEED = 0.35F;
         private static final float TWITCH_SHARPNESS = 12.0F;
         private static final float WALK_BOUNCE = 0.08F;
+        /** Alert ears lose this share of their outward tilt (they stand up). */
+        private static final float ALERT_STRAIGHTEN = 0.7F;
+        /** Flattened ears swing out sideways and back ("airplane ears"). */
+        private static final float FLATTEN_SPREAD = 0.9F;
+        private static final float FLATTEN_BACK = 0.7F;
+        /** Drooping ears fall outward and a little back, scaled by the shape's flop. */
+        private static final float DROOP_SPREAD = 0.55F;
+        private static final float DROOP_BACK = 0.35F;
+        /** Jitter makes twitches this much faster and stronger at full strength. */
+        private static final float JITTER_SPEED = 2.5F;
+        private static final float JITTER_STRENGTH = 1.5F;
         /** Helmet shell top is 1 px above the head (armor inflate 1.0); ears sit just on top of it. */
         private static final float HELMET_LIFT = 0.8F;
         private final ModelPart leftEar;
@@ -1232,15 +1248,22 @@ public final class CosmeticModels {
         public void setupAnim(AvatarRenderState state) {
             super.setupAnim(state);
             CosmeticMotion motion = motion(state);
-            float t = state.ageInTicks * TWITCH_SPEED / Mth.PI + motion.phase();
-            float left = (float) Math.pow(Math.max(Mth.sin(t), 0.0F), TWITCH_SHARPNESS) * shape.twitch();
-            float right = (float) Math.pow(Math.max(Mth.sin(t * 0.83F + 1.7F), 0.0F), TWITCH_SHARPNESS) * shape.twitch();
+            float jitter = motion.jitter();
+            float t = state.ageInTicks * TWITCH_SPEED * (1.0F + JITTER_SPEED * jitter) / Mth.PI + motion.phase();
+            float twitch = shape.twitch() * (1.0F + JITTER_STRENGTH * jitter);
+            float left = (float) Math.pow(Math.max(Mth.sin(t), 0.0F), TWITCH_SHARPNESS) * twitch;
+            float right = (float) Math.pow(Math.max(Mth.sin(t * 0.83F + 1.7F), 0.0F), TWITCH_SHARPNESS) * twitch;
             float bounce = Mth.sin(state.walkAnimationPos * 0.6662F * 2) * WALK_BOUNCE * motion.walkAmount();
+            float tilt = shape.tilt() + reactionOutward(motion, shape.tilt(), shape.flop());
+            float back = reactionBack(motion, shape.flop());
             // "left_ear" sits at -x: tilt it outward (negative zRot); twitches flick further outward.
-            leftEar.zRot = -shape.tilt() - left - bounce;
-            rightEar.zRot = shape.tilt() + shape.extraRightTilt() + right + bounce;
-            leftEar.xRot = -left * 0.5F;
-            rightEar.xRot = -right * 0.5F;
+            leftEar.zRot = -tilt - left - bounce;
+            rightEar.zRot = tilt + shape.extraRightTilt() + right + bounce;
+            leftEar.xRot = -left * 0.5F - back;
+            rightEar.xRot = -right * 0.5F - back;
+            float turn = reactionTurn(motion);
+            leftEar.yRot = turn;
+            rightEar.yRot = turn;
             // A visible helmet (the wearer chose "show", or the server forbids hiding armor): ears poke out on top
             // of it and the headband, which would be inside the helmet, is not drawn.
             boolean helmet = wearsHelmet(state);
@@ -1248,6 +1271,29 @@ public final class CosmeticModels {
             leftEar.y = leftEar.getInitialPose().y() - lift;
             rightEar.y = rightEar.getInitialPose().y() - lift;
             headband.visible = !helmet;
+        }
+
+        /**
+         * How much further outward (radians, added to the rest tilt) the reactions push an ear: alert ears stand up,
+         * scared or sad ones fall outward; flattening wins over alertness. Shared with Blockbench ear bones.
+         *
+         * @param restTilt the ear's own outward tilt
+         * @param flop     how far the ear falls when drooping ({@link EarShape#flop()})
+         */
+        public static float reactionOutward(CosmeticMotion motion, float restTilt, float flop) {
+            float flatten = motion.earFlatten();
+            return -restTilt * ALERT_STRAIGHTEN * motion.earAlert() * (1.0F - flatten)
+                    + FLATTEN_SPREAD * flatten + DROOP_SPREAD * motion.droop() * flop;
+        }
+
+        /** How far the reactions tip an ear back (radians, ModelPart xRot sign: back is negative xRot). */
+        public static float reactionBack(CosmeticMotion motion, float flop) {
+            return FLATTEN_BACK * motion.earFlatten() + DROOP_BACK * motion.droop() * flop;
+        }
+
+        /** Both ears turn their openings toward what they noticed (fades out with alertness); ModelPart yRot. */
+        public static float reactionTurn(CosmeticMotion motion) {
+            return motion.earYaw() * motion.earAlert() * (1.0F - motion.earFlatten());
         }
 
         /** Head armor drawn by the armor layer (not a carved pumpkin or skull, which use their own shapes). */
@@ -1260,7 +1306,11 @@ public final class CosmeticModels {
         }
     }
 
-    /** Tail droops down-back, waves along its length, swings out when turning (SPEC §4.5). */
+    /**
+     * Tail droops down-back, waves along its length, swings out when turning. Reactions
+     * ({@link CosmeticMotion}): a quick wag (raised a little), puffed up and stiff when startled, hanging lower when
+     * drooping, trembling when jittery.
+     */
     public static final class TailModel extends GroupModel {
         private static final float DROOP = -0.5F;
         private static final float CURL = 0.1F;
@@ -1269,6 +1319,17 @@ public final class CosmeticModels {
         private static final float SWAY_SPEED = 0.16F;
         private static final float SEGMENT_PHASE = 0.45F;
         private static final float WALK_LIFT = 0.25F;
+        private static final float WAG_SPEED = 0.9F;
+        private static final float WAG_AMPLITUDE = 0.22F;
+        private static final float WAG_LIFT = 0.35F;
+        /** A puffed tail is this much thicker, sticks out straighter and barely sways. */
+        private static final float PUFF_SCALE = 0.45F;
+        private static final float PUFF_LIFT = 0.45F;
+        private static final float PUFF_STIFFEN = 0.8F;
+        private static final float DROOP_EXTRA = 0.6F;
+        private static final float DROOP_CALM = 0.7F;
+        private static final float JITTER_SPEED = 2.2F;
+        private static final float JITTER_AMPLITUDE = 0.05F;
         private final ModelPart[] segments = new ModelPart[TAIL_SEGMENTS];
 
         public TailModel(ModelPart root, Groups group, int band) {
@@ -1293,17 +1354,30 @@ public final class CosmeticModels {
         public void setupAnim(AvatarRenderState state) {
             super.setupAnim(state);
             CosmeticMotion motion = motion(state);
-            float amplitude = IDLE_SWAY * dev.eliasnvx.femboymod.client.render.CosmeticRenderData.idleScale() + WALK_SWAY * motion.walkAmount();
+            float wag = motion.tailWag();
+            float puff = motion.tailPuff();
+            float droop = motion.droop();
+            float calm = (1.0F - PUFF_STIFFEN * puff) * (1.0F - DROOP_CALM * droop);
+            float amplitude = (IDLE_SWAY * dev.eliasnvx.femboymod.client.render.CosmeticRenderData.idleScale()
+                    + WALK_SWAY * motion.walkAmount()) * calm;
+            float lift = WALK_LIFT * motion.walkAmount() + WAG_LIFT * wag + PUFF_LIFT * puff - DROOP_EXTRA * droop;
+            float age = state.ageInTicks;
             for (int i = 0; i < TAIL_SEGMENTS; i++) {
                 ModelPart segment = segments[i];
-                segment.xRot = i == 0 ? DROOP + WALK_LIFT * motion.walkAmount() : CURL;
-                float wave = Mth.sin(state.ageInTicks * SWAY_SPEED + motion.phase() - i * SEGMENT_PHASE);
-                segment.yRot = wave * amplitude + motion.turnSway() / TAIL_SEGMENTS;
+                segment.xRot = i == 0 ? DROOP + lift : CURL * (1.0F - puff);
+                float wave = Mth.sin(age * SWAY_SPEED + motion.phase() - i * SEGMENT_PHASE);
+                float wagWave = Mth.sin(age * WAG_SPEED - i * SEGMENT_PHASE);
+                float tremble = Mth.sin(age * JITTER_SPEED * Mth.PI + i) * JITTER_AMPLITUDE * motion.jitter();
+                segment.yRot = wave * amplitude + wagWave * WAG_AMPLITUDE * wag + tremble + motion.turnSway() / TAIL_SEGMENTS;
             }
+            // The base stays slim where it meets the body; everything after it fluffs up (children inherit the scale).
+            float thickness = 1.0F + PUFF_SCALE * puff;
+            segments[1].xScale = thickness;
+            segments[1].yScale = thickness;
         }
     }
 
-    /** Pleat strips follow the legs individually; outer strips flare more (SPEC §4.5). */
+    /** Pleat strips follow the legs individually; outer strips flare more. */
     public static final class SkirtModel extends GroupModel {
         private static final float REST_FLARE = 0.1F;
         private static final float LEG_FOLLOW = 0.9F;
@@ -1361,7 +1435,7 @@ public final class CosmeticModels {
         }
     }
 
-    /** Oversized hoodie; hands disappear into the sleeves while crouching (SPEC §5.1). */
+    /** Oversized hoodie; hands disappear into the sleeves while crouching. */
     public static final class HoodieModel extends GroupModel {
         private final ModelPart leftCuff;
         private final ModelPart rightCuff;

@@ -38,7 +38,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Vibe Check Scanner (SPEC v1.2): an arch you stand under. Right-click to get your vibe (0..100, from Drip, sets
+ * Vibe Check Scanner: an arch you stand under. Right-click to get your vibe (0..100, from Drip, sets
  * and the collection; config {@code vibe_check}) onto the server leaderboard; sneak + right-click shows the board.
  */
 public class VibeScannerBlock extends HorizontalDirectionalBlock {

@@ -9,6 +9,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticsEvents;
 import dev.eliasnvx.femboymod.block.FemboyBlocks;
 import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import dev.eliasnvx.femboymod.energy.CaffeineLog;
@@ -17,10 +18,12 @@ import dev.eliasnvx.femboymod.energy.CaffeineRules;
 import dev.eliasnvx.femboymod.energy.EnergyDrink;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -66,6 +69,13 @@ public final class PlatformHelperImpl {
         DynamicRegistries.register(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
         DynamicRegistries.register(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
         DynamicRegistries.registerSynced(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
+        // right after the vanilla death loot, and only for a death that happened: a death another mod cancels keeps
+        // the outfit. Fabric has no shared drops event, so grave mods only collect these if they support the mod.
+        ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+            if (entity instanceof ServerPlayer player) {
+                CosmeticsEvents.dropOnDeath(player);
+            }
+        });
     }
 
     public static List<DiscoveredAddon> discoverAddons() {
@@ -127,5 +137,9 @@ public final class PlatformHelperImpl {
                 FemboyBlocks.CLOTHING_RACK.get());
         net.fabricmc.fabric.api.object.builder.v1.world.poi.PoiHelper.register(FemboyBlocks.LAUNDRY_BASKET_POI.identifier(), 0, 1,
                 FemboyBlocks.LAUNDRY_BASKET.get());
+    }
+
+    public static boolean canMobGrief(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.Entity mob) {
+        return level.getGameRules().get(net.minecraft.world.level.gamerules.GameRules.MOB_GRIEFING);
     }
 }

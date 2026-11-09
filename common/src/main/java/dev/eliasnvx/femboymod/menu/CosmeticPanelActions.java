@@ -72,8 +72,10 @@ public final class CosmeticPanelActions {
 
     /** Creative inventory panel: the cursor is client-side, so the item arrives in the packet (creative only). */
     public static boolean creativeSet(ServerPlayer player, Identifier slot, ItemStack stack) {
-        if (!player.hasInfiniteMaterials() || !CosmeticsManager.orderedSlots().contains(slot)) {
-            return false;
+        if (!player.hasInfiniteMaterials() || player.isSpectator() || !player.isAlive()
+                || player.containerMenu != player.inventoryMenu || !CosmeticsManager.orderedSlots().contains(slot)
+                || !stack.isItemEnabled(player.level().enabledFeatures())) {
+            return false; // like vanilla's creative slot packet: creative, in the inventory, an item this world has
         }
         ItemStack single = stack.copyWithCount(Math.min(1, stack.getCount()));
         if (!single.isEmpty() && !CosmeticsManager.canEquip(player, slot, single)) {

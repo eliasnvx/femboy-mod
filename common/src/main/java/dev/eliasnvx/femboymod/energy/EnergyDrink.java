@@ -15,7 +15,7 @@ import net.minecraft.world.item.Item;
 import java.util.List;
 
 /**
- * Byte Energy flavor balance (SPEC §5.2), data pack registry {@code femboymod:energy_drink}, entry id = item id:
+ * Byte Energy flavor balance, data pack registry {@code femboymod:energy_drink}, entry id = item id:
  * {@code {"effects": [{"effect": "minecraft:speed", "duration": 1200, "amplifier": 0}]}}.
  */
 public record EnergyDrink(List<Buff> effects) {

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:simple_block",
+  "schedule_tick": true,
+  "to_place": {
+    "id": "femboymod:debug_flytrap",
+    "properties": {
+      "digesting": "false",
+      "stage": "0"
+    }
+  }
+}

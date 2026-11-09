@@ -26,8 +26,11 @@ public record ProfileSyncPayload(CompoundTag values) implements CustomPacketPayl
     }
 
     public static void handle(ProfileSyncPayload payload, NetworkManager.PacketContext context) {
-        context.queue(() -> PlatformHelper.setProfile(context.getPlayer(),
-                PlatformHelper.getProfile(context.getPlayer()).merge(payload.values())));
+        context.queue(() -> {
+            if (context.getPlayer() != null) { // null if queued as the client left the world
+                PlatformHelper.setProfile(context.getPlayer(), PlatformHelper.getProfile(context.getPlayer()).merge(payload.values()));
+            }
+        });
     }
 
     public static void send(ServerPlayer player, CompoundTag values) {

@@ -23,7 +23,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
-/** Pink Creeper: vanilla creeper model with our own pink texture and a bow on the head (SPEC §5.4). */
+/** Pink Creeper: vanilla creeper model with our own pink texture and a bow on the head. */
 public final class PinkCreeperRenderer extends CreeperRenderer {
 
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(FemboyMod.MOD_ID, "textures/entity/pink_creeper.png");
