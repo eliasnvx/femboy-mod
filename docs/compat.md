@@ -7,11 +7,13 @@ Checked on MC 26.3, 2026-09-25.
 |---|---|---|
 | Sodium 0.9.2 + Iris 1.11.6 (Fabric) | ✅ cosmetics, colorways, geo models, glow outline and first-person sleeves render correctly (no shader pack) | `./gradlew :fabric:runClientGameTest -Pcompat_render=true`, screenshots compared with vanilla |
 | JEI 31.7 | ✅ plugin loads without errors; all recipes are vanilla types (crafting, dye, transmute, smithing), which JEI shows natively. Info pages (U on an item): cosmetics, dyeing, backpacks, charms | `./gradlew :fabric:runClientGameTest -Pcompat_jei=true` (log). Info page layout: ⏳ manual |
-| Mod Menu 21 | ✅ config button (`FemboyModMenu`) | Phase 4 |
-| NeoForge mods list | ✅ config button (`IConfigScreenFactory`) | Phase 4 |
+| Mod Menu 21 | ✅ config button (`FemboyModMenu`) | manual check |
+| NeoForge mods list | ✅ config button (`IConfigScreenFactory`) | manual check |
 | Jade 26.3 | ✅ no integration needed: block names/containers come from vanilla data | ⏳ quick manual look |
 | EMI, REI | ⏸ no 26.3 builds yet | re-check on release |
 | Curios 17.0.0-beta (NeoForge) | ✅ cosmetics fit Curios slots (head: ears, clips and face pieces; necklace; body: tops; hands; belt; feet: shoes) and count like ours: Drip, sets, effects, rendering. A slot already filled in our outfit wins; backpacks stay in our back slot | `-Pcompat_slots=true`: `CuriosGameTest` with the real mod (beta.3 on NeoForge 26.3.0.76; beta.2 on 26.3.0.16-beta), 2026-10-13. Rendering in game: ⏳ manual |
+| Grave mods (NeoForge) | ✅ cosmetics are part of the death drops (`LivingDropsEvent`), which grave mods collect; a cancelled death keeps the outfit | `grave_mods_collect_cosmetics` GameTest with a stand-in grave listener, 2026-11-01. A real grave mod: ⏳ manual |
+| Grave mods (Fabric) | ⚠️ no shared drops event on Fabric: cosmetics drop next to the grave unless the grave mod supports us | — |
 | Accessories / Trinkets | ⏸ no 26.3 builds yet (the 1.21.1 and 1.20.1 builds support them) | re-check on release |
 | 3D Skin Layers 1.11.3 | ✅ after a fix (2026-10-14): it puts the skin's 3D outer layers into every `PlayerModel` in `setupAnim`, our cosmetic models included, so the outer skin was drawn with the cosmetic's texture (reported by a player). Cosmetic models now keep the outer layer parts hidden. 1.21.1 / 1.20.1 aren't affected (our cosmetic models are `HumanoidModel`s there; its mixin targets `PlayerModel`) | `-Pcompat_models=skinlayers`, `CompatModelsClientTest` screenshots (bisected against ETF and EMF) |
 | Entity Model Features 3.3.11 + Entity Texture Features 7.2.5 + Fresh Animations 1.10.5 | ✅ cosmetics render on the animated player, standing, walking, from behind | `-Pcompat_models=true` with `FEMBOYMOD_COMPAT_PACKS` (Fresh Animations), 2026-10-14 |
