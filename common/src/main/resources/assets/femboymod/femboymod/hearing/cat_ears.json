@@ -1,0 +1,6 @@
+{
+  "items": ["femboymod:cat_ears"],
+  "radius": 16,
+  "notices_first": ["minecraft:creeper", "femboymod:pink_creeper"],
+  "notices_first_radius": 24
+}

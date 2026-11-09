@@ -18,6 +18,8 @@ import dev.eliasnvx.femboymod.world.trade.TradeSets;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -30,7 +32,7 @@ import java.util.Arrays;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import java.util.function.Function;
 
-/** Blocks of SPEC §5.6 and the Thrifter profession (§5.5). */
+/** Blocks and the Thrifter profession. */
 public final class FemboyBlocks {
 
     public static final DeferredRegister<Block> BLOCKS = FemboyItems.BLOCKS;
@@ -95,7 +97,7 @@ public final class FemboyBlocks {
     public static final RegistrySupplier<Block> NEON_SIGN = block("neon_sign", NeonSignBlock::new,
             BlockBehaviour.Properties.of().strength(0.8F).sound(SoundType.GLASS).noOcclusion().lightLevel(state -> NeonSignBlock.LIGHT));
 
-    // Gamer corner furniture (SPEC v1.1)
+    // Gamer corner furniture
     public static final RegistrySupplier<Block> GAMER_CHAIR = block("gamer_chair", GamerChairBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(1.0F).sound(SoundType.WOOL).noOcclusion());
     public static final RegistrySupplier<Block> GAMER_MONITOR = block("gamer_monitor", GamerMonitorBlock::new,
@@ -131,6 +133,22 @@ public final class FemboyBlocks {
             BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(2.0F).sound(SoundType.METAL).noOcclusion());
     public static final RegistrySupplier<Block> VANITY_TABLE = block("vanity_table", VanityTableBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5F).sound(SoundType.WOOD).noOcclusion());
+
+    // Plants (0.3.0): the Debug Flytrap (swamps), catnip (plains, meadows) and Potted Grass. Generation: data/femboymod/worldgen.
+    // Potted variants use the vanilla FlowerPotBlock(Block, Properties) constructor: vanilla files the plant under
+    // FlowerPotBlock's content map, NeoForge's patched constructor adds it to the empty pot (addPlant), so no extra hook.
+    public static final RegistrySupplier<Block> DEBUG_FLYTRAP = block("debug_flytrap", DebugFlytrapBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().instabreak().randomTicks().sound(SoundType.GRASS)
+                    .pushReaction(PushReaction.DESTROY)); // 26.3: POPPED
+    public static final RegistrySupplier<Block> POTTED_DEBUG_FLYTRAP = blockWithoutItem("potted_debug_flytrap",
+            props -> new PottedDebugFlytrapBlock(DEBUG_FLYTRAP.get(), props), flowerPot().randomTicks());
+    public static final RegistrySupplier<Block> CATNIP = block("catnip", CatnipBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().instabreak().sound(SoundType.GRASS)
+                    .offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY)); // 26.3: POPPED
+    public static final RegistrySupplier<Block> POTTED_CATNIP = blockWithoutItem("potted_catnip",
+            props -> new FlowerPotBlock(CATNIP.get(), props), flowerPot());
+    public static final RegistrySupplier<Block> POTTED_GRASS = blockWithoutItem("potted_grass",
+            props -> new PottedGrassBlock(Blocks.SHORT_GRASS, props), flowerPot());
 
     public static final RegistrySupplier<BlockEntityType<ClothingRackBlockEntity>> CLOTHING_RACK_ENTITY = BLOCK_ENTITIES.register(
             "clothing_rack", () -> BlockEntityType.Builder.of(ClothingRackBlockEntity::new, CLOTHING_RACK.get()).build(null));
@@ -173,6 +191,17 @@ public final class FemboyBlocks {
         return block;
     }
 
+    /** Potted plants: no item of their own (made by putting the plant into a flower pot), like vanilla's. */
+    private static RegistrySupplier<Block> blockWithoutItem(String name, Function<BlockBehaviour.Properties, Block> factory,
+                                                            BlockBehaviour.Properties props) {
+        return BLOCKS.register(name, () -> factory.apply(props));
+    }
+
+    /** Vanilla's flower pot properties (private in {@code Blocks}; 26.3 pops instead of DESTROY). */
+    private static BlockBehaviour.Properties flowerPot() {
+        return BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY);
+    }
+
     /** Rose quartz bud/cluster: amethyst-style crystal on any face (height and side inset in pixels). */
     private static RegistrySupplier<Block> cluster(String name, float height, float inset, SoundType sound, int light) {
         return block(name, props -> new AmethystClusterBlock(height, inset, props),
@@ -186,10 +215,11 @@ public final class FemboyBlocks {
                 BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.WOOL).noOcclusion());
     }
 
-    /** The cozy interior pieces (0.2.0); their items get a how-to tooltip ({@code tooltip.femboymod.<name>}). */
-    public static boolean isInterior(Block block) {
+    /** The cozy interior pieces (0.2.0) and the plants (0.3.0): their items get a how-to tooltip ({@code tooltip.femboymod.<name>}). */
+    public static boolean hasHowTo(Block block) {
         return block == BEAN_BAG.get() || block == FLUFFY_RUG.get() || block == FAIRY_LIGHTS.get() || block == LAVA_LAMP.get()
-                || block == PET_BED.get() || block == LAUNDRY_BASKET.get() || block == MINI_FRIDGE.get() || block == VANITY_TABLE.get();
+                || block == PET_BED.get() || block == LAUNDRY_BASKET.get() || block == MINI_FRIDGE.get() || block == VANITY_TABLE.get()
+                || block == DEBUG_FLYTRAP.get() || block == CATNIP.get();
     }
 
     /** Called from FemboyMod.init after the block register. */

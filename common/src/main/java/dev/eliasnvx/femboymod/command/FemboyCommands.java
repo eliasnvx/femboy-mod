@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
-/** {@code /femboymod colorway ...}: debug/creative helper to apply colorways until dyeing lands (Phase 2). */
+/** {@code /femboymod colorway ...}: debug/creative helper to apply colorways. */
 public final class FemboyCommands {
 
     private static final SimpleCommandExceptionType EMPTY_HAND =

@@ -6,7 +6,7 @@ vanity table. Block models, blockstates, item definitions and textures. PLACEHOL
 
 Dyeable pieces (bean bag, rug, pet bed, lava lamp) get one texture per dye color and a blockstate variant per
 color; their items pick the model by the `color` block state (the loot table copies it). The lava lamp's wax moves
-in a slow interpolated animation; fairy lights are steady. Nothing blinks (SPEC §1.1).
+in a slow interpolated animation; fairy lights are steady. Nothing blinks.
 
 1.21.1 port: item models are `models/item/<name>.json`; the dyeable ones pick the color's model through overrides on
 the `femboymod:color` item property (dye id / 16, registered in FemboyModClient). The 26.3 item definitions

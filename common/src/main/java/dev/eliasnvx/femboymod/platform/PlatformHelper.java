@@ -80,4 +80,13 @@ public final class PlatformHelper {
     public static void setProfile(Player player, dev.eliasnvx.femboymod.profile.ProfileData profile) {
         throw new AssertionError();
     }
+
+    /**
+     * May this mob change blocks? Vanilla's mob griefing rule; on NeoForge through its mob griefing event, which claim
+     * and protection mods use to keep mobs out of protected land.
+     */
+    @ExpectPlatform
+    public static boolean canMobGrief(net.minecraft.server.level.ServerLevel level, @org.jetbrains.annotations.Nullable net.minecraft.world.entity.Entity mob) {
+        throw new AssertionError();
+    }
 }

@@ -216,6 +216,7 @@ public final class MirrorRenderer implements BlockEntityRenderer<MirrorBlockEnti
         if (cameraFront > 0) { // not looking at the back of the mirror
             windowPlanes(pose, facing, shape, cameraX, cameraY, cameraZ);
             // players, then pets (#femboymod:mirror_reflected; tameable ones once tamed)
+            net.minecraft.world.entity.Entity cameraEntity = net.minecraft.client.Minecraft.getInstance().getCameraEntity();
             candidates.clear();
             candidates.addAll(level.players());
             level.getEntities(EntityTypeTest.forClass(LivingEntity.class), new AABB(pos).inflate(RANGE),
@@ -231,6 +232,11 @@ public final class MirrorRenderer implements BlockEntityRenderer<MirrorBlockEnti
                 Vec3 feet = reflectedEntity.getPosition(partialTick);
                 double front = MirrorMath.front(feet.x, feet.z, qx, qz, nx, nz);
                 if (front < MIN_FRONT || feet.distanceToSqr(qx, pos.getY() + 1.0, qz) > RANGE * RANGE) {
+                    continue;
+                }
+                // nobody behind a wall: a mirror isn't a window into the next room (the viewer sees the mirror, so skip them)
+                if (reflectedEntity != cameraEntity && !MirrorSight.sees(level, pos, nx, nz,
+                        pos.getY() + (shape.bottom() + shape.top()) / 2, reflectedEntity)) {
                     continue;
                 }
                 double rx = feet.x - 2 * front * nx;

@@ -28,6 +28,22 @@ public final class FemboyTags {
     public static final TagKey<Item> CHILLABLE = TagKey.create(Registries.ITEM, id("chillable"));
     /** Tames, breeds and tempts rubber ducks. */
     public static final TagKey<Item> RUBBER_DUCK_FOOD = TagKey.create(Registries.ITEM, id("rubber_duck_food"));
+    /** Polished floors that socks slide on (carpets and rugs are not in it: they grip). */
+    public static final TagKey<net.minecraft.world.level.block.Block> SOCK_SLIPPERY =
+            TagKey.create(Registries.BLOCK, id("sock_slippery"));
+    /** What cats push off tables: small things without block entities (their drops fly off, see CatMischief). */
+    public static final TagKey<net.minecraft.world.level.block.Block> CAT_KNOCKABLE =
+            TagKey.create(Registries.BLOCK, id("cat_knockable"));
+    /** Right-clicking these with an empty hand counts as touching grass (grass blocks, grass, Potted Grass). */
+    public static final TagKey<net.minecraft.world.level.block.Block> TOUCHABLE_GRASS =
+            TagKey.create(Registries.BLOCK, id("touchable_grass"));
+    /** Cats that smell these nearby get catnip zoomies (catnip, potted catnip). */
+    public static final TagKey<net.minecraft.world.level.block.Block> CATNIP =
+            TagKey.create(Registries.BLOCK, id("catnip"));
+    /** What a Debug Flytrap catches and eats: the Bugs, and vanilla's little crawlers. */
+    public static final TagKey<EntityType<?>> FLYTRAP_PREY = TagKey.create(Registries.ENTITY_TYPE, id("flytrap_prey"));
+    /** Fed to a cat (or smelled nearby): catnip zoomies. Fed to an untamed Stray Cat: a good chance to tame it. */
+    public static final TagKey<Item> CATNIP_ITEMS = TagKey.create(Registries.ITEM, id("catnip"));
     public static final TagKey<net.minecraft.world.level.block.Block> RUBBER_DUCK_SPAWNABLE_ON =
             TagKey.create(Registries.BLOCK, id("rubber_duck_spawnable_on"));
     /** Wearing any of these, the Fashion Critic is impressed no matter the Drip (dark shades: no arguing with them). */

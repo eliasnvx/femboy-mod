@@ -1,68 +1,65 @@
 package dev.eliasnvx.femboymod.client;
 
+import com.mojang.serialization.Codec;
 import dev.eliasnvx.femboymod.config.ClientConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
+import dev.eliasnvx.femboymod.social.HeadpatConsent;
+import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.Nullable;
 
-/** Client options screen (SPEC §10). Server options live in config/femboymod-common.json. */
-public final class ConfigScreen extends Screen {
-
-    private static final int WIDTH = 220;
-    private static final int ROW = 24;
-    private static final int TOP = 40;
-    private final @Nullable Screen parent;
+/**
+ * Client options screen, laid out like vanilla's option screens: a scrolling list, so every option stays
+ * reachable at any window size and GUI scale. Server options live in config/femboymod-common.json.
+ *
+ * <p>1.21.1's {@code OptionsList} only takes full-width rows as {@link OptionInstance}s (26.3 also takes widgets), so
+ * each option is one here; it is not registered with vanilla's {@code options.txt}, the value lives in our config.
+ */
+public final class ConfigScreen extends OptionsSubScreen {
 
     public ConfigScreen(@Nullable Screen parent) {
-        super(Component.translatable("config.femboymod.title"));
-        this.parent = parent;
+        super(parent, Minecraft.getInstance().options, Component.translatable("config.femboymod.title"));
     }
 
     @Override
-    protected void init() {
-        int x = (width - WIDTH) / 2;
-        int y = TOP;
+    protected void addOptions() {
         ClientConfig c = FemboyConfig.client();
-        addToggle(x, y, "show_others_cosmetics", c.showOthersCosmetics(), v -> FemboyConfig.setClient(FemboyConfig.client().withShowOthersCosmetics(v)));
-        addToggle(x, y += ROW, "drip_hud", c.dripHud(), v -> FemboyConfig.setClient(FemboyConfig.client().withDripHud(v)));
-        addRenderableWidget(CycleButton.<ClientConfig.HudCorner>builder(
-                        corner -> Component.translatable("config.femboymod.drip_hud_corner." + corner.getSerializedName()))
-                .withValues(ClientConfig.HudCorner.values())
-                .withInitialValue(c.hudCorner())
-                .create(x, y += ROW, WIDTH, 20, Component.translatable("config.femboymod.drip_hud_corner"),
-                        (button, value) -> FemboyConfig.setClient(FemboyConfig.client().withHudCorner(value))));
-        addToggle(x, y += ROW, "uwu_chat", c.uwuChat(), v -> FemboyConfig.setClient(FemboyConfig.client().withUwuChat(v)));
-        addToggle(x, y += ROW, "nya_sound", c.nyaSound(), v -> FemboyConfig.setClient(FemboyConfig.client().withNyaSound(v)));
-        addToggle(x, y += ROW, "rgb_animations", c.rgbAnimations(), v -> FemboyConfig.setClient(FemboyConfig.client().withRgbAnimations(v)));
-        addRenderableWidget(CycleButton.<ClientConfig.Physics>builder(
-                        p -> Component.translatable("config.femboymod.physics." + p.getSerializedName()))
-                .withValues(ClientConfig.Physics.values())
-                .withInitialValue(c.physics())
-                .create(x, y += ROW, WIDTH, 20, Component.translatable("config.femboymod.physics"),
-                        (button, value) -> FemboyConfig.setClient(FemboyConfig.client().withPhysics(value))));
-        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, b -> onClose())
-                .bounds((width - WIDTH) / 2, y + ROW + 8, WIDTH, 20).build());
+        addToggle("show_others_cosmetics", c.showOthersCosmetics(), v -> FemboyConfig.setClient(FemboyConfig.client().withShowOthersCosmetics(v)));
+        addToggle("drip_hud", c.dripHud(), v -> FemboyConfig.setClient(FemboyConfig.client().withDripHud(v)));
+        list.addBig(cycle("drip_hud_corner", ClientConfig.HudCorner.values(), ClientConfig.HudCorner.CODEC, c.hudCorner(), null,
+                value -> FemboyConfig.setClient(FemboyConfig.client().withHudCorner(value))));
+        addToggle("uwu_chat", c.uwuChat(), v -> FemboyConfig.setClient(FemboyConfig.client().withUwuChat(v)));
+        addToggle("nya_sound", c.nyaSound(), v -> FemboyConfig.setClient(FemboyConfig.client().withNyaSound(v)));
+        addToggle("rgb_animations", c.rgbAnimations(), v -> FemboyConfig.setClient(FemboyConfig.client().withRgbAnimations(v)));
+        list.addBig(cycle("physics", ClientConfig.Physics.values(), ClientConfig.Physics.CODEC, c.physics(), null,
+                value -> FemboyConfig.setClient(FemboyConfig.client().withPhysics(value))));
+        addToggle("reactive_ears_and_tails", c.reactiveCosmetics(), v -> FemboyConfig.setClient(FemboyConfig.client().withReactiveCosmetics(v)));
+        addToggle("first_person_ear_tips", c.earTips(), v -> FemboyConfig.setClient(FemboyConfig.client().withEarTips(v)));
+        list.addBig(cycle("headpats_from_players", HeadpatConsent.values(), HeadpatConsent.CODEC, c.headpats(),
+                Component.translatable("config.femboymod.headpats_from_players.tooltip"),
+                value -> {
+                    FemboyConfig.setClient(FemboyConfig.client().withHeadpats(value));
+                    FemboyModClient.sendHeadpatConsent();
+                }));
     }
 
-    private void addToggle(int x, int y, String key, boolean value, java.util.function.Consumer<Boolean> onChange) {
-        addRenderableWidget(CycleButton.onOffBuilder(value)
-                .create(x, y, WIDTH, 20, Component.translatable("config.femboymod." + key), (button, v) -> onChange.accept(v)));
+    private void addToggle(String key, boolean value, Consumer<Boolean> onChange) {
+        list.addBig(OptionInstance.createBoolean("config.femboymod." + key, value, onChange));
     }
 
-    @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
-        graphics.drawCenteredString(font, title, width / 2, TOP / 2 - 4, 0xFFFFFFFF);
-    }
-
-    @Override
-    public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+    /** A full-width cycle row; each value reads {@code config.femboymod.<key>.<value>}. */
+    private static <T extends Enum<T> & StringRepresentable> OptionInstance<T> cycle(String key, T[] values, Codec<T> codec,
+            T initial, @Nullable Component tooltip, Consumer<T> onChange) {
+        return new OptionInstance<>("config.femboymod." + key,
+                tooltip == null ? OptionInstance.noTooltip() : OptionInstance.cachedConstantTooltip(tooltip),
+                // the cycle button puts "caption: " in front itself
+                (caption, value) -> Component.translatable("config.femboymod." + key + "." + value.getSerializedName()),
+                new OptionInstance.Enum<>(List.of(values), codec), initial, onChange);
     }
 }

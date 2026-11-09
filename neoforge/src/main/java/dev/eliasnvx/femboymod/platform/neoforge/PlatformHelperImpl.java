@@ -10,6 +10,7 @@ import dev.eliasnvx.femboymod.api.cosmetic.LookbookEntry;
 import dev.eliasnvx.femboymod.api.cosmetic.SetBonus;
 import dev.eliasnvx.femboymod.api.drip.DripRules;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticsEvents;
 import dev.eliasnvx.femboymod.block.FemboyBlocks;
 import dev.eliasnvx.femboymod.wardrobe.WardrobePresets;
 import net.minecraft.core.registries.Registries;
@@ -18,10 +19,16 @@ import dev.eliasnvx.femboymod.energy.CaffeineLog;
 import dev.eliasnvx.femboymod.profile.ProfileData;
 import dev.eliasnvx.femboymod.energy.CaffeineRules;
 import dev.eliasnvx.femboymod.energy.EnergyDrink;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -75,6 +82,17 @@ public final class PlatformHelperImpl {
             event.dataPackRegistry(CaffeineRules.REGISTRY_KEY, CaffeineRules.CODEC);
             event.dataPackRegistry(dev.eliasnvx.femboymod.api.combat.DripDamage.REGISTRY_KEY, dev.eliasnvx.femboymod.api.combat.DripDamage.CODEC);
             event.dataPackRegistry(dev.eliasnvx.femboymod.api.backpack.CharmStats.REGISTRY_KEY, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC, dev.eliasnvx.femboymod.api.backpack.CharmStats.CODEC);
+        });
+        // cosmetics join the death drops before anyone else looks at them: grave mods (which read and usually cancel
+        // this event) collect them with the inventory, and a cancelled death never gets here
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, (LivingDropsEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                for (ItemStack stack : CosmeticsEvents.takeDeathDrops(player)) {
+                    ItemEntity drop = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), stack);
+                    drop.setDefaultPickUpDelay();
+                    event.getDrops().add(drop);
+                }
+            }
         });
     }
 
@@ -159,5 +177,9 @@ public final class PlatformHelperImpl {
                 java.util.Set.copyOf(FemboyBlocks.CLOTHING_RACK.get().getStateDefinition().getPossibleStates()), 1, 1));
         POIS.register(FemboyBlocks.LAUNDRY_BASKET_POI.location().getPath(), () -> new PoiType(
                 java.util.Set.copyOf(FemboyBlocks.LAUNDRY_BASKET.get().getStateDefinition().getPossibleStates()), 0, 1));
+    }
+
+    public static boolean canMobGrief(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.Entity mob) {
+        return net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, mob);
     }
 }

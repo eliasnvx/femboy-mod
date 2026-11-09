@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 /**
- * UwU choker (SPEC §4.7): rewrite the chat text at the start of sendChat, i.e. before it is signed, so
+ * UwU choker: rewrite the chat text at the start of sendChat, i.e. before it is signed, so
  * the signature matches and servers show no "modified" marker. Commands use sendCommand and are untouched.
  */
 @Mixin(ClientPacketListener.class)

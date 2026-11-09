@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/** Pure Drip Level formula (SPEC §4.6). No Minecraft state, so it is unit tested directly. */
+/** Pure Drip Level formula. No Minecraft state, so it is unit tested directly. */
 public final class DripCalculator {
 
     private DripCalculator() {

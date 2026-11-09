@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""README / mod page images: banner, section headers and screenshot galleries. No AI images (AGENTS.md):
-backgrounds, the pixel font and the frames are drawn here, the pictures are real in-game screenshots.
+"""README / mod page images: banner, section headers and screenshot galleries.
+Backgrounds, the pixel font and the frames are drawn here, the pictures are real in-game screenshots.
 
     FEMBOYMOD_DOCS_SHOTS=1 ./gradlew :fabric:runClientGameTest   # takes the docs_* screenshots
     python3 tools/docs/make_readme_images.py                       # writes docs/images/*.png
@@ -312,7 +312,7 @@ def selfie():
     return Image.open(files[-1]).convert("RGB") if files else None
 
 
-# Only icons drawn by our own tools (no AI drafts) go on the pages; see ASSET_PROVENANCE.md.
+# Only icons drawn by our own tools (no AI drafts) go on the pages.
 HEADERS = {
     "header_cosmetics": ("COSMETICS & OUTFITS", "cat_ear_headphones", (247, 168, 204)),
     "header_drip": ("DRIP, SETS & STYLE", "crop_sweater", (245, 169, 184)),

@@ -22,6 +22,7 @@
     "LivingEntityHurtMixin",
     "InventoryMenuMixin",
     "ItemEntityDamageMixin",
-    "PetBedGoalsMixin"
+    "PetBedGoalsMixin",
+    "LivingEntitySlideMixin"
   ]
 }

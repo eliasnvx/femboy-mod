@@ -50,6 +50,7 @@ public final class BuiltinEffects {
         registry.register(id("damage_bonus"), DamageBonusEffect.CODEC);
         registry.register(id("glow_friends"), GlowFriendsEffect.CODEC);
         registry.register(id("muffle_sounds"), MuffleSoundsEffect.CODEC);
+        registry.register(id("slide"), SlideEffect.CODEC);
     }
 
     /**
@@ -306,6 +307,33 @@ public final class BuiltinEffects {
         @Override
         public MapCodec<GlowFriendsEffect> codec() {
             return CODEC;
+        }
+    }
+
+    /**
+     * Sock sliding on polished floors ({@link SockSlide}): {@code grip} 0..1 scales the floor's friction (lower =
+     * slipperier). The wearer's client applies it to their movement; the server only listens (swish, advancement).
+     * Socks use it with the {@code femboymod:no_shoes} condition.
+     */
+    public record SlideEffect(float grip) implements CosmeticEffect {
+
+        public static final MapCodec<SlideEffect> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.floatRange(0.0F, 1.0F).fieldOf("grip").forGetter(SlideEffect::grip)
+        ).apply(i, SlideEffect::new));
+
+        @Override
+        public MapCodec<SlideEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public void tick(ServerPlayer player, EffectSource source) {
+            SockSlide.listen(player);
+        }
+
+        @Override
+        public void onDeactivate(ServerPlayer player, EffectSource source) {
+            SockSlide.forget(player);
         }
     }
 

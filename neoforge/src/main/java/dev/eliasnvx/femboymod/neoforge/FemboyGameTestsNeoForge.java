@@ -17,7 +17,7 @@ import java.util.List;
  */
 public final class FemboyGameTestsNeoForge {
 
-    /** Only for the Curios check; the shared tests bring their own ({@link CosmeticGameTests.Entry#maxTicks()}). */
+    /** Only for the NeoForge-only checks; the shared tests bring their own ({@link CosmeticGameTests.Entry#maxTicks()}). */
     private static final int MAX_TICKS = CosmeticGameTests.Entry.DEFAULT_MAX_TICKS;
     private static final long SETUP_TICKS = 0L;
     /** 8x8x8 of air in {@code data/femboymod/structure/empty.nbt}, the same size as Fabric's empty template. */
@@ -40,6 +40,8 @@ public final class FemboyGameTestsNeoForge {
                 .map(entry -> new TestFunction(FemboyMod.MOD_ID, FemboyMod.MOD_ID + "." + entry.name(), EMPTY_STRUCTURE,
                         entry.maxTicks(), SETUP_TICKS, true, entry.body()))
                 .toList());
+        tests.add(new TestFunction(FemboyMod.MOD_ID, FemboyMod.MOD_ID + ".grave_mods_collect_cosmetics", EMPTY_STRUCTURE,
+                MAX_TICKS, SETUP_TICKS, true, GraveDropsGameTest::graveModsCollectCosmetics));
         if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
             // -Pcompat_slots=true: only the Curios check; Curios can't sync to the shared tests' mock players
             tests.clear();

@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Pure UwU text transformation (SPEC §4.7): no Minecraft classes, unit tested. Commands and links are
+ * Pure UwU text transformation: no Minecraft classes, unit tested. Commands and links are
  * never changed; the result is dropped (original kept) if it would exceed the chat length limit.
  */
 public final class UwuTransformer {
