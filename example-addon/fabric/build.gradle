@@ -23,7 +23,7 @@ dependencies {
     common(project(path: ":example-addon-common")) { transitive false }
 }
 
-// Addon GameTests run with `build` (CI): API regression check (SPEC §8.5, §13)
+// Addon GameTests run with `build` (CI): API regression check
 fabricApi {
     configureTests {
         createSourceSet = true

@@ -3,7 +3,7 @@ package dev.eliasnvx.femboymod.api.cosmetic;
 import dev.eliasnvx.femboymod.api.FemboyApi;
 import net.minecraft.resources.Identifier;
 
-/** Ids of the built-in cosmetic slots (SPEC §4.3). */
+/** Ids of the built-in cosmetic slots. */
 public final class FemboySlots {
 
     /** Ears, hair clips, headphones. */

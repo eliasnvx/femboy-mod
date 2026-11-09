@@ -41,5 +41,5 @@ dependencies {
 
 tasks.withType(PublishToMavenRepository).configureEach { enabled = false }
 
-// Addon GameTests run with `build` (CI): API regression check (SPEC §8.5, §13)
+// Addon GameTests run with `build` (CI): API regression check
 tasks.named("check") { dependsOn "runGameTestServer" }
