@@ -4,17 +4,25 @@ import dev.eliasnvx.femboymod.api.FemboyApi;
 import dev.eliasnvx.femboymod.api.FemboyCreativeTabs;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.colorway.ColorwayPattern;
+import dev.eliasnvx.femboymod.api.cosmetic.CosmeticStats;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsEvents;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.menu.CosmeticsMenu;
 import dev.eliasnvx.femboymod.network.CosmeticsSyncPayload;
+import dev.eliasnvx.femboymod.network.SyncedRegistries;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Lifecycle;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
@@ -24,7 +32,11 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.EntityEvent;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -38,11 +50,15 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
- * Loader-independent GameTest bodies (SPEC §13). Registered by
+ * Loader-independent GameTest bodies. Registered by
  * {@code fabric/src/gametest} (Fabric) and {@code FemboyGameTestsForge} (Forge).
  */
 public final class CosmeticGameTests {
@@ -53,9 +69,12 @@ public final class CosmeticGameTests {
             new Entry("right_click_equip_swaps", CosmeticGameTests::rightClickEquipSwaps),
             new Entry("quick_move_conserves_items", CosmeticGameTests::quickMoveConservesItems),
             new Entry("death_drops_cosmetics", CosmeticGameTests::deathDropsCosmetics),
+            new Entry("real_death_drops_cosmetics", CosmeticGameTests::realDeathDropsCosmetics),
+            new Entry("cancelled_death_keeps_cosmetics", CosmeticGameTests::cancelledDeathKeepsCosmetics),
             new Entry("attachment_codec_round_trip", CosmeticGameTests::attachmentCodecRoundTrip),
             new Entry("sync_payload_round_trip", CosmeticGameTests::syncPayloadRoundTrip),
             new Entry("colorway_patterns_loaded", CosmeticGameTests::colorwayPatternsLoaded),
+            new Entry("synced_registries_decode_before_tags", CosmeticGameTests::syncedRegistriesDecodeBeforeTags),
             new Entry("creative_tab_contains_items", CosmeticGameTests::creativeTabContainsItems));
 
     private static final ResourceLocation HEAD = FemboySlots.HEAD_ACCESSORY;
@@ -81,6 +100,10 @@ public final class CosmeticGameTests {
         all.addAll(ExternalSlotsGameTests.ALL);
         all.addAll(FriendsGameTests.ALL);
         all.addAll(InteriorGameTests.ALL);
+        all.addAll(SockSlideGameTests.ALL);
+        all.addAll(CatMischiefGameTests.ALL);
+        all.addAll(PlantGameTests.ALL);
+        all.addAll(NetworkGameTests.ALL);
         return all;
     }
 
@@ -168,6 +191,56 @@ public final class CosmeticGameTests {
         });
     }
 
+    /** Players whose death the listener below cancels, as a revive mod would; it ignores everyone else. */
+    private static final Set<UUID> SPARED = ConcurrentHashMap.newKeySet();
+    private static boolean listening;
+
+    private static synchronized void listen() {
+        if (!listening) {
+            listening = true;
+            EntityEvent.LIVING_DEATH.register((entity, source) ->
+                    SPARED.contains(entity.getUUID()) ? EventResult.interruptFalse() : EventResult.pass());
+        }
+    }
+
+    private static List<ItemEntity> earsAround(GameTestHelper helper, ServerPlayer player) {
+        return helper.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(3),
+                item -> item.getItem().is(FemboyItems.CAT_EARS.get()));
+    }
+
+    /** A real death (through the loader hooks, not a direct call) drops what was worn, once. */
+    public static void realDeathDropsCosmetics(GameTestHelper helper) {
+        ServerPlayer player = InteriorGameTests.survivalPlayer(helper, "death_tester", new BlockPos(1, 1, 1));
+        try {
+            CosmeticsManager.set(player, HEAD, new ItemStack(FemboyItems.CAT_EARS.get()));
+            player.die(player.damageSources().genericKill());
+            helper.assertTrue(CosmeticsManager.get(player).isEmpty(), "the slots are empty after dying");
+            List<ItemEntity> drops = earsAround(helper, player);
+            GameTestAsserts.assertValueEqual(helper, drops.size(), 1, "the ears dropped with the death loot");
+            drops.forEach(Entity::discard);
+            helper.succeed();
+        } finally {
+            helper.getLevel().getServer().getPlayerList().remove(player);
+        }
+    }
+
+    /** Another mod cancels the death (a revive mod): the outfit stays on, nothing drops. */
+    public static void cancelledDeathKeepsCosmetics(GameTestHelper helper) {
+        listen();
+        ServerPlayer player = InteriorGameTests.survivalPlayer(helper, "revive_tester", new BlockPos(1, 1, 1));
+        SPARED.add(player.getUUID());
+        try {
+            CosmeticsManager.set(player, HEAD, new ItemStack(FemboyItems.CAT_EARS.get()));
+            player.die(player.damageSources().genericKill());
+            helper.assertTrue(CosmeticsManager.get(player).get(HEAD).is(FemboyItems.CAT_EARS.get()), "the ears are still worn");
+            helper.assertTrue(earsAround(helper, player).isEmpty(), "and nothing dropped");
+            helper.succeed();
+        } finally {
+            SPARED.remove(player.getUUID());
+            helper.getLevel().getServer().getPlayerList().remove(player);
+        }
+    }
+
     public static void attachmentCodecRoundTrip(GameTestHelper helper) {
         CosmeticInventory inventory = sampleInventory(helper);
         var ops = RegistryOps.create(NbtOps.INSTANCE, helper.getLevel().registryAccess());
@@ -178,7 +251,7 @@ public final class CosmeticGameTests {
     }
 
     public static void syncPayloadRoundTrip(GameTestHelper helper) {
-        CosmeticsSyncPayload payload = new CosmeticsSyncPayload(42, sampleInventory(helper), false);
+        CosmeticsSyncPayload payload = new CosmeticsSyncPayload(42, sampleInventory(helper), false, true);
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
             payload.write(buf);
@@ -186,6 +259,7 @@ public final class CosmeticGameTests {
             GameTestAsserts.assertValueEqual(helper, decoded.entityId(), 42, "entity id");
             assertSame(helper, payload.cosmetics(), decoded.cosmetics());
             helper.assertFalse(decoded.armorHidingAllowed(), "armor hiding flag");
+            helper.assertTrue(decoded.armorRevealed(), "PvP reveal flag");
         } finally {
             buf.release();
         }
@@ -199,6 +273,75 @@ public final class CosmeticGameTests {
         GameTestAsserts.assertValueEqual(helper, trans.value().stripes().size(), 5, "trans flag stripes");
         helper.assertTrue(registry.size() >= 12, "All built-in patterns should load, got " + registry.size());
         helper.succeed();
+    }
+
+    /**
+     * A client joining a dedicated server decodes the synced data pack registries from the login packet, before it has
+     * any tags (1.20.1): the programming socks' {@code #femboymod:bugs} failed with "Missing tag" and disconnected every
+     * player. Every entry is sent the way the server sends it and read the way that client reads it.
+     */
+    public static void syncedRegistriesDecodeBeforeTags(GameTestHelper helper) {
+        RegistryAccess access = helper.getLevel().registryAccess();
+        RegistryOps<Tag> server = RegistryOps.create(NbtOps.INSTANCE, access);
+        RegistryOps.RegistryInfoLookup beforeTags = CosmeticGameTests::builtInWithoutTags;
+        RegistryOps<Tag> joiningClient = RegistryOps.create(NbtOps.INSTANCE, beforeTags);
+        int sent = 0;
+        for (SyncedRegistries.Entry<?> entry : SyncedRegistries.ALL) {
+            sent += roundTrip(helper, access, entry, server, joiningClient);
+        }
+        helper.assertTrue(sent > SyncedRegistries.ALL.size(), "synced entries checked: " + sent);
+
+        CosmeticStats socks = access.registryOrThrow(CosmeticStats.REGISTRY_KEY)
+                .getOrThrow(CosmeticStats.keyOf(FemboyItems.PROGRAMMING_SOCKS.get()));
+        Tag encoded = CosmeticStats.CODEC.encodeStart(server, socks).result().orElseThrow();
+        helper.assertTrue(encoded.toString().contains("#femboymod:bugs"), "the socks still reference a tag");
+        boolean plainFails;
+        try {
+            plainFails = CosmeticStats.CODEC.parse(joiningClient, encoded).result().isEmpty();
+        } catch (IllegalStateException missingTag) {
+            plainFails = true;
+        }
+        helper.assertTrue(plainFails, "the JSON codec needs tags, so this test reproduces the failed join");
+        helper.succeed();
+    }
+
+    private static <T> int roundTrip(GameTestHelper helper, RegistryAccess access, SyncedRegistries.Entry<T> entry,
+            RegistryOps<Tag> server, RegistryOps<Tag> client) {
+        Codec<T> network = entry.networkCodec();
+        int count = 0;
+        for (Map.Entry<ResourceKey<T>, T> element : access.registryOrThrow(entry.key()).entrySet()) {
+            ResourceLocation id = element.getKey().location();
+            Tag sent = network.encodeStart(server, element.getValue()).result().orElse(null);
+            helper.assertTrue(sent != null, "the server encodes " + id);
+            Optional<T> received = network.parse(client, sent).result();
+            helper.assertTrue(received.isPresent(), "a joining client decodes " + id);
+            GameTestAsserts.assertValueEqual(helper, network.encodeStart(server, received.get()).result().orElse(null), sent,
+                    "round trip of " + id);
+            count++;
+        }
+        return count;
+    }
+
+    /** What a 1.20.1 client reads the login packet with: built-in registries, no tags until the tags packet. */
+    @SuppressWarnings("unchecked")
+    private static <T> Optional<RegistryOps.RegistryInfo<T>> builtInWithoutTags(ResourceKey<? extends Registry<? extends T>> key) {
+        Registry<T> registry = (Registry<T>) BuiltInRegistries.REGISTRY.get(key.location());
+        if (registry == null) {
+            return Optional.empty();
+        }
+        HolderLookup.RegistryLookup<T> lookup = registry.asLookup();
+        HolderGetter<T> untagged = new HolderGetter<>() {
+            @Override
+            public Optional<Holder.Reference<T>> get(ResourceKey<T> id) {
+                return lookup.get(id);
+            }
+
+            @Override
+            public Optional<HolderSet.Named<T>> get(TagKey<T> tag) {
+                return Optional.empty();
+            }
+        };
+        return Optional.of(new RegistryOps.RegistryInfo<>(lookup, untagged, Lifecycle.stable()));
     }
 
     public static void creativeTabContainsItems(GameTestHelper helper) {

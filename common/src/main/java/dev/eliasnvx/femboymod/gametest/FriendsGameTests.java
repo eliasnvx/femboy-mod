@@ -13,7 +13,11 @@ import dev.eliasnvx.femboymod.halloween.TrickOrTreat;
 import dev.eliasnvx.femboymod.pet.PetOutfitItem;
 import dev.eliasnvx.femboymod.pet.PetOutfits;
 import dev.eliasnvx.femboymod.registry.FemboyItems;
+import dev.eliasnvx.femboymod.network.HeadpatConsentPayload;
+import dev.eliasnvx.femboymod.social.HeadpatConsent;
 import dev.eliasnvx.femboymod.social.Headpats;
+import io.netty.buffer.Unpooled;
+import net.minecraft.network.FriendlyByteBuf;
 import dev.eliasnvx.femboymod.world.FemboyGameRules;
 import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
@@ -60,7 +64,8 @@ public final class FriendsGameTests {
             new CosmeticGameTests.Entry("new_mobs_run_their_ai", FriendsGameTests::newMobsRunTheirAi),
             new CosmeticGameTests.Entry("rubber_duck_floats_high", FriendsGameTests::rubberDuckFloatsHigh),
             new CosmeticGameTests.Entry("headpat_a_pet", FriendsGameTests::headpatAPet),
-            new CosmeticGameTests.Entry("headpat_a_player", FriendsGameTests::headpatAPlayer));
+            new CosmeticGameTests.Entry("headpat_a_player", FriendsGameTests::headpatAPlayer),
+            new CosmeticGameTests.Entry("headpats_need_consent", FriendsGameTests::headpatsNeedConsent));
 
     private static final BlockPos MOB_POS = new BlockPos(1, 2, 1);
     /** A pet that could use some healing. */
@@ -349,5 +354,47 @@ public final class FriendsGameTests {
         helper.getLevel().getServer().getPlayerList().remove(patter);
         helper.getLevel().getServer().getPlayerList().remove(friend);
         helper.succeed();
+    }
+
+    /** Nobody: no headpat; teammates: only from the same team; everyone: anyone. The option survives the network. */
+    public static void headpatsNeedConsent(GameTestHelper helper) {
+        var level = helper.getLevel();
+        // distinct names: teams go by scoreboard name, and mock players all share one
+        ServerPlayer patter = InteriorGameTests.survivalPlayer(helper, "headpat_patter", new BlockPos(1, 1, 1));
+        ServerPlayer friend = InteriorGameTests.survivalPlayer(helper, "headpat_friend", new BlockPos(2, 1, 1));
+        ServerPlayer stranger = InteriorGameTests.survivalPlayer(helper, "headpat_stranger", new BlockPos(3, 1, 1));
+        var team = level.getScoreboard().addPlayerTeam("femboymod_headpat_test");
+        try {
+            GameTestAsserts.assertValueEqual(helper, Headpats.consent(friend), HeadpatConsent.EVERYONE, "until the client says otherwise");
+            Headpats.setConsent(friend, HeadpatConsent.NOBODY);
+            helper.assertFalse(Headpats.pat(level, patter, friend), "nobody: no headpat");
+            helper.assertFalse(friend.hasEffect(FemboyEffects.holder(FemboyEffects.COZY)), "and no Cozy");
+            Headpats.setConsent(friend, HeadpatConsent.TEAMMATES);
+            helper.assertFalse(Headpats.pat(level, patter, friend), "teammates only, and they share no team");
+            level.getScoreboard().addPlayerToTeam(friend.getScoreboardName(), team);
+            level.getScoreboard().addPlayerToTeam(patter.getScoreboardName(), team);
+            helper.assertTrue(Headpats.pat(level, patter, friend), "a teammate's headpat lands");
+            helper.assertTrue(friend.hasEffect(FemboyEffects.holder(FemboyEffects.COZY)), "the friend is Cozy");
+            helper.assertFalse(Headpats.pat(level, stranger, friend), "someone from outside the team can't");
+            Headpats.setConsent(friend, HeadpatConsent.EVERYONE);
+            helper.assertTrue(Headpats.pat(level, stranger, friend), "everyone: anyone can");
+
+            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            try {
+                new HeadpatConsentPayload(HeadpatConsent.TEAMMATES).write(buf);
+                GameTestAsserts.assertValueEqual(helper, HeadpatConsentPayload.read(buf).consent(), HeadpatConsent.TEAMMATES, "round trip");
+                buf.writeVarInt(99);
+                GameTestAsserts.assertValueEqual(helper, HeadpatConsentPayload.read(buf).consent(), HeadpatConsent.NOBODY,
+                        "an unknown value means the strictest");
+            } finally {
+                buf.release();
+            }
+            helper.succeed();
+        } finally {
+            level.getScoreboard().removePlayerTeam(team);
+            for (ServerPlayer player : List.of(patter, friend, stranger)) {
+                level.getServer().getPlayerList().remove(player);
+            }
+        }
     }
 }

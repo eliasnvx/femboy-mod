@@ -334,10 +334,11 @@ public final class InteriorGameTests {
     }
 
     /**
-     * A connected survival player (mock players are creative: dyes and socks would not be used up or stolen). Like
-     * {@link MockPlayers}, the connection gets an {@link EmbeddedChannel} so Forge's login hooks can send to it.
+     * A connected survival player (mock players are creative: dyes and socks would not be used up or stolen), in the
+     * player list; remove it when done. Like {@link MockPlayers}, the connection gets an {@link EmbeddedChannel} so
+     * Forge's login hooks can send to it.
      */
-    private static ServerPlayer survivalPlayer(GameTestHelper helper, String name, BlockPos pos) {
+    public static ServerPlayer survivalPlayer(GameTestHelper helper, String name, BlockPos pos) {
         MinecraftServer server = helper.getLevel().getServer();
         ServerPlayer player = new ServerPlayer(server, helper.getLevel(), new GameProfile(UUID.randomUUID(), name));
         Connection connection = new Connection(PacketFlow.SERVERBOUND);
