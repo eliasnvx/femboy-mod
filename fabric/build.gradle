@@ -23,14 +23,14 @@ repositories {
 }
 
 dependencies {
-    // Optional: config button in Mod Menu (SPEC §9)
+    // Optional: config button in Mod Menu
     modCompileOnly("com.terraformersmc:modmenu:${rootProject.modmenu_version}") { transitive false }
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
     modImplementation "dev.architectury:architectury-fabric:${rootProject.architectury_api_version}"
     modImplementation "software.bernie.geckolib:geckolib-fabric-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
-    // Slot mods (SPEC §4.3): wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds Trinkets to the dev runtime
+    // Slot mods: wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds Trinkets to the dev runtime
     modCompileOnly("maven.modrinth:trinkets:${rootProject.trinkets_fabric_version}") { transitive false }
     modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}") { transitive false }
     modCompileOnly("maven.modrinth:accessories:${rootProject.accessories_fabric_version}") { transitive false }
@@ -40,7 +40,7 @@ dependencies {
         modRuntimeOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${rootProject.cca_version}"
     }
 
-    // Compat smoke test (SPEC §9): ./gradlew :fabric:runClientGameTest -Pcompat_render=true
+    // Compat smoke test: ./gradlew :fabric:runClientGameTest -Pcompat_render=true
     // loads Sodium + Iris into the dev runtime only. Never a compile dependency.
     if (project.findProperty("compat_render") == "true") {
         modRuntimeOnly "maven.modrinth:sodium:${rootProject.sodium_fabric_version}"
@@ -50,7 +50,7 @@ dependencies {
     if (project.findProperty("compat_figura") == "true") {
         modRuntimeOnly "maven.modrinth:figura:${rootProject.figura_fabric_version}"
     }
-    // JEI compat check (SPEC §9): ./gradlew :fabric:runClient -Pcompat_jei=true
+    // JEI compat check: ./gradlew :fabric:runClient -Pcompat_jei=true
     if (project.findProperty("compat_jei") == "true") {
         modRuntimeOnly "mezz.jei:jei-${rootProject.minecraft_version}-fabric:${rootProject.jei_version}"
     }
@@ -61,7 +61,7 @@ dependencies {
     shadowBundle(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
-// Server GameTests (SPEC §13): shared bodies in common/.../gametest, Fabric glue in src/gametest.
+// Server GameTests: shared bodies in common/.../gametest, Fabric glue in src/gametest.
 // They run as part of `build` via the generated `runGameTest` task.
 fabricApi {
     configureTests {
@@ -84,7 +84,7 @@ loom {
             source sourceSets.gametest
             runDir "build/run/compatClient"
             property "femboymod.compat_harness", "true"
-            // -Pharness_scene=pets|halloween|mobs|interior|mirror picks another CompatHarness scene
+            // -Pharness_scene=pets|halloween|mobs|interior|mirror|ears|slide|cats|plants|blocks|settings picks another CompatHarness scene
             property "femboymod.harness_scene", project.findProperty("harness_scene") ?: "compat"
             programArgs "--width", "1600", "--height", "900"
         }
@@ -116,7 +116,7 @@ def remapCompatHarnessJar = tasks.register("remapCompatHarnessJar", net.fabricmc
 tasks.register("runProdCompatClient", net.fabricmc.loom.task.prod.ClientProductionRunTask) {
     mods.from(remapJar, remapCompatHarnessJar, configurations.prodCompatMods)
     jvmArgs.add("-Dfemboymod.compat_harness=true")
-    // -Pharness_scene=pets|halloween|mobs|interior|mirror picks another CompatHarness scene
+    // -Pharness_scene=pets|halloween|mobs|interior|mirror|ears|slide|cats|plants|blocks|settings picks another CompatHarness scene
     jvmArgs.add("-Dfemboymod.harness_scene=${project.findProperty("harness_scene") ?: "compat"}")
     programArgs.addAll("--width", "1600", "--height", "900")
     runDir = layout.buildDirectory.dir("run/prodCompatClient")
