@@ -15,9 +15,6 @@ bin/
 .env.*
 .env.example
 
-# Raw AI drafts never go to git or the jar (SPEC §11.2)
-art/generated/
-
 # Python
 __pycache__/
 *.pyc
@@ -28,34 +25,5 @@ __pycache__/
 # OS
 .DS_Store
 
-# Local agent overrides
-.claude/settings.local.json
-CLAUDE.local.md
-
 # Minecraft logs written by dev tools
 logs/
-
-# Private notes and agent rules (kept locally)
-.agents/
-.claude/
-AGENTS.md
-CLAUDE.md
-SPEC.md
-ASSET_PROVENANCE.md
-docs/PROGRESS.md
-docs/decisions.md
-docs/release-checklist.md
-docs/art/
-docs/pages/
-tools/sync-agent-rules.sh
-
-# AI image tooling (drafts and helpers stay local)
-tools/texgen/
-art/picks.yaml
-tools/docs/square_icon.py
-
-# Rejected procedural icon options
-art/icon/options/
-
-# Earlier AI-drafted slot icons, kept locally (the shipped 16x16 sprites come from tools/gui/make_slot_icons.py)
-art/source/slot_icons/raw/

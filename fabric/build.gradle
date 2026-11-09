@@ -23,20 +23,20 @@ repositories {
 }
 
 dependencies {
-    // Optional: config button in Mod Menu (SPEC §9)
+    // Optional: config button in Mod Menu
     modCompileOnly("com.terraformersmc:modmenu:${rootProject.modmenu_version}") { transitive false }
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
     modImplementation "dev.architectury:architectury-fabric:${rootProject.architectury_api_version}"
     modImplementation "software.bernie.geckolib:geckolib-fabric-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
-    // Compat smoke test (SPEC §9): ./gradlew :fabric:runClientGameTest -Pcompat_render=true
+    // Compat smoke test: ./gradlew :fabric:runClientGameTest -Pcompat_render=true
     // loads Sodium + Iris into the dev runtime only. Never a compile dependency.
     if (project.findProperty("compat_render") == "true") {
         modRuntimeOnly "maven.modrinth:sodium:${rootProject.sodium_fabric_version}"
         modRuntimeOnly "maven.modrinth:iris:${rootProject.iris_fabric_version}"
     }
-    // Slot mods (SPEC §4.3): wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds them to the dev runtime
+    // Slot mods: wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds them to the dev runtime
     modCompileOnly("maven.modrinth:trinkets:${rootProject.trinkets_fabric_version}") { transitive false }
     modCompileOnly("org.ladysnake.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}") { transitive false }
     modCompileOnly("maven.modrinth:accessories:${rootProject.accessories_fabric_version}") { transitive false }
@@ -49,7 +49,7 @@ dependencies {
     if (project.findProperty("compat_figura") == "true") {
         modRuntimeOnly "maven.modrinth:figura:${rootProject.figura_fabric_version}"
     }
-    // JEI compat check (SPEC §9): ./gradlew :fabric:runClient -Pcompat_jei=true
+    // JEI compat check: ./gradlew :fabric:runClient -Pcompat_jei=true
     if (project.findProperty("compat_jei") == "true") {
         modRuntimeOnly "mezz.jei:jei-${rootProject.minecraft_version}-fabric:${rootProject.jei_version}"
     }
@@ -60,7 +60,7 @@ dependencies {
     shadowBundle(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
-// Server GameTests (SPEC §13): shared bodies in common/.../gametest, Fabric glue in src/gametest.
+// Server GameTests: shared bodies in common/.../gametest, Fabric glue in src/gametest.
 // They run as part of `build` via the generated `runGameTest` task.
 fabricApi {
     configureTests {
