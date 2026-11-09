@@ -30,6 +30,8 @@ public final class MirrorClientTest implements FabricClientGameTest {
             world.getServer().runCommand("weather clear");
             world.getServer().runCommand("time set midnight");
             world.getServer().runCommand("execute as @p at @s align xz run tp @s ~0.5 ~ ~0.5 0 10");
+            net.minecraft.core.BlockPos start = world.getServer().computeOnServer(server ->
+                    server.getPlayerList().getPlayers().getFirst().blockPosition());
             world.getServer().runCommand("execute at @p run setblock ~ ~ ~4 femboymod:mirror[facing=north,half=lower]");
             world.getServer().runCommand("execute at @p run setblock ~ ~1 ~4 femboymod:mirror[facing=north,half=upper]");
             context.runOnClient(mc -> {
@@ -68,6 +70,25 @@ public final class MirrorClientTest implements FabricClientGameTest {
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
             context.waitTicks(SETTLE);
             shot(context, "mirror_bare_noon");
+
+            // a cat beside the mirror is reflected; with a wall between it and the mirror it isn't (no seeing into the
+            // next room). Seen from the left, so the cat's reflection is in the glass.
+            world.getServer().runCommand(String.format(java.util.Locale.ROOT, "tp @p %.1f %d %.1f -50 10",
+                    start.getX() - 2.5, start.getY(), start.getZ() + 1.5));
+            world.getServer().runOnServer(server -> {
+                var level = server.overworld();
+                var cat = net.minecraft.world.entity.EntityTypes.CAT.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+                cat.snapTo(start.getX() + 2.5, start.getY(), start.getZ() + 2.5, 0.0F, 0.0F);
+                cat.setNoAi(true);
+                cat.tame(server.getPlayerList().getPlayers().getFirst()); // mirrors show pets once tamed
+                level.addFreshEntity(cat);
+            });
+            context.waitTicks(SETTLE);
+            shot(context, "mirror_pet_in_sight");
+            world.getServer().runCommand(String.format(java.util.Locale.ROOT, "fill %d %d %d %d %d %d minecraft:stone",
+                    start.getX() + 1, start.getY(), start.getZ() + 3, start.getX() + 1, start.getY() + 1, start.getZ() + 3));
+            context.waitTicks(SETTLE);
+            shot(context, "mirror_pet_behind_wall");
         }
     }
 

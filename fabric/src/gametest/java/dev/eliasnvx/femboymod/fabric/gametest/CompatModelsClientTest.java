@@ -188,7 +188,7 @@ public final class CompatModelsClientTest implements FabricClientGameTest {
     }
 
     /** Copies the pack into Iris's folder and turns it on (Iris internals by reflection: dev-only test code). */
-    private static void enableShaderPack(Path zip) throws ReflectiveOperationException, java.io.IOException {
+    static void enableShaderPack(Path zip) throws ReflectiveOperationException, java.io.IOException {
         Class<?> iris = Class.forName("net.irisshaders.iris.Iris");
         Path dir = (Path) iris.getMethod("getShaderpacksDirectory").invoke(null);
         Files.createDirectories(dir);

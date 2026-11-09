@@ -323,8 +323,11 @@ public final class InteriorGameTests {
                 entity -> entity.getItem().is(item));
     }
 
-    /** A connected survival player (mock players are creative: dyes and socks would not be used up or stolen). */
-    private static ServerPlayer survivalPlayer(GameTestHelper helper, String name, BlockPos pos) {
+    /**
+     * A connected survival player (mock players are creative: dyes and socks would not be used up or stolen), in the
+     * player list; remove it when done.
+     */
+    public static ServerPlayer survivalPlayer(GameTestHelper helper, String name, BlockPos pos) {
         var server = helper.getLevel().getServer();
         CommonListenerCookie cookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), name), false);
         ServerPlayer player = new ServerPlayer(server, helper.getLevel(), cookie.gameProfile(), cookie.clientInformation());

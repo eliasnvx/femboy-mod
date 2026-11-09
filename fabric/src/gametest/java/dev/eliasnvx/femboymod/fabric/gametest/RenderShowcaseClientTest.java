@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Visual check of the placeholder cosmetics (SPEC §16 Phase 2): full set on the player, screenshots
+ * Visual check of the placeholder cosmetics: full set on the player, screenshots
  * from the front and back, standing and walking. Screenshots land in the run dir's screenshots folder.
  * Run with {@code ./gradlew :fabric:runClientGameTest}.
  */
@@ -143,7 +143,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             world.getServer().runCommand("tp @p ~ ~ ~ 0 0");
             context.runOnClient(mc -> mc.options.fov().set(DEFAULT_FOV));
 
-            // Backpack with charms on the back (SPEC §5.3)
+            // Backpack with charms on the back
             world.getServer().runOnServer(server -> {
                 ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
                 ItemStack backpack = new ItemStack(FemboyItems.CANVAS_BACKPACK.get());
@@ -176,13 +176,13 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.runOnClient(mc -> mc.player.closeContainer());
             context.waitTicks(SETTLE_TICKS / 4);
 
-            // UwU choker: outgoing chat is rewritten before signing (SPEC §4.7); server log shows the result
+            // UwU choker: outgoing chat is rewritten before signing; server log shows the result
             context.runOnClient(mc -> mc.player.connection.sendChat("привет друг"));
             context.runOnClient(mc -> mc.player.connection.sendChat("hello friend, see https://example.org/real"));
             context.runOnClient(mc -> mc.player.connection.sendCommand("say command stays hello"));
             context.waitTicks(SETTLE_TICKS);
 
-            // Phase 4: world content in front of the player (camera looks north)
+            // World content in front of the player (camera looks north)
             world.getServer().runCommand("fill ~-4 ~ ~-6 ~4 ~3 ~-2 air");
             world.getServer().runCommand("setblock ~-2 ~ ~-4 femboymod:clothing_rack[facing=south]");
             world.getServer().runCommand("setblock ~ ~ ~-5 femboymod:wardrobe[facing=south]");
@@ -508,7 +508,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             world.getServer().runCommand("tp @p ~ ~ ~ 20 10");
             context.waitTicks(SETTLE_TICKS / 2);
             context.takeScreenshot("femboymod_first_person_nails");
-            // Emotes (SPEC v1.2): heart hands, wave and peace, seen from the front
+            // Emotes: heart hands, wave and peace, seen from the front
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
             world.getServer().runCommand("tp @p ~ ~ ~ 20 -10");
             context.runOnClient(mc -> dev.eliasnvx.femboymod.client.EmoteClient.show(mc.player.getId(), dev.eliasnvx.femboymod.emote.Emote.HEART_HANDS));
@@ -521,7 +521,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.waitTicks(SETTLE_TICKS / 4);
             closeUp(context, "femboymod_emote_peace");
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
-            // Stray cats (SPEC v1.2): five pastel coats
+            // Stray cats: five pastel coats
             for (int coat = 0; coat < 5; coat++) {
                 world.getServer().runCommand("summon femboymod:stray_cat ~" + (coat - 2) + " ~ ~-3 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],femboymod_coat:" + coat + "}");
             }
@@ -652,7 +652,7 @@ public final class RenderShowcaseClientTest implements FabricClientGameTest {
             context.takeScreenshot("femboymod_config_screen");
             context.setScreen(() -> null);
 
-            // Item icons at a large GUI scale (32x32 icons, SPEC 11.4)
+            // Item icons at a large GUI scale (32x32 icons)
             world.getServer().runOnServer(server -> fillInventoryWithModItems(server.getPlayerList().getPlayers().getFirst()));
             context.waitTicks(SETTLE_TICKS / 4);
             context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));

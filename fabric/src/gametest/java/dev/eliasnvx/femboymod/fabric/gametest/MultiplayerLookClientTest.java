@@ -1,5 +1,21 @@
 package dev.eliasnvx.femboymod.fabric.gametest;
 
+import dev.eliasnvx.femboymod.client.ConfigScreen;
+import dev.eliasnvx.femboymod.client.FemboyModClient;
+import dev.eliasnvx.femboymod.client.GlowHostilesClient;
+import dev.eliasnvx.femboymod.config.FemboyConfig;
+import dev.eliasnvx.femboymod.config.ServerSettings;
+import dev.eliasnvx.femboymod.cosmetic.ArmorHiding;
+import dev.eliasnvx.femboymod.cosmetic.PvpCombat;
+import dev.eliasnvx.femboymod.social.HeadpatConsent;
+import dev.eliasnvx.femboymod.social.Headpats;
+import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.block.Blocks;
 import com.mojang.authlib.GameProfile;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
 import dev.eliasnvx.femboymod.api.cosmetic.FemboySlots;
@@ -37,6 +53,8 @@ public final class MultiplayerLookClientTest implements FabricClientGameTest {
     private static final int SYNC_TIMEOUT = 100;
     private static final int FAR = 400;
     private static final int HOODIE_COLOR = 0xF7B8D2;
+    /** The chest piece in {@link ArmorHiding#mask}. */
+    private static final int CHEST_BIT = 1 << ArmorHiding.ARMOR_SLOTS.indexOf(EquipmentSlot.CHEST);
 
     @Override
     public void runTest(ClientGameTestContext context) {
@@ -88,6 +106,81 @@ public final class MultiplayerLookClientTest implements FabricClientGameTest {
             server.runOnServer(s -> CosmeticsManager.setHidden(friend(s), FemboySlots.TAIL, false));
             waitUntil(context, "Friend's tail shown again", inv -> !inv.isHidden(FemboySlots.TAIL));
 
+            // 4. Others see Friend's backpack, not what's inside
+            server.runOnServer(s -> {
+                ItemStack backpack = new ItemStack(FemboyItems.CANVAS_BACKPACK.get());
+                backpack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(new ItemStack(Items.DIAMOND, 64))));
+                CosmeticsManager.set(friend(s), FemboySlots.BACK, backpack);
+            });
+            waitUntil(context, "Friend's backpack", inv -> inv.get(FemboySlots.BACK).is(FemboyItems.CANVAS_BACKPACK.get()));
+            if (context.computeOnClient(mc -> find(mc).get(FemboySlots.BACK).has(DataComponents.CONTAINER))) {
+                throw new AssertionError("another player's backpack contents reached this client");
+            }
+
+            // 5. The server's settings reach the client, and so do changes (the set bonus game rule)
+            server.runCommand("gamerule femboymod:set_bonuses false");
+            context.waitFor(mc -> !ServerSettings.client().setBonuses(), SYNC_TIMEOUT);
+            server.runCommand("gamerule femboymod:set_bonuses true");
+            context.waitFor(mc -> ServerSettings.client().setBonuses(), SYNC_TIMEOUT);
+
+            // 6. Armor hidden under the hoodie shows while Friend fights another player
+            server.runOnServer(s -> friend(s).setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE)));
+            context.waitFor(mc -> friendPlayer(mc) != null && (ArmorHiding.cachedMask(friendPlayer(mc)) & CHEST_BIT) != 0, SYNC_TIMEOUT);
+            server.runOnServer(s -> PvpCombat.fight(friend(s), me(s)));
+            try {
+                context.waitFor(mc -> (ArmorHiding.cachedMask(friendPlayer(mc)) & CHEST_BIT) == 0, SYNC_TIMEOUT);
+            } catch (RuntimeException e) {
+                throw new AssertionError("Friend's hidden chestplate didn't show during the fight", e);
+            }
+
+            // 7. Heart Glasses (no team): Friend glows in plain sight, not through a wall
+            server.runOnServer(s -> CosmeticsManager.set(me(s), FemboySlots.FACE, new ItemStack(FemboyItems.HEART_GLASSES.get())));
+            context.waitFor(mc -> friendPlayer(mc) != null && GlowHostilesClient.shouldGlow(friendPlayer(mc)), SYNC_TIMEOUT);
+            server.runOnServer(s -> {
+                ServerPlayer me = me(s);
+                BlockPos wall = me.blockPosition().south(2);
+                for (int x = -2; x <= 2; x++) {
+                    for (int y = 0; y <= 2; y++) {
+                        me.level().setBlockAndUpdate(wall.offset(x, y, 0), Blocks.STONE.defaultBlockState());
+                    }
+                }
+            });
+            try {
+                context.waitFor(mc -> !GlowHostilesClient.shouldGlow(friendPlayer(mc)), SYNC_TIMEOUT);
+            } catch (RuntimeException e) {
+                throw new AssertionError("Heart Glasses showed Friend through a wall", e);
+            }
+            server.runOnServer(s -> {
+                ServerPlayer me = me(s);
+                BlockPos wall = me.blockPosition().south(2);
+                for (int x = -2; x <= 2; x++) {
+                    for (int y = 0; y <= 2; y++) {
+                        me.level().setBlockAndUpdate(wall.offset(x, y, 0), Blocks.AIR.defaultBlockState());
+                    }
+                }
+                CosmeticsManager.set(me, FemboySlots.FACE, ItemStack.EMPTY);
+                friend(s).setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
+            });
+
+            // 8. Headpat consent: the option changed on this client reaches the server, which turns Friend's headpat away
+            setHeadpats(context, server, HeadpatConsent.NOBODY);
+            if (server.computeOnServer(s -> Headpats.pat((ServerLevel) me(s).level(), friend(s), me(s)))) {
+                throw new AssertionError("Friend's headpat landed although this player takes none");
+            }
+            context.setScreen(() -> new ConfigScreen(null));
+            context.waitTicks(5);
+            // the list scrolls: down to the last option, the cursor over the list
+            context.getInput().setCursorPos(context.computeOnClient(mc -> mc.getWindow().getScreenWidth()) / 2.0,
+                    context.computeOnClient(mc -> mc.getWindow().getScreenHeight()) / 2.0);
+            context.getInput().scroll(-20);
+            context.waitTicks(5);
+            context.takeScreenshot(TestScreenshotOptions.of("multiplayer_config_headpats"));
+            context.setScreen(() -> null);
+            setHeadpats(context, server, HeadpatConsent.EVERYONE);
+            if (!server.computeOnServer(s -> Headpats.pat((ServerLevel) me(s).level(), friend(s), me(s)))) {
+                throw new AssertionError("Friend's headpat didn't land after allowing everyone again");
+            }
+
             // Look at Friend for a screenshot
             server.runOnServer(s -> {
                 ServerPlayer me = me(s);
@@ -98,6 +191,18 @@ public final class MultiplayerLookClientTest implements FabricClientGameTest {
             context.takeScreenshot(TestScreenshotOptions.of("multiplayer_friend_look"));
 
             server.runOnServer(s -> s.getPlayerList().remove(friend(s)));
+        }
+    }
+
+    private static void setHeadpats(ClientGameTestContext context, TestDedicatedServerContext server, HeadpatConsent consent) {
+        context.runOnClient(mc -> {
+            FemboyConfig.setClient(FemboyConfig.client().withHeadpats(consent));
+            FemboyModClient.sendHeadpatConsent();
+        });
+        try {
+            server.waitFor(s -> Headpats.consent(me(s)) == consent, SYNC_TIMEOUT);
+        } catch (RuntimeException e) {
+            throw new AssertionError("The server never heard headpats_from_players = " + consent.getSerializedName(), e);
         }
     }
 
@@ -119,6 +224,12 @@ public final class MultiplayerLookClientTest implements FabricClientGameTest {
         return server.getPlayerList().getPlayers().stream()
                 .filter(p -> !p.getName().getString().equals(FRIEND))
                 .findFirst().orElseThrow();
+    }
+
+    private static net.minecraft.world.entity.player.Player friendPlayer(Minecraft mc) {
+        return mc.level == null ? null : mc.level.players().stream()
+                .filter(p -> p.getName().getString().equals(FRIEND))
+                .findFirst().orElse(null);
     }
 
     private static CosmeticInventory find(Minecraft mc) {
