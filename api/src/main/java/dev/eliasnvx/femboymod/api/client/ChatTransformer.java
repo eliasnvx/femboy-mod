@@ -1,7 +1,7 @@
 package dev.eliasnvx.femboymod.api.client;
 
 /**
- * Rewrites the local player's outgoing chat message before it is signed and sent (SPEC §4.7).
+ * Rewrites the local player's outgoing chat message before it is signed and sent.
  * Registered in {@link dev.eliasnvx.femboymod.api.FemboyClientApi#chatTransformers()}; transformers run in
  * registration order. Never called for commands. Must be SFW and must not add control characters or '§'.
  */

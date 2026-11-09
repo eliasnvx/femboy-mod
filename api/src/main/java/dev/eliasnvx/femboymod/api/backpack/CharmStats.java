@@ -13,7 +13,7 @@ import net.minecraft.world.item.Item;
 import java.util.List;
 
 /**
- * What a charm does while it hangs on a worn backpack (SPEC §5.3), loaded from the data pack registry
+ * What a charm does while it hangs on a worn backpack, loaded from the data pack registry
  * {@code femboymod:charm}. The entry id equals the charm item's id:
  * {@code data/<ns>/femboymod/charm/<item>.json} → {@code {"effects": [ ... ]}}.
  * Items also need the item tag {@code #femboymod:charms} to fit into charm slots.
