@@ -18,14 +18,14 @@ repositories {
 }
 
 dependencies {
-    // Optional: config button in Mod Menu (SPEC §9)
+    // Optional: config button in Mod Menu
     compileOnly("com.terraformersmc:modmenu:${rootProject.modmenu_version}") { transitive false }
     implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
     implementation "dev.architectury:architectury-fabric:${rootProject.architectury_api_version}"
     implementation "com.geckolib:geckolib-fabric-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
-    // Compat smoke test (SPEC §9): ./gradlew :fabric:runClientGameTest -Pcompat_render=true
+    // Compat smoke test: ./gradlew :fabric:runClientGameTest -Pcompat_render=true
     // loads Sodium + Iris into the dev runtime only. Never a compile dependency.
     if (project.findProperty("compat_render") == "true") {
         runtimeOnly "maven.modrinth:sodium:${rootProject.sodium_fabric_version}"
@@ -58,7 +58,7 @@ dependencies {
         runtimeOnly "maven.modrinth:emotecraft:${rootProject.emotecraft_fabric_version}"
         runtimeOnly "maven.modrinth:player-animation-library:${rootProject.playeranimationlib_fabric_version}"
     }
-    // JEI compat check (SPEC §9): ./gradlew :fabric:runClient -Pcompat_jei=true
+    // JEI compat check: ./gradlew :fabric:runClient -Pcompat_jei=true
     if (project.findProperty("compat_jei") == "true") {
         runtimeOnly "mezz.jei:jei-${rootProject.minecraft_version}-fabric:${rootProject.jei_version}"
     }
@@ -69,7 +69,7 @@ dependencies {
     shadowBundle(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
-// Server GameTests (SPEC §13): shared bodies in common/.../gametest, Fabric glue in src/gametest.
+// Server GameTests: shared bodies in common/.../gametest, Fabric glue in src/gametest.
 // They run as part of `build` via the generated `runGameTest` task.
 fabricApi {
     configureTests {
