@@ -18,7 +18,7 @@ dependencies {
     modImplementation "dev.architectury:architectury-forge:${rootProject.architectury_api_version}"
     modImplementation "software.bernie.geckolib:geckolib-forge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
-    // Slot mods (SPEC §4.3): wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds Curios to the dev runtime
+    // Slot mods: wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds Curios to the dev runtime
     modCompileOnly("maven.modrinth:curios:${rootProject.curios_forge_version}") { transitive false }
     modCompileOnly("maven.modrinth:accessories:${rootProject.accessories_forge_version}") { transitive false }
     if (project.findProperty("compat_slots") == "true") {
@@ -33,7 +33,7 @@ dependencies {
     shadowBundle(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
 }
 
-// Server GameTests (SPEC §13): shared bodies in common/.../gametest, registered by FemboyGameTestsForge.
+// Server GameTests: shared bodies in common/.../gametest, registered by FemboyGameTestsForge.
 loom {
     forge {
         // Forge only loads mixin configs listed in the jar manifest; Loom writes it from here
