@@ -15,7 +15,7 @@ rootProject.name = "femboymod"
 
 include("api", "common", "fabric", "neoforge")
 
-// Example addon: dogfoods the public API, never published (SPEC §8.5)
+// Example addon: dogfoods the public API, never published
 include("example-addon-common", "example-addon-fabric", "example-addon-neoforge")
 project(":example-addon-common").projectDir = file("example-addon/common")
 project(":example-addon-fabric").projectDir = file("example-addon/fabric")
