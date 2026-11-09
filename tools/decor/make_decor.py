@@ -6,7 +6,7 @@ PLACEHOLDER-quality procedural pixel art, no AI.
 
 Ores draw only the crystals on a transparent overlay; the stone underneath is the vanilla texture referenced
 by the model (not copied). Furniture reuses the plush atlas packer (tools/plush). Animated textures (monitor
-code, rainbow LED) scroll or blend slowly: no flashing (SPEC §1.1).
+code, rainbow LED) scroll or blend slowly: no flashing.
 """
 import colorsys
 import json

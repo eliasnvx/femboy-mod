@@ -7,16 +7,17 @@ import net.minecraft.resources.Identifier;
 import java.util.List;
 
 /**
- * Server/common options ({@code config/femboymod-common.json}, SPEC §10). Balance of items, sets, drip
+ * Server/common options ({@code config/femboymod-common.json}). Balance of items, sets, drip
  * and drinks lives in data packs; this file holds switches, the Pink Creeper numbers and hostile mob spawning/stats.
  */
 public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabledSlots, boolean setBonusesEnabled,
                            PinkCreeper pinkCreeper, Mobs mobs, Furniture furniture, StylePoints stylePoints, VibeCheck vibeCheck, Friends friends,
-                           boolean giveLookbook, Photos photos, Halloween halloween, RubberDucks rubberDucks) {
+                           boolean giveLookbook, Photos photos, Halloween halloween, RubberDucks rubberDucks, Cats cats,
+                           Plants plants, Pvp pvp) {
 
     public static final CommonConfig DEFAULTS = new CommonConfig(false, List.of(), true, PinkCreeper.DEFAULTS, Mobs.DEFAULTS,
             Furniture.DEFAULTS, StylePoints.DEFAULTS, VibeCheck.DEFAULTS, Friends.DEFAULTS, true, Photos.DEFAULTS,
-            Halloween.DEFAULTS, RubberDucks.DEFAULTS);
+            Halloween.DEFAULTS, RubberDucks.DEFAULTS, Cats.DEFAULTS, Plants.DEFAULTS, Pvp.DEFAULTS);
 
     public static final Codec<CommonConfig> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.BOOL.fieldOf("keep_cosmetics_on_death").orElse(DEFAULTS.keepCosmeticsOnDeath).forGetter(CommonConfig::keepCosmeticsOnDeath),
@@ -31,8 +32,85 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
             Codec.BOOL.fieldOf("give_lookbook_on_first_join").orElse(DEFAULTS.giveLookbook).forGetter(CommonConfig::giveLookbook),
             Photos.CODEC.fieldOf("photos").orElse(Photos.DEFAULTS).forGetter(CommonConfig::photos),
             Halloween.CODEC.fieldOf("halloween").orElse(Halloween.DEFAULTS).forGetter(CommonConfig::halloween),
-            RubberDucks.CODEC.fieldOf("rubber_ducks").orElse(RubberDucks.DEFAULTS).forGetter(CommonConfig::rubberDucks)
+            RubberDucks.CODEC.fieldOf("rubber_ducks").orElse(RubberDucks.DEFAULTS).forGetter(CommonConfig::rubberDucks),
+            Cats.CODEC.fieldOf("cats").orElse(Cats.DEFAULTS).forGetter(CommonConfig::cats),
+            Plants.CODEC.fieldOf("plants").orElse(Plants.DEFAULTS).forGetter(CommonConfig::plants),
+            Pvp.CODEC.fieldOf("pvp").orElse(Pvp.DEFAULTS).forGetter(CommonConfig::pvp)
     ).apply(i, CommonConfig::new));
+
+    /**
+     * Cats knocking things off tables (also needs the game rules {@code femboymod:cat_mischief} and mob griefing).
+     * Every {@code knockCheckInterval} ticks an idle cat with a player within {@code knockAudienceRange} looks for a
+     * {@code #femboymod:cat_knockable} block at an edge within {@code knockSearchRadius} and goes for it with
+     * {@code knockChance}; it stares at its audience {@code knockStareTicks} first, then waits {@code knockCooldownTicks}.
+     */
+    public record Cats(int knockCheckInterval, float knockChance, int knockCooldownTicks, int knockSearchRadius,
+                       double knockAudienceRange, int knockStareTicks) {
+
+        public static final Cats DEFAULTS = new Cats(200, 0.25F, 6000, 6, 12.0, 40);
+
+        public static final Codec<Cats> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.intRange(20, 72000).fieldOf("knock_check_interval").orElse(DEFAULTS.knockCheckInterval).forGetter(Cats::knockCheckInterval),
+                Codec.floatRange(0, 1).fieldOf("knock_chance").orElse(DEFAULTS.knockChance).forGetter(Cats::knockChance),
+                Codec.intRange(0, 720000).fieldOf("knock_cooldown_ticks").orElse(DEFAULTS.knockCooldownTicks).forGetter(Cats::knockCooldownTicks),
+                Codec.intRange(1, 16).fieldOf("knock_search_radius").orElse(DEFAULTS.knockSearchRadius).forGetter(Cats::knockSearchRadius),
+                Codec.doubleRange(1, 64).fieldOf("knock_audience_range").orElse(DEFAULTS.knockAudienceRange).forGetter(Cats::knockAudienceRange),
+                Codec.intRange(0, 400).fieldOf("knock_stare_ticks").orElse(DEFAULTS.knockStareTicks).forGetter(Cats::knockStareTicks)
+        ).apply(i, Cats::new));
+    }
+
+    /**
+     * Plants (0.3.0). Debug Flytrap: checks for prey every {@code flytrapCheckInterval} ticks within
+     * {@code flytrapReach} + {@code flytrapReachPerStage} per growth stage, then digests for {@code flytrapDigestTicks}.
+     * Catnip: cats within {@code catnipSniffRadius} of it (or fed it) get zoomies, then a mischief phase (knock checks
+     * every {@code catnipKnockInterval} ticks, always going, {@code catnipKnockCooldownTicks} apart), then lie down
+     * purring; afterwards they ignore catnip for {@code catnipToleranceTicks}. Feeding it to an untamed Stray Cat tames
+     * it with {@code strayCatTameChance}. Touch grass: a reminder after {@code touchGrassReminderMinutes} of play
+     * without touching grass (0 = off); touching gives Regeneration for {@code touchGrassBuffTicks}, at most once per
+     * {@code touchGrassBuffCooldownTicks}.
+     */
+    public record Plants(int flytrapCheckInterval, float flytrapReach, float flytrapReachPerStage, int flytrapDigestTicks,
+                         int catnipSniffRadius, int catnipZoomiesTicks, float catnipZoomiesSpeed, int catnipMischiefTicks,
+                         int catnipKnockInterval, int catnipKnockCooldownTicks, int catnipPurrTicks, int catnipToleranceTicks,
+                         float strayCatTameChance, int touchGrassReminderMinutes, int touchGrassBuffTicks,
+                         int touchGrassBuffCooldownTicks) {
+
+        public static final Plants DEFAULTS = new Plants(10, 1.5F, 1.0F, 600, 3, 200, 0.6F, 1200, 40, 200, 300, 6000,
+                0.5F, 120, 200, 6000);
+
+        public static final Codec<Plants> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.intRange(1, 200).fieldOf("flytrap_check_interval").orElse(DEFAULTS.flytrapCheckInterval).forGetter(Plants::flytrapCheckInterval),
+                Codec.floatRange(0, 8).fieldOf("flytrap_reach").orElse(DEFAULTS.flytrapReach).forGetter(Plants::flytrapReach),
+                Codec.floatRange(0, 8).fieldOf("flytrap_reach_per_stage").orElse(DEFAULTS.flytrapReachPerStage).forGetter(Plants::flytrapReachPerStage),
+                Codec.intRange(1, 72000).fieldOf("flytrap_digest_ticks").orElse(DEFAULTS.flytrapDigestTicks).forGetter(Plants::flytrapDigestTicks),
+                Codec.intRange(0, 8).fieldOf("catnip_sniff_radius").orElse(DEFAULTS.catnipSniffRadius).forGetter(Plants::catnipSniffRadius),
+                Codec.intRange(0, 2400).fieldOf("catnip_zoomies_ticks").orElse(DEFAULTS.catnipZoomiesTicks).forGetter(Plants::catnipZoomiesTicks),
+                Codec.floatRange(0, 4).fieldOf("catnip_zoomies_speed").orElse(DEFAULTS.catnipZoomiesSpeed).forGetter(Plants::catnipZoomiesSpeed),
+                Codec.intRange(0, 72000).fieldOf("catnip_mischief_ticks").orElse(DEFAULTS.catnipMischiefTicks).forGetter(Plants::catnipMischiefTicks),
+                Codec.intRange(20, 72000).fieldOf("catnip_knock_interval").orElse(DEFAULTS.catnipKnockInterval).forGetter(Plants::catnipKnockInterval),
+                Codec.intRange(0, 72000).fieldOf("catnip_knock_cooldown_ticks").orElse(DEFAULTS.catnipKnockCooldownTicks).forGetter(Plants::catnipKnockCooldownTicks),
+                Codec.intRange(0, 2400).fieldOf("catnip_purr_ticks").orElse(DEFAULTS.catnipPurrTicks).forGetter(Plants::catnipPurrTicks),
+                Codec.intRange(0, 720000).fieldOf("catnip_tolerance_ticks").orElse(DEFAULTS.catnipToleranceTicks).forGetter(Plants::catnipToleranceTicks),
+                Codec.floatRange(0, 1).fieldOf("stray_cat_tame_chance").orElse(DEFAULTS.strayCatTameChance).forGetter(Plants::strayCatTameChance),
+                Codec.intRange(0, 1440).fieldOf("touch_grass_reminder_minutes").orElse(DEFAULTS.touchGrassReminderMinutes).forGetter(Plants::touchGrassReminderMinutes),
+                Codec.intRange(0, 6000).fieldOf("touch_grass_buff_ticks").orElse(DEFAULTS.touchGrassBuffTicks).forGetter(Plants::touchGrassBuffTicks),
+                Codec.intRange(0, 720000).fieldOf("touch_grass_buff_cooldown_ticks").orElse(DEFAULTS.touchGrassBuffCooldownTicks).forGetter(Plants::touchGrassBuffCooldownTicks)
+        ).apply(i, Plants::new));
+    }
+
+    /**
+     * PvP fairness. Armor hidden under an outfit shows again for everyone while its wearer is in a fight with another
+     * player (hit or got hit by one) and {@code revealHiddenArmorTicks} after it (0 = never; PvP servers can also turn
+     * hiding off with the game rule {@code femboymod:allow_hidden_armor}).
+     */
+    public record Pvp(int revealHiddenArmorTicks) {
+
+        public static final Pvp DEFAULTS = new Pvp(200);
+
+        public static final Codec<Pvp> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.intRange(0, 72000).fieldOf("reveal_hidden_armor_ticks").orElse(DEFAULTS.revealHiddenArmorTicks).forGetter(Pvp::revealHiddenArmorTicks)
+        ).apply(i, Pvp::new));
+    }
 
     /** When villagers give candy to costumed players: in the real Halloween season (auto), always, or never. */
     public enum Season {
@@ -69,16 +147,21 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
     }
 
     /**
-     * Printed selfies (Phone): on/off, paper per photo (0 = free), ticks between two prints per player, and how many
-     * photo requests a player may send per second (pictures are fetched when photo items come into view).
+     * Printed selfies (Phone): on/off, paper per photo (0 = free), ticks between two prints per player, how many
+     * photo requests a player may send per second (pictures are fetched when photo items come into view), and how
+     * many pictures the server keeps per player and in all (0 = no limit). Past a limit the picture nobody has looked
+     * at for the longest fades (its file is deleted; the photo item stays, blank).
      */
-    public record Photos(boolean enabled, int paperCost, int cooldownTicks, int requestsPerSecond) {
-        public static final Photos DEFAULTS = new Photos(true, 1, 100, 20);
+    public record Photos(boolean enabled, int paperCost, int cooldownTicks, int requestsPerSecond, int maxPerPlayer,
+                         int maxTotal) {
+        public static final Photos DEFAULTS = new Photos(true, 1, 100, 20, 64, 2048);
         public static final Codec<Photos> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.BOOL.fieldOf("enabled").orElse(DEFAULTS.enabled).forGetter(Photos::enabled),
                 Codec.intRange(0, 64).fieldOf("paper_cost").orElse(DEFAULTS.paperCost).forGetter(Photos::paperCost),
                 Codec.intRange(0, 72000).fieldOf("cooldown_ticks").orElse(DEFAULTS.cooldownTicks).forGetter(Photos::cooldownTicks),
-                Codec.intRange(1, 1000).fieldOf("requests_per_second").orElse(DEFAULTS.requestsPerSecond).forGetter(Photos::requestsPerSecond)
+                Codec.intRange(1, 1000).fieldOf("requests_per_second").orElse(DEFAULTS.requestsPerSecond).forGetter(Photos::requestsPerSecond),
+                Codec.intRange(0, 100000).fieldOf("max_per_player").orElse(DEFAULTS.maxPerPlayer).forGetter(Photos::maxPerPlayer),
+                Codec.intRange(0, 1000000).fieldOf("max_total").orElse(DEFAULTS.maxTotal).forGetter(Photos::maxTotal)
         ).apply(i, Photos::new));
     }
 
@@ -87,7 +170,7 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
     }
 
     /**
-     * SPEC v1.2 "Friends": the stray cat, the wandering cosplayer and headpats.
+     * Friends: the stray cat, the wandering cosplayer and headpats.
      *
      * @param strayCatSpawnWeight   weight in {@code #femboymod:stray_cat_spawns} (0 disables natural spawning)
      * @param strayCatGiftChance    chance per morning that a tamed stray cat brings its owner a gift
@@ -124,7 +207,7 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
     }
 
     /**
-     * Vibe Check Scanner (SPEC v1.2): how the 0..100 score is built and what a daily scan pays.
+     * Vibe Check Scanner: how the 0..100 score is built and what a daily scan pays.
      *
      * @param dripWeight       score per Drip Level point
      * @param perSet           score per active set bonus
@@ -173,7 +256,7 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
     }
 
     /**
-     * Gamer corner furniture (SPEC v1.1 "Gamer Room").
+     * Gamer corner furniture.
      *
      * @param chairHealInterval ticks between heals while sitting in a Gamer Chair (0 disables the regen)
      * @param chairHealAmount   health restored per heal (half-hearts)
@@ -216,7 +299,7 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
 
     /**
      * @param spawnWeight   spawn weight in {@code #femboymod:pink_creeper_spawns} biomes (0 disables spawning)
-     * @param playerDamage  damage of the confetti blast to players (SPEC: 0)
+     * @param playerDamage  damage of the confetti blast to players
      * @param mobDamage     damage to other mobs
      * @param knockback     knockback strength
      * @param radius        blast radius in blocks; blocks are never destroyed
@@ -261,7 +344,9 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
     }
 
     /** Hostile meme mobs: bugs, the caffeinated zombie, the hissy cat and the Fashion Critic mini-boss. */
-    public record Mobs(Mob bug, Mob caffeinatedZombie, Mob hissyCat, Mob fashionCritic, CriticReview criticReview, Mob sockGoblin) {
+    /** @param sockGoblinSlideGrip grip of Sock Goblins on polished floors (they wear socks: 1 = no sliding) */
+    public record Mobs(Mob bug, Mob caffeinatedZombie, Mob hissyCat, Mob fashionCritic, CriticReview criticReview, Mob sockGoblin,
+                       float sockGoblinSlideGrip) {
 
         public static final Mobs DEFAULTS = new Mobs(
                 new Mob(40, 3, 5, 6.0, 2.0, 0.32),
@@ -269,7 +354,8 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
                 new Mob(15, 1, 1, 10.0, 3.0, 0.38),
                 new Mob(1, 1, 1, 80.0, 7.0, 0.3),
                 CriticReview.DEFAULTS,
-                new Mob(10, 1, 1, 10.0, 0.0, 0.34));
+                new Mob(10, 1, 1, 10.0, 0.0, 0.34),
+                0.1F);
 
         public static final Codec<Mobs> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Mob.codec(DEFAULTS.bug).fieldOf("bug").orElse(DEFAULTS.bug).forGetter(Mobs::bug),
@@ -277,7 +363,8 @@ public record CommonConfig(boolean keepCosmeticsOnDeath, List<Identifier> disabl
                 Mob.codec(DEFAULTS.hissyCat).fieldOf("hissy_cat").orElse(DEFAULTS.hissyCat).forGetter(Mobs::hissyCat),
                 Mob.codec(DEFAULTS.fashionCritic).fieldOf("fashion_critic").orElse(DEFAULTS.fashionCritic).forGetter(Mobs::fashionCritic),
                 CriticReview.CODEC.fieldOf("critic_review").orElse(DEFAULTS.criticReview).forGetter(Mobs::criticReview),
-                Mob.codec(DEFAULTS.sockGoblin).fieldOf("sock_goblin").orElse(DEFAULTS.sockGoblin).forGetter(Mobs::sockGoblin)
+                Mob.codec(DEFAULTS.sockGoblin).fieldOf("sock_goblin").orElse(DEFAULTS.sockGoblin).forGetter(Mobs::sockGoblin),
+                Codec.floatRange(0, 1).fieldOf("sock_goblin_slide_grip").orElse(DEFAULTS.sockGoblinSlideGrip).forGetter(Mobs::sockGoblinSlideGrip)
         ).apply(i, Mobs::new));
     }
 

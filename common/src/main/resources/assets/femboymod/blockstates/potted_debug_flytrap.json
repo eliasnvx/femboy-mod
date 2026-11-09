@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "digesting=false": {
+      "model": "femboymod:block/potted_debug_flytrap"
+    },
+    "digesting=true": {
+      "model": "femboymod:block/potted_debug_flytrap_closed"
+    }
+  }
+}

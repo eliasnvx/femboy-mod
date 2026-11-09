@@ -126,10 +126,14 @@ public final class CosmeticsMenu extends AbstractContainerMenu {
         ItemStack original = stack.copy();
 
         if (index < cosmeticSlotCount) {
-            // cosmetic -> player inventory
-            if (!moveItemStackTo(stack, cosmeticSlotCount, slots.size(), true)) {
+            // cosmetic -> player inventory. Moves a copy: the worn stack must stay intact until the slot is set, or
+            // CosmeticsManager.set sees an already-emptied stack and posts no unequip events
+            ItemStack moving = stack.copy();
+            if (!moveItemStackTo(moving, cosmeticSlotCount, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
+            slot.setByPlayer(moving); // what didn't fit stays worn (nothing, for one-item cosmetics)
+            return original;
         } else {
             // player inventory -> the matching empty cosmetic slot
             Identifier target = CosmeticsManager.slotOf(stack);

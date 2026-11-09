@@ -9,6 +9,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
@@ -75,6 +76,26 @@ public record CosmeticInventory(Map<Identifier, ItemStack> items, Set<Identifier
             }
         });
         armor = java.util.Collections.unmodifiableMap(armorCopy);
+    }
+
+    /**
+     * What other players get to see: the same outfit without what's packed inside (a worn backpack's contents, a
+     * bundle's). Renderers only need the item, its colorway and charms; the contents are private and can be large.
+     */
+    public CosmeticInventory forOthers() {
+        Map<Identifier, ItemStack> visible = new LinkedHashMap<>();
+        items.forEach((slot, stack) -> visible.put(slot, withoutContents(stack)));
+        return new CosmeticInventory(visible, hidden, armor);
+    }
+
+    private static ItemStack withoutContents(ItemStack stack) {
+        if (!stack.has(DataComponents.CONTAINER) && !stack.has(DataComponents.BUNDLE_CONTENTS)) {
+            return stack;
+        }
+        ItemStack copy = stack.copy();
+        copy.remove(DataComponents.CONTAINER);
+        copy.remove(DataComponents.BUNDLE_CONTENTS);
+        return copy;
     }
 
     public CosmeticInventory withArmor(EquipmentSlot slot, ArmorVisibility visibility) {

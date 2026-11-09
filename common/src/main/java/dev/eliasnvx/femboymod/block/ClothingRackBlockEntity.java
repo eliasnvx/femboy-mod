@@ -22,7 +22,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
-/** Clothing Rack: shows up to 3 hanging items (SPEC §5.6); Thrifter's job site. Contents drop when broken. */
+/** Clothing Rack: shows up to 3 hanging items; Thrifter's job site. Contents drop when broken. */
 public class ClothingRackBlockEntity extends BlockEntity implements ListBackedContainer, ItemOwner {
 
     public static final int SLOTS = 3;

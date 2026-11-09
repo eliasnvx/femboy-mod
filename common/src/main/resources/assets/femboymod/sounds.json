@@ -367,5 +367,27 @@
       "femboymod:social/headpat3"
     ],
     "subtitle": "subtitles.femboymod.headpat"
+  },
+  "sock.slide": {
+    "sounds": [
+      "femboymod:sock/slide1",
+      "femboymod:sock/slide2",
+      "femboymod:sock/slide3"
+    ],
+    "subtitle": "subtitles.femboymod.sock_slide"
+  },
+  "debug_flytrap.snap": {
+    "sounds": [
+      "femboymod:block/flytrap/snap1",
+      "femboymod:block/flytrap/snap2"
+    ],
+    "subtitle": "subtitles.femboymod.debug_flytrap.snap"
+  },
+  "debug_flytrap.gulp": {
+    "sounds": [
+      "femboymod:block/flytrap/gulp1",
+      "femboymod:block/flytrap/gulp2"
+    ],
+    "subtitle": "subtitles.femboymod.debug_flytrap.gulp"
   }
 }

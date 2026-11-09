@@ -11,6 +11,8 @@ public final class FemboyNetwork {
         NetworkManager.registerS2C(CosmeticsSyncPayload.TYPE, CosmeticsSyncPayload.STREAM_CODEC, CosmeticsSyncPayload::handle);
         NetworkManager.registerS2C(ProfileSyncPayload.TYPE, ProfileSyncPayload.STREAM_CODEC, ProfileSyncPayload::handle);
         NetworkManager.registerS2C(EmotePayloads.Show.TYPE, EmotePayloads.Show.STREAM_CODEC, EmotePayloads.Show::handle);
+        NetworkManager.registerS2C(EarCuePayload.TYPE, EarCuePayload.STREAM_CODEC, EarCuePayload::handle);
+        NetworkManager.registerS2C(ServerSettingsPayload.TYPE, ServerSettingsPayload.STREAM_CODEC, ServerSettingsPayload::handle);
         NetworkManager.registerC2S(EmotePayloads.Play.TYPE, EmotePayloads.Play.STREAM_CODEC, EmotePayloads.Play::handle);
         NetworkManager.registerC2S(OpenBackpackPayload.TYPE, OpenBackpackPayload.STREAM_CODEC, OpenBackpackPayload::handle);
         NetworkManager.registerC2S(OpenCosmeticsMenuPayload.TYPE, OpenCosmeticsMenuPayload.STREAM_CODEC, OpenCosmeticsMenuPayload::handle);
@@ -20,6 +22,7 @@ public final class FemboyNetwork {
         NetworkManager.registerC2S(CosmeticPanelClickPayload.TYPE, CosmeticPanelClickPayload.STREAM_CODEC, CosmeticPanelClickPayload::handle);
         NetworkManager.registerC2S(PhotoPayloads.Upload.TYPE, PhotoPayloads.Upload.STREAM_CODEC, PhotoPayloads.Upload::handle);
         NetworkManager.registerC2S(PhotoPayloads.Request.TYPE, PhotoPayloads.Request.STREAM_CODEC, PhotoPayloads.Request::handle);
+        NetworkManager.registerC2S(HeadpatConsentPayload.TYPE, HeadpatConsentPayload.STREAM_CODEC, HeadpatConsentPayload::handle);
         NetworkManager.registerS2C(PhotoPayloads.Picture.TYPE, PhotoPayloads.Picture.STREAM_CODEC, PhotoPayloads.Picture::handle);
     }
 }

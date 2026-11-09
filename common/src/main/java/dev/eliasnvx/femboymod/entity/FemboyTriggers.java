@@ -15,7 +15,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import java.util.Optional;
 
 /**
- * One generic advancement trigger {@code femboymod:event} (SPEC §5.8):
+ * One generic advancement trigger {@code femboymod:event}:
  * {@code {"trigger": "femboymod:event", "conditions": {"event": "confetti_survivor", "min": 1}}}.
  */
 public final class FemboyTriggers {
@@ -41,6 +41,16 @@ public final class FemboyTriggers {
     public static final String HEADPAT_PLAYER = "headpat_player";
     /** Gave a tamed pet a headpat. */
     public static final String HEADPAT_PET = "headpat_pet";
+    /** Coasted across a polished floor in socks. */
+    public static final String SOCK_DRIFT = "sock_drift";
+    /** Watched a cat push something off a table. */
+    public static final String CAT_MISCHIEF = "cat_mischief";
+    /** A Debug Flytrap ate a bug near the player. */
+    public static final String FLYTRAP_SNACK = "flytrap_snack";
+    /** Touched grass (or Potted Grass) with an empty hand. */
+    public static final String TOUCH_GRASS = "touch_grass";
+    /** Fed a cat catnip. */
+    public static final String CATNIP = "catnip";
 
     public static final DeferredRegister<CriterionTrigger<?>> REGISTER = DeferredRegister.create(FemboyMod.MOD_ID, Registries.TRIGGER_TYPE);
     public static final RegistrySupplier<EventTrigger> EVENT = REGISTER.register("event", EventTrigger::new);

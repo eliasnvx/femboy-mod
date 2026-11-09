@@ -8,7 +8,7 @@ They are grayscale and tinted per color group in game. The models declare a 64x6
     python3 tools/materials/make_materials.py --density 2 --out <dir>
 
 The same design is drawn at both densities, so screenshots compare resolution, not style.
-Hand-painted textures replace these before release (SPEC §11, ASSET_PROVENANCE.md).
+Hand-painted textures replace these before release.
 """
 import argparse
 import os

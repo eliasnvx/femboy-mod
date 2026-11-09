@@ -14,9 +14,12 @@ import com.geckolib.renderer.base.GeoRenderState;
 import com.geckolib.renderer.base.RenderPassInfo;
 import com.geckolib.util.GeckoLibUtil;
 import dev.eliasnvx.femboymod.FemboyMod;
+import com.geckolib.animation.state.BoneSnapshot;
+import dev.eliasnvx.femboymod.api.client.CosmeticMotion;
 import dev.eliasnvx.femboymod.api.client.CosmeticRenderContext;
 import dev.eliasnvx.femboymod.api.client.CosmeticRenderer;
 import dev.eliasnvx.femboymod.api.colorway.Colorway;
+import dev.eliasnvx.femboymod.client.render.model.CosmeticModels;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerModel;
@@ -28,9 +31,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Renderer {@code femboymod:geo}: draws a Blockbench/GeckoLib model for a cosmetic item (SPEC §4.5).
+ * Renderer {@code femboymod:geo}: draws a Blockbench/GeckoLib model for a cosmetic item.
  *
  * <p>Convention for an item {@code <ns>:<path>} (used automatically when the model file exists, so it
  * overrides the built-in code model; works for addon items too):
@@ -43,7 +47,9 @@ import java.util.Map;
  *     looping {@code idle} animation</li>
  * </ul>
  * Top-level bones named like GeckoLib armor ({@code armorHead}, {@code armorBody}, {@code armorLeftArm},
- * {@code armorRightArm}, {@code armorLeftLeg}, {@code armorRightLeg}) follow the player's body parts.
+ * {@code armorRightArm}, {@code armorLeftLeg}, {@code armorRightLeg}) follow the player's body parts. Bones named
+ * {@code left_ear} and {@code right_ear} (the left one on the model's -x side, like the built-in ears) react like the
+ * built-in ears (turning, flattening, drooping) on top of their animation.
  */
 public final class GeoCosmeticRenderer implements CosmeticRenderer {
 
@@ -65,6 +71,10 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
     private final Related related = new Related();
     private final Vector3f scratch = new Vector3f();
     private final RenderPassInfo.BoneUpdater<GeoRenderState> followBody = this::followBody;
+    private static final String LEFT_EAR = "left_ear";
+    private static final String RIGHT_EAR = "right_ear";
+    /** Blockbench ears flop like the built-in cat ears. */
+    private static final float EAR_FLOP = 1.0F;
 
     public GeoCosmeticRenderer(Identifier itemId) {
         String base = "cosmetic/" + itemId.getPath();
@@ -101,17 +111,28 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         }
         related.overlay = ctx.overlay();
         related.parent = ctx.parentModel();
+        related.motion = ctx.motion();
         Minecraft minecraft = Minecraft.getInstance();
         renderer.performRenderPass(animatable, related, ctx.poseStack(), ctx.collector(),
                 minecraft.gameRenderer.gameRenderState().levelRenderState.cameraRenderState, ctx.light(),
                 minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false), followBody);
     }
 
-    /** Copies the player's (already posed) body part transforms onto the armor-named bones. */
+    /** Copies the player's (already posed) body part transforms onto the armor-named bones, then adds ear reactions. */
     private void followBody(RenderPassInfo<GeoRenderState> info, com.geckolib.renderer.base.BoneSnapshots snapshots) {
         PlayerModel parent = related.parent;
         if (parent == null) {
             return;
+        }
+        if (related.motion != null) {
+            Optional<BoneSnapshot> left = snapshots.get(LEFT_EAR);
+            if (left.isPresent()) {
+                react(left.get(), related.motion, -1);
+            }
+            Optional<BoneSnapshot> right = snapshots.get(RIGHT_EAR);
+            if (right.isPresent()) {
+                react(right.get(), related.motion, 1);
+            }
         }
         for (Map.Entry<ArmorSegment, String> entry : BONES.entrySet()) {
             snapshots.get(entry.getValue()).ifPresent(snapshot -> {
@@ -123,12 +144,29 @@ public final class GeoCosmeticRenderer implements CosmeticRenderer {
         }
     }
 
+    /**
+     * Adds the ear reactions to a bone, on top of its animation (GeckoLib adds snapshot rotations to the bone's own).
+     * Geo rotations are ModelPart rotations with x and y negated (see {@link #followBody}). The ear's rest tilt is its
+     * z rotation from the file, and "outward" is the way it already leans; an upright ear uses {@code side}.
+     *
+     * @param side -1 for {@code left_ear}, 1 for {@code right_ear}: the outward direction of an upright ear
+     */
+    private static void react(BoneSnapshot ear, CosmeticMotion motion, int side) {
+        float rest = ear.getBone().baseRotZ();
+        float outwardSign = rest != 0.0F ? Math.signum(rest) : side;
+        float outward = CosmeticModels.EarsModel.reactionOutward(motion, Math.abs(rest), EAR_FLOP);
+        ear.setRotZ(ear.getRotZ() + outwardSign * outward);
+        ear.setRotX(ear.getRotX() + CosmeticModels.EarsModel.reactionBack(motion, EAR_FLOP));
+        ear.setRotY(ear.getRotY() - CosmeticModels.EarsModel.reactionTurn(motion));
+    }
+
     private static final class Related {
         int entityId;
         int color;
         int overlay;
         Identifier texture;
         @Nullable PlayerModel parent;
+        @Nullable CosmeticMotion motion;
     }
 
     private final class Animatable implements SingletonGeoAnimatable {

@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/** Decorative empty energy can (a collectible; SPEC §5.2). */
+/** Decorative empty energy can (a collectible). */
 public class EmptyCanBlock extends Block {
 
     private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 9.0);

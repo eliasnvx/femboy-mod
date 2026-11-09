@@ -8,7 +8,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
 /**
- * Sound events (SPEC §5.7). sounds.json points them at vanilla sound files with our own pitch/volume,
+ * Sound events. sounds.json points them at vanilla sound files with our own pitch/volume,
  * so no audio files are shipped (nothing licensed, nothing to attribute).
  */
 public final class FemboySounds {
@@ -28,6 +28,11 @@ public final class FemboySounds {
     public static final RegistrySupplier<SoundEvent> STEP_SLIPPERS = event("step.slippers");
     /** A soft pat-pat and a little sparkle (synthesized, tools/sounds/make_sounds.py). */
     public static final RegistrySupplier<SoundEvent> HEADPAT = event("headpat");
+    /** A soft fabric swish when socks slide on a polished floor (synthesized, tools/sounds/make_sounds.py). */
+    public static final RegistrySupplier<SoundEvent> SOCK_SLIDE = event("sock.slide");
+    /** A Debug Flytrap snapping shut on a bug, and a soft gulp when it's done digesting (synthesized). */
+    public static final RegistrySupplier<SoundEvent> FLYTRAP_SNAP = event("debug_flytrap.snap");
+    public static final RegistrySupplier<SoundEvent> FLYTRAP_GULP = event("debug_flytrap.gulp");
     // Bug: own synthesized sounds (tools/sounds/make_sounds.py)
     public static final RegistrySupplier<SoundEvent> BUG_AMBIENT = event("bug.ambient");
     public static final RegistrySupplier<SoundEvent> BUG_HURT = event("bug.hurt");

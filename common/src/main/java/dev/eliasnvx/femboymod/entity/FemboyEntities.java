@@ -66,14 +66,14 @@ public final class FemboyEntities {
             () -> EntityType.Builder.<Seat>of(Seat::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).noSummon().noLootTable().clientTrackingRange(10).build(SEAT_KEY));
 
-    /** Stray Cat (SPEC v1.2): a vanilla-style tameable cat with a pastel coat and mod gifts. */
+    /** Stray Cat: a vanilla-style tameable cat with a pastel coat and mod gifts. */
     public static final ResourceKey<EntityType<?>> STRAY_CAT_KEY = key("stray_cat");
     public static final RegistrySupplier<EntityType<StrayCat>> STRAY_CAT = REGISTER.register(STRAY_CAT_KEY.identifier(),
             () -> EntityType.Builder.<StrayCat>of(StrayCat::new, MobCategory.CREATURE)
                     .sized(0.6F, 0.7F).eyeHeight(0.35F).passengerAttachments(0.5125F).clientTrackingRange(8).build(STRAY_CAT_KEY));
     public static final TagKey<Biome> STRAY_CAT_SPAWNS = biomeTag("stray_cat_spawns");
 
-    /** Wandering Cosplayer (SPEC v1.2): rare travelling trader with exclusive colorways (see CosplayerSpawner). */
+    /** Wandering Cosplayer: rare travelling trader with exclusive colorways (see CosplayerSpawner). */
     public static final ResourceKey<EntityType<?>> COSPLAYER_KEY = key("cosplayer");
     public static final RegistrySupplier<EntityType<Cosplayer>> COSPLAYER = REGISTER.register(COSPLAYER_KEY.identifier(),
             () -> EntityType.Builder.<Cosplayer>of(Cosplayer::new, MobCategory.CREATURE)

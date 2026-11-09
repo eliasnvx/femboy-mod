@@ -36,10 +36,14 @@ final class FemboyGameTestsNeoForge {
         DeferredRegister<Consumer<GameTestHelper>> functions = DeferredRegister.create(Registries.TEST_FUNCTION, FemboyMod.MOD_ID);
         List<DeferredHolder<Consumer<GameTestHelper>, Consumer<GameTestHelper>>> holders = new ArrayList<>();
         List<Integer> maxTicks = new ArrayList<>();
-        List<CosmeticGameTests.Entry> entries = ModList.get().isLoaded("curios")
-                // -Pcompat_slots=true: only the Curios check; Curios can't sync to the shared tests' mock players
-                ? List.of(new CosmeticGameTests.Entry("curios_slots_count_as_worn", CuriosGameTest::cosmeticsInCuriosSlotsCount))
-                : CosmeticGameTests.all();
+        List<CosmeticGameTests.Entry> entries = new ArrayList<>();
+        if (ModList.get().isLoaded("curios")) {
+            // -Pcompat_slots=true: only the Curios check; Curios can't sync to the shared tests' mock players
+            entries.add(new CosmeticGameTests.Entry("curios_slots_count_as_worn", CuriosGameTest::cosmeticsInCuriosSlotsCount));
+        } else {
+            entries.addAll(CosmeticGameTests.all());
+            entries.add(new CosmeticGameTests.Entry("grave_mods_collect_cosmetics", GraveDropsGameTest::graveModsCollectCosmetics));
+        }
         for (CosmeticGameTests.Entry entry : entries) {
             holders.add(functions.register(entry.name(), entry::body));
             maxTicks.add(entry.maxTicks());

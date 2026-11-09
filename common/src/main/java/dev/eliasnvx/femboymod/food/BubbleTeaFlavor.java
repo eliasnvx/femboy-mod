@@ -10,7 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 
 /**
- * A bubble tea flavor (SPEC v1.1), data pack registry {@code femboymod:bubble_tea_flavor}. Every drink picks a
+ * A bubble tea flavor, data pack registry {@code femboymod:bubble_tea_flavor}. Every drink picks a
  * random flavor by weight: {@code {"weight": 3, "effects": [{"effect": "minecraft:haste", "duration": 1200}]}}.
  * The flavor's name is the lang key {@code bubble_tea_flavor.<namespace>.<path>}.
  */

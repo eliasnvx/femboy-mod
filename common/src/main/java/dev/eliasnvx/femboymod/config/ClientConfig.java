@@ -2,13 +2,16 @@ package dev.eliasnvx.femboymod.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.eliasnvx.femboymod.social.HeadpatConsent;
 import net.minecraft.util.StringRepresentable;
 
-/** Client-only options ({@code config/femboymod-client.json}, SPEC §10). */
+/** Client-only options ({@code config/femboymod-client.json}). */
 public record ClientConfig(boolean showOthersCosmetics, boolean dripHud, boolean nyaSound, boolean rgbAnimations,
-                           Physics physics, boolean uwuChat, HudCorner hudCorner) {
+                           Physics physics, boolean uwuChat, HudCorner hudCorner, boolean reactiveCosmetics,
+                           boolean earTips, HeadpatConsent headpats) {
 
-    public static final ClientConfig DEFAULTS = new ClientConfig(true, true, false, true, Physics.FULL, true, HudCorner.AUTO);
+    public static final ClientConfig DEFAULTS = new ClientConfig(true, true, false, true, Physics.FULL, true, HudCorner.AUTO,
+            true, true, HeadpatConsent.EVERYONE);
 
     public static final Codec<ClientConfig> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.BOOL.fieldOf("show_others_cosmetics").orElse(DEFAULTS.showOthersCosmetics).forGetter(ClientConfig::showOthersCosmetics),
@@ -17,16 +20,22 @@ public record ClientConfig(boolean showOthersCosmetics, boolean dripHud, boolean
             Codec.BOOL.fieldOf("rgb_animations").orElse(DEFAULTS.rgbAnimations).forGetter(ClientConfig::rgbAnimations),
             Physics.CODEC.fieldOf("tail_skirt_physics").orElse(DEFAULTS.physics).forGetter(ClientConfig::physics),
             Codec.BOOL.fieldOf("uwu_chat").orElse(DEFAULTS.uwuChat).forGetter(ClientConfig::uwuChat),
-            HudCorner.CODEC.fieldOf("femboy_level_panel_corner").orElse(DEFAULTS.hudCorner).forGetter(ClientConfig::hudCorner)
+            HudCorner.CODEC.fieldOf("femboy_level_panel_corner").orElse(DEFAULTS.hudCorner).forGetter(ClientConfig::hudCorner),
+            Codec.BOOL.fieldOf("reactive_ears_and_tails").orElse(DEFAULTS.reactiveCosmetics).forGetter(ClientConfig::reactiveCosmetics),
+            Codec.BOOL.fieldOf("first_person_ear_tips").orElse(DEFAULTS.earTips).forGetter(ClientConfig::earTips),
+            HeadpatConsent.CODEC.fieldOf("headpats_from_players").orElse(DEFAULTS.headpats).forGetter(ClientConfig::headpats)
     ).apply(i, ClientConfig::new));
 
-    public ClientConfig withShowOthersCosmetics(boolean v) { return new ClientConfig(v, dripHud, nyaSound, rgbAnimations, physics, uwuChat, hudCorner); }
-    public ClientConfig withDripHud(boolean v) { return new ClientConfig(showOthersCosmetics, v, nyaSound, rgbAnimations, physics, uwuChat, hudCorner); }
-    public ClientConfig withNyaSound(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, v, rgbAnimations, physics, uwuChat, hudCorner); }
-    public ClientConfig withRgbAnimations(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, v, physics, uwuChat, hudCorner); }
-    public ClientConfig withPhysics(Physics v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, v, uwuChat, hudCorner); }
-    public ClientConfig withUwuChat(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, v, hudCorner); }
-    public ClientConfig withHudCorner(HudCorner v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, uwuChat, v); }
+    public ClientConfig withShowOthersCosmetics(boolean v) { return new ClientConfig(v, dripHud, nyaSound, rgbAnimations, physics, uwuChat, hudCorner, reactiveCosmetics, earTips, headpats); }
+    public ClientConfig withDripHud(boolean v) { return new ClientConfig(showOthersCosmetics, v, nyaSound, rgbAnimations, physics, uwuChat, hudCorner, reactiveCosmetics, earTips, headpats); }
+    public ClientConfig withNyaSound(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, v, rgbAnimations, physics, uwuChat, hudCorner, reactiveCosmetics, earTips, headpats); }
+    public ClientConfig withRgbAnimations(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, v, physics, uwuChat, hudCorner, reactiveCosmetics, earTips, headpats); }
+    public ClientConfig withPhysics(Physics v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, v, uwuChat, hudCorner, reactiveCosmetics, earTips, headpats); }
+    public ClientConfig withUwuChat(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, v, hudCorner, reactiveCosmetics, earTips, headpats); }
+    public ClientConfig withHudCorner(HudCorner v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, uwuChat, v, reactiveCosmetics, earTips, headpats); }
+    public ClientConfig withReactiveCosmetics(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, uwuChat, hudCorner, v, earTips, headpats); }
+    public ClientConfig withEarTips(boolean v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, uwuChat, hudCorner, reactiveCosmetics, v, headpats); }
+    public ClientConfig withHeadpats(HeadpatConsent v) { return new ClientConfig(showOthersCosmetics, dripHud, nyaSound, rgbAnimations, physics, uwuChat, hudCorner, reactiveCosmetics, earTips, v); }
 
     /**
      * Where the Femboy Level panel sits. {@link #AUTO} is the top left corner, or the bottom right one when a minimap

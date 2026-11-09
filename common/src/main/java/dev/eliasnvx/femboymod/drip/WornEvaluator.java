@@ -15,6 +15,7 @@ import dev.eliasnvx.femboymod.cosmetic.CosmeticInventory;
 import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
 import dev.eliasnvx.femboymod.cosmetic.Colorways;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
+import dev.eliasnvx.femboymod.config.ServerSettings;
 import dev.eliasnvx.femboymod.api.backpack.CharmStats;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -67,9 +68,11 @@ public final class WornEvaluator {
     public static synchronized Evaluation evaluate(Player player) {
         CosmeticInventory inventory = CosmeticsManager.worn(player);
         RegistryAccess registries = player.level().registryAccess();
-        // Server: the femboymod:set_bonuses game rule can switch sets off per world (clients follow the server's effects)
-        boolean setsAllowed = FemboyConfig.common().setBonusesEnabled() && !(player.level() instanceof ServerLevel serverLevel
-                && !serverLevel.getGameRules().get(FemboyGameRules.SET_BONUSES.get()));
+        // Server: its config and the femboymod:set_bonuses game rule; client: the server's verdict (ServerSettings), so
+        // client-only set effects (glow, sounds, the Drip HUD) follow the server, not this client's config file
+        boolean setsAllowed = player.level() instanceof ServerLevel serverLevel
+                ? FemboyConfig.common().setBonusesEnabled() && serverLevel.getGameRules().get(FemboyGameRules.SET_BONUSES.get())
+                : ServerSettings.client().setBonuses();
         Cached cached = CACHE.get(player);
         if (cached != null && cached.inventory() == inventory && cached.registries() == registries && cached.setsAllowed() == setsAllowed) {
             return cached.evaluation();
@@ -115,7 +118,7 @@ public final class WornEvaluator {
         return new Evaluation(drip, Set.copyOf(activeSets), List.copyOf(effects));
     }
 
-    /** Charms hanging on a worn backpack (SPEC §5.3). */
+    /** Charms hanging on a worn backpack. */
     private static void addCharmEffects(List<PlannedEffect> out, ItemStack stack, Identifier slot, RegistryAccess registries) {
         if (!stack.has(FemboyComponents.BACKPACK.get())) {
             return;

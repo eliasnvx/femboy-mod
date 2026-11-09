@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Draws everything a player wears (SPEC §4.5). Added to every player renderer on both loaders. */
+/** Draws everything a player wears. Added to every player renderer on both loaders. */
 public final class CosmeticLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 
     private final Map<Identifier, CosmeticRenderer> renderers = new HashMap<>();

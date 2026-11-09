@@ -7,7 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
 /**
- * Phone (SPEC v1.1 Photo Mode): right-click takes a selfie. Purely client-side; the client entrypoint installs
+ * Phone (Photo Mode): right-click takes a selfie. Purely client-side; the client entrypoint installs
  * {@link #onClientUse} so this common class never touches client code.
  */
 public class PhoneItem extends Item {

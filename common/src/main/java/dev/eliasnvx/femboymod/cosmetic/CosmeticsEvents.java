@@ -6,12 +6,16 @@ import dev.eliasnvx.femboymod.network.ProfileSyncPayload;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.InteractionEvent;
+import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.eliasnvx.femboymod.effect.CosmeticEffectsManager;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.network.CosmeticsSyncPayload;
+import java.util.List;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -21,7 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.gamerules.GameRules;
 import dev.eliasnvx.femboymod.registry.FemboyComponents;
 
-/** Game hooks for cosmetic slots: sync, right-click equip, death drops. */
+/** Game hooks for cosmetic slots: sync, right-click equip, death drops (with the loader hooks). */
 public final class CosmeticsEvents {
 
     private static boolean lastArmorRule = true;
@@ -42,10 +46,13 @@ public final class CosmeticsEvents {
         });
         PlayerEvent.PLAYER_QUIT.register(CosmeticEffectsManager::stop);
         PlayerEvent.PLAYER_QUIT.register(dev.eliasnvx.femboymod.photo.PhotoService::forget);
+        PlayerEvent.PLAYER_QUIT.register(dev.eliasnvx.femboymod.network.EmotePayloads::forget);
+        PlayerEvent.PLAYER_QUIT.register(dev.eliasnvx.femboymod.energy.EnergyDrinks::forgetEarCue);
         TickEvent.PLAYER_POST.register(player -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 CosmeticEffectsManager.tick(serverPlayer);
                 ProfileHooks.tick(serverPlayer);
+                dev.eliasnvx.femboymod.energy.EnergyDrinks.checkEarCue(serverPlayer);
             }
         });
         // allow_hidden_armor changed with /gamerule: resend everyone's outfit so clients redraw the armor
@@ -57,17 +64,34 @@ public final class CosmeticsEvents {
                 server.getPlayerList().getPlayers().forEach(CosmeticsSyncPayload::sendToTrackingAndSelf);
             }
         });
-        PlayerEvent.CHANGE_DIMENSION.register((player, from, to) -> CosmeticsSyncPayload.sendToTrackingAndSelf(player));
+        // outfit changes queued during the tick go out once, at its end
+        TickEvent.SERVER_POST.register(server -> CosmeticsSyncPayload.flushDirty());
+        LifecycleEvent.SERVER_STOPPED.register(server -> CosmeticsSyncPayload.clearDirty());
+        PlayerEvent.CHANGE_DIMENSION.register((player, from, to) -> {
+            CosmeticsSyncPayload.sendToTrackingAndSelf(player);
+            // NeoForge builds a new client player for the new dimension without copying attachments: the profile too
+            ProfileSyncPayload.sendAll(player);
+        });
         EntityEvent.START_TRACKING.register((entity, watcher) -> {
             if (entity instanceof Player tracked) {
-                CosmeticsSyncPayload.sendTo(watcher, tracked);
+                // On Fabric start tracking fires before the spawn packet goes out: sent now, the outfit can reach a
+                // client that doesn't know the player yet and be dropped (seen on the 1.20.1 port). The server's next
+                // task runs after this tick sent the spawn packets.
+                MinecraftServer server = watcher.level().getServer();
+                server.schedule(new TickTask(server.getTickCount(), () -> {
+                    if (!watcher.hasDisconnected() && !tracked.isRemoved()) {
+                        CosmeticsSyncPayload.sendTo(watcher, tracked);
+                        dev.eliasnvx.femboymod.energy.EnergyDrinks.resendEarCue(watcher, tracked);
+                    }
+                }));
             }
         });
 
+        // effects only (a death another mod cancels resumes them next tick); the slots drop with the vanilla death
+        // loot, from the loader hook (PlatformHelperImpl): a cancelled death keeps them, grave mods can collect them
         EntityEvent.LIVING_DEATH.register((entity, source) -> {
             if (entity instanceof ServerPlayer player) {
                 CosmeticEffectsManager.stop(player);
-                dropOnDeath(player);
             }
             return EventResult.pass();
         });
@@ -75,14 +99,24 @@ public final class CosmeticsEvents {
         InteractionEvent.USE_ITEM.register((level, player, hand) -> equipFromHand(player, hand, false));
     }
 
-    public static void dropOnDeath(ServerPlayer player) {
+    /**
+     * Empties a dying player's slots and returns what they wore, or nothing when a keep rule applies (the attachment is
+     * copyOnDeath, so kept cosmetics carry over to the respawned player). Called while the vanilla death loot drops:
+     * NeoForge puts them into {@code LivingDropsEvent}'s drops (where grave mods look), Fabric spawns them right after.
+     */
+    public static List<ItemStack> takeDeathDrops(ServerPlayer player) {
         ServerLevel level = (ServerLevel) player.level();
         if (level.getGameRules().get(GameRules.KEEP_INVENTORY) || level.getGameRules().get(FemboyGameRules.KEEP_COSMETICS.get())
                 || FemboyConfig.common().keepCosmeticsOnDeath()) {
-            return; // the attachment is copyOnDeath, so cosmetics carry over to the respawned player
+            return List.of();
         }
-        for (ItemStack stack : CosmeticsManager.clear(player)) {
-            player.spawnAtLocation(level, stack);
+        return CosmeticsManager.clear(player);
+    }
+
+    /** Drops a dying player's cosmetics at their feet (unless a keep rule applies). */
+    public static void dropOnDeath(ServerPlayer player) {
+        for (ItemStack stack : takeDeathDrops(player)) {
+            player.spawnAtLocation((ServerLevel) player.level(), stack);
         }
     }
 

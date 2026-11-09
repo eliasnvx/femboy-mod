@@ -31,7 +31,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Stray Cat (SPEC v1.2): a vanilla cat at heart (tame it with fish, it sits, sleeps on your bed and brings the usual
+ * Stray Cat: a vanilla cat at heart (tame it with fish, it sits, sleeps on your bed and brings the usual
  * morning gifts) with a pastel coat, that also brings a little mod gift each morning when its owner is near
  * (loot table {@code femboymod:gameplay/stray_cat_gift}, config {@code friends.stray_cat_*}).
  */

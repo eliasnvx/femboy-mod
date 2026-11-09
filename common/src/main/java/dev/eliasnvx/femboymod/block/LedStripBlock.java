@@ -22,7 +22,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * LED strip (SPEC v1.1) on any face. Right-click cycles the color: pink, purple, blue, white and a slow
+ * LED strip on any face. Right-click cycles the color: pink, purple, blue, white and a slow
  * rainbow (a smooth texture animation, never a strobe). Servers can turn the rainbow off
  * ({@code furniture.led_rainbow}); then only static colors are offered.
  */
