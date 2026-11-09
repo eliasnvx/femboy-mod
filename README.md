@@ -7,7 +7,7 @@
 [![NeoForge](https://img.shields.io/badge/NeoForge-26.3-E68A00?style=for-the-badge)](https://neoforged.net/)
 [![Architectury](https://img.shields.io/badge/Architectury-22.0.4-9C6ADE?style=for-the-badge)](https://modrinth.com/mod/architectury-api)
 [![License](https://img.shields.io/badge/License-MIT-C9A7FF?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.2.0-F291BE?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-0.3.0-F291BE?style=for-the-badge)](CHANGELOG.md)
 
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1BD96A?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/mod/femboy-mod)
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-F16436?style=for-the-badge&logo=curseforge&logoColor=white)](https://www.curseforge.com/minecraft/mc-mods/femboy-mod)
@@ -165,7 +165,8 @@ Drip matters in a fight: the better you look, the less they hurt.
 | `femboymod:style_points` | `true` | players earn Style Points |
 | `femboymod:set_bonuses` | `true` | set bonuses apply |
 | `femboymod:keep_cosmetics` | `false` | cosmetics stay on when you die |
-| `femboymod:allow_hidden_armor` | `true` | players may hide armor under their outfit (turn off on PvP servers) |
+| `femboymod:allow_hidden_armor` | `true` | players may hide armor under their outfit (it shows anyway while they fight another player; turn hiding off entirely on PvP servers) |
+| `femboymod:cat_mischief` | `true` | cats push flower pots, candles and plushies off tables while someone watches (also needs `mobGriefing`) |
 | `femboymod:drip_pvp_percent` | `0` | PvP: % more damage per Drip tier above the victim |
 
 **Config** — `config/femboymod-common.json` (balance, mobs, furniture, style points, vibe check, friends) and `femboymod-client.json` (HUD panel, RGB animations, physics, UwU chat); in game via Mod Menu or the NeoForge mod list.
