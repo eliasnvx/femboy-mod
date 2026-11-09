@@ -1,4 +1,4 @@
-# Femboy Mod API: addon guide (API 0.2.0)
+# Femboy Mod API: addon guide (API 0.3.0)
 
 > The API is `0.x`, so minor versions may still break things. Changes are listed in [CHANGELOG.md](CHANGELOG.md).
 > Working reference: [`example-addon/`](../../example-addon). CI builds and tests it, and every snippet below comes from it.
@@ -15,6 +15,7 @@
 - [A renderer](#a-renderer)
 - [A Blockbench model instead of code](#a-blockbench-model-instead-of-code)
 - [Chat transformers](#chat-transformers)
+- [Reactive ears and tails](#reactive-ears-and-tails)
 - [Events](#events)
 - [Queries](#queries)
 - [Rules](#rules)
@@ -108,10 +109,12 @@ Built-in effect types:
 | `femboymod:glow_friends` | `radius`, `teammates_only` (true: only your scoreboard team, or everyone if you have none); client-side outline |
 | `femboymod:muffle_sounds` | `sounds` (sound event ids), `volume` (0..1); client-side, for the wearer |
 | `femboymod:damage_bonus` | `targets` (entity id, list or tag), `multiplier`: the wearer hits those mobs harder |
+| `femboymod:slide` | `grip` (0..1, lower = slipperier): the wearer slides on polished floors (`#femboymod:sock_slippery`); sneaking, carpets and rugs grip. Socks use it with `femboymod:no_shoes` |
 
 On Minecraft 1.20.1, `femboymod:attribute` also takes the 1.21 player attributes the game lacks, by their 1.21.1 ids: `minecraft:generic.step_height`, `generic.movement_efficiency`, `generic.safe_fall_distance`, `generic.jump_strength`, `generic.oxygen_bonus`, `player.block_break_speed` and `player.sneaking_speed`. The mod computes them from what the player wears (same math as 1.21.1); any other unknown attribute is skipped with a warning in the log.
 
-Built-in conditions (`"when"`): `femboymod:cold_biome`, `femboymod:crouching`, `femboymod:sprinting`.
+Built-in conditions (`"when"`): `femboymod:cold_biome`, `femboymod:crouching`, `femboymod:sprinting`, `femboymod:night`,
+`femboymod:no_shoes` (feet slot empty and no boots).
 
 ## Lookbook: where to get it
 The Lookbook (a book every player gets once, also a button in the Outfit screen) lists every cosmetic by slot. Tell players where to find yours in `data/<ns>/femboymod/lookbook/<item path>.json` (file name = item id, like `cosmetic_stats`):
@@ -215,12 +218,16 @@ public void submit(CosmeticRenderContext ctx) {
 - `ctx.stack()` is the worn item: read the colorway with `api.common().getColorway(stack)`.
 - `ctx.entity()` is the wearer, `ctx.partialTick()` the frame's partial tick.
 - `ctx.motion()` gives smoothed movement values (walk amount, turn sway, phase) for procedural animation (`CosmeticMotion`).
+  Since 0.3.0 it also has the reactions of [reactive ears and tails](#reactive-ears-and-tails) (`earAlert`, `earYaw`,
+  `earFlatten`, `droop`, `tailWag`, `tailPuff`, `jitter`, all 0 when nothing reacts), so your own ears or tail can react too.
 
 ## A Blockbench model instead of code
 If your item has no explicit renderer, you can draw it without code. Put the files at
 `assets/<ns>/geo/cosmetic/<item path>.geo.json` and `assets/<ns>/textures/cosmetic/<item path>.png`
 (an optional `_dyeable.png` is multiplied by the colorway; an optional `animations/cosmetic/<item path>.animation.json` plays a looping `idle`).
 Run `./gradlew :common:exportBlockbenchStarters` to get starting `.geo.json` files with the bone names the mod expects.
+Bones named `left_ear` and `right_ear` react like the built-in ears (turn, flatten, droop) on top of your animation; give
+your item a [hearing profile](#reactive-ears-and-tails) so it notices things.
 
 ## Chat transformers
 ```java
@@ -231,6 +238,41 @@ api.chatTransformers().register(id("my_filter"), message -> wearsMyItem() ? mess
 - A transformer that throws is logged and skipped.
 - `ChatTransformEvent` fires after all transformers. It can change the final text or cancel, in which case the original is sent.
 - The UwU choker is `femboymod:uwu`.
+
+## Reactive ears and tails
+Built-in ears and the tail react to what happens around the wearer: they turn toward mobs they hear, flatten at a hissing
+creeper, droop at low health, wag near the wearer's pet. Two ways to join in:
+
+**A reaction source** (client, in `onInitializeClient`) adds your own reasons. The example addon makes ears perk up and the
+tail wag while the friendship pin is worn and another player is close:
+```java
+api.reactionSources().register(id("pin"), (wearer, reactions) -> {
+    if (api.common().getCosmetics(wearer).get(PIN_SLOT).isEmpty()) return;
+    for (Player other : wearer.level().players()) {
+        if (other != wearer && other.distanceToSqr(wearer) <= 16) { reactions.wag(0.7F); reactions.perk(0.5F); return; }
+    }
+});
+```
+- Sources run a few times per second on the client for every nearby player who wears reactive cosmetics. The strongest value
+  of each reaction wins; the mod smooths them, so just say what should happen right now.
+- Use only what the client knows. Mob effects of other players are not sent to other clients.
+- A source that throws is logged once and skipped.
+
+**A hearing profile** (client resources, `assets/<ns>/femboymod/hearing/<name>.json`) makes your worn item react, or tunes ours:
+```json
+{
+  "items": ["femboymod:cat_ears"],
+  "radius": 16,
+  "notices_first": ["minecraft:creeper", "#minecraft:skeletons"],
+  "notices_first_radius": 24,
+  "night_radius": 20,
+  "startles": false,
+  "flatten": 1.0
+}
+```
+`items` and `notices_first` take ids and `#tags`. Hostile mobs within `radius` are noticed (every mob with `startles`), the
+ones in `notices_first` first and from further away; `night_radius` replaces `radius` in the dark; `flatten` (0..1) scales how
+far the ears flatten. When several worn items have a profile, the one in the earliest slot counts.
 
 ## Events
 Subscribe with `api.events().addListener(EventClass.class, handler)`. You can pass a priority: `addListener(Class, EventPriority, handler)`.
@@ -295,6 +337,19 @@ Per-world switches for admins (`/gamerule femboymod:<name> <value>`); a feature 
 | `femboymod:keep_cosmetics` | false | worn cosmetics stay on death |
 | `femboymod:allow_hidden_armor` | true | players may hide armor under their outfit (visual only); off = armor always drawn |
 | `femboymod:drip_pvp_percent` | 0 | PvP: % more damage per Drip tier above the victim (less when below); 0 = off |
+| `femboymod:cat_mischief` | true | cats push things off tables while someone watches (also needs `mobGriefing`) |
+
+## Tags for the world features
+Data packs and addons extend these like any tag (`"replace": false`):
+
+| Tag | What it does |
+|---|---|
+| `#femboymod:cat_knockable` (block) | what cats push off tables; no blocks with block entities (their contents would be lost) |
+| `#femboymod:flytrap_prey` (entity type) | what the Debug Flytrap catches and eats (Bugs, silverfish, endermites) |
+| `#femboymod:catnip` (block) | cats that smell these within 3 blocks get a catnip high |
+| `#femboymod:catnip` (item) | feeding these to a cat starts the high; untamed Stray Cats may get tamed |
+| `#femboymod:touchable_grass` (block) | right-click with an empty hand counts as touching grass |
+| `#femboymod:sock_slippery` (block) | polished floors that socks slide on |
 
 ## Queries
 | Method | Returns |

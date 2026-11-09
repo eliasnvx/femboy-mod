@@ -52,4 +52,14 @@ public interface FemboyClientApi {
      * @return the motion values; neutral values if the player wears nothing
      */
     CosmeticMotion motion(LivingEntity entity);
+
+    /**
+     * Returns the registry of reasons for reactive ears and tails to move (the mod's own reactions, such as
+     * noticing mobs or flinching when hurt, are built in). Register during {@link FemboyAddon#onInitializeClient}.
+     *
+     * @return the reaction source registry
+     */
+    @org.jetbrains.annotations.ApiStatus.AvailableSince("0.3.0")
+    @org.jetbrains.annotations.ApiStatus.Experimental
+    ApiRegistry<dev.eliasnvx.femboymod.api.client.CosmeticReactionSource> reactionSources();
 }

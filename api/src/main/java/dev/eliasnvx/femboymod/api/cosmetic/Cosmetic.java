@@ -16,7 +16,7 @@ import java.util.Optional;
  *
  * @param slot     id of the {@link CosmeticSlotType} the item is worn in
  * @param renderer id of the renderer used to draw the item on the body; empty means the
- *                 renderer registered under the item's own id (client, Phase 2)
+ *                 renderer registered under the item's own id (client)
  */
 public record Cosmetic(ResourceLocation slot, Optional<ResourceLocation> renderer) {
 

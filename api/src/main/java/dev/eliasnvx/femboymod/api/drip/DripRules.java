@@ -19,8 +19,8 @@ import java.util.List;
  *
  * @param harmonyBonus   bonus per color-matched item
  * @param setBonus       bonus per completed set
- * @param maxLevel       upper clamp (SPEC: 100)
- * @param tierThresholds ascending levels for tiers 1..N (SPEC: tiers 0–5)
+ * @param maxLevel       upper clamp
+ * @param tierThresholds ascending levels for tiers 1..N (tiers 0–5)
  */
 public record DripRules(int harmonyBonus, int setBonus, int maxLevel, List<Integer> tierThresholds) {
 
