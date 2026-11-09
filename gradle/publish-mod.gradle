@@ -1,4 +1,4 @@
-// Modrinth + CurseForge publishing (SPEC §14), applied by :fabric and :neoforge.
+// Modrinth + CurseForge publishing, applied by :fabric and :neoforge.
 // Run by .github/workflows/release.yml on a v* tag. Without tokens it is a dry run:
 //   ./gradlew :fabric:publishMods   (prints what would be uploaded)
 apply plugin: "me.modmuss50.mod-publish-plugin"

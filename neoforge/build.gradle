@@ -25,7 +25,7 @@ dependencies {
     modImplementation "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
     modImplementation "software.bernie.geckolib:geckolib-neoforge-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
 
-    // Slot mods (SPEC §4.3): wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds Curios to the dev runtime
+    // Slot mods: wear our cosmetics in their slots. Compile only; -Pcompat_slots=true adds Curios to the dev runtime
     modCompileOnly("maven.modrinth:curios:${rootProject.curios_neoforge_version}") { transitive false }
     modCompileOnly("maven.modrinth:accessories:${rootProject.accessories_neoforge_version}") { transitive false }
     // Accessories / Aether (which brings Accessories) in the dev client: ./gradlew :neoforge:runClient -Pcompat_accessories=true
@@ -60,7 +60,7 @@ dependencies {
     shadowBundle(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
 }
 
-// Server GameTests (SPEC §13): shared bodies in common/.../gametest, registered by FemboyGameTestsNeoForge.
+// Server GameTests: shared bodies in common/.../gametest, registered by FemboyGameTestsNeoForge.
 loom {
     runs {
         gameTestServer {
