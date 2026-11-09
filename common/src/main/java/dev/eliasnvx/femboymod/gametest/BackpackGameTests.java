@@ -27,7 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 import java.util.function.Consumer;
 
-/** Phase 3 (SPEC §13): backpack dupe safety, tier upgrades, charms; energy drinks. */
+/** Backpack dupe safety, tier upgrades, charms; energy drinks. */
 public final class BackpackGameTests {
 
     public static final List<CosmeticGameTests.Entry> ALL = List.of(

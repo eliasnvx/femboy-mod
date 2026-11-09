@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/** Phase 2 logic: stats, set bonuses, Drip Level, dyeing. Registered like {@link CosmeticGameTests}. */
+/** Stats, set bonuses, Drip Level, dyeing. Registered like {@link CosmeticGameTests}. */
 public final class WearableGameTests {
 
     public static final List<CosmeticGameTests.Entry> ALL = List.of(
