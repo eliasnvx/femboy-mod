@@ -3,6 +3,39 @@
 All notable changes to Femboy Mod. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/api/CHANGELOG.md`.
 
+## [0.3.0] - 2026-11-10
+### Added
+- **Reactive ears and tails**: ears turn toward mobs they hear, stand up when alert, flatten at a hissing creeper or when you get hurt, fold underwater and droop at low health or in bed; the tail puffs up when startled, wags near your pet and after a headpat, and twitches after Byte Energy. Every kind of ears hears differently: cat ears notice creepers first and furthest, wolf ears lock onto skeletons, bunny ears hear furthest but react to every mob, fox ears hear better at night, bear ears never flatten. Other players see it too. In first person the ear tips peek in at the top of the screen on the side of what they heard. Client options `reactive_ears_and_tails`, `first_person_ear_tips`; resource packs can tune hearing in `assets/<ns>/femboymod/hearing/`
+- **Sock sliding**: in Programming Socks or Fishnet Tights without shoes or boots you slide on polished floors (planks, polished stone, smooth stone, quartz, concrete, glazed terracotta; block tag `#femboymod:sock_slippery`) and keep sliding when you let go. Shoes, carpets and rugs grip, and so does sneaking. A soft swish when you coast, and an advancement: Parquet Drift. Sock Goblins wear socks too, so indoors they slide and are easier to catch (config `mobs.sock_goblin_slide_grip`)
+- **Cats knock things off tables**: now and then, while you watch, a cat walks up to a flower pot, candle, plushie, rubber duck or lava lamp at the edge of a table, stares at you, and pushes it off. Nothing breaks: it lands on the floor as items (a potted flower as the pot and the flower). Advancement: Gravity Check. Game rule `femboymod:cat_mischief` (and vanilla mob griefing), config `cats.knock_*`
+- **Debug Flytrap**: a swamp plant that catches bugs. It snaps up Bugs, silverfish and endermites that come close, digests with its jaws shut and grows a stage with every meal (three stages, each reaching further). Plant it by your base or put it in a flower pot on your desk. Advancement: Bug Fixed. Entity tag `#femboymod:flytrap_prey`, config `plants.flytrap_*`
+- **Touch grass**: after two hours of play (configurable, 0 turns it off) the game gently suggests touching grass, to you only. Right-click grass, or the new Potted Grass, with an empty hand: a short Regeneration, a fresh timer and an advancement. Config `plants.touch_grass_*`
+- **Catnip**: grows wild in plains and meadows, can be planted, potted and spread with bone meal. Cats that smell it or eat a sprig get the zoomies, then hunt for things to push off tables, then lie down purring. Feeding catnip to a Stray Cat tames it more easily. Advancement: Zoomies. Config `plants.catnip_*`
+- **Headpat consent**: choose who may give you headpats: everyone, teammates (your scoreboard team) or nobody (settings, `headpats_from_players` in `femboymod-client.json`). The server learns your choice when you join and whenever you change it; someone you turn away sees a short note. Pets still love headpats
+- **Photo storage limit**: the server keeps at most 64 pictures per player and 2048 in all (config `photos.max_per_player`, `photos.max_total`; 0 = no limit). Past a limit the picture nobody has looked at for the longest fades: the photo item stays, blank, with "The picture has faded" in its tooltip. Photos on display are looked at, so they stay. Pictures printed before this update count toward the total
+
+### Fixed
+- Multiplayer hardening (from a multiplayer audit):
+  - A client sending photo uploads without paper, or uploads that don't decode, could make the server decode them one after another. Paper and cooldown are now checked first, and a broken upload makes that player wait a second
+  - Outfit changes made in one tick (hiding, armor visibility, presets, quick clicks) now go out to the players around as one update at the end of the tick, with one equip sound. Wheel emotes play one at a time
+  - Other players no longer receive what's packed inside your worn backpack, only the backpack itself
+  - The creative cosmetic slot packet now decodes and checks items like vanilla's creative slot packet (rejects items that wouldn't save; only in the inventory, not for spectators, only items enabled in the world)
+  - NeoForge: after going through a portal the Lookbook collection and Style Points were empty until something changed; the profile is now resent on dimension change
+  - Cats pushing things off tables now respect claim and protection mods on NeoForge (they ask through its mob griefing event) and report the block as destroyed by the cat
+- PvP fairness:
+  - Armor hidden under an outfit shows for everyone while its wearer is fighting another player, and for 10 seconds after (config `pvp.reveal_hidden_armor_ticks`, 0 = off)
+  - Mirrors only reflect what they can see: nobody behind a wall shows up in a mirror anymore
+  - Heart Glasses: teammates glow through walls as before; without a team, other players glow only while you can see them
+- The server's settings now reach clients: with set bonuses off on the server (config or `femboymod:set_bonuses`), client-side set effects (glowing mobs, sounds, the Drip HUD tier) turn off too; disabled slots and the Style Coupon price shown in the outfit screen are the server's
+- Wardrobe and outfit presets follow the same rules as equipping by hand (disabled slots, addons that refuse an item); cosmetics from other mods' slots don't count in a disabled slot
+- Shift-clicking a cosmetic off in the outfit menu now tells addons it came off
+- Caffeine ear twitch: players who walk up later see it too, and it stops when the caffeine is gone early (milk, death)
+- More than 64 photos in view no longer makes the client ask the server for them over and over; the extra ones show as developing
+- Singleplayer and LAN hosts: the headpat cooldown no longer carries over to another world
+- The settings screen is a scrolling list like vanilla's option screens: on small windows or with a large GUI scale the last options and the Done button were cut off
+- Cosmetics now drop together with the rest of the death loot instead of just before it. A death another mod cancels (revive and "downed" mods) no longer drops your outfit. NeoForge: grave mods collect your cosmetics with the inventory (they read the same drops). Fabric has no shared drops event, so there grave mods only collect them if they support Femboy Mod; otherwise they land next to the grave as before
+- 1.21.1: rose quartz, moonstone, glitter and neon quartz ores were black around their gems, the rose quartz buds and cluster stood in black squares, and the neon signs' plate was flat black: the see-through parts of their textures stay see-through now
+
 ## [0.2.1] - 2026-10-17
 ### Fixed
 - NeoForge: the game crashed on start with Accessories installed (also through The Aether, which ships it): "Registry Object not present: femboymod:cosmetic"
