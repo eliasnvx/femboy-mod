@@ -12,7 +12,8 @@
     "client.SoundEngineMuffleMixin",
     "client.PlayerModelEmoteMixin",
     "client.LivingEntityRendererNameTagMixin",
-    "client.AgeableListModelAccessor"
+    "client.AgeableListModelAccessor",
+    "client.LivingEntityJumpMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -36,6 +36,10 @@ public final class ConfigScreen extends OptionsSubScreen {
                 value -> FemboyConfig.setClient(FemboyConfig.client().withHudCorner(value))));
         addToggle("uwu_chat", c.uwuChat(), v -> FemboyConfig.setClient(FemboyConfig.client().withUwuChat(v)));
         addToggle("nya_sound", c.nyaSound(), v -> FemboyConfig.setClient(FemboyConfig.client().withNyaSound(v)));
+        list.addBig(new OptionInstance<>("config.femboymod.nya_volume", OptionInstance.noTooltip(),
+                (caption, val) -> Component.translatable("options.percent_value", caption, val),
+                new OptionInstance.IntRange(0, 100), c.nyaVolume(),
+                v -> FemboyConfig.setClient(FemboyConfig.client().withNyaVolume(v))));
         addToggle("rgb_animations", c.rgbAnimations(), v -> FemboyConfig.setClient(FemboyConfig.client().withRgbAnimations(v)));
         list.addBig(cycle("physics", ClientConfig.Physics.values(), ClientConfig.Physics.CODEC, c.physics(), null,
                 value -> FemboyConfig.setClient(FemboyConfig.client().withPhysics(value))));

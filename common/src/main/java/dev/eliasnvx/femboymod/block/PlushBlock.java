@@ -5,15 +5,21 @@ import dev.eliasnvx.femboymod.registry.FemboySounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
@@ -24,20 +30,34 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
-/** Plushies: decorative; right-click squeaks. */
-public class PlushBlock extends HorizontalDirectionalBlock {
+/** Plushies: decorative; squish-and-bounce on placement and right-click, squeaking on interaction. */
+public class PlushBlock extends HorizontalDirectionalBlock implements EntityBlock {
 
     private final Map<Direction, VoxelShape> shapes;
     private final MapCodec<PlushBlock> codec;
+    private final @Nullable SimpleParticleType extraParticle;
     private static final float MIN_PITCH = 1.3F;
     private static final float PITCH_RANGE = 0.4F;
+    private static final float PLACE_VOLUME = 0.35F;
+    private static final float PLACE_MIN_PITCH = 1.05F;
+    private static final float PLACE_PITCH_RANGE = 0.2F;
 
     /** @param northShape outline with the face pointing north (the model's orientation) */
     public PlushBlock(Properties properties, VoxelShape northShape) {
+        this(properties, northShape, null);
+    }
+
+    /** @param extraParticle optional themed particle emitted alongside hearts on right-click (e.g. portal sparks) */
+    public PlushBlock(Properties properties, VoxelShape northShape, @Nullable SimpleParticleType extraParticle) {
         super(properties);
         this.shapes = BlockShapes.rotateHorizontal(northShape);
-        this.codec = simpleCodec(props -> new PlushBlock(props, northShape));
+        this.extraParticle = extraParticle;
+        this.codec = simpleCodec(props -> new PlushBlock(props, northShape, extraParticle));
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    public @Nullable SimpleParticleType extraParticle() {
+        return extraParticle;
     }
 
     @Override
@@ -61,11 +81,42 @@ public class PlushBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new PlushBlockEntity(pos, state);
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.INVISIBLE;
+    }
+
+    @Override
+    protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+        super.triggerEvent(state, level, pos, id, param);
+        BlockEntity entity = level.getBlockEntity(pos);
+        return entity != null && entity.triggerEvent(id, param);
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (!level.isClientSide) {
+            level.blockEvent(pos, this, PlushBlockEntity.EVENT_PLACE, 0);
+            float pitch = PLACE_MIN_PITCH + level.getRandom().nextFloat() * PLACE_PITCH_RANGE;
+            level.playSound(null, pos, FemboySounds.PLUSH_SQUEAK.get(), SoundSource.BLOCKS, PLACE_VOLUME, pitch);
+        }
+    }
+
+    @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (level instanceof ServerLevel serverLevel) {
+            level.blockEvent(pos, this, PlushBlockEntity.EVENT_CLICK, 0);
             float pitch = MIN_PITCH + level.getRandom().nextFloat() * PITCH_RANGE;
             level.playSound(null, pos, FemboySounds.PLUSH_SQUEAK.get(), SoundSource.BLOCKS, 1.0F, pitch);
             serverLevel.sendParticles(ParticleTypes.HEART, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 1, 0.1, 0.1, 0.1, 0.0);
+            if (extraParticle != null) {
+                serverLevel.sendParticles(extraParticle, pos.getX() + 0.5, pos.getY() + 0.65, pos.getZ() + 0.5, 5, 0.2, 0.2, 0.2, 0.05);
+            }
         }
         return InteractionResult.SUCCESS;
     }

@@ -77,6 +77,8 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> ROSE_QUARTZ_EARRINGS = cosmetic("rose_quartz_earrings", FemboySlots.FACE);
     public static final RegistrySupplier<Item> ROSE_QUARTZ_BRACELET = cosmetic("rose_quartz_bracelet", FemboySlots.HANDS);
     public static final RegistrySupplier<Item> MOONSTONE_PENDANT = cosmetic("moonstone_pendant", FemboySlots.NECK);
+    public static final RegistrySupplier<Item> CAT_BEANIE = cosmetic("cat_beanie", FemboySlots.HEAD_ACCESSORY);
+    public static final RegistrySupplier<Item> OVERSIZED_SCARF = cosmetic("oversized_scarf", FemboySlots.NECK);
     public static final RegistrySupplier<Item> CYBER_VISOR = cosmetic("cyber_visor", FemboySlots.FACE);
     /** Chunky black sunglasses; the Fashion Critic can't argue with them (#femboymod:critic_approved). */
     public static final RegistrySupplier<Item> DARK_SHADES = cosmetic("dark_shades", FemboySlots.FACE);
@@ -211,6 +213,10 @@ public final class FemboyItems {
     /** Block item for a block registered elsewhere (FemboyBlocks). */
     public static RegistrySupplier<Item> blockItem(String name, RegistrySupplier<Block> block) {
         return register(name, props -> new BlockItem(block.get(), props));
+    }
+
+    public static RegistrySupplier<Item> plushBlockItem(String name, RegistrySupplier<Block> block) {
+        return register(name, props -> new dev.eliasnvx.femboymod.item.PlushBlockItem(block.get(), props));
     }
 
     private static RegistrySupplier<Item> spawnEgg(String name, RegistrySupplier<? extends EntityType<? extends Mob>> entity) {

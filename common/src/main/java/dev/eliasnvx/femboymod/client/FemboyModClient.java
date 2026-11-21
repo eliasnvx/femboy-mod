@@ -78,6 +78,8 @@ public final class FemboyModClient {
         FemboyMenus.MINI_FRIDGE.listen(type -> MenuRegistry.registerScreenFactory(type, FurnitureStorageScreen::new));
         FemboyBlocks.CLOTHING_RACK_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, ClothingRackRenderer::new));
         FemboyBlocks.MIRROR_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, dev.eliasnvx.femboymod.client.render.MirrorRenderer::new));
+        FemboyBlocks.PLUSH_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, dev.eliasnvx.femboymod.client.render.PlushRenderer::new));
+        FemboyBlocks.PLUSH_SHELF_ENTITY.listen(type -> BlockEntityRendererRegistry.register(type, dev.eliasnvx.femboymod.client.render.PlushShelfRenderer::new));
         // 26.3 picks the render layer from the textures; 1.21.1 needs it set per block, or transparent pixels draw black
         for (var block : FemboyBlocks.BLOCKS) {
             String name = block.getId().getPath();
@@ -89,7 +91,6 @@ public final class FemboyModClient {
                         net.minecraft.client.renderer.RenderType.cutoutMipped(), registered));
             }
         }
-        ClientTickEvent.CLIENT_POST.register(NyaSound::tick);
         KeyMappingRegistry.register(OPEN_COSMETICS);
         KeyMappingRegistry.register(EMOTES);
         dev.eliasnvx.femboymod.emote.EmoteClientHooks.onShow = EmoteClient::show;
@@ -206,21 +207,21 @@ public final class FemboyModClient {
             }
         }
         if (stack.getItem() instanceof dev.eliasnvx.femboymod.pet.PetOutfitItem) {
-            lines.add(Component.translatable("tooltip.femboymod.pet_outfit").withStyle(ChatFormatting.GRAY));
+            addWrapped(lines, Component.translatable("tooltip.femboymod.pet_outfit"), ChatFormatting.GRAY);
         }
         if (stack.is(dev.eliasnvx.femboymod.registry.FemboyItems.LOST_SOCK.get())) {
-            lines.add(Component.translatable("tooltip.femboymod.lost_sock").withStyle(ChatFormatting.GRAY));
+            addWrapped(lines, Component.translatable("tooltip.femboymod.lost_sock"), ChatFormatting.GRAY);
         }
         if (stack.is(dev.eliasnvx.femboymod.registry.FemboyTags.HALLOWEEN_COSTUME)) {
-            lines.add(Component.translatable("tooltip.femboymod.trick_or_treat").withStyle(ChatFormatting.GOLD));
+            addWrapped(lines, Component.translatable("tooltip.femboymod.trick_or_treat"), ChatFormatting.GOLD);
         }
         if (stack.has(FemboyComponents.CHILLED.get())) {
-            lines.add(Component.translatable("tooltip.femboymod.chilled").withStyle(ChatFormatting.AQUA));
+            addWrapped(lines, Component.translatable("tooltip.femboymod.chilled"), ChatFormatting.AQUA);
         }
         if (stack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem
                 && dev.eliasnvx.femboymod.block.FemboyBlocks.hasHowTo(blockItem.getBlock())) {
-            lines.add(Component.translatable("tooltip." + blockItem.getBlock().getDescriptionId().substring("block.".length()))
-                    .withStyle(ChatFormatting.GRAY));
+            addWrapped(lines, Component.translatable("tooltip." + blockItem.getBlock().getDescriptionId().substring("block.".length())),
+                    ChatFormatting.GRAY);
         }
         Cosmetic cosmetic = stack.get(FemboyComponents.COSMETIC.get());
         if (cosmetic != null) {
@@ -231,7 +232,7 @@ public final class FemboyModClient {
             lines.add(Component.translatable("tooltip.femboymod.slot",
                     Component.translatable(CosmeticSlotType.translationKey(cosmetic.slot()))).withStyle(ChatFormatting.GRAY));
             if (slides(stack)) {
-                lines.add(Component.translatable("tooltip.femboymod.slides").withStyle(ChatFormatting.GRAY));
+                addWrapped(lines, Component.translatable("tooltip.femboymod.slides"), ChatFormatting.GRAY);
             }
         }
         Colorway colorway = dev.eliasnvx.femboymod.cosmetic.Colorways.effective(stack).orElse(null);
@@ -241,6 +242,19 @@ public final class FemboyModClient {
                     .map(key -> (Component) Component.translatable(key.location().toLanguageKey("colorway")))
                     .orElseGet(() -> Component.translatable("colorway.femboymod.solid"));
             lines.add(Component.translatable("tooltip.femboymod.colorway", name).withStyle(ChatFormatting.GRAY));
+        }
+    }
+
+    private static final int TOOLTIP_MAX_WIDTH = 175;
+
+    private static void addWrapped(List<Component> lines, Component text, ChatFormatting color) {
+        Minecraft mc = Minecraft.getInstance();
+        if (!mc.isSameThread() || mc.font == null) {
+            lines.add(text.copy().withStyle(color));
+            return;
+        }
+        for (var part : mc.font.getSplitter().splitLines(text, TOOLTIP_MAX_WIDTH, net.minecraft.network.chat.Style.EMPTY)) {
+            lines.add(Component.literal(part.getString()).withStyle(color));
         }
     }
 
