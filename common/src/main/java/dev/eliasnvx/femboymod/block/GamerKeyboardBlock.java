@@ -1,9 +1,11 @@
 package dev.eliasnvx.femboymod.block;
 
+import dev.eliasnvx.femboymod.registry.FemboySounds;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +25,8 @@ import org.jetbrains.annotations.Nullable;
 /** Mechanical keyboard with a mouse: right-click to clack the keys. */
 public class GamerKeyboardBlock extends HorizontalDirectionalBlock {
 
-    private static final float MIN_PITCH = 1.5F;
-    private static final float PITCH_RANGE = 0.5F;
+    private static final float MIN_PITCH = 0.92F;
+    private static final float PITCH_RANGE = 0.16F;
     private static final VoxelShape NORTH_SHAPE = Block.box(1.0, 0.0, 5.0, 15.0, 2.0, 11.0);
     private final Map<Direction, VoxelShape> shapes = Shapes.rotateHorizontal(NORTH_SHAPE);
 
@@ -50,9 +52,10 @@ public class GamerKeyboardBlock extends HorizontalDirectionalBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide()) {
+        if (level instanceof ServerLevel serverLevel) {
             float pitch = MIN_PITCH + level.getRandom().nextFloat() * PITCH_RANGE;
-            level.playSound(null, pos, SoundEvents.BAMBOO_WOOD_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.6F, pitch);
+            level.playSound(null, pos, FemboySounds.KEYBOARD_CLACK.get(), SoundSource.BLOCKS, 0.85F, pitch);
+            serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5, 2, 0.2, 0.05, 0.2, 0.01);
         }
         return InteractionResult.SUCCESS;
     }

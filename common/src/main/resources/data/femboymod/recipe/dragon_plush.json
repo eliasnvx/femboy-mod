@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:black_wool",
+    "minecraft:purple_wool",
+    "minecraft:ender_pearl",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:dragon_plush"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:yellow_wool",
+    "minecraft:yellow_wool",
+    "minecraft:honeycomb",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:bee_plush"
+  }
+}

@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.gametest;
 
+import dev.eliasnvx.femboymod.block.PlushBlock;
 import dev.eliasnvx.femboymod.config.CommonConfig;
 import dev.eliasnvx.femboymod.entity.CatKnockGoal;
 import dev.eliasnvx.femboymod.entity.CatMischief;
@@ -86,7 +87,7 @@ public final class CatMischiefGameTests {
         helper.succeed();
     }
 
-    /** Pushing a block entity would lose its contents: none in the tag (and no tag entry is missing). */
+    /** Pushing a block entity with saved data would lose its contents: only stateless plushies may have one. */
     public static void catKnockableHasNoBlockEntities(GameTestHelper helper) {
         List<Block> blocks = new java.util.ArrayList<>();
         for (Holder<Block> holder : BuiltInRegistries.BLOCK.getTagOrEmpty(FemboyTags.CAT_KNOCKABLE)) {
@@ -94,7 +95,7 @@ public final class CatMischiefGameTests {
         }
         helper.assertTrue(blocks.contains(Blocks.FLOWER_POT) && blocks.contains(Blocks.CANDLE), "pots and candles are in: " + blocks.size());
         for (Block block : blocks) {
-            helper.assertFalse(block instanceof EntityBlock, block + " has a block entity");
+            helper.assertFalse(block instanceof EntityBlock && !(block instanceof PlushBlock), block + " has a block entity");
         }
         helper.succeed();
     }

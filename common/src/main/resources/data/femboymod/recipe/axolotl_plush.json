@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:pink_wool",
+    "minecraft:pink_wool",
+    "minecraft:clay_ball",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:axolotl_plush"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:oak_slab",
+    "minecraft:oak_slab",
+    "minecraft:stick",
+    "minecraft:pink_dye"
+  ],
+  "result": {
+    "id": "femboymod:plush_shelf"
+  }
+}

@@ -127,6 +127,8 @@ public final class CosmeticModels {
     public static final ModelLayerLocation CAT_PAW_GLOVES = layer("cat_paw_gloves");
     // 0.2.0 Halloween
     public static final ModelLayerLocation WITCH_HAT = layer("witch_hat");
+    public static final ModelLayerLocation CAT_BEANIE = layer("cat_beanie");
+    public static final ModelLayerLocation OVERSIZED_SCARF = layer("oversized_scarf");
     public static final ModelLayerLocation PUMPKIN_HOODIE = layer("pumpkin_hoodie");
     public static final ModelLayerLocation GHOST_SHEET = layer("ghost_sheet");
     public static final ModelLayerLocation CANDY_PAIL = layer("candy_pail");
@@ -193,6 +195,8 @@ public final class CosmeticModels {
         layers.put(BUNNY_SLIPPERS, CosmeticModels::bunnySlippers);
         layers.put(CAT_PAW_GLOVES, CosmeticModels::catPawGloves);
         layers.put(WITCH_HAT, CosmeticModels::witchHat);
+        layers.put(CAT_BEANIE, CosmeticModels::catBeanie);
+        layers.put(OVERSIZED_SCARF, CosmeticModels::oversizedScarf);
         layers.put(GHOST_SHEET, CosmeticModels::ghostSheet);
         layers.put(CANDY_PAIL, CosmeticModels::candyPail);
         layers.put(BACKPACK, CosmeticModels::backpack);
@@ -296,6 +300,9 @@ public final class CosmeticModels {
         }, 0.5F, 3.0F, 0.26F, 0.0F, 0.25F, 1.0F);
     }
 
+    /** Slight outward angle so ears face diagonally like real animal ears instead of sitting flat in one plane. */
+    private static final float EAR_REST_YAW = 0.16F;
+
     private static LayerDefinition animalEars(EarShape shape) {
         MeshDefinition mesh = emptyPlayerMesh();
         PartDefinition head = mesh.getRoot().getChild("head");
@@ -313,13 +320,19 @@ public final class CosmeticModels {
         for (int side = -1; side <= 1; side += 2) {
             float tilt = side * shape.tilt() + (side > 0 ? shape.extraRightTilt() : 0.0F);
             PartDefinition ear = pivot(head, side < 0 ? "left_ear" : "right_ear",
-                    PartPose.offsetAndRotation(side * shape.spacing(), -8.3F, -0.2F, 0.0F, 0.0F, tilt));
+                    PartPose.offsetAndRotation(side * shape.spacing(), -8.3F, -0.2F, 0.0F, -side * EAR_REST_YAW, tilt));
             Groups.Builder b = new Groups.Builder(ear);
-            // back shell (full silhouette), inner ear in front, fur furthest front
             b.bandRange(-height, 0.0F);
-            b.extrude(mask, Map.of('M', BANDED, 'A', BANDED, 'F', BANDED, 'D', DARK), -width / 2, -height, -0.4F, pixel, 0.9F);
-            b.extrude(mask, Map.of('A', ACCENT, 'F', ACCENT), -width / 2, -height, -0.6F, pixel, 0.2F);
-            b.extrude(mask, Map.of('F', DETAIL), -width / 2, -height, -0.75F, pixel, 0.2F);
+            // Outer rim juts forward to form a real cupped 3D ear cavity around the recessed inner ear
+            b.extrude(mask, Map.of('M', BANDED, 'D', DARK), -width / 2, -height, -0.65F, pixel, 1.55F);
+            // Recessed inner ear inside the cup
+            b.extrude(mask, Map.of('A', ACCENT, 'F', ACCENT), -width / 2, -height, -0.15F, pixel, 0.45F);
+            // Fluffy inner fur tufts protruding out from the cavity
+            b.extrude(mask, Map.of('F', DETAIL), -width / 2, -height, -0.50F, pixel, 0.55F);
+            // Solid back wall across the full silhouette
+            b.extrude(mask, Map.of('M', BANDED, 'A', BANDED, 'F', BANDED, 'D', DARK), -width / 2, -height, 0.25F, pixel, 0.95F);
+            // Rounded convex back dome so the ear has plush 3D depth from the side and behind
+            b.extrude(mask, Map.of('A', BANDED, 'F', BANDED), -width / 2, -height, 1.15F, pixel, 0.60F);
             b.build();
         }
         return layerOf(mesh);
@@ -327,55 +340,57 @@ public final class CosmeticModels {
 
     // ------------------------------------------------------------------ tail
 
-    /** Fox-style brush: thin at the base, bushiest toward the end, white tip. */
-    private static final int TAIL_SEGMENTS = 10;
-    private static final float[] TAIL_WIDTH = {1.4F, 2.0F, 2.6F, 3.1F, 3.5F, 3.7F, 3.6F, 3.2F, 2.6F, 1.7F};
-    private static final float TAIL_SEGMENT_LENGTH = 1.45F;
-    /** Fur strands stick out this far past the core. */
-    private static final float TAIL_FUR = 0.45F;
+    /** Long, plush fox-style brush: slim base, full rounded middle, graceful S-curve and soft tapered white tip. */
+    private static final int TAIL_SEGMENTS = 14;
+    private static final float[] TAIL_WIDTH = {
+            1.5F, 2.1F, 2.7F, 3.3F, 3.8F, 4.2F, 4.5F, 4.6F, 4.5F, 4.2F, 3.7F, 3.0F, 2.2F, 1.4F};
+    private static final float[] TAIL_REST_PITCH = {
+            -0.48F, -0.14F, -0.04F, 0.05F, 0.10F, 0.13F, 0.14F, 0.14F, 0.13F, 0.11F, 0.08F, 0.04F, -0.02F, -0.06F};
+    private static final float TAIL_SEGMENT_LENGTH = 1.55F;
+    /** Rounded fur layers stick out this far past the core (creating a smooth octagonal silhouette). */
+    private static final float TAIL_FUR = 0.55F;
     /** Last segments are the (white) fur tip. */
-    private static final int TAIL_TIP_FROM = 7;
+    private static final int TAIL_TIP_FROM = 10;
 
     private static LayerDefinition tail() {
         MeshDefinition mesh = emptyPlayerMesh();
         PartDefinition parent = mesh.getRoot().getChild("body");
         for (int i = 0; i < TAIL_SEGMENTS; i++) {
             float w = TAIL_WIDTH[i];
-            float h = w / 2;
+            float h = w / 2.0F;
             float len = TAIL_SEGMENT_LENGTH;
-            PartPose pose = i == 0 ? PartPose.offset(0.0F, 9.5F, 2.4F) : PartPose.offset(0.0F, 0.0F, len);
+            PartPose pose = i == 0 ? PartPose.offset(0.0F, 9.6F, 2.2F) : PartPose.offset(0.0F, 0.0F, len);
             parent = pivot(parent, "segment" + i, pose);
             boolean tip = i >= TAIL_TIP_FROM;
             Groups body = tip ? DETAIL : MAIN;
             // the last colored segment already lightens toward the tip, fur is lighter than the core
             Groups fur = tip || i == TAIL_TIP_FROM - 1 ? DETAIL : ACCENT;
             Groups.Builder b = new Groups.Builder(parent).bandRange(0.0F, TAIL_SEGMENTS);
+            // slight overlap on both ends eliminates gaps on curves
+            float zStart = i == 0 ? 0.0F : -0.22F;
+            float zLen = i == 0 ? len + 0.22F : len + 0.44F;
             if (body == MAIN) {
-                b.boxInBand(i + 0.5F, -h, -h, 0.0F, w, w, len + 0.2F);   // one pattern ring per segment
+                b.boxInBand(i + 0.5F, -h, -h, zStart, w, w, zLen);   // one pattern ring per segment
             } else {
-                b.box(body, -h, -h, 0.0F, w, w, len + 0.2F);
+                b.box(body, -h, -h, zStart, w, w, zLen);
             }
-            if (i == 0) {
-                b.build();
-                continue; // the base stays slim where it meets the body
-            }
-            // fur strands on all four sides, a little shorter than the segment so neighbours overlap softly
-            float strand = w - 0.8F;
-            b.box(fur, -h - TAIL_FUR, -strand / 2, 0.15F, TAIL_FUR, strand, len - 0.1F);
-            b.box(fur, h, -strand / 2, 0.15F, TAIL_FUR, strand, len - 0.1F);
-            b.box(fur, -strand / 2, -h - TAIL_FUR, 0.15F, strand, TAIL_FUR, len - 0.1F);
-            b.box(fur, -strand / 2, h, 0.15F, strand, TAIL_FUR, len - 0.1F);
-            // tufts: corner clumps on every other segment break the boxy outline
-            if (i % 2 == 1 && w > 2.4F) {
-                float c = h - 0.2F;
-                b.box(fur, -c - 0.4F, -c - 0.4F, 0.4F, 0.9F, 0.9F, len * 0.7F);
-                b.box(fur, c - 0.5F, -c - 0.4F, 0.6F, 0.9F, 0.9F, len * 0.6F);
-                b.box(fur, -c - 0.4F, c - 0.5F, 0.7F, 0.9F, 0.9F, len * 0.6F);
-                b.box(fur, c - 0.5F, c - 0.5F, 0.3F, 0.9F, 0.9F, len * 0.7F);
+            if (i > 0) {
+                // symmetric rounded fur bands on all four sides turn the square core into a plush octagonal brush
+                float furDepth = Math.min(TAIL_FUR, w * 0.16F);
+                float strand = w * 0.68F;
+                float furZ = -0.06F;
+                float furLen = len + 0.14F;
+                b.box(fur, -h - furDepth, -strand / 2.0F, furZ, furDepth, strand, furLen);
+                b.box(fur, h, -strand / 2.0F, furZ, furDepth, strand, furLen);
+                b.box(fur, -strand / 2.0F, -h - furDepth, furZ, strand, furDepth, furLen);
+                b.box(fur, -strand / 2.0F, h, furZ, strand, furDepth, furLen);
             }
             if (i == TAIL_SEGMENTS - 1) {
-                b.box(DETAIL, -h + 0.3F, -h + 0.3F, len, w - 0.6F, w - 0.6F, 0.7F);   // rounded tip
-                b.box(DETAIL, -0.4F, -0.4F, len + 0.7F, 0.8F, 0.8F, 0.4F);           // pointy end
+                // smooth 3-step tapered fluffy tip
+                float t1 = Math.max(0.9F, w - 0.35F);
+                b.box(DETAIL, -t1 / 2.0F, -t1 / 2.0F, len, t1, t1, 0.85F);
+                b.box(DETAIL, -0.45F, -0.45F, len + 0.85F, 0.9F, 0.9F, 0.65F);
+                b.box(DETAIL, -0.25F, -0.25F, len + 1.50F, 0.5F, 0.5F, 0.45F);
             }
             b.build();
         }
@@ -732,6 +747,57 @@ public final class CosmeticModels {
         return layerOf(mesh);
     }
 
+    /** Chunky knit beanie with a folded cuff, small cat-ear corners and a tiny pin on the cuff. */
+    private static LayerDefinition catBeanie() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        PartDefinition head = mesh.getRoot().getChild("head");
+        Groups.Builder hat = new Groups.Builder(pivot(head, "cat_beanie", PartPose.ZERO));
+        hat.box(ACCENT, -4.65F, -7.2F, -4.65F, 9.3F, 2.2F, 9.3F);                  // thick folded knit cuff
+        hat.box(MAIN, -4.4F, -9.5F, -4.4F, 8.8F, 2.5F, 8.8F);                      // main knit dome
+        hat.box(MAIN, -3.9F, -10.2F, -3.9F, 7.8F, 0.8F, 7.8F);                     // rounded crown
+        hat.box(METAL, 2.2F, -6.5F, -4.85F, 1.3F, 0.9F, 0.25F);                    // tiny cuff tag/pin
+        hat.build();
+        for (int side : new int[]{-1, 1}) {
+            PartDefinition ear = pivot(head, side < 0 ? "beanie_ear_l" : "beanie_ear_r",
+                    PartPose.offsetAndRotation(side * 2.9F, -9.8F, 0.0F, 0.0F, -side * EAR_REST_YAW, side * 0.22F));
+            Groups.Builder e = new Groups.Builder(ear);
+            // Cupped 3D knit cat ear: protruding outer rim, recessed pink inner knit, rounded plush back
+            e.box(MAIN, -1.4F, -1.7F, -1.05F, 0.65F, 1.9F, 2.0F);
+            e.box(MAIN, 0.75F, -1.7F, -1.05F, 0.65F, 1.9F, 2.0F);
+            e.box(MAIN, -0.95F, -2.7F, -0.95F, 1.9F, 1.15F, 1.85F);
+            e.box(MAIN, -0.5F, -3.2F, -0.7F, 1.0F, 0.6F, 1.4F);
+            e.box(MAIN, -1.2F, -1.8F, -0.25F, 2.4F, 1.9F, 1.35F);                 // solid back wall
+            e.box(MAIN, -0.85F, -2.2F, 1.0F, 1.7F, 1.7F, 0.45F);                  // rounded back dome
+            e.box(DETAIL, -0.75F, -1.75F, -0.65F, 1.5F, 1.45F, 0.5F);             // recessed inner-ear knit accent
+            e.build();
+        }
+        return layerOf(mesh);
+    }
+
+    /** Thick cozy knit scarf wrapped around the neck with two hanging ends and fringe. */
+    private static LayerDefinition oversizedScarf() {
+        MeshDefinition mesh = emptyPlayerMesh();
+        PartDefinition body = mesh.getRoot().getChild("body");
+        Groups.Builder scarf = new Groups.Builder(pivot(body, "oversized_scarf", PartPose.ZERO));
+        // Plush wrapped collar around the neck/shoulders
+        scarf.box(MAIN, -4.7F, -0.6F, -3.1F, 9.4F, 2.6F, 6.2F);
+        scarf.box(ACCENT, -4.85F, 0.3F, -3.25F, 9.7F, 0.9F, 6.5F);                 // folded rib stripe
+        // Front hanging tail (right side of chest)
+        scarf.box(MAIN, 1.1F, 1.8F, -3.25F, 2.5F, 6.2F, 1.1F);
+        scarf.box(ACCENT, 1.05F, 6.3F, -3.3F, 2.6F, 0.9F, 1.2F);
+        scarf.box(DETAIL, 1.2F, 8.0F, -3.15F, 0.5F, 1.1F, 0.7F);                   // fringe tassels
+        scarf.box(DETAIL, 2.1F, 8.0F, -3.15F, 0.5F, 1.1F, 0.7F);
+        scarf.box(DETAIL, 3.0F, 8.0F, -3.15F, 0.5F, 1.1F, 0.7F);
+        // Back hanging tail (left shoulder)
+        scarf.box(MAIN, -3.5F, 1.8F, 2.1F, 2.4F, 4.8F, 1.0F);
+        scarf.box(ACCENT, -3.55F, 5.2F, 2.05F, 2.5F, 0.8F, 1.1F);
+        scarf.box(DETAIL, -3.4F, 6.6F, 2.2F, 0.5F, 1.0F, 0.6F);
+        scarf.box(DETAIL, -2.5F, 6.6F, 2.2F, 0.5F, 1.0F, 0.6F);
+        scarf.box(DETAIL, -1.6F, 6.6F, 2.2F, 0.5F, 1.0F, 0.6F);
+        scarf.build();
+        return layerOf(mesh);
+    }
+
     /**
      * A sheet over the head and down to the knees with two dark eye holes, floppy sleeves over the arms; the
      * drape below the waist is wide enough for the legs to swing inside.
@@ -807,12 +873,17 @@ public final class CosmeticModels {
         float top = -8 - o - HOOD_THICKNESS;
         for (int side = -1; side <= 1; side += 2) {
             PartDefinition ear = pivot(head, side < 0 ? "hood_ear_right" : "hood_ear_left",
-                    PartPose.offsetAndRotation(side * HOOD_EAR_SPACING, top, HOOD_EAR_Z, 0.0F, 0.0F, side * HOOD_EAR_TILT));
+                    PartPose.offsetAndRotation(side * HOOD_EAR_SPACING, top, HOOD_EAR_Z, 0.0F, -side * EAR_REST_YAW, side * HOOD_EAR_TILT));
             Groups.Builder b = new Groups.Builder(ear);
-            b.box(MAIN, -1.6F, -1.2F, -0.6F, 3.2F, 1.2F, 1.2F);   // base
-            b.box(MAIN, -1.1F, -2.2F, -0.5F, 2.2F, 1.0F, 1.0F);   // middle step
-            b.box(MAIN, -0.55F, -3.0F, -0.4F, 1.1F, 0.8F, 0.8F);  // tip
-            b.box(ACCENT, -0.9F, -2.0F, -0.75F, 1.8F, 1.7F, 0.2F); // inner ear
+            // Cupped 3D fabric cat ear: outer walls frame the recessed accent inner ear, rounded dome behind
+            b.box(MAIN, -1.7F, -1.4F, -0.85F, 0.7F, 1.5F, 1.7F);      // left rim
+            b.box(MAIN, 1.0F, -1.4F, -0.85F, 0.7F, 1.5F, 1.7F);       // right rim
+            b.box(MAIN, -1.2F, -2.4F, -0.75F, 0.65F, 1.1F, 1.5F);     // upper left rim
+            b.box(MAIN, 0.55F, -2.4F, -0.75F, 0.65F, 1.1F, 1.5F);     // upper right rim
+            b.box(MAIN, -0.7F, -3.2F, -0.6F, 1.4F, 0.9F, 1.3F);       // rounded tip
+            b.box(MAIN, -1.4F, -2.2F, -0.1F, 2.8F, 2.2F, 1.0F);       // solid back wall
+            b.box(MAIN, -0.95F, -2.5F, 0.85F, 1.9F, 2.0F, 0.55F);     // convex back dome
+            b.box(ACCENT, -0.95F, -2.1F, -0.45F, 1.9F, 1.9F, 0.45F);  // recessed inner ear
             b.build();
         }
     }
@@ -958,15 +1029,19 @@ public final class CosmeticModels {
             b.box(DETAIL, face, -5.3F, -2.0F, 0.3F, 3.2F, 0.5F);
             b.box(DETAIL, face, -5.3F, 1.5F, 0.3F, 3.2F, 0.5F);
             b.box(DARK, face, -5.3F, -1.5F, 0.3F, 3.2F, 3.0F);                        // plate inside the ring
-            // cat ear sunk into the band and tilted outward: stepped triangle with a glowing inner ear
+            // cat ear sunk into the band and tilted outward: cupped 3D shell with a recessed glowing RGB inner triangle
             PartDefinition earPivot = pivot(mesh.getRoot().getChild("head"), side < 0 ? "headset_left_ear" : "headset_right_ear",
-                    PartPose.offsetAndRotation(side * HEADSET_EAR_SPACING, HEADSET_EAR_BASE_Y, 0.0F, 0.0F, 0.0F, side * HEADSET_EAR_TILT));
+                    PartPose.offsetAndRotation(side * HEADSET_EAR_SPACING, HEADSET_EAR_BASE_Y, 0.0F, 0.0F, -side * EAR_REST_YAW, side * HEADSET_EAR_TILT));
             Groups.Builder ear = new Groups.Builder(earPivot);
-            ear.box(MAIN, -1.5F, -1.2F, -0.8F, 3.0F, 1.2F, 1.6F);
-            ear.box(MAIN, -1.1F, -2.4F, -0.8F, 2.2F, 1.2F, 1.6F);
-            ear.box(MAIN, -0.6F, -3.4F, -0.8F, 1.2F, 1.0F, 1.6F);
-            ear.box(DETAIL, -0.8F, -2.2F, -1.0F, 1.6F, 1.2F, 0.3F);
-            ear.box(DETAIL, -0.4F, -3.0F, -1.0F, 0.8F, 0.8F, 0.3F);
+            ear.box(MAIN, -1.6F, -1.3F, -1.05F, 0.65F, 1.4F, 2.0F);   // left bezel
+            ear.box(MAIN, 0.95F, -1.3F, -1.05F, 0.65F, 1.4F, 2.0F);   // right bezel
+            ear.box(MAIN, -1.2F, -2.5F, -0.95F, 0.6F, 1.3F, 1.85F);   // upper left bezel
+            ear.box(MAIN, 0.6F, -2.5F, -0.95F, 0.6F, 1.3F, 1.85F);    // upper right bezel
+            ear.box(MAIN, -0.7F, -3.5F, -0.85F, 1.4F, 1.1F, 1.7F);    // top crown
+            ear.box(MAIN, -1.4F, -2.4F, 0.1F, 2.8F, 2.5F, 0.95F);     // solid rear shell
+            ear.box(ACCENT, -0.95F, -2.7F, 0.95F, 1.9F, 2.2F, 0.45F); // rounded rear housing
+            ear.box(DETAIL, -0.9F, -2.2F, -0.75F, 1.8F, 1.6F, 0.85F); // recessed glowing inner triangle
+            ear.box(DETAIL, -0.45F, -3.0F, -0.70F, 0.9F, 0.85F, 0.8F);
             ear.build();
         }
         // boom mic on the left cup, curving toward the mouth
@@ -1262,8 +1337,8 @@ public final class CosmeticModels {
             leftEar.xRot = -left * 0.5F - back;
             rightEar.xRot = -right * 0.5F - back;
             float turn = reactionTurn(motion);
-            leftEar.yRot = turn;
-            rightEar.yRot = turn;
+            leftEar.yRot = turn + EAR_REST_YAW;
+            rightEar.yRot = turn - EAR_REST_YAW;
             // A visible helmet (the wearer chose "show", or the server forbids hiding armor): ears poke out on top
             // of it and the headband, which would be inside the helmet, is not drawn.
             boolean helmet = wearsHelmet(state);
@@ -1312,24 +1387,23 @@ public final class CosmeticModels {
      * drooping, trembling when jittery.
      */
     public static final class TailModel extends GroupModel {
-        private static final float DROOP = -0.5F;
-        private static final float CURL = 0.1F;
-        private static final float IDLE_SWAY = 0.08F;
-        private static final float WALK_SWAY = 0.2F;
-        private static final float SWAY_SPEED = 0.16F;
-        private static final float SEGMENT_PHASE = 0.45F;
-        private static final float WALK_LIFT = 0.25F;
-        private static final float WAG_SPEED = 0.9F;
-        private static final float WAG_AMPLITUDE = 0.22F;
+        private static final float IDLE_SWAY = 0.065F;
+        private static final float WALK_SWAY = 0.15F;
+        private static final float SWAY_SPEED = 0.14F;
+        private static final float SEGMENT_PHASE = 0.36F;
+        private static final float WALK_LIFT = 0.28F;
+        private static final float WALK_BOB = 0.032F;
+        private static final float WAG_SPEED = 0.85F;
+        private static final float WAG_AMPLITUDE = 0.16F;
         private static final float WAG_LIFT = 0.35F;
         /** A puffed tail is this much thicker, sticks out straighter and barely sways. */
-        private static final float PUFF_SCALE = 0.45F;
-        private static final float PUFF_LIFT = 0.45F;
+        private static final float PUFF_SCALE = 0.42F;
+        private static final float PUFF_LIFT = 0.42F;
         private static final float PUFF_STIFFEN = 0.8F;
-        private static final float DROOP_EXTRA = 0.6F;
+        private static final float DROOP_EXTRA = 0.55F;
         private static final float DROOP_CALM = 0.7F;
         private static final float JITTER_SPEED = 2.2F;
-        private static final float JITTER_AMPLITUDE = 0.05F;
+        private static final float JITTER_AMPLITUDE = 0.04F;
         private final ModelPart[] segments = new ModelPart[TAIL_SEGMENTS];
 
         public TailModel(ModelPart root, Groups group, int band) {
@@ -1341,12 +1415,12 @@ public final class CosmeticModels {
             }
         }
 
-        /** Pose with no motion (droop and curl); the Blockbench starter export bakes it into the bones. */
+        /** Pose with no motion (graceful S-curve); the Blockbench starter export bakes it into the bones. */
         public static void applyRestPose(ModelPart root) {
             ModelPart part = root.getChild("body");
             for (int i = 0; i < TAIL_SEGMENTS; i++) {
                 part = part.getChild("segment" + i);
-                part.xRot = i == 0 ? DROOP : CURL;
+                part.xRot = TAIL_REST_PITCH[i];
             }
         }
 
@@ -1361,14 +1435,23 @@ public final class CosmeticModels {
             float amplitude = (IDLE_SWAY * dev.eliasnvx.femboymod.client.render.CosmeticRenderData.idleScale()
                     + WALK_SWAY * motion.walkAmount()) * calm;
             float lift = WALK_LIFT * motion.walkAmount() + WAG_LIFT * wag + PUFF_LIFT * puff - DROOP_EXTRA * droop;
+            float straighten = 1.0F - 0.75F * puff - 0.25F * motion.walkAmount();
             float age = state.ageInTicks;
             for (int i = 0; i < TAIL_SEGMENTS; i++) {
                 ModelPart segment = segments[i];
-                segment.xRot = i == 0 ? DROOP + lift : CURL * (1.0F - puff);
+                float along = (float) i / (TAIL_SEGMENTS - 1);
+                float weight = 0.25F + 0.75F * along;
+                float bob = Mth.cos(age * SWAY_SPEED * 2.0F - i * SEGMENT_PHASE) * WALK_BOB * motion.walkAmount() * weight * calm;
+                segment.xRot = i == 0
+                        ? TAIL_REST_PITCH[0] + lift
+                        : TAIL_REST_PITCH[i] * straighten + bob;
                 float wave = Mth.sin(age * SWAY_SPEED + motion.phase() - i * SEGMENT_PHASE);
                 float wagWave = Mth.sin(age * WAG_SPEED - i * SEGMENT_PHASE);
                 float tremble = Mth.sin(age * JITTER_SPEED * Mth.PI + i) * JITTER_AMPLITUDE * motion.jitter();
-                segment.yRot = wave * amplitude + wagWave * WAG_AMPLITUDE * wag + tremble + motion.turnSway() / TAIL_SEGMENTS;
+                float yaw = (wave * amplitude + wagWave * WAG_AMPLITUDE * wag) * weight
+                        + tremble + (motion.turnSway() / TAIL_SEGMENTS) * (0.5F + along);
+                segment.yRot = yaw;
+                segment.zRot = yaw * 0.32F;
             }
             // The base stays slim where it meets the body; everything after it fluffs up (children inherit the scale).
             float thickness = 1.0F + PUFF_SCALE * puff;

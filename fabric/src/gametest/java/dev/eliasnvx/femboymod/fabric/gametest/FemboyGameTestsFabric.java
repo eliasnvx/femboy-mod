@@ -429,6 +429,16 @@ public final class FemboyGameTestsFabric {
     }
 
     @GameTest
+    public void plushiesSquishOnPlaceAndClick(GameTestHelper helper) {
+        DecorGameTests.plushiesSquishOnPlaceAndClick(helper);
+    }
+
+    @GameTest
+    public void plushShelfAndWinterCosmetics(GameTestHelper helper) {
+        DecorGameTests.plushShelfAndWinterCosmetics(helper);
+    }
+
+    @GameTest
     public void ledStripCyclesColors(GameTestHelper helper) {
         DecorGameTests.ledStripCyclesColors(helper);
     }
@@ -655,7 +665,7 @@ public final class FemboyGameTestsFabric {
 
     @GameTest
     public void allTestsRegistered(GameTestHelper helper) {
-        helper.assertValueEqual(CosmeticGameTests.all().size(), 125, "shared tests wired into the Fabric glue");
+        helper.assertValueEqual(CosmeticGameTests.all().size(), 127, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

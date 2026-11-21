@@ -97,8 +97,13 @@ public final class CosmeticsScreen extends AbstractContainerScreen<CosmeticsMenu
                 .build());
         addRenderableWidget(Button.builder(Component.translatable("gui.femboymod.outfit.lookbook"),
                         b -> Minecraft.getInstance().gui.setScreen(new LookbookScreen(this)))
-                .bounds(x, couponY + BUTTON_ROW, COUPON_W, PRESET_BUTTON_H)
+                .bounds(x, couponY + BUTTON_ROW, COUPON_W - 20, PRESET_BUTTON_H)
                 .tooltip(Tooltip.create(Component.translatable("gui.femboymod.outfit.lookbook.tooltip")))
+                .build());
+        addRenderableWidget(Button.builder(Component.literal("⚙"),
+                        b -> Minecraft.getInstance().gui.setScreen(new ConfigScreen(this)))
+                .bounds(x + COUPON_W - 18, couponY + BUTTON_ROW, 18, PRESET_BUTTON_H)
+                .tooltip(Tooltip.create(Component.translatable("config.femboymod.title")))
                 .build());
     }
 

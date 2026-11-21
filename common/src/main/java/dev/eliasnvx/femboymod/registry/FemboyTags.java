@@ -12,6 +12,8 @@ public final class FemboyTags {
 
     /** Items that fit into backpack charm slots. */
     public static final TagKey<Item> CHARMS = TagKey.create(Registries.ITEM, id("charms"));
+    /** Animal ears and cat-ear headphones. */
+    public static final TagKey<Item> EARS = TagKey.create(Registries.ITEM, id("ears"));
     /** Hoodies: first-person sleeves, the Full Femboy Mode set. */
     public static final TagKey<Item> HOODIES = TagKey.create(Registries.ITEM, id("hoodies"));
     /** Tops that get sleeves in first person (hoodies and the ghost sheet). */

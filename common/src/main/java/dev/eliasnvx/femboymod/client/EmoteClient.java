@@ -64,6 +64,7 @@ public final class EmoteClient {
     public static void pose(PlayerModel model, AvatarRenderState state) {
         Active active = ACTIVE.isEmpty() ? null : ACTIVE.get(state.id);
         if (active == null) {
+            posePlushHug(model, state);
             return;
         }
         float elapsed = Util.getMillis() - active.startMillis();
@@ -87,6 +88,25 @@ public final class EmoteClient {
                 set(model.rightArm, -2.9F + bounce, 0.0F, -0.35F, blend);
                 set(model.leftArm, -2.9F + bounce, 0.0F, 0.35F, blend);
             }
+        }
+    }
+
+    private static void posePlushHug(PlayerModel model, AvatarRenderState state) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) {
+            return;
+        }
+        Entity entity = mc.level.getEntity(state.id);
+        if (entity instanceof net.minecraft.world.entity.player.Player player
+                && !player.isUsingItem()
+                && (player.getMainHandItem().getItem() instanceof dev.eliasnvx.femboymod.item.PlushBlockItem
+                || player.getOffhandItem().getItem() instanceof dev.eliasnvx.femboymod.item.PlushBlockItem)) {
+            model.rightArm.xRot = -0.95F;
+            model.rightArm.yRot = -0.35F;
+            model.rightArm.zRot = 0.05F;
+            model.leftArm.xRot = -0.95F;
+            model.leftArm.yRot = 0.35F;
+            model.leftArm.zRot = -0.05F;
         }
     }
 

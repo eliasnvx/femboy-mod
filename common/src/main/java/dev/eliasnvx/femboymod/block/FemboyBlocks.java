@@ -49,9 +49,20 @@ public final class FemboyBlocks {
     public static final RegistrySupplier<Block> SHARK_PLUSH = plush("shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5));
     public static final RegistrySupplier<Block> CAT_PLUSH = plush("cat_plush", Block.box(3.5, 0.0, 4.5, 14.0, 13.5, 11.5));
     public static final RegistrySupplier<Block> CREEPER_PLUSH = plush("creeper_plush", Block.box(4.0, 0.0, 4.0, 12.0, 13.0, 12.0));
-    public static final RegistrySupplier<Block> RUBBER_DUCK = block("rubber_duck",
+    public static final RegistrySupplier<Block> ENDERMAN_PLUSH = plush("enderman_plush", Block.box(4.0, 0.0, 2.5, 12.0, 12.7, 11.6),
+            net.minecraft.core.particles.ParticleTypes.PORTAL);
+    public static final RegistrySupplier<Block> DRAGON_PLUSH = plush("dragon_plush", Block.box(2.0, 0.0, 2.5, 14.0, 12.8, 14.8),
+            net.minecraft.core.particles.ParticleTypes.PORTAL);
+    public static final RegistrySupplier<Block> AXOLOTL_PLUSH = plush("axolotl_plush", Block.box(1.5, 0.0, 2.5, 14.5, 6.0, 15.2));
+    public static final RegistrySupplier<Block> BEE_PLUSH = plush("bee_plush", Block.box(2.0, 0.0, 2.0, 14.0, 9.0, 14.0));
+    public static final RegistrySupplier<Block> FROG_PLUSH = plush("frog_plush", Block.box(2.6, 0.0, 2.8, 13.4, 9.0, 11.6));
+    public static final RegistrySupplier<Block> BUNNY_PLUSH = plush("bunny_plush", Block.box(1.6, 0.0, 4.5, 14.4, 12.1, 13.8));
+    public static final RegistrySupplier<Block> FOX_PLUSH = plush("fox_plush", Block.box(3.8, 0.0, 1.6, 14.4, 7.8, 12.2));
+    public static final RegistrySupplier<Block> RUBBER_DUCK = plushBlock("rubber_duck",
             props -> new RubberDuckBlock(props, Block.box(4.0, 0.0, 3.5, 12.0, 11.0, 14.0)),
             BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.WOOL).noOcclusion());
+    public static final RegistrySupplier<Block> PLUSH_SHELF = block("plush_shelf", PlushShelfBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.0F).sound(SoundType.WOOD).noOcclusion());
 
     // Ores (rose quartz in mountains and caves, glitter in flower biomes). Generation: data/femboymod/worldgen.
     public static final RegistrySupplier<Block> ROSE_QUARTZ_ORE = block("rose_quartz_ore",
@@ -158,6 +169,14 @@ public final class FemboyBlocks {
             "laundry_basket", () -> new BlockEntityType<>(LaundryBasketBlockEntity::new, Set.of(LAUNDRY_BASKET.get())));
     public static final RegistrySupplier<BlockEntityType<MiniFridgeBlockEntity>> MINI_FRIDGE_ENTITY = BLOCK_ENTITIES.register(
             "mini_fridge", () -> new BlockEntityType<>(MiniFridgeBlockEntity::new, Set.of(MINI_FRIDGE.get())));
+    public static final RegistrySupplier<BlockEntityType<PlushBlockEntity>> PLUSH_ENTITY = BLOCK_ENTITIES.register(
+            "plush", () -> new BlockEntityType<>(PlushBlockEntity::new,
+                    Set.of(SHARK_PLUSH.get(), CAT_PLUSH.get(), CREEPER_PLUSH.get(),
+                            ENDERMAN_PLUSH.get(), DRAGON_PLUSH.get(), AXOLOTL_PLUSH.get(),
+                            BEE_PLUSH.get(), FROG_PLUSH.get(), BUNNY_PLUSH.get(), FOX_PLUSH.get(),
+                            RUBBER_DUCK.get())));
+    public static final RegistrySupplier<BlockEntityType<PlushShelfBlockEntity>> PLUSH_SHELF_ENTITY = BLOCK_ENTITIES.register(
+            "plush_shelf", () -> new BlockEntityType<>(PlushShelfBlockEntity::new, Set.of(PLUSH_SHELF.get())));
 
     /** Laundry baskets are points of interest so Sock Goblins find them (registered per loader with the Thrifter's). */
     public static final ResourceKey<PoiType> LAUNDRY_BASKET_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, id("laundry_basket"));
@@ -209,7 +228,18 @@ public final class FemboyBlocks {
 
     /** Shapes match tools/plush/make_plushies.py (face pointing north). */
     private static RegistrySupplier<Block> plush(String name, VoxelShape northShape) {
-        return block(name, props -> new PlushBlock(props, northShape),
+        return plush(name, northShape, null);
+    }
+
+    private static RegistrySupplier<Block> plushBlock(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties props) {
+        RegistrySupplier<Block> block = BLOCKS.register(name, () -> factory.apply(props.setId(ResourceKey.create(Registries.BLOCK, id(name)))));
+        FemboyItems.plushBlockItem(name, block);
+        return block;
+    }
+
+    private static RegistrySupplier<Block> plush(String name, VoxelShape northShape,
+                                                 @org.jetbrains.annotations.Nullable net.minecraft.core.particles.SimpleParticleType extraParticle) {
+        return plushBlock(name, props -> new PlushBlock(props, northShape, extraParticle),
                 BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.WOOL).noOcclusion());
     }
 
@@ -217,7 +247,7 @@ public final class FemboyBlocks {
     public static boolean hasHowTo(Block block) {
         return block == BEAN_BAG.get() || block == FLUFFY_RUG.get() || block == FAIRY_LIGHTS.get() || block == LAVA_LAMP.get()
                 || block == PET_BED.get() || block == LAUNDRY_BASKET.get() || block == MINI_FRIDGE.get() || block == VANITY_TABLE.get()
-                || block == DEBUG_FLYTRAP.get() || block == CATNIP.get();
+                || block == PLUSH_SHELF.get() || block == DEBUG_FLYTRAP.get() || block == CATNIP.get();
     }
 
     /** Called from FemboyMod.init after the block register. */

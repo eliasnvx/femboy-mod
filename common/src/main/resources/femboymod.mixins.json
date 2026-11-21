@@ -13,7 +13,8 @@
     "client.SoundEngineMuffleMixin",
     "client.PlayerModelEmoteMixin",
     "client.LivingEntityRenderStateMixin",
-    "client.LivingEntityRendererPetOutfitMixin"
+    "client.LivingEntityRendererPetOutfitMixin",
+    "client.LivingEntityJumpMixin"
   ],
   "injectors": {
     "defaultRequire": 1

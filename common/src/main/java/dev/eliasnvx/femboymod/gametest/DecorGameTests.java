@@ -59,7 +59,9 @@ public final class DecorGameTests {
             new CosmeticGameTests.Entry("geode_crystals_grow_and_new_ores_drop", DecorGameTests::geodeCrystalsGrowAndNewOresDrop),
             new CosmeticGameTests.Entry("dark_shades_impress_the_critic", DecorGameTests::darkShadesImpressTheCritic),
             new CosmeticGameTests.Entry("ores_generate_and_drop", DecorGameTests::oresGenerateAndDrop),
-            new CosmeticGameTests.Entry("posters_and_glitter_colorway", DecorGameTests::postersAndGlitterColorway));
+            new CosmeticGameTests.Entry("posters_and_glitter_colorway", DecorGameTests::postersAndGlitterColorway),
+            new CosmeticGameTests.Entry("plushies_squish_on_place_and_click", DecorGameTests::plushiesSquishOnPlaceAndClick),
+            new CosmeticGameTests.Entry("plush_shelf_and_winter_cosmetics", DecorGameTests::plushShelfAndWinterCosmetics));
 
     private static final BlockPos CHAIR = new BlockPos(1, 1, 1);
     private static final BlockPos ORE = new BlockPos(2, 1, 1);
@@ -112,6 +114,7 @@ public final class DecorGameTests {
         helper.succeed();
     }
 
+
     public static void rubberDuckGrantsInsight(GameTestHelper helper) {
         WearableGameTests.withPlayer(helper, player -> {
             int xp = player.totalExperience;
@@ -121,6 +124,40 @@ public final class DecorGameTests {
             helper.assertFalse(RubberDuckBlock.debug(player), "cooldown: the duck needs a break too");
         });
     }
+
+    /** Every plushie (including the rubber duck) creates a PlushBlockEntity and reacts to place/click block events. */
+    public static void plushiesSquishOnPlaceAndClick(GameTestHelper helper) {
+        List<Block> plushes = List.of(
+                FemboyBlocks.SHARK_PLUSH.get(),
+                FemboyBlocks.CAT_PLUSH.get(),
+                FemboyBlocks.CREEPER_PLUSH.get(),
+                FemboyBlocks.ENDERMAN_PLUSH.get(),
+                FemboyBlocks.DRAGON_PLUSH.get(),
+                FemboyBlocks.AXOLOTL_PLUSH.get(),
+                FemboyBlocks.BEE_PLUSH.get(),
+                FemboyBlocks.FROG_PLUSH.get(),
+                FemboyBlocks.BUNNY_PLUSH.get(),
+                FemboyBlocks.FOX_PLUSH.get(),
+                FemboyBlocks.RUBBER_DUCK.get());
+        for (int i = 0; i < plushes.size(); i++) {
+            BlockPos rel = new BlockPos(i % 4, 1, 1 + i / 4);
+            Block plush = plushes.get(i);
+            helper.setBlock(rel, plush);
+            BlockPos abs = helper.absolutePos(rel);
+            var be = helper.getLevel().getBlockEntity(abs);
+            helper.assertTrue(be instanceof dev.eliasnvx.femboymod.block.PlushBlockEntity, plush + " has PlushBlockEntity");
+            var plushBe = (dev.eliasnvx.femboymod.block.PlushBlockEntity) be;
+            plush.setPlacedBy(helper.getLevel(), abs, helper.getBlockState(rel), null, new ItemStack(plush));
+            helper.assertTrue(helper.getBlockState(rel).triggerEvent(helper.getLevel(), abs,
+                    dev.eliasnvx.femboymod.block.PlushBlockEntity.EVENT_PLACE, 0), plush + " handles place event");
+            helper.assertValueEqual(plushBe.squishKind(), dev.eliasnvx.femboymod.block.PlushSquish.Kind.PLACE, "place kind");
+            helper.assertTrue(helper.getBlockState(rel).triggerEvent(helper.getLevel(), abs,
+                    dev.eliasnvx.femboymod.block.PlushBlockEntity.EVENT_CLICK, 0), plush + " handles click event");
+            helper.assertValueEqual(plushBe.squishKind(), dev.eliasnvx.femboymod.block.PlushSquish.Kind.CLICK, "click kind");
+        }
+        helper.succeed();
+    }
+
 
     public static void foodBubbleTeaAndStrawberryMilk(GameTestHelper helper) {
         helper.assertTrue(BubbleTeaItem.pick(helper.getLevel(), helper.getLevel().getRandom()) != null, "flavors loaded");
@@ -242,6 +279,7 @@ public final class DecorGameTests {
         helper.succeed();
     }
 
+
     public static void geodeCrystalsGrowAndNewOresDrop(GameTestHelper helper) {
         var placed = helper.getLevel().registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
         for (var key : List.of(FemboyWorldgen.ORE_MOONSTONE, FemboyWorldgen.ORE_NEON_QUARTZ, FemboyWorldgen.ROSE_QUARTZ_GEODE)) {
@@ -269,6 +307,7 @@ public final class DecorGameTests {
         helper.succeed();
     }
 
+
     /** Zero Drip but dark shades on: the critic is impressed (it gets weakened, the player is left alone). */
     public static void darkShadesImpressTheCritic(GameTestHelper helper) {
         var critic = helper.spawn(dev.eliasnvx.femboymod.entity.FemboyEntities.FASHION_CRITIC.get(), CHAIR);
@@ -291,6 +330,7 @@ public final class DecorGameTests {
         helper.succeed();
     }
 
+
     public static void oresGenerateAndDrop(GameTestHelper helper) {
         var placed = helper.getLevel().registryAccess().lookupOrThrow(Registries.PLACED_FEATURE);
         helper.assertTrue(placed.get(FemboyWorldgen.ORE_ROSE_QUARTZ).isPresent(), "rose quartz placed feature loaded");
@@ -309,6 +349,7 @@ public final class DecorGameTests {
         });
         helper.succeed();
     }
+
 
     public static void postersAndGlitterColorway(GameTestHelper helper) {
         var paintings = helper.getLevel().registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT);
@@ -330,7 +371,46 @@ public final class DecorGameTests {
         helper.succeed();
     }
 
+
     private static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath("femboymod", path);
+    }
+
+    /** Plush Shelf holds up to 3 items, drops them once when broken (no dupe), and winter cosmetics equip cleanly. */
+    public static void plushShelfAndWinterCosmetics(GameTestHelper helper) {
+        BlockPos rel = new BlockPos(1, 1, 1);
+        helper.setBlock(rel, FemboyBlocks.PLUSH_SHELF.get());
+        BlockPos abs = helper.absolutePos(rel);
+        var be = helper.getLevel().getBlockEntity(abs);
+        helper.assertTrue(be instanceof dev.eliasnvx.femboymod.block.PlushShelfBlockEntity, "PlushShelfBlockEntity present");
+        var shelf = (dev.eliasnvx.femboymod.block.PlushShelfBlockEntity) be;
+        helper.assertTrue(shelf.place(new ItemStack(FemboyBlocks.SHARK_PLUSH.get())), "slot 0");
+        helper.assertTrue(shelf.place(new ItemStack(FemboyBlocks.CAT_PLUSH.get())), "slot 1");
+        helper.assertTrue(shelf.place(new ItemStack(FemboyBlocks.DRAGON_PLUSH.get())), "slot 2");
+        helper.assertFalse(shelf.place(new ItemStack(FemboyBlocks.FOX_PLUSH.get())), "shelf full at 3");
+        helper.assertTrue(shelf.hasPlush(), "detects plush on shelf");
+
+        helper.getLevel().destroyBlock(abs, true);
+        var drops = helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, helper.getBounds());
+        int sharks = drops.stream().filter(e -> e.getItem().is(FemboyBlocks.SHARK_PLUSH.get().asItem())).mapToInt(e -> e.getItem().getCount()).sum();
+        int cats = drops.stream().filter(e -> e.getItem().is(FemboyBlocks.CAT_PLUSH.get().asItem())).mapToInt(e -> e.getItem().getCount()).sum();
+        int dragons = drops.stream().filter(e -> e.getItem().is(FemboyBlocks.DRAGON_PLUSH.get().asItem())).mapToInt(e -> e.getItem().getCount()).sum();
+        helper.assertValueEqual(sharks, 1, "shark dropped once");
+        helper.assertValueEqual(cats, 1, "cat dropped once");
+        helper.assertValueEqual(dragons, 1, "dragon dropped once");
+
+        WearableGameTests.withPlayer(helper, player -> {
+            ItemStack beanie = new ItemStack(FemboyItems.CAT_BEANIE.get());
+            ItemStack scarf = new ItemStack(FemboyItems.OVERSIZED_SCARF.get());
+            helper.assertValueEqual(CosmeticsManager.slotOf(beanie), FemboySlots.HEAD_ACCESSORY, "cat beanie slot");
+            helper.assertValueEqual(CosmeticsManager.slotOf(scarf), FemboySlots.NECK, "oversized scarf slot");
+            CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, beanie);
+            helper.assertFalse(player.canFreeze(), "cat beanie prevents freezing in powder snow");
+            CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, ItemStack.EMPTY);
+            CosmeticsManager.set(player, FemboySlots.NECK, scarf);
+            helper.assertFalse(player.canFreeze(), "oversized scarf prevents freezing in powder snow");
+            CosmeticsManager.set(player, FemboySlots.HEAD_ACCESSORY, beanie);
+            helper.assertTrue(FemboyMod.api().getDripLevel(player).level() > 0, "winter cosmetics add drip");
+        });
     }
 }

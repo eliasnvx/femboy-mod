@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:orange_wool",
+    "minecraft:orange_wool",
+    "minecraft:sweet_berries",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:fox_plush"
+  }
+}

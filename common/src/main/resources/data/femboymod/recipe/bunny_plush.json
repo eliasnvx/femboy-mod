@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:white_wool",
+    "minecraft:white_wool",
+    "minecraft:carrot",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:bunny_plush"
+  }
+}

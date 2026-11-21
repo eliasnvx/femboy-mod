@@ -146,6 +146,10 @@ public final class BuiltinCosmeticRenderers {
                 models, CosmeticModels.NAIL_POLISH, Groups.GroupModelFactory.PLAIN, FABRIC, PINK, LIGHTER, PINK));
         registry.register(id("moonstone_pendant"), models -> new GroupedRenderer(
                 models, CosmeticModels.MOONSTONE_PENDANT, Groups.GroupModelFactory.PLAIN, FABRIC, GOLD, DARKER, MOONSTONE));
+        registry.register(id("cat_beanie"), models -> new GroupedRenderer(
+                models, CosmeticModels.CAT_BEANIE, Groups.GroupModelFactory.PLAIN, KNIT, SOCK_PINK, DARKER, BOW_PINK));
+        registry.register(id("oversized_scarf"), models -> new GroupedRenderer(
+                models, CosmeticModels.OVERSIZED_SCARF, Groups.GroupModelFactory.PLAIN, KNIT, LAVENDER, DARKER, FUR_WHITE));
         registry.register(id("dark_shades"), models -> new GroupedRenderer(
                 models, CosmeticModels.DARK_SHADES, Groups.GroupModelFactory.PLAIN, FABRIC, CHOKER_BLACK, 0.55F, SHADES_LENS));
         registry.register(id("cyber_visor"), models -> new GroupedRenderer(

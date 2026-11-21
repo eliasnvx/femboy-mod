@@ -5,6 +5,7 @@ import dev.eliasnvx.femboymod.config.FemboyConfig;
 import dev.eliasnvx.femboymod.social.HeadpatConsent;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
@@ -38,6 +39,7 @@ public final class ConfigScreen extends OptionsSubScreen {
                         (button, value) -> FemboyConfig.setClient(FemboyConfig.client().withHudCorner(value))));
         addToggle("uwu_chat", c.uwuChat(), v -> FemboyConfig.setClient(FemboyConfig.client().withUwuChat(v)));
         addToggle("nya_sound", c.nyaSound(), v -> FemboyConfig.setClient(FemboyConfig.client().withNyaSound(v)));
+        list.addBig(new VolumeSlider(0, 0, ROW_WIDTH, ROW_HEIGHT, c.nyaVolume()));
         addToggle("rgb_animations", c.rgbAnimations(), v -> FemboyConfig.setClient(FemboyConfig.client().withRgbAnimations(v)));
         list.addBig(CycleButton.<ClientConfig.Physics>builder(
                         p -> Component.translatable("config.femboymod.physics." + p.getSerializedName()), c.physics())
@@ -60,5 +62,28 @@ public final class ConfigScreen extends OptionsSubScreen {
     private void addToggle(String key, boolean value, Consumer<Boolean> onChange) {
         list.addBig(CycleButton.onOffBuilder(value)
                 .create(0, 0, ROW_WIDTH, ROW_HEIGHT, Component.translatable("config.femboymod." + key), (button, v) -> onChange.accept(v)));
+    }
+
+    private static final class VolumeSlider extends AbstractSliderButton {
+
+        VolumeSlider(int x, int y, int width, int height, int initialPercent) {
+            super(x, y, width, height, Component.empty(), initialPercent / 100.0);
+            updateMessage();
+        }
+
+        private int percent() {
+            return (int) Math.round(value * 100.0);
+        }
+
+        @Override
+        protected void updateMessage() {
+            setMessage(Component.translatable("options.percent_value",
+                    Component.translatable("config.femboymod.nya_volume"), percent()));
+        }
+
+        @Override
+        protected void applyValue() {
+            FemboyConfig.setClient(FemboyConfig.client().withNyaVolume(percent()));
+        }
     }
 }
