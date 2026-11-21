@@ -1,5 +1,6 @@
 package dev.eliasnvx.femboymod.mixin;
 
+import dev.eliasnvx.femboymod.entity.CatCuddlePlushGoal;
 import dev.eliasnvx.femboymod.entity.CatKnockGoal;
 import dev.eliasnvx.femboymod.entity.CatnipGoal;
 import dev.eliasnvx.femboymod.entity.PetBedGoal;
@@ -40,6 +41,7 @@ public abstract class PetBedGoalsMixin extends TamableAnimal {
         if ((Object) this instanceof Cat cat) {
             goalSelector.addGoal(MISCHIEF_PRIORITY, new CatKnockGoal(cat));
             goalSelector.addGoal(CATNIP_PRIORITY, new CatnipGoal(cat));
+            goalSelector.addGoal(DOG_PRIORITY, new CatCuddlePlushGoal(cat));
         }
     }
 }

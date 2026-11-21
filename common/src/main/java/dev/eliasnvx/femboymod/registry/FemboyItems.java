@@ -31,6 +31,7 @@ import dev.eliasnvx.femboymod.backpack.BackpackItem;
 import dev.eliasnvx.femboymod.backpack.BackpackSpec;
 import dev.eliasnvx.femboymod.item.DyeableCosmeticItem;
 import dev.eliasnvx.femboymod.item.ItemList;
+import dev.eliasnvx.femboymod.item.PlushBlockItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -93,6 +94,9 @@ public final class FemboyItems {
     public static final RegistrySupplier<Item> CANDY_PAIL = cosmetic("candy_pail", FemboySlots.WAIST);
     /** Eaten fast; a short sugar rush. Villagers hand it out to costumed players in the Halloween season. */
     public static final RegistrySupplier<Item> CANDY = register("candy", FemboyItems::candy);
+    // 0.4.0 winter cosmetics
+    public static final RegistrySupplier<Item> CAT_BEANIE = cosmetic("cat_beanie", FemboySlots.HEAD_ACCESSORY);
+    public static final RegistrySupplier<Item> OVERSIZED_SCARF = cosmetic("oversized_scarf", FemboySlots.NECK);
     // 0.2.0 pet outfits for tamed cats, wolves and parrots (PetOutfits)
     public static final RegistrySupplier<Item> PET_BOW = petOutfit("pet_bow", PetOutfitItem.Slot.HEAD);
     public static final RegistrySupplier<Item> MINI_WITCH_HAT = petOutfit("mini_witch_hat", PetOutfitItem.Slot.HEAD);
@@ -213,6 +217,11 @@ public final class FemboyItems {
     /** Block item for a block registered elsewhere (FemboyBlocks). */
     public static RegistrySupplier<Item> blockItem(String name, RegistrySupplier<Block> block) {
         return register(name, props -> new BlockItem(block.get(), props));
+    }
+
+    /** Plushie block item: squeaks in air, wearable on head, hugged with both hands. */
+    public static RegistrySupplier<Item> plushBlockItem(String name, RegistrySupplier<Block> block) {
+        return register(name, props -> new PlushBlockItem(block.get(), props));
     }
 
     private static RegistrySupplier<Item> spawnEgg(String name, RegistrySupplier<? extends EntityType<? extends Mob>> entity) {

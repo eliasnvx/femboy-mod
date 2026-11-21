@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "femboymod:item/oversized_scarf",
+    "layer1": "femboymod:item/oversized_scarf_detail"
+  }
+}

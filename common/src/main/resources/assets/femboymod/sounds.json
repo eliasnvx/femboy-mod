@@ -70,14 +70,8 @@
   "nya": {
     "sounds": [
       {
-        "name": "minecraft:mob/cat/meow1",
-        "pitch": 1.3,
-        "volume": 0.6
-      },
-      {
-        "name": "minecraft:mob/cat/meow2",
-        "pitch": 1.3,
-        "volume": 0.6
+        "name": "femboymod:social/nya",
+        "volume": 1.0
       }
     ],
     "subtitle": "subtitles.femboymod.nya"
@@ -389,5 +383,13 @@
       "femboymod:block/flytrap/gulp2"
     ],
     "subtitle": "subtitles.femboymod.debug_flytrap.gulp"
+  },
+  "keyboard.clack": {
+    "sounds": [
+      "femboymod:block/keyboard/clack1",
+      "femboymod:block/keyboard/clack2",
+      "femboymod:block/keyboard/clack3"
+    ],
+    "subtitle": "subtitles.femboymod.keyboard.clack"
   }
 }

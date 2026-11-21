@@ -459,6 +459,16 @@ public final class FemboyGameTestsFabric implements FabricGameTest {
     }
 
     @GameTest(template = EMPTY_STRUCTURE)
+    public void plushiesSquishOnPlaceAndClick(GameTestHelper helper) {
+        DecorGameTests.plushiesSquishOnPlaceAndClick(helper);
+    }
+
+    @GameTest(template = EMPTY_STRUCTURE)
+    public void plushShelfAndWinterCosmetics(GameTestHelper helper) {
+        DecorGameTests.plushShelfAndWinterCosmetics(helper);
+    }
+
+    @GameTest(template = EMPTY_STRUCTURE)
     public void terminalCraftsAndSaysBtw(GameTestHelper helper) {
         DecorGameTests.terminalCraftsAndSaysBtw(helper);
     }
@@ -695,7 +705,7 @@ public final class FemboyGameTestsFabric implements FabricGameTest {
 
     @GameTest(template = EMPTY_STRUCTURE)
     public void allTestsRegistered(GameTestHelper helper) {
-        GameTestAsserts.assertValueEqual(helper, CosmeticGameTests.all().size(), 128, "shared tests wired into the Fabric glue");
+        GameTestAsserts.assertValueEqual(helper, CosmeticGameTests.all().size(), 130, "shared tests wired into the Fabric glue");
         helper.succeed();
     }
 }

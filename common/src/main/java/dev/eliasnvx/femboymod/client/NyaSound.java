@@ -1,34 +1,47 @@
 package dev.eliasnvx.femboymod.client;
 
-import dev.eliasnvx.femboymod.FemboyMod;
+import dev.eliasnvx.femboymod.config.ClientConfig;
 import dev.eliasnvx.femboymod.config.FemboyConfig;
-import dev.eliasnvx.femboymod.drip.WornEvaluator;
+import dev.eliasnvx.femboymod.cosmetic.CosmeticsManager;
+import dev.eliasnvx.femboymod.registry.FemboyItems;
 import dev.eliasnvx.femboymod.registry.FemboySounds;
+import dev.eliasnvx.femboymod.registry.FemboyTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
-/** "Nya" when jumping in the full set. Off by default; only you hear it. */
+/** "Nya" when jumping while wearing any ears (or the cat-ear hoodie). Off by default; only you hear it. */
 public final class NyaSound {
 
-    private static final ResourceLocation FULL_SET = new ResourceLocation(FemboyMod.MOD_ID, "full_femboy_mode");
-    private static final float VOLUME = 0.6F;
-    private static boolean wasOnGround = true;
+    private static final float MIN_PITCH = 0.94F;
+    private static final float PITCH_RANGE = 0.14F;
 
     private NyaSound() {
     }
 
-    public static void tick(Minecraft minecraft) {
-        LocalPlayer player = minecraft.player;
-        if (player == null) {
+    /** Called from {@code LivingEntityJumpMixin} on the client whenever a living entity jumps. */
+    public static void onJump(LivingEntity entity) {
+        if (!(entity instanceof LocalPlayer player)) {
             return;
         }
-        boolean onGround = player.onGround();
-        boolean jumped = wasOnGround && !onGround && player.getDeltaMovement().y > 0;
-        wasOnGround = onGround;
-        if (jumped && FemboyConfig.client().nyaSound() && WornEvaluator.evaluate(player).activeSets().contains(FULL_SET)) {
-            player.playSound(FemboySounds.NYA.get(), VOLUME, 1.0F + (player.getRandom().nextFloat() - 0.5F) * 0.2F);
+        ClientConfig config = FemboyConfig.client();
+        if (player != Minecraft.getInstance().player || !config.nyaSound() || config.nyaVolume() <= 0) {
+            return;
         }
+        if (wearingEars(player)) {
+            float volume = config.nyaVolume() / 100.0F;
+            float pitch = MIN_PITCH + player.getRandom().nextFloat() * PITCH_RANGE;
+            player.playSound(FemboySounds.NYA.get(), volume, pitch);
+        }
+    }
+
+    private static boolean wearingEars(LocalPlayer player) {
+        for (ItemStack stack : CosmeticsManager.worn(player).all().values()) {
+            if (stack.is(FemboyTags.EARS) || stack.is(FemboyItems.CAT_EAR_HOODIE.get())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -33,6 +33,8 @@ public final class FemboySounds {
     /** A Debug Flytrap snapping shut on a bug, and a soft gulp when it's done digesting (synthesized). */
     public static final RegistrySupplier<SoundEvent> FLYTRAP_SNAP = event("debug_flytrap.snap");
     public static final RegistrySupplier<SoundEvent> FLYTRAP_GULP = event("debug_flytrap.gulp");
+    /** Mechanical keyboard keystroke clacks (synthesized, tools/sounds/make_sounds.py). */
+    public static final RegistrySupplier<SoundEvent> KEYBOARD_CLACK = event("keyboard.clack");
     // Bug: own synthesized sounds (tools/sounds/make_sounds.py)
     public static final RegistrySupplier<SoundEvent> BUG_AMBIENT = event("bug.ambient");
     public static final RegistrySupplier<SoundEvent> BUG_HURT = event("bug.hurt");

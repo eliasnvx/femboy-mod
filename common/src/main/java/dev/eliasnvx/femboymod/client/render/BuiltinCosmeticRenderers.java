@@ -124,6 +124,10 @@ public final class BuiltinCosmeticRenderers {
                 models, CosmeticModels.GHOST_SHEET, Groups.GroupModelFactory.PLAIN, FABRIC, SHEET_WHITE, DARKER, CORD_WHITE));
         registry.register(id("candy_pail"), models -> new GroupedRenderer(
                 models, CosmeticModels.CANDY_PAIL, Groups.GroupModelFactory.PLAIN, FABRIC, PUMPKIN_ORANGE, DARKER, CANDY_PINK));
+        registry.register(id("cat_beanie"), models -> new GroupedRenderer(
+                models, CosmeticModels.CAT_BEANIE, Groups.GroupModelFactory.PLAIN, KNIT, SOCK_PINK, DARKER, BOW_PINK));
+        registry.register(id("oversized_scarf"), models -> new GroupedRenderer(
+                models, CosmeticModels.OVERSIZED_SCARF, Groups.GroupModelFactory.PLAIN, KNIT, LAVENDER, DARKER, FUR_WHITE));
         registry.register(id("fishnet_tights"), models -> new GroupedRenderer(
                 models, CosmeticModels.FISHNET, Groups.GroupModelFactory.PLAIN, FISHNET, FISHNET_BLACK, DARKER, BOW_PINK));
         registry.register(id("uwu_choker"), models -> new GroupedRenderer(

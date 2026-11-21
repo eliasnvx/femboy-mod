@@ -14,7 +14,8 @@
     "client.LocalPlayerSneakMixin",
     "client.PlayerRendererNameTagMixin",
     "client.LivingEntityRendererNameTagMixin",
-    "client.AgeableListModelAccessor"
+    "client.AgeableListModelAccessor",
+    "client.LivingEntityJumpMixin"
   ],
   "injectors": {
     "defaultRequire": 1

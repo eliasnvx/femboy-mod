@@ -3,6 +3,23 @@
 All notable changes to Femboy Mod. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/api/CHANGELOG.md`.
 
+## [0.4.0] - 2026-11-21
+### Added
+- **7 new chibi plushies & squish-and-bounce**: Enderman, Dragon, Axolotl, Bee, Frog, Bunny, and Fox plushies join Shark, Cat, Creeper, and Rubber Duck (11 total). Every plushie has upgraded 128×128 chibi models, squishes and bounces when placed or right-clicked, and emits themed particles (Enderman and Dragon spark with portal particles)
+- **Plushies in hand, on your head, and Plushie Shelf**: right-click any plushie in mid-air to squeak it, hug it with both hands in third person, wear it on your head in the helmet slot, or display up to 3 items on the new wall-mounted **Plushie Shelf** (`plush_shelf` — right-click empty-handed to squish plushies on the shelf, sneak-right-click to take them down)
+- **Winter cosmetics**: **Cat-Ear Beanie** (`cat_beanie`, head accessory, in `#femboymod:ears`) and **Oversized Scarf** (`oversized_scarf`, neck). Both are dyeable, grant Regeneration in cold biomes, and prevent freezing in powder snow (`#minecraft:freeze_immune_wearables`)
+- **Cats cuddle plushies**: tamed cats and Stray Cats periodically walk over to nearby plushies, lie down next to them, purr, and emit heart particles
+- **Clacky mechanical keyboard**: upgraded 3D mechanical keyboard model with sculpted keycap rows, accented WASD/Esc/Enter/Spacebar keys, and a sculpted gaming mouse; clicking it plays synthesized mechanical keystroke clacks (`femboymod:keyboard.clack`) and spawns electric sparks
+- **Quick Settings button & Nya volume**: added a `⚙` Settings button directly to the Outfit screen and a `nya_volume` slider (0–100%, default 80%) in client settings
+
+### Changed
+- **Upgraded 3D tail & ears**: rebuilt the tail with 14 smooth octagonal segments, a natural S-curve posture, and tip-weighted wave/bob animation; gave all animal ears (`cat_ears`, `fox_ears`, `bunny_ears`, `bear_ears`, `wolf_ears`) as well as the ears on `cat_ear_headphones`, `cat_ear_hoodie`, and `cat_beanie` real cupped 3D cavities, rounded backs, and a natural outward angle
+- **Wrapped item tooltips**: long item and furniture descriptions now wrap neatly to compact lines instead of stretching across the screen
+
+### Fixed
+- **Nya jump sound** (#2): switched jump detection to `LivingEntity#jumpFromGround` so bunny-hopping and auto-jump work reliably, replaced the placeholder meow with a dedicated CC0 *Nya* sound (`social/nya.ogg`), and let any `#femboymod:ears` item or `cat_ear_hoodie` trigger it when enabled
+- **Inventory item framing**: centered the Plushie Shelf and Neon Sign models inside inventory slots
+
 ## [0.3.0] - 2026-11-10
 ### Added
 - **Reactive ears and tails**: ears turn toward mobs they hear, stand up when alert, flatten at a hissing creeper or when you get hurt, fold underwater and droop at low health or in bed; the tail puffs up when startled, wags near your pet and after a headpat, and twitches after Byte Energy. Every kind of ears hears differently: cat ears notice creepers first and furthest, wolf ears lock onto skeletons, bunny ears hear furthest but react to every mob, fox ears hear better at night, bear ears never flatten. Other players see it too. In first person the ear tips peek in at the top of the screen on the side of what they heard. Client options `reactive_ears_and_tails`, `first_person_ear_tips`; resource packs can tune hearing in `assets/<ns>/femboymod/hearing/`
