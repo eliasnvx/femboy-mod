@@ -49,7 +49,7 @@ public final class SetupRating {
     public static int evaluate(ServerLevel level, BlockPos center, int radius) {
         int found = 0;
         for (Kind kind : BLOCK_KINDS) {
-            if (hasBlock(level, center, radius, kind.blocks())) {
+            if (hasBlock(level, center, radius, kind)) {
                 found++;
             }
         }
@@ -60,10 +60,15 @@ public final class SetupRating {
         return found;
     }
 
-    private static boolean hasBlock(ServerLevel level, BlockPos center, int radius, TagKey<Block> tag) {
+    private static boolean hasBlock(ServerLevel level, BlockPos center, int radius, Kind kind) {
+        TagKey<Block> tag = kind.blocks();
+        boolean isKeyboard = "keyboard".equals(kind.name());
         for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, -radius, -radius), center.offset(radius, radius, radius))) {
             BlockState state = level.getBlockState(pos);
             if (state.is(tag) && (!state.hasProperty(BlockStateProperties.LIT) || state.getValue(BlockStateProperties.LIT))) {
+                return true;
+            }
+            if (isKeyboard && state.hasProperty(GamerMonitorBlock.WITH_KEYBOARD) && state.getValue(GamerMonitorBlock.WITH_KEYBOARD)) {
                 return true;
             }
         }

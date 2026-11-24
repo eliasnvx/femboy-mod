@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "femboymod:strawberry"
+    }
+  ],
+  "result": {
+    "id": "femboymod:strawberry_seeds",
+    "count": 2
+  }
+}

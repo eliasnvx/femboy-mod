@@ -15,10 +15,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CarpetBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -75,9 +81,65 @@ public class PlushBlock extends HorizontalDirectionalBlock implements EntityBloc
         return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
+    /**
+     * Vertical offset so plushies placed above partial surfaces (beds, slabs, carpets, rugs, pet beds)
+     * rest directly on top of the surface instead of floating above it.
+     */
+    public static double restingYOffset(@Nullable BlockGetter level, BlockPos pos) {
+        if (level == null) {
+            return 0.0;
+        }
+        BlockPos belowPos = pos.below();
+        BlockState below = level.getBlockState(belowPos);
+        if (below.isAir()) {
+            return 0.0;
+        }
+        Block block = below.getBlock();
+        if (block instanceof BedBlock
+                || block instanceof SlabBlock
+                || block instanceof CarpetBlock
+                || block instanceof FluffyRugBlock
+                || block instanceof PetBedBlock) {
+            VoxelShape belowShape = below.getShape(level, belowPos);
+            if (!belowShape.isEmpty()) {
+                double topY = belowShape.max(Direction.Axis.Y);
+                if (topY > 0.0 && topY < 1.0) {
+                    return topY - 1.0;
+                }
+            }
+        }
+        return 0.0;
+    }
+
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return shapes.get(state.getValue(FACING));
+        VoxelShape base = shapes.get(state.getValue(FACING));
+        double yOffset = restingYOffset(level, pos);
+        return yOffset == 0.0 ? base : base.move(0.0, yOffset, 0.0);
+    }
+
+    @Override
+    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        BlockPos belowPos = pos.below();
+        BlockState below = level.getBlockState(belowPos);
+        return !below.isAir() && !below.getShape(level, belowPos).isEmpty();
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level,
+                                     BlockPos pos, BlockPos neighborPos) {
+        if (direction == Direction.DOWN && !canSurvive(state, level, pos)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(state, direction, neighbor, level, pos, neighborPos);
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (level.getBlockState(pos.below()).getBlock() instanceof BedBlock) {
+            return Shapes.empty();
+        }
+        return getShape(state, level, pos, context);
     }
 
     @Override
@@ -113,9 +175,10 @@ public class PlushBlock extends HorizontalDirectionalBlock implements EntityBloc
             level.blockEvent(pos, this, PlushBlockEntity.EVENT_CLICK, 0);
             float pitch = MIN_PITCH + level.getRandom().nextFloat() * PITCH_RANGE;
             level.playSound(null, pos, FemboySounds.PLUSH_SQUEAK.get(), SoundSource.BLOCKS, 1.0F, pitch);
-            serverLevel.sendParticles(ParticleTypes.HEART, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 1, 0.1, 0.1, 0.1, 0.0);
+            double yOffset = restingYOffset(level, pos);
+            serverLevel.sendParticles(ParticleTypes.HEART, pos.getX() + 0.5, pos.getY() + 0.8 + yOffset, pos.getZ() + 0.5, 1, 0.1, 0.1, 0.1, 0.0);
             if (extraParticle != null) {
-                serverLevel.sendParticles(extraParticle, pos.getX() + 0.5, pos.getY() + 0.65, pos.getZ() + 0.5, 5, 0.2, 0.2, 0.2, 0.05);
+                serverLevel.sendParticles(extraParticle, pos.getX() + 0.5, pos.getY() + 0.65 + yOffset, pos.getZ() + 0.5, 5, 0.2, 0.2, 0.2, 0.05);
             }
         }
         return InteractionResult.SUCCESS;

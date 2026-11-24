@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "femboymod:block/desk_mic"
+    },
+    "facing=east": {
+      "model": "femboymod:block/desk_mic",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "femboymod:block/desk_mic",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "femboymod:block/desk_mic",
+      "y": 270
+    }
+  }
+}

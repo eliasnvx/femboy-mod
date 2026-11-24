@@ -14,7 +14,7 @@ public final class BlockRenderLayers {
 
     /** Cross models and thin planes, like vanilla's plants and amethyst buds ({@code RenderType.cutout()}). */
     public static final List<String> CUTOUT = List.of(
-            "debug_flytrap", "potted_debug_flytrap", "catnip", "potted_catnip", "potted_grass",
+            "debug_flytrap", "potted_debug_flytrap", "catnip", "potted_catnip", "potted_grass", "strawberry_bush",
             "small_rose_quartz_bud", "medium_rose_quartz_bud", "large_rose_quartz_bud", "rose_quartz_cluster",
             "neon_sign");
 

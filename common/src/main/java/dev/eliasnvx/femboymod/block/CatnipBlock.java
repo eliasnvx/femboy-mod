@@ -1,12 +1,14 @@
 package dev.eliasnvx.femboymod.block;
 
 import com.mojang.serialization.MapCodec;
+import dev.eliasnvx.femboymod.registry.FemboyItems;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -14,25 +16,30 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * Catnip (0.3.0): a wild mint of plains and meadows, plantable and pottable. Cats that smell it (or get fed a sprig)
- * get the zoomies ({@link dev.eliasnvx.femboymod.entity.Catnip}). Bone meal spreads it to a free spot next to it, like
- * a firefly bush, so it can be farmed.
- *
- * <p>1.21.1 has no {@code VegetationBlock} (it's {@link BushBlock}) and no neighbour-spread helpers in
- * {@link BonemealableBlock}: the spread below does what 26.3's {@code BonemealableBlock.findSpreadableNeighbourPos} does.
- */
+/** Catnip: plantable from {@code catnip_seeds} (grows age 0..3) or full-grown. */
 public class CatnipBlock extends BushBlock implements BonemealableBlock {
 
     public static final MapCodec<CatnipBlock> CODEC = simpleCodec(CatnipBlock::new);
-    private static final VoxelShape SHAPE = Block.box(3.0, 0.0, 3.0, 13.0, 10.0, 13.0);
+    public static final int MAX_AGE = 3;
+    public static final IntegerProperty AGE = BlockStateProperties.AGE_3;
+    private static final VoxelShape[] SHAPES = {
+            Block.box(5.0, 0.0, 5.0, 11.0, 4.0, 11.0),
+            Block.box(4.0, 0.0, 4.0, 12.0, 6.0, 12.0),
+            Block.box(3.5, 0.0, 3.5, 12.5, 8.0, 12.5),
+            Block.box(3.0, 0.0, 3.0, 13.0, 10.0, 13.0),
+    };
 
     public CatnipBlock(Properties properties) {
         super(properties);
+        registerDefaultState(stateDefinition.any().setValue(AGE, MAX_AGE));
     }
 
     @Override
@@ -41,14 +48,40 @@ public class CatnipBlock extends BushBlock implements BonemealableBlock {
     }
 
     @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(AGE);
+    }
+
+    @Override
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+        if (context.getItemInHand().is(FemboyItems.CATNIP_SEEDS.get())) {
+            return defaultBlockState().setValue(AGE, 0);
+        }
+        return defaultBlockState();
+    }
+
+    @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        Vec3 offset = state.getOffset(level, pos); // planted off-center like flowers
-        return SHAPE.move(offset.x, offset.y, offset.z);
+        Vec3 offset = state.getOffset(level, pos);
+        return SHAPES[state.getValue(AGE)].move(offset.x, offset.y, offset.z);
+    }
+
+    @Override
+    protected boolean isRandomlyTicking(BlockState state) {
+        return state.getValue(AGE) < MAX_AGE;
+    }
+
+    @Override
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        int age = state.getValue(AGE);
+        if (age < MAX_AGE && random.nextInt(5) == 0 && level.getRawBrightness(pos.above(), 0) >= 9) {
+            level.setBlock(pos, state.setValue(AGE, age + 1), Block.UPDATE_CLIENTS);
+        }
     }
 
     @Override
     public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
-        return spreadSpot(Direction.Plane.HORIZONTAL.stream().toList(), level, pos, state).isPresent();
+        return state.getValue(AGE) < MAX_AGE || spreadSpot(Direction.Plane.HORIZONTAL.stream().toList(), level, pos, state).isPresent();
     }
 
     @Override
@@ -58,11 +91,15 @@ public class CatnipBlock extends BushBlock implements BonemealableBlock {
 
     @Override
     public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
+        int age = state.getValue(AGE);
+        if (age < MAX_AGE) {
+            level.setBlock(pos, state.setValue(AGE, age + 1), Block.UPDATE_CLIENTS);
+            return;
+        }
         spreadSpot(Direction.Plane.HORIZONTAL.shuffledCopy(random), level, pos, state)
                 .ifPresent(spot -> level.setBlockAndUpdate(spot, defaultBlockState()));
     }
 
-    /** The first free neighbour (in {@code directions} order) where catnip can grow. */
     private static Optional<BlockPos> spreadSpot(List<Direction> directions, LevelReader level, BlockPos pos, BlockState state) {
         for (Direction direction : directions) {
             BlockPos spot = pos.relative(direction);

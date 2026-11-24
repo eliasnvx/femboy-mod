@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    " F ",
+    " P "
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:cherry_sapling"
+    },
+    "F": {
+      "item": "minecraft:pink_petals"
+    },
+    "P": {
+      "item": "minecraft:flower_pot"
+    }
+  },
+  "result": {
+    "id": "femboymod:sakura_bonsai",
+    "count": 1
+  }
+}

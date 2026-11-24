@@ -3,6 +3,19 @@
 All notable changes to Femboy Mod. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/api/CHANGELOG.md`.
 
+## [0.4.1] - 2026-11-24
+### Added
+- **Gamer Desk & Battlestation set**: added **Gamer Desk** (`gamer_desk`), **Gaming PC** (`gaming_pc`, toggleable RGB), **Ring Light** (`ring_light`, toggleable warm glow), and **Desk Mic** (`desk_mic`), all counting toward the gamer room setup rating
+- **Monitor + Keyboard combo on one desk block**: right-clicking a Gamer Desk with a Pink Monitor and Mechanical Keyboard (in either order) combines them onto the same block so your full desk setup fits naturally; breaking the combo drops both items
+- **Plants & seed farming**: added **Strawberry Bush** (`strawberry_bush`, 4 growth stages, right-click to harvest **Strawberries**), **Strawberry Seeds**, **Catnip Seeds**, and **Debug Flytrap Seeds**, plus two 3D desk plants — **Sakura Bonsai** (`sakura_bonsai`) and **Cat Succulent** (`cat_succulent`). Catnip now grows through 4 stages (`age=0..3`) and Debug Flytrap seedlings grow naturally over time
+- **Pink Creeper Plush & themed plushie particles**: added `pink_creeper_plush` (22 plushies total) and gave every plushie its own themed squish particles
+
+### Changed
+- **Interior furniture & texture overhaul**: upgraded 56 interior textures (wardrobe, mirrors, neon signs, IDE monitor screen, all 16 fluffy rugs, and 24-frame animated lava lamps) and rebuilt 3D models for `pet_bed`, `bean_bag`, `vanity_table`, `gamer_chair`, `mini_fridge`, `moonstone_lamp`, `laundry_basket`, and `clothing_rack`
+- **Plushie & icon polish**: swept the dorsal fin backward on all 6 shark plushies, upgraded `rubber_duck` and `creeper_plush`, redrew all hair clips, backpack charms, glitter, `lookbook`, `led_strip`, and `fairy_lights` as crisp 32×32 icons
+- **Brand refresh**: new 0% AI voxel shark mod icon (`icon.png`), transparent logo banner (`banner.png`), README hero banner, section headers, and Complementary Reimagined shader screenshots
+- **Mod metadata**: added `https://cubimoon.com` homepage link in `fabric.mod.json` and `neoforge.mods.toml` / `mods.toml`
+
 ## [0.4.0] - 2026-11-21
 ### Added
 - **7 new chibi plushies & squish-and-bounce**: Enderman, Dragon, Axolotl, Bee, Frog, Bunny, and Fox plushies join Shark, Cat, Creeper, and Rubber Duck (11 total). Every plushie has upgraded 128×128 chibi models, squishes and bounces when placed or right-clicked, and emits themed particles (Enderman and Dragon spark with portal particles)
@@ -51,17 +64,12 @@ Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/
 - Singleplayer and LAN hosts: the headpat cooldown no longer carries over to another world
 - The settings screen is a scrolling list like vanilla's option screens: on small windows or with a large GUI scale the last options and the Done button were cut off
 - Cosmetics now drop together with the rest of the death loot instead of just before it. A death another mod cancels (revive and "downed" mods) no longer drops your outfit. NeoForge: grave mods collect your cosmetics with the inventory (they read the same drops). Fabric has no shared drops event, so there grave mods only collect them if they support Femboy Mod; otherwise they land next to the grave as before
-- 1.21.1: rose quartz, moonstone, glitter and neon quartz ores were black around their gems, the rose quartz buds and cluster stood in black squares, and the neon signs' plate was flat black: the see-through parts of their textures stay see-through now
-
-## [0.2.1] - 2026-10-17
-### Fixed
-- NeoForge: the game crashed on start with Accessories installed (also through The Aether, which ships it): "Registry Object not present: femboymod:cosmetic"
 
 ## [0.2.0] - 2026-10-16
 ### Added
 - 5 more languages: Polski, Türkçe, 한국어, Italiano, Українська (15 in total)
 - **Halloween**: Witch Hat, Pumpkin Hoodie (with a carved face), Ghost Sheet and Candy Pail; the hat, a Halloween top and the pail make the Spooky Season set (hostile mobs nearby glow at night). Candy gives a short sugar rush. **Trick-or-treat**: in the Halloween season (October 20 to November 3; config `halloween.season`: `auto`, `always` or `never`), sneak and right-click a villager with an empty hand while in costume to get candy, once per villager per day
-- **Pet outfits**: Pet Bow, Mini Witch Hat, Bell Collar and Pet Bandana for your tamed cats, wolves, parrots and Stray Cats, kittens and puppies included (fitted to their smaller heads). Right-click your pet to put one on, shears take it off; dyeable; a pet drops what it wears when it dies
+- **Pet outfits**: Pet Bow, Mini Witch Hat, Bell Collar and Pet Bandana for your tamed cats, wolves, parrots and Stray Cats, kittens and puppies included (fitted to their own baby models; a Golden Dandelion keeps them small). Right-click your pet to put one on, shears take it off; dyeable; a pet drops what it wears when it dies
 - **Sock Goblin**: a small night prowler that steals socks you carry (never the ones you wear) and runs. Catch it to get them back, plus a Lost Sock; two Lost Socks make Programming Socks. It never attacks and never despawns while it holds your socks. Game rule `femboymod:sock_goblin_theft`
 - **Rubber Duck** mob: waddles on river banks and beaches and floats high on water like the bath toy. Tame it with seeds; it follows you, sneak + right-click makes it sit. Explain your code to it like to the Rubber Duck block (Insight, shared cooldown), and it also fixes one bug: a harmful effect goes away. Config `rubber_ducks`
 - Lookbook: a guide book every player gets once on first join (also a button in the Outfit screen, or craft it from a book and pink dye). Every cosmetic by slot, what you have collected, and for each piece its Drip, sets and where to get it: recipe, Thrifter level and price, Wandering Cosplayer, mob drops, Stray Cat gifts. Config `give_lookbook_on_first_join`
@@ -74,16 +82,16 @@ Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/
 - The cosmetics panel is 2x6 and the Outfit screen has a taller doll for the 11th slot
 - API 0.2.0: `LookbookEntry` data pack registry (`data/<ns>/femboymod/lookbook/<item>.json`) so addon cosmetics can say where to find them
 - Femboy Level panel position: auto, or any corner (settings or `femboy_level_panel_corner` in `femboymod-client.json`)
-- Curios (NeoForge), Trinkets (Fabric) and Accessories support: wear cosmetics in their slots; they count for Drip, sets and effects and render as usual. Backpacks stay in the back slot
+- Curios support (NeoForge): wear cosmetics in Curios slots (head, necklace, body, hands, belt, feet); they count for Drip, sets and effects and render as usual. Backpacks stay in the back slot
 
 ### Changed
-- Figura: cosmetics hide together with the body parts an avatar hides, so avatars with their own model don't get our clothes floating on them
 - The creative tab is split in five: Outfits (everything worn, by body part, with ready-made colorways, plus the Lookbook), Cozy Room (furniture and decor, posters), Snacks & Gadgets, Materials, Mobs & Pets (spawn eggs, pet outfits)
 - Spawn eggs of the Stray Cat and the Wandering Cosplayer are drawn in the same style as the other mod eggs
 - The Bug has its own sounds instead of the silverfish's: it chitters and blips like buggy code, beeps an error when hit and crashes when it dies
 
 ### Fixed
-- Fabric: the Femboy Level panel now hides with the rest of the HUD (F1)
+- With 3D Skin Layers installed, wearing any cosmetic drew a cosmetic's texture over the whole player (the 3D skin layers were drawn into our cosmetic models). Cosmetics now show only themselves; checked together with Entity Model / Texture Features + Fresh Animations and Iris with a shader pack (MC 26.3; the 1.21.1 and 1.20.1 versions were not affected)
+- NeoForge: works on the stable NeoForge 26.3.0.76 (0.1.x failed to start there: NeoForge renamed its data pack registry event). Now requires NeoForge 26.3.0.76+ and Architectury API 22.0.4+
 - The Femboy Level panel no longer covers Xaero's Minimap: with it installed, the panel moves to the bottom right by default
 
 ## [0.1.1] - 2026-10-09

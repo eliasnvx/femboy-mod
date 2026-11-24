@@ -1,6 +1,15 @@
 {
   "variants": {
-    "": {
+    "age=0": {
+      "model": "femboymod:block/catnip_stage0"
+    },
+    "age=1": {
+      "model": "femboymod:block/catnip_stage1"
+    },
+    "age=2": {
+      "model": "femboymod:block/catnip_stage2"
+    },
+    "age=3": {
       "model": "femboymod:block/catnip"
     }
   }

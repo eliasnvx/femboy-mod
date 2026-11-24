@@ -47,18 +47,48 @@ public final class FemboyBlocks {
             BlockBehaviour.Properties.of().strength(1.5F).sound(SoundType.GLASS).noOcclusion());
     public static final RegistrySupplier<Block> GILDED_MIRROR = block("gilded_mirror", MirrorBlock::new,
             BlockBehaviour.Properties.of().strength(1.5F).sound(SoundType.GLASS).noOcclusion());
-    public static final RegistrySupplier<Block> SHARK_PLUSH = plush("shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5));
-    public static final RegistrySupplier<Block> CAT_PLUSH = plush("cat_plush", Block.box(3.5, 0.0, 4.5, 14.0, 13.5, 11.5));
-    public static final RegistrySupplier<Block> CREEPER_PLUSH = plush("creeper_plush", Block.box(4.0, 0.0, 4.0, 12.0, 13.0, 12.0));
+    public static final RegistrySupplier<Block> SHARK_PLUSH = plush("shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5),
+            net.minecraft.core.particles.ParticleTypes.SPLASH);
+    public static final RegistrySupplier<Block> PINK_SHARK_PLUSH = plush("pink_shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5),
+            net.minecraft.core.particles.ParticleTypes.CHERRY_LEAVES);
+    public static final RegistrySupplier<Block> GRAY_SHARK_PLUSH = plush("gray_shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5),
+            net.minecraft.core.particles.ParticleTypes.SPLASH);
+    public static final RegistrySupplier<Block> PURPLE_SHARK_PLUSH = plush("purple_shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5),
+            net.minecraft.core.particles.ParticleTypes.WITCH);
+    public static final RegistrySupplier<Block> PASTEL_SHARK_PLUSH = plush("pastel_shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5),
+            net.minecraft.core.particles.ParticleTypes.CHERRY_LEAVES);
+    public static final RegistrySupplier<Block> RAINBOW_SHARK_PLUSH = plush("rainbow_shark_plush", Block.box(2.5, 0.0, 2.5, 13.5, 8.0, 15.5),
+            net.minecraft.core.particles.ParticleTypes.FIREWORK);
+    public static final RegistrySupplier<Block> CAT_PLUSH = plush("cat_plush", Block.box(3.5, 0.0, 4.5, 14.0, 13.5, 11.5),
+            net.minecraft.core.particles.ParticleTypes.HEART);
+    public static final RegistrySupplier<Block> CREEPER_PLUSH = plush("creeper_plush", Block.box(4.0, 0.0, 4.0, 12.0, 13.0, 12.0),
+            net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER);
+    public static final RegistrySupplier<Block> PINK_CREEPER_PLUSH = plush("pink_creeper_plush", Block.box(4.0, 0.0, 4.0, 12.0, 13.0, 12.0),
+            net.minecraft.core.particles.ParticleTypes.CHERRY_LEAVES);
     public static final RegistrySupplier<Block> ENDERMAN_PLUSH = plush("enderman_plush", Block.box(4.0, 0.0, 2.5, 12.0, 12.7, 11.6),
             net.minecraft.core.particles.ParticleTypes.PORTAL);
     public static final RegistrySupplier<Block> DRAGON_PLUSH = plush("dragon_plush", Block.box(2.0, 0.0, 2.5, 14.0, 12.8, 14.8),
             net.minecraft.core.particles.ParticleTypes.PORTAL);
-    public static final RegistrySupplier<Block> AXOLOTL_PLUSH = plush("axolotl_plush", Block.box(1.5, 0.0, 2.5, 14.5, 6.0, 15.2));
-    public static final RegistrySupplier<Block> BEE_PLUSH = plush("bee_plush", Block.box(2.0, 0.0, 2.0, 14.0, 9.0, 14.0));
-    public static final RegistrySupplier<Block> FROG_PLUSH = plush("frog_plush", Block.box(2.6, 0.0, 2.8, 13.4, 9.0, 11.6));
-    public static final RegistrySupplier<Block> BUNNY_PLUSH = plush("bunny_plush", Block.box(1.6, 0.0, 4.5, 14.4, 12.1, 13.8));
-    public static final RegistrySupplier<Block> FOX_PLUSH = plush("fox_plush", Block.box(3.8, 0.0, 1.6, 14.4, 7.8, 12.2));
+    public static final RegistrySupplier<Block> AXOLOTL_PLUSH = plush("axolotl_plush", Block.box(1.5, 0.0, 2.5, 14.5, 6.0, 15.2),
+            net.minecraft.core.particles.ParticleTypes.SPLASH);
+    public static final RegistrySupplier<Block> BEE_PLUSH = plush("bee_plush", Block.box(2.0, 0.0, 2.0, 14.0, 9.0, 14.0),
+            net.minecraft.core.particles.ParticleTypes.FALLING_NECTAR);
+    public static final RegistrySupplier<Block> FROG_PLUSH = plush("frog_plush", Block.box(2.6, 0.0, 2.8, 13.4, 9.0, 11.6),
+            net.minecraft.core.particles.ParticleTypes.SPLASH);
+    public static final RegistrySupplier<Block> BUNNY_PLUSH = plush("bunny_plush", Block.box(1.6, 0.0, 4.5, 14.4, 12.1, 13.8),
+            net.minecraft.core.particles.ParticleTypes.HEART);
+    public static final RegistrySupplier<Block> FOX_PLUSH = plush("fox_plush", Block.box(3.8, 0.0, 1.6, 14.4, 7.8, 12.2),
+            net.minecraft.core.particles.ParticleTypes.GLOW);
+    public static final RegistrySupplier<Block> CAPYBARA_PLUSH = plush("capybara_plush", Block.box(3.6, 0.0, 1.5, 12.4, 13.4, 12.2),
+            net.minecraft.core.particles.ParticleTypes.BUBBLE_POP);
+    public static final RegistrySupplier<Block> PENGUIN_PLUSH = plush("penguin_plush", Block.box(2.0, 0.0, 3.2, 14.0, 13.0, 12.0),
+            net.minecraft.core.particles.ParticleTypes.SNOWFLAKE);
+    public static final RegistrySupplier<Block> BEAR_PLUSH = plush("bear_plush", Block.box(3.2, 0.0, 3.2, 12.8, 13.4, 13.2),
+            net.minecraft.core.particles.ParticleTypes.HEART);
+    public static final RegistrySupplier<Block> SEAL_PLUSH = plush("seal_plush", Block.box(1.2, 0.0, 2.8, 14.8, 7.6, 15.4),
+            net.minecraft.core.particles.ParticleTypes.SPLASH);
+    public static final RegistrySupplier<Block> RED_PANDA_PLUSH = plush("red_panda_plush", Block.box(3.4, 0.0, 3.2, 14.8, 13.2, 13.2),
+            net.minecraft.core.particles.ParticleTypes.GLOW);
     public static final RegistrySupplier<Block> RUBBER_DUCK = plushBlock("rubber_duck",
             props -> new RubberDuckBlock(props, Block.box(4.0, 0.0, 3.5, 12.0, 11.0, 14.0)),
             BlockBehaviour.Properties.of().strength(0.5F).sound(SoundType.WOOL).noOcclusion());
@@ -116,6 +146,19 @@ public final class FemboyBlocks {
                     .lightLevel(state -> state.getValue(GamerMonitorBlock.LIT) ? GamerMonitorBlock.LIGHT : 0));
     public static final RegistrySupplier<Block> GAMER_KEYBOARD = block("gamer_keyboard", GamerKeyboardBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.5F).sound(SoundType.STONE).noOcclusion());
+    public static final RegistrySupplier<Block> GAMER_DESK = block("gamer_desk", GamerDeskBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(1.5F).sound(SoundType.WOOD).noOcclusion());
+    public static final RegistrySupplier<Block> GAMING_PC = block("gaming_pc",
+            props -> new ToggleableDecorBlock(props, Block.box(4.0, 0.0, 1.5, 12.0, 14.5, 14.5)),
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(1.5F).sound(SoundType.METAL).noOcclusion()
+                    .lightLevel(state -> state.getValue(ToggleableDecorBlock.LIT) ? 5 : 0));
+    public static final RegistrySupplier<Block> RING_LIGHT = block("ring_light",
+            props -> new ToggleableDecorBlock(props, Block.box(3.5, 0.0, 3.5, 12.5, 16.0, 12.5)),
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.8F).sound(SoundType.METAL).noOcclusion()
+                    .lightLevel(state -> state.getValue(ToggleableDecorBlock.LIT) ? 13 : 0));
+    public static final RegistrySupplier<Block> DESK_MIC = block("desk_mic",
+            props -> new SimpleDecorBlock(props, Block.box(5.0, 0.0, 4.5, 11.0, 13.0, 11.0)),
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.6F).sound(SoundType.METAL).noOcclusion());
     public static final RegistrySupplier<Block> TERMINAL = block("terminal", TerminalBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(2.0F).sound(SoundType.METAL).noOcclusion());
     public static final RegistrySupplier<Block> VIBE_SCANNER = block("vibe_scanner", dev.eliasnvx.femboymod.vibe.VibeScannerBlock::new,
@@ -154,12 +197,21 @@ public final class FemboyBlocks {
     public static final RegistrySupplier<Block> POTTED_DEBUG_FLYTRAP = blockWithoutItem("potted_debug_flytrap",
             props -> new PottedDebugFlytrapBlock(DEBUG_FLYTRAP.get(), props), flowerPot().randomTicks());
     public static final RegistrySupplier<Block> CATNIP = block("catnip", CatnipBlock::new,
-            BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().instabreak().sound(SoundType.GRASS)
+            BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().instabreak().randomTicks().sound(SoundType.GRASS)
                     .offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY)); // 26.3: POPPED
     public static final RegistrySupplier<Block> POTTED_CATNIP = blockWithoutItem("potted_catnip",
             props -> new FlowerPotBlock(CATNIP.get(), props), flowerPot());
     public static final RegistrySupplier<Block> POTTED_GRASS = blockWithoutItem("potted_grass",
             props -> new PottedGrassBlock(Blocks.SHORT_GRASS, props), flowerPot());
+    public static final RegistrySupplier<Block> STRAWBERRY_BUSH = blockWithoutItem("strawberry_bush", StrawberryBushBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().instabreak().randomTicks()
+                    .sound(SoundType.SWEET_BERRY_BUSH).pushReaction(PushReaction.DESTROY));
+    public static final RegistrySupplier<Block> SAKURA_BONSAI = block("sakura_bonsai",
+            props -> new SimpleDecorBlock(props, Block.box(2.5, 0.0, 3.5, 13.5, 15.0, 12.5)),
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.6F).sound(SoundType.DECORATED_POT).noOcclusion());
+    public static final RegistrySupplier<Block> CAT_SUCCULENT = block("cat_succulent",
+            props -> new SimpleDecorBlock(props, Block.box(4.0, 0.0, 4.0, 12.0, 10.5, 12.0)),
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.5F).sound(SoundType.DECORATED_POT).noOcclusion());
 
     public static final RegistrySupplier<BlockEntityType<ClothingRackBlockEntity>> CLOTHING_RACK_ENTITY = BLOCK_ENTITIES.register(
             "clothing_rack", () -> BlockEntityType.Builder.of(ClothingRackBlockEntity::new, CLOTHING_RACK.get()).build(null));
@@ -174,9 +226,13 @@ public final class FemboyBlocks {
             "mini_fridge", () -> BlockEntityType.Builder.of(MiniFridgeBlockEntity::new, MINI_FRIDGE.get()).build(null));
     public static final RegistrySupplier<BlockEntityType<PlushBlockEntity>> PLUSH_ENTITY = BLOCK_ENTITIES.register(
             "plush", () -> BlockEntityType.Builder.of(PlushBlockEntity::new,
-                    SHARK_PLUSH.get(), CAT_PLUSH.get(), CREEPER_PLUSH.get(),
+                    SHARK_PLUSH.get(), PINK_SHARK_PLUSH.get(), GRAY_SHARK_PLUSH.get(),
+                    PURPLE_SHARK_PLUSH.get(), PASTEL_SHARK_PLUSH.get(), RAINBOW_SHARK_PLUSH.get(),
+                    CAT_PLUSH.get(), CREEPER_PLUSH.get(), PINK_CREEPER_PLUSH.get(),
                     ENDERMAN_PLUSH.get(), DRAGON_PLUSH.get(), AXOLOTL_PLUSH.get(),
                     BEE_PLUSH.get(), FROG_PLUSH.get(), BUNNY_PLUSH.get(), FOX_PLUSH.get(),
+                    CAPYBARA_PLUSH.get(), PENGUIN_PLUSH.get(), BEAR_PLUSH.get(),
+                    SEAL_PLUSH.get(), RED_PANDA_PLUSH.get(),
                     RUBBER_DUCK.get()).build(null));
     public static final RegistrySupplier<BlockEntityType<PlushShelfBlockEntity>> PLUSH_SHELF_ENTITY = BLOCK_ENTITIES.register(
             "plush_shelf", () -> BlockEntityType.Builder.of(PlushShelfBlockEntity::new, PLUSH_SHELF.get()).build(null));
