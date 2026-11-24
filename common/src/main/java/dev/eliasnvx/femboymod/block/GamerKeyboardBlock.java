@@ -54,7 +54,22 @@ public class GamerKeyboardBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, net.minecraft.world.InteractionHand hand, BlockHitResult hit) {
+        net.minecraft.world.item.ItemStack stack = player.getItemInHand(hand);
+        if (stack.is(FemboyBlocks.GAMER_MONITOR.get().asItem())) {
+            if (!level.isClientSide()) {
+                BlockState combo = FemboyBlocks.GAMER_MONITOR.get().defaultBlockState()
+                        .setValue(GamerMonitorBlock.FACING, state.getValue(FACING))
+                        .setValue(GamerMonitorBlock.LIT, true)
+                        .setValue(GamerMonitorBlock.WITH_KEYBOARD, true);
+                level.setBlock(pos, combo, Block.UPDATE_ALL);
+                if (!player.getAbilities().instabuild) {
+                    stack.shrink(1);
+                }
+                level.playSound(null, pos, FemboySounds.KEYBOARD_CLACK.get(), SoundSource.BLOCKS, 0.85F, 1.15F);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
+        }
         if (level instanceof ServerLevel serverLevel) {
             float pitch = MIN_PITCH + level.getRandom().nextFloat() * PITCH_RANGE;
             level.playSound(null, pos, FemboySounds.KEYBOARD_CLACK.get(), SoundSource.BLOCKS, CLACK_VOLUME, pitch);

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "femboymod:block/gamer_desk"
+    },
+    "facing=east": {
+      "model": "femboymod:block/gamer_desk",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "femboymod:block/gamer_desk",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "femboymod:block/gamer_desk",
+      "y": 270
+    }
+  }
+}

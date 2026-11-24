@@ -23,11 +23,11 @@ public class PetBedGoal extends MoveToBlockGoal {
     /** Ticks between looks for a bed; vanilla cats look every 2 s too. */
     private static final int LOOK_INTERVAL = 40;
     /**
-     * Close enough to the spot above the bed's middle; pets stand on the 9 px cushion. Navigation stops a pet within
-     * 0.45 of the bed's node on both axes, so one that comes in diagonally can stop at a corner of the cushion, about
-     * 1.13 from the spot: 1.2 takes it (the floor next to the bed is 1.5 away and still doesn't count).
+     * Close enough to the spot above the bed's middle (y + 1.5); pets stand on the 3.8 px cushion (y + 0.24).
+     * Even at a corner of the cushion (0.45 off on X/Z) the distance is ~1.41, while the nearest floor edge next
+     * to the bed is >= 1.60 away.
      */
-    private static final double REACH = 1.2;
+    private static final double REACH = 1.45;
     private static final double OWNER_RANGE = 12.0;
 
     private final TamableAnimal pet;
@@ -95,7 +95,11 @@ public class PetBedGoal extends MoveToBlockGoal {
     /** A pet bed with room above it that no other pet is on (two pets on one bed push each other off). */
     @Override
     protected boolean isValidTarget(LevelReader level, BlockPos pos) {
-        return level.getBlockState(pos).getBlock() instanceof PetBedBlock && level.isEmptyBlock(pos.above())
-                && pet.level().getEntitiesOfClass(TamableAnimal.class, new AABB(pos), other -> other != pet).isEmpty();
+        if (!(level.getBlockState(pos).getBlock() instanceof PetBedBlock) || !level.isEmptyBlock(pos.above())) {
+            return false;
+        }
+        boolean alreadyHere = isReachedTarget() && pos.equals(blockPos);
+        return pet.level().getEntitiesOfClass(TamableAnimal.class, new AABB(pos),
+                other -> other != pet && (!alreadyHere || PetBedBlock.isResting(other))).isEmpty();
     }
 }

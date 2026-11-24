@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "femboymod:block/strawberry_bush_stage1"
+  }
+}

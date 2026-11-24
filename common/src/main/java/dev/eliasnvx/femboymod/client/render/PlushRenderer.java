@@ -1,6 +1,7 @@
 package dev.eliasnvx.femboymod.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.eliasnvx.femboymod.block.PlushBlock;
 import dev.eliasnvx.femboymod.block.PlushBlockEntity;
 import dev.eliasnvx.femboymod.block.PlushSquish;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -27,7 +28,11 @@ public final class PlushRenderer implements BlockEntityRenderer<PlushBlockEntity
         BakedModel model = blockRenderer.getBlockModel(state);
         float scaleY = PlushSquish.scaleY(plush.squishKind(), plush.squishAge(partialTick));
         float scaleXZ = PlushSquish.scaleXZ(scaleY);
+        float yOffset = (float) PlushBlock.restingYOffset(plush.getLevel(), plush.getBlockPos());
         pose.pushPose();
+        if (yOffset != 0.0F) {
+            pose.translate(0.0F, yOffset, 0.0F);
+        }
         if (scaleY != 1.0F || scaleXZ != 1.0F) {
             pose.translate(0.5F, 0.0F, 0.5F);
             pose.scale(scaleXZ, scaleY, scaleXZ);

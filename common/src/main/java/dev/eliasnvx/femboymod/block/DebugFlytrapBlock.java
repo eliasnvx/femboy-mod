@@ -84,6 +84,10 @@ public class DebugFlytrapBlock extends BushBlock {
 
     @Override
     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        int stage = state.getValue(STAGE);
+        if (stage < MAX_STAGE && !state.getValue(DIGESTING) && random.nextInt(6) == 0 && level.getRawBrightness(pos.above(), 0) >= 9) {
+            level.setBlock(pos, state.setValue(STAGE, stage + 1), Block.UPDATE_CLIENTS);
+        }
         keepTicking(level, pos, state, this);
     }
 

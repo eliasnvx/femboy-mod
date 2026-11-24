@@ -2,19 +2,39 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
+      "rolls": 1,
       "entries": [
         {
           "type": "minecraft:item",
           "name": "femboymod:gamer_monitor"
         }
       ],
-      "rolls": 1
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "femboymod:gamer_keyboard"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        },
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "femboymod:gamer_monitor",
+          "properties": {
+            "with_keyboard": "true"
+          }
+        }
+      ]
     }
-  ],
-  "random_sequence": "femboymod:blocks/gamer_monitor"
+  ]
 }

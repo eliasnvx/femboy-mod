@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "femboymod:debug_flytrap"
+    }
+  ],
+  "result": {
+    "item": "femboymod:debug_flytrap_seeds",
+    "count": 2
+  }
+}

@@ -53,11 +53,13 @@ final class CreativeTabContents {
             "wardrobe", "clothing_rack", "laundry_basket", "mini_fridge",
             "mirror", "gilded_mirror", "vanity_table",
             "gamer_chair", "bean_bag", "pet_bed",
-            "gamer_monitor", "gamer_keyboard", "terminal", "vibe_scanner",
+            "gamer_monitor", "gamer_keyboard", "gamer_desk", "gaming_pc", "ring_light", "desk_mic", "terminal", "vibe_scanner",
             "led_strip", "neon_sign", "moonstone_lamp", "fairy_lights", "lava_lamp",
-            "fluffy_rug", "plush_shelf", "shark_plush", "cat_plush", "creeper_plush",
+            "fluffy_rug", "plush_shelf", "shark_plush", "pink_shark_plush", "gray_shark_plush",
+            "purple_shark_plush", "pastel_shark_plush", "rainbow_shark_plush", "cat_plush", "creeper_plush", "pink_creeper_plush",
             "enderman_plush", "dragon_plush", "axolotl_plush", "bee_plush", "frog_plush", "bunny_plush", "fox_plush",
-            "rubber_duck", "debug_flytrap", "catnip");
+            "capybara_plush", "penguin_plush", "bear_plush", "seal_plush", "red_panda_plush",
+            "rubber_duck", "sakura_bonsai", "cat_succulent", "debug_flytrap", "debug_flytrap_seeds", "catnip", "catnip_seeds", "strawberry_seeds");
     /** Each material next to its ore and blocks. */
     private static final List<String> MATERIALS_ORDER = List.of(
             "rose_quartz_ore", "deepslate_rose_quartz_ore", "rose_quartz", "rose_quartz_block", "budding_rose_quartz",
@@ -72,7 +74,7 @@ final class CreativeTabContents {
     /** Drinks first, then food, then gadgets. */
     private static final List<String> SNACKS_ORDER = List.of(
             "byte_energy_pink", "byte_energy_blue", "byte_energy_purple", "byte_energy_rainbow", "empty_energy_can",
-            "bubble_tea", "strawberry_milk", "mochi", "onigiri", "candy", "phone", "photo", "style_coupon");
+            "bubble_tea", "strawberry_milk", "strawberry", "mochi", "onigiri", "candy", "phone", "photo", "style_coupon");
     /** Not food, but at home in the snacks and gadgets tab. */
     private static final Set<String> GADGETS = Set.of("empty_energy_can", "phone", "photo", "style_coupon");
 

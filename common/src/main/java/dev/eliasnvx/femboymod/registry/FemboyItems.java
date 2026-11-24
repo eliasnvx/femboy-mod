@@ -147,6 +147,14 @@ public final class FemboyItems {
             .food(new FoodProperties.Builder().nutrition(3).saturationMod(0.5F).fast().build()))); // fast = 0.8 s
     public static final RegistrySupplier<Item> ONIGIRI = register("onigiri", props -> new Item(props
             .food(new FoodProperties.Builder().nutrition(6).saturationMod(0.7F).build())));
+    public static final RegistrySupplier<Item> STRAWBERRY = register("strawberry", props -> new Item(props
+            .food(new FoodProperties.Builder().nutrition(2).saturationMod(0.3F).fast().build())));
+    public static final RegistrySupplier<Item> STRAWBERRY_SEEDS = register("strawberry_seeds",
+            props -> new net.minecraft.world.item.ItemNameBlockItem(dev.eliasnvx.femboymod.block.FemboyBlocks.STRAWBERRY_BUSH.get(), props));
+    public static final RegistrySupplier<Item> CATNIP_SEEDS = register("catnip_seeds",
+            props -> new net.minecraft.world.item.ItemNameBlockItem(dev.eliasnvx.femboymod.block.FemboyBlocks.CATNIP.get(), props));
+    public static final RegistrySupplier<Item> DEBUG_FLYTRAP_SEEDS = register("debug_flytrap_seeds",
+            props -> new net.minecraft.world.item.ItemNameBlockItem(dev.eliasnvx.femboymod.block.FemboyBlocks.DEBUG_FLYTRAP.get(), props));
 
     // Pink Creeper drops and spawn egg
     public static final RegistrySupplier<Item> GLITTER = register("glitter", props -> new Item(props));

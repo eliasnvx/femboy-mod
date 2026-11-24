@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "femboymod:catnip"
+    }
+  ],
+  "result": {
+    "item": "femboymod:catnip_seeds",
+    "count": 2
+  }
+}
