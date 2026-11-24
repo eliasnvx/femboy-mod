@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,lit=true": {
+      "model": "femboymod:block/ring_light"
+    },
+    "facing=north,lit=false": {
+      "model": "femboymod:block/ring_light_off"
+    },
+    "facing=east,lit=true": {
+      "model": "femboymod:block/ring_light",
+      "y": 90
+    },
+    "facing=east,lit=false": {
+      "model": "femboymod:block/ring_light_off",
+      "y": 90
+    },
+    "facing=south,lit=true": {
+      "model": "femboymod:block/ring_light",
+      "y": 180
+    },
+    "facing=south,lit=false": {
+      "model": "femboymod:block/ring_light_off",
+      "y": 180
+    },
+    "facing=west,lit=true": {
+      "model": "femboymod:block/ring_light",
+      "y": 270
+    },
+    "facing=west,lit=false": {
+      "model": "femboymod:block/ring_light_off",
+      "y": 270
+    }
+  }
+}

@@ -3,6 +3,19 @@
 All notable changes to Femboy Mod. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions: `<mod>+<mc>-<loader>`, e.g. `1.0.0+26.3-neoforge`. API changes: `docs/api/CHANGELOG.md`.
 
+## [0.4.1] - 2026-11-24
+### Added
+- **Gamer Desk & Battlestation set**: added **Gamer Desk** (`gamer_desk`), **Gaming PC** (`gaming_pc`, toggleable RGB), **Ring Light** (`ring_light`, toggleable warm glow), and **Desk Mic** (`desk_mic`), all counting toward the gamer room setup rating
+- **Monitor + Keyboard combo on one desk block**: right-clicking a Gamer Desk with a Pink Monitor and Mechanical Keyboard (in either order) combines them onto the same block so your full desk setup fits naturally; breaking the combo drops both items
+- **Plants & seed farming**: added **Strawberry Bush** (`strawberry_bush`, 4 growth stages, right-click to harvest **Strawberries**), **Strawberry Seeds**, **Catnip Seeds**, and **Debug Flytrap Seeds**, plus two 3D desk plants — **Sakura Bonsai** (`sakura_bonsai`) and **Cat Succulent** (`cat_succulent`). Catnip now grows through 4 stages (`age=0..3`) and Debug Flytrap seedlings grow naturally over time
+- **Pink Creeper Plush & themed plushie particles**: added `pink_creeper_plush` (22 plushies total) and gave every plushie its own themed squish particles
+
+### Changed
+- **Interior furniture & texture overhaul**: upgraded 56 interior textures (wardrobe, mirrors, neon signs, IDE monitor screen, all 16 fluffy rugs, and 24-frame animated lava lamps) and rebuilt 3D models for `pet_bed`, `bean_bag`, `vanity_table`, `gamer_chair`, `mini_fridge`, `moonstone_lamp`, `laundry_basket`, and `clothing_rack`
+- **Plushie & icon polish**: swept the dorsal fin backward on all 6 shark plushies, upgraded `rubber_duck` and `creeper_plush`, redrew all hair clips, backpack charms, glitter, `lookbook`, `led_strip`, and `fairy_lights` as crisp 32×32 icons
+- **Brand refresh**: new 0% AI voxel shark mod icon (`icon.png`), transparent logo banner (`banner.png`), README hero banner, section headers, and Complementary Reimagined shader screenshots
+- **Mod metadata**: added `https://cubimoon.com` homepage link in `fabric.mod.json` and `neoforge.mods.toml` / `mods.toml`
+
 ## [0.4.0] - 2026-11-21
 ### Added
 - **7 new chibi plushies & squish-and-bounce**: Enderman, Dragon, Axolotl, Bee, Frog, Bunny, and Fox plushies join Shark, Cat, Creeper, and Rubber Duck (11 total). Every plushie has upgraded 128×128 chibi models, squishes and bounces when placed or right-clicked, and emits themed particles (Enderman and Dragon spark with portal particles)

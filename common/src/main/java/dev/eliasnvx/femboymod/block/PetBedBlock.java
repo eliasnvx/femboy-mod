@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -34,8 +35,8 @@ import org.jetbrains.annotations.Nullable;
 public class PetBedBlock extends HorizontalDirectionalBlock {
 
     /** Pets stand on the cushion at 9 px, like on a bed (the goal's reach check needs it); the rim is only drawn. */
-    private static final VoxelShape COLLISION = Block.box(1.0, 0.0, 1.0, 15.0, 9.0, 15.0);
-    private static final VoxelShape OUTLINE = Shapes.or(COLLISION, Block.box(1.0, 9.0, 1.0, 15.0, 12.0, 15.0));
+    private static final VoxelShape COLLISION = Block.box(1.0, 0.0, 1.0, 15.0, 3.8, 15.0);
+    private static final VoxelShape OUTLINE = Shapes.or(COLLISION, Block.box(1.0, 3.8, 1.0, 15.0, 6.2, 15.0));
 
     public PetBedBlock(Properties properties) {
         super(properties);
@@ -62,6 +63,11 @@ public class PetBedBlock extends HorizontalDirectionalBlock {
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return COLLISION;
+    }
+
+    @Override
+    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+        return type == PathComputationType.LAND;
     }
 
     @Override

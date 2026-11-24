@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " G ",
+    "GIG",
+    " I "
+  ],
+  "key": {
+    "G": "minecraft:glowstone_dust",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "femboymod:ring_light",
+    "count": 1
+  }
+}

@@ -149,6 +149,14 @@ public final class FemboyItems {
             .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.5F).build(), Consumables.defaultFood().consumeSeconds(0.8F).build())));
     public static final RegistrySupplier<Item> ONIGIRI = register("onigiri", props -> new Item(props
             .food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.7F).build())));
+    public static final RegistrySupplier<Item> STRAWBERRY = register("strawberry", props -> new Item(props
+            .food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.3F).build(), Consumables.defaultFood().consumeSeconds(0.8F).build())));
+    public static final RegistrySupplier<Item> STRAWBERRY_SEEDS = register("strawberry_seeds",
+            props -> new BlockItem(dev.eliasnvx.femboymod.block.FemboyBlocks.STRAWBERRY_BUSH.get(), props));
+    public static final RegistrySupplier<Item> CATNIP_SEEDS = register("catnip_seeds",
+            props -> new BlockItem(dev.eliasnvx.femboymod.block.FemboyBlocks.CATNIP.get(), props));
+    public static final RegistrySupplier<Item> DEBUG_FLYTRAP_SEEDS = register("debug_flytrap_seeds",
+            props -> new BlockItem(dev.eliasnvx.femboymod.block.FemboyBlocks.DEBUG_FLYTRAP.get(), props));
 
     // Pink Creeper drops and spawn egg
     public static final RegistrySupplier<Item> GLITTER = register("glitter", props -> new Item(props));

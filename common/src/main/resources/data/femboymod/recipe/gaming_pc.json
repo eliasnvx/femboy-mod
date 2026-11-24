@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IGI",
+    "IRI",
+    "IPI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:glass_pane",
+    "R": "minecraft:redstone",
+    "P": "minecraft:pink_dye"
+  },
+  "result": {
+    "id": "femboymod:gaming_pc",
+    "count": 1
+  }
+}

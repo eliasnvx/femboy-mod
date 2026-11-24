@@ -1,33 +1,63 @@
 {
   "variants": {
-    "facing=north,lit=true": {
+    "facing=north,lit=true,with_keyboard=false": {
       "model": "femboymod:block/gamer_monitor"
     },
-    "facing=north,lit=false": {
+    "facing=north,lit=true,with_keyboard=true": {
+      "model": "femboymod:block/gamer_monitor_with_keyboard"
+    },
+    "facing=north,lit=false,with_keyboard=false": {
       "model": "femboymod:block/gamer_monitor_off"
     },
-    "facing=east,lit=true": {
+    "facing=north,lit=false,with_keyboard=true": {
+      "model": "femboymod:block/gamer_monitor_with_keyboard_off"
+    },
+    "facing=east,lit=true,with_keyboard=false": {
       "model": "femboymod:block/gamer_monitor",
       "y": 90
     },
-    "facing=east,lit=false": {
+    "facing=east,lit=true,with_keyboard=true": {
+      "model": "femboymod:block/gamer_monitor_with_keyboard",
+      "y": 90
+    },
+    "facing=east,lit=false,with_keyboard=false": {
       "model": "femboymod:block/gamer_monitor_off",
       "y": 90
     },
-    "facing=south,lit=true": {
+    "facing=east,lit=false,with_keyboard=true": {
+      "model": "femboymod:block/gamer_monitor_with_keyboard_off",
+      "y": 90
+    },
+    "facing=south,lit=true,with_keyboard=false": {
       "model": "femboymod:block/gamer_monitor",
       "y": 180
     },
-    "facing=south,lit=false": {
+    "facing=south,lit=true,with_keyboard=true": {
+      "model": "femboymod:block/gamer_monitor_with_keyboard",
+      "y": 180
+    },
+    "facing=south,lit=false,with_keyboard=false": {
       "model": "femboymod:block/gamer_monitor_off",
       "y": 180
     },
-    "facing=west,lit=true": {
+    "facing=south,lit=false,with_keyboard=true": {
+      "model": "femboymod:block/gamer_monitor_with_keyboard_off",
+      "y": 180
+    },
+    "facing=west,lit=true,with_keyboard=false": {
       "model": "femboymod:block/gamer_monitor",
       "y": 270
     },
-    "facing=west,lit=false": {
+    "facing=west,lit=true,with_keyboard=true": {
+      "model": "femboymod:block/gamer_monitor_with_keyboard",
+      "y": 270
+    },
+    "facing=west,lit=false,with_keyboard=false": {
       "model": "femboymod:block/gamer_monitor_off",
+      "y": 270
+    },
+    "facing=west,lit=false,with_keyboard=true": {
+      "model": "femboymod:block/gamer_monitor_with_keyboard_off",
       "y": 270
     }
   }

@@ -7,7 +7,7 @@
 [![NeoForge](https://img.shields.io/badge/NeoForge-26.3-E68A00?style=for-the-badge)](https://neoforged.net/)
 [![Architectury](https://img.shields.io/badge/Architectury-22.0.4-9C6ADE?style=for-the-badge)](https://modrinth.com/mod/architectury-api)
 [![License](https://img.shields.io/badge/License-MIT-C9A7FF?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.4.0-F291BE?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-0.4.1-F291BE?style=for-the-badge)](CHANGELOG.md)
 
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1BD96A?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/mod/femboy-mod)
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-F16436?style=for-the-badge&logo=curseforge&logoColor=white)](https://www.curseforge.com/minecraft/mc-mods/femboy-mod)
@@ -96,7 +96,7 @@ Eleven **cosmetic slots**, separate from armor, shown to everyone on the server:
 
 - **Byte Energy** in four flavors — caffeine stacks up: first you're fast, then you're jittery, then comes the crash
 - **Bubble tea** with 7 surprise flavors (taro, matcha, mango, lychee…) — each cup is a random buff
-- **Strawberry milk** calms the jitters and cancels the crash · **mochi** · **onigiri**
+- **Strawberry milk** calms the jitters and cancels the crash · fresh **Strawberries** (grown on **Strawberry Bushes**) · **mochi** · **onigiri**
 
 ---
 
@@ -106,16 +106,16 @@ Eleven **cosmetic slots**, separate from armor, shown to everyone on the server:
 
 ![Gamer room](docs/images/gamer_room.png)
 
+- **Gamer Desk & Battlestation** — **Gamer Desk** (snap a **Pink Monitor** and **Mechanical Keyboard** right onto the same desk block, or place them side by side), **Gaming PC** with toggleable RGB fans, **Ring Light**, **Desk Mic**, and **Terminal** (a crafting table that reminds you, btw, that you use Terminal)
 - **Gamer Chair** — sit down and slowly heal; the better your **setup rating** (up to ★★★★★★: screen, keyboard, lights, comfort, rubber duck, posters) the faster
-- **Pink Monitor** with scrolling code · ⌨ **Mechanical Keyboard** (3D keycaps, real clacky switches and sparks) · **Terminal** — a crafting table that reminds you, btw, that you use Terminal
 - **LED Strip** — four colors and a slow rainbow (never strobes) · **Moonstone Night Light** · **Neon Signs** (heart / cat / btw)
-- **11 chibi plushies & Plushie Shelf** — shark, cat, creeper, enderman, dragon, axolotl, bee, frog, bunny, fox and rubber duck. Right-click to squish and squeak (in the world, in mid-air or on a shelf), hug them with both hands, wear one on your head, or line up three on a wall-mounted **Plushie Shelf**
+- **22 chibi plushies & Plushie Shelf** — 6 shark variants (classic, pink, gray, purple, pastel, rainbow), cat, creeper & pink creeper, enderman, dragon, axolotl, bee, frog, bunny, fox, capybara, penguin, bear, seal, red panda and rubber duck. Right-click to squish and squeak with themed particles (in the world, in mid-air, on a bed or on a shelf), hug them with both hands, wear one on your head, rest them flush on beds and rugs, or line up three on a wall-mounted **Plushie Shelf**
 - **Rubber Duck** — explain your code to it: a meme answer, a bit of XP and *Insight* (faster digging)
 - **20 posters** in 1×1, 1×2 and 2×2
 - **Phone** — Photo Mode takes a selfie as an instant print with the mod's watermark; with paper it also prints a **Photo** you can hang in an item frame or give to a friend
 - **Mirror** (and a gilded one) — see your outfit live, with everyone standing in front of it; right-click to change clothes
-- **Cozy corner** — bean bag (sit and heal), fluffy rugs (square, round or heart), fairy lights, lava lamp, pet bed (your cats and dogs rest and heal on it), laundry basket, mini fridge (chilled Byte Energy lasts longer) and a vanity table with a real mirror; rugs, bean bags, pet beds and lamps in all 16 dye colors
-- **Desk plants** — **Debug Flytrap** (swamp plant that snaps up Bugs, silverfish and endermites and grows with every meal), **Catnip** (zoomies, then purring) and **Potted Grass** (right-click when the game gently suggests touching grass after two hours)
+- **Cozy corner** — bean bag (sit and heal), fluffy rugs (square, round or heart), fairy lights, animated lava lamps, cozy cat-ear pet bed (your cats and dogs rest and heal on it), laundry basket, mini fridge (chilled Byte Energy lasts longer) and a Hollywood-bulb vanity table with a real mirror; rugs, bean bags, pet beds and lamps in all 16 dye colors
+- **Plants & Seed Farming** — grow **Strawberry Bushes**, **Catnip** (4 growth stages, bone-mealable, zoomies then purring), and **Debug Flytraps** (snaps up Bugs, silverfish and endermites and grows through 3 stages) from seeds; decorate your desk with **Sakura Bonsai**, **Cat Succulent** and **Potted Grass** (right-click when the game gently suggests touching grass after two hours)
 
 ---
 
@@ -220,7 +220,7 @@ Architectury multi-loader: `api` / `common` / `fabric` / `neoforge` / `example-a
 - **Author:** eliasnvx · part of [Cubimoon](https://cubimoon.com/)
 - **Wiki:** recipes, sets and mechanics at [cubimoon.com/en/wiki/femboy-mod](https://cubimoon.com/en/wiki/femboy-mod)
 - **Support:** [Patreon](https://patreon.com/eliasnvx) · optional, the mod stays free
-- Screenshots are real in-game renders. The mod icon and some item icons started as AI drafts and were picked and cleaned up by hand; everything else is procedural or hand-made.
+- Screenshots are real in-game renders. Some item icons started as AI drafts and were picked and cleaned up by hand; the mod icon and everything else are procedural or hand-made.
 - SFW, no third-party brands or characters, no flashing effects. Pride content appears only as optional colorways and badges.
 
 ## License

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "femboymod:block/bear_plush"
+    },
+    "facing=east": {
+      "model": "femboymod:block/bear_plush",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "femboymod:block/bear_plush",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "femboymod:block/bear_plush",
+      "y": 270
+    }
+  }
+}

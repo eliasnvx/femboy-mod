@@ -1,12 +1,15 @@
 package dev.eliasnvx.femboymod.block;
 
+import dev.eliasnvx.femboymod.registry.FemboySounds;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -23,12 +26,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Pink PC monitor: right-click turns it on or off. When on, the screen scrolls "code" (a slow,
- * smooth texture animation) and gives off a little light.
+ * Pink PC monitor: right-click turns it on or off. Right-click with a Gamer Keyboard to snap
+ * the keyboard & mouse onto the same desk block; sneak-right-click empty-handed to detach it.
  */
 public class GamerMonitorBlock extends HorizontalDirectionalBlock {
 
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    public static final BooleanProperty WITH_KEYBOARD = BooleanProperty.create("with_keyboard");
     public static final int LIGHT = 7;
     private static final float ON_PITCH = 1.4F;
     private static final float OFF_PITCH = 1.1F;
@@ -37,16 +41,25 @@ public class GamerMonitorBlock extends HorizontalDirectionalBlock {
             Block.box(5.0, 0.0, 7.0, 11.0, 1.0, 11.0),
             Block.box(7.0, 1.0, 8.0, 9.0, 4.0, 10.0),
             Block.box(1.0, 4.0, 7.0, 15.0, 14.0, 9.0));
+    private static final VoxelShape NORTH_COMBO_SHAPE = Shapes.or(
+            Block.box(1.0, 0.0, 1.0, 15.0, 2.0, 8.0),
+            Block.box(5.0, 0.0, 9.5, 11.0, 1.0, 13.5),
+            Block.box(7.0, 1.0, 10.5, 9.0, 4.0, 12.5),
+            Block.box(1.0, 4.0, 9.5, 15.0, 14.0, 11.5));
     private final Map<Direction, VoxelShape> shapes = Shapes.rotateHorizontal(NORTH_SHAPE);
+    private final Map<Direction, VoxelShape> comboShapes = Shapes.rotateHorizontal(NORTH_COMBO_SHAPE);
 
     public GamerMonitorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, true));
+        registerDefaultState(stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(LIT, true)
+                .setValue(WITH_KEYBOARD, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT);
+        builder.add(FACING, LIT, WITH_KEYBOARD);
     }
 
     @Override
@@ -56,12 +69,37 @@ public class GamerMonitorBlock extends HorizontalDirectionalBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return shapes.get(state.getValue(FACING));
+        return (state.getValue(WITH_KEYBOARD) ? comboShapes : shapes).get(state.getValue(FACING));
+    }
+
+    @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                          Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!state.getValue(WITH_KEYBOARD) && stack.is(FemboyBlocks.GAMER_KEYBOARD.get().asItem())) {
+            if (!level.isClientSide()) {
+                level.setBlock(pos, state.setValue(WITH_KEYBOARD, true), Block.UPDATE_ALL);
+                if (!player.getAbilities().instabuild) {
+                    stack.shrink(1);
+                }
+                level.playSound(null, pos, FemboySounds.KEYBOARD_CLACK.get(), SoundSource.BLOCKS, 0.85F, 1.1F);
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide()) {
+            if (player.isShiftKeyDown() && state.getValue(WITH_KEYBOARD)) {
+                level.setBlock(pos, state.setValue(WITH_KEYBOARD, false), Block.UPDATE_ALL);
+                ItemStack kb = new ItemStack(FemboyBlocks.GAMER_KEYBOARD.get());
+                if (!player.getInventory().add(kb)) {
+                    player.drop(kb, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                }
+                level.playSound(null, pos, FemboySounds.KEYBOARD_CLACK.get(), SoundSource.BLOCKS, 0.7F, 0.9F);
+                return InteractionResult.SUCCESS;
+            }
             boolean lit = !state.getValue(LIT);
             level.setBlock(pos, state.setValue(LIT, lit), Block.UPDATE_ALL);
             level.playSound(null, pos, SoundEvents.STONE_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.5F, lit ? ON_PITCH : OFF_PITCH);

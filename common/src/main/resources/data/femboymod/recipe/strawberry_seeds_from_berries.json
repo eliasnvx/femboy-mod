@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:sweet_berries",
+    "minecraft:pink_dye"
+  ],
+  "result": {
+    "id": "femboymod:strawberry_seeds",
+    "count": 2
+  }
+}

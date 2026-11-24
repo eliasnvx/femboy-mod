@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "I I",
+    "I I"
+  ],
+  "key": {
+    "P": "minecraft:cherry_planks",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "femboymod:gamer_desk",
+    "count": 1
+  }
+}

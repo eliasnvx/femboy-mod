@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "femboymod:block/cat_succulent"
+    },
+    "facing=east": {
+      "model": "femboymod:block/cat_succulent",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "femboymod:block/cat_succulent",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "femboymod:block/cat_succulent",
+      "y": 270
+    }
+  }
+}

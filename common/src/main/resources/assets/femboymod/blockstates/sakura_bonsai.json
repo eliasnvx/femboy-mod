@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "femboymod:block/sakura_bonsai"
+    },
+    "facing=east": {
+      "model": "femboymod:block/sakura_bonsai",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "femboymod:block/sakura_bonsai",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "femboymod:block/sakura_bonsai",
+      "y": 270
+    }
+  }
+}

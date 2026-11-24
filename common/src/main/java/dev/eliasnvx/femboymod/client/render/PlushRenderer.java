@@ -1,6 +1,7 @@
 package dev.eliasnvx.femboymod.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.eliasnvx.femboymod.block.PlushBlock;
 import dev.eliasnvx.femboymod.block.PlushBlockEntity;
 import dev.eliasnvx.femboymod.block.PlushSquish;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -30,6 +31,7 @@ public final class PlushRenderer implements BlockEntityRenderer<PlushBlockEntity
         final BlockModelRenderState model = new BlockModelRenderState();
         float scaleY = 1.0F;
         float scaleXZ = 1.0F;
+        float yOffset = 0.0F;
     }
 
     @Override
@@ -45,18 +47,24 @@ public final class PlushRenderer implements BlockEntityRenderer<PlushBlockEntity
         float scaleY = PlushSquish.scaleY(plush.squishKind(), plush.squishAge(partialTicks));
         state.scaleY = scaleY;
         state.scaleXZ = PlushSquish.scaleXZ(scaleY);
+        state.yOffset = (float) PlushBlock.restingYOffset(plush.getLevel(), plush.getBlockPos());
     }
 
     @Override
     public void submit(State state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera) {
-        if (state.scaleY == 1.0F && state.scaleXZ == 1.0F) {
+        if (state.scaleY == 1.0F && state.scaleXZ == 1.0F && state.yOffset == 0.0F) {
             state.model.submit(pose, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             return;
         }
         pose.pushPose();
-        pose.translate(0.5F, 0.0F, 0.5F);
-        pose.scale(state.scaleXZ, state.scaleY, state.scaleXZ);
-        pose.translate(-0.5F, 0.0F, -0.5F);
+        if (state.yOffset != 0.0F) {
+            pose.translate(0.0F, state.yOffset, 0.0F);
+        }
+        if (state.scaleY != 1.0F || state.scaleXZ != 1.0F) {
+            pose.translate(0.5F, 0.0F, 0.5F);
+            pose.scale(state.scaleXZ, state.scaleY, state.scaleXZ);
+            pose.translate(-0.5F, 0.0F, -0.5F);
+        }
         state.model.submit(pose, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         pose.popPose();
     }

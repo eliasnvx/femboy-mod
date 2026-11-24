@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:brown_wool",
+    "minecraft:brown_wool",
+    "minecraft:pink_wool",
+    "minecraft:string"
+  ],
+  "result": {
+    "id": "femboymod:bear_plush"
+  }
+}

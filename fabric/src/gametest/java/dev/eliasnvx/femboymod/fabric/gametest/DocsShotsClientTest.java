@@ -39,17 +39,28 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
         if (System.getenv("FEMBOYMOD_DOCS_SHOTS") == null) {
             return;
         }
+        String shader = System.getenv("FEMBOYMOD_COMPAT_SHADER");
+        if (shader != null && !shader.isBlank()) {
+            context.runOnClient(mc -> {
+                try {
+                    CompatModelsClientTest.enableShaderPack(java.nio.file.Path.of(shader));
+                } catch (ReflectiveOperationException | java.io.IOException e) {
+                    throw new IllegalStateException("could not turn on the shader pack", e);
+                }
+            });
+            context.waitTicks(200);
+        }
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
             world.getConnection().waitForChunksRender();
             world.getServer().runCommand("clear @p femboymod:lookbook"); // the first-join book, not wanted in shots
-            cmd(world, "time set noon");
+            cmd(world, "time set 1000"); // bright golden morning sunlight
             cmd(world, "weather clear");
             cmd(world, "gamerule advance_time false");
             cmd(world, "gamerule advance_weather false");
             context.runOnClient(mc -> mc.gui.toastManager().clear());
 
             garden(world);
-            // Hero: the classic look in a flower garden with two stray cats
+            // 1. Outfits hero shot in a cherry garden in golden morning sun
             outfit(world, player -> {
                 wear(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get()));
                 wear(player, FemboySlots.OUTFIT_TOP, colored(FemboyItems.OVERSIZED_HOODIE.get(), 0xF7B8D2));
@@ -60,125 +71,22 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
                 wear(player, FemboySlots.HANDS, new ItemStack(FemboyItems.STRIPED_MITTENS.get()));
                 wear(player, FemboySlots.BACK, backpack(player.level().getServer()));
             });
-            cmd(world, "summon femboymod:stray_cat ~2 ~ ~-2 {NoAI:1b,PersistenceRequired:1b,Rotation:[200f,0f],femboymod_coat:0}");
+            cmd(world, "setblock ~-2 ~ ~-3 femboymod:clothing_rack[facing=south]");
+            cmd(world, "setblock ~2 ~ ~-3 femboymod:shark_plush[facing=south]");
+            cmd(world, "summon femboymod:stray_cat ~2 ~ ~-1.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[200f,0f],femboymod_coat:0}");
             cmd(world, "summon femboymod:stray_cat ~-2 ~ ~-1 {NoAI:1b,PersistenceRequired:1b,Rotation:[160f,0f],femboymod_coat:1}");
-            camera(context, world, CameraType.THIRD_PERSON_FRONT, 25, 12, 55);
+            camera(context, world, CameraType.THIRD_PERSON_FRONT, 22, 10, 46);
             shot(context, "docs_hero");
-            camera(context, world, CameraType.THIRD_PERSON_BACK, 150, 18, 55);
+            camera(context, world, CameraType.THIRD_PERSON_BACK, 152, 16, 48);
             shot(context, "docs_back");
             gone(world, "femboymod:stray_cat");
-
-            // Outfits
-            outfit(world, player -> {
-                wear(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EAR_HEADPHONES.get()));
-                wear(player, FemboySlots.FACE, new ItemStack(FemboyItems.DARK_SHADES.get()));
-                wear(player, FemboySlots.OUTFIT_TOP, colored(FemboyItems.CROP_SWEATER.get(), 0x2B2A33));
-                wear(player, FemboySlots.WAIST, new ItemStack(FemboyItems.BELT_CHAINS.get()));
-                wear(player, FemboySlots.OUTFIT_BOTTOM, colored(FemboyItems.PLEATED_SKIRT.get(), 0x2B2A33));
-                wear(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.FISHNET_TIGHTS.get()));
-                wear(player, FemboySlots.HANDS, colored(FemboyItems.ARM_WARMERS.get(), 0x2B2A33));
-            });
-            camera(context, world, CameraType.THIRD_PERSON_FRONT, 20, 8, 50);
-            shot(context, "docs_outfit_edgy");
-            outfit(world, player -> {
-                wear(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.BUNNY_EARS.get()));
-                wear(player, FemboySlots.NECK, new ItemStack(FemboyItems.MOONSTONE_PENDANT.get()));
-                wear(player, FemboySlots.OUTFIT_TOP, patterned(player.level().getServer(), FemboyItems.CAT_EAR_HOODIE.get(), "sakura", 0xFFFFFF));
-                wear(player, FemboySlots.OUTFIT_BOTTOM, colored(FemboyItems.PLEATED_SKIRT.get(), 0xF2F0F2));
-                wear(player, FemboySlots.LEGS_OVERLAY, patterned(player.level().getServer(), FemboyItems.PROGRAMMING_SOCKS.get(), "pearl", 0xFFFFFF));
-                wear(player, FemboySlots.FACE, new ItemStack(FemboyItems.HEART_GLASSES.get()));
-            });
-            shot(context, "docs_outfit_soft");
-            outfit(world, player -> {
-                wear(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.FOX_EARS.get()));
-                wear(player, FemboySlots.FACE, patterned(player.level().getServer(), FemboyItems.CYBER_VISOR.get(), "neon", 0xFFFFFF));
-                wear(player, FemboySlots.OUTFIT_TOP, patterned(player.level().getServer(), FemboyItems.OVERSIZED_HOODIE.get(), "cyber_pastel", 0xFFFFFF));
-                wear(player, FemboySlots.OUTFIT_BOTTOM, colored(FemboyItems.PLEATED_SKIRT.get(), 0x1E1A2A));
-                wear(player, FemboySlots.LEGS_OVERLAY, patterned(player.level().getServer(), FemboyItems.PROGRAMMING_SOCKS.get(), "neon", 0xFFFFFF));
-                wear(player, FemboySlots.TAIL, colored(FemboyItems.TAIL.get(), 0xE8863A));
-            });
-            shot(context, "docs_outfit_cyber");
-            outfit(world, player -> {
-                wear(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.BEAR_EARS.get()));
-                wear(player, FemboySlots.FACE, new ItemStack(FemboyItems.ROSE_QUARTZ_EARRINGS.get()));
-                wear(player, FemboySlots.OUTFIT_TOP, patterned(player.level().getServer(), FemboyItems.OVERSIZED_HOODIE.get(), "pride_rainbow", 0xFFFFFF));
-                wear(player, FemboySlots.OUTFIT_BOTTOM, colored(FemboyItems.PLEATED_SKIRT.get(), 0xA8E6CF));
-                wear(player, FemboySlots.LEGS_OVERLAY, patterned(player.level().getServer(), FemboyItems.PROGRAMMING_SOCKS.get(), "glitter", 0xFFD1EC));
-                wear(player, FemboySlots.HANDS, new ItemStack(FemboyItems.ROSE_QUARTZ_BRACELET.get()));
-            });
-            shot(context, "docs_outfit_pride");
-
-            // Emote
-            context.runOnClient(mc -> dev.eliasnvx.femboymod.client.EmoteClient.show(mc.player.getId(), dev.eliasnvx.femboymod.emote.Emote.HEART_HANDS));
-            context.waitTicks(SETTLE / 2);
-            shot(context, "docs_emote");
             clearGarden(world);
 
-            // Gamer room at night
+            // 2. Cozy Gamer Room at twilight (hero room + UI overlay)
             gamerRoom(world);
-            outfit(world, player -> { });
             outfit(world, player -> {
                 wear(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EAR_HEADPHONES.get()));
-                wear(player, FemboySlots.OUTFIT_TOP, colored(FemboyItems.CAT_EAR_HOODIE.get(), 0xC8A2E8));
-                wear(player, FemboySlots.OUTFIT_BOTTOM, new ItemStack(FemboyItems.PLEATED_SKIRT.get()));
-                wear(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()));
-                wear(player, FemboySlots.TAIL, new ItemStack(FemboyItems.TAIL.get()));
-            });
-            cmd(world, "time set midnight");
-            world.getServer().runOnServer(server -> {
-                ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
-                dev.eliasnvx.femboymod.entity.Seat.sit(player.level(), player.blockPosition().offset(0, 0, -3), player, 0.3);
-            });
-            camera(context, world, CameraType.THIRD_PERSON_BACK, 180, 20, 70);
-            context.waitTicks(SETTLE);
-            shot(context, "docs_gamer_room");
-            world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst().stopRiding());
-            outfit(world, player -> { });
-            cmd(world, "tp @p ~ ~ ~ 180 10");
-            camera(context, world, CameraType.FIRST_PERSON, 180, 8, 70);
-            shot(context, "docs_gamer_room_wide");
-            clearArea(world);
-            cmd(world, "time set noon");
-
-            // Ores, geodes and neon at night (no outfit: set-bonus hearts would float in front of the camera)
-            outfit(world, player -> { });
-            oreWall(world);
-            cmd(world, "time set midnight");
-            camera(context, world, CameraType.FIRST_PERSON, 180, 12, 70);
-            shot(context, "docs_ores");
-            clearArea(world);
-            cmd(world, "time set noon");
-
-            // Friends and mobs
-            for (int coat = 0; coat < 5; coat++) {
-                cmd(world, "summon femboymod:stray_cat ~" + (coat - 2) * 1.2 + " ~ ~-3 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f],femboymod_coat:" + coat + "}");
-            }
-            cmd(world, "summon femboymod:cosplayer ~ ~ ~-5 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f]}");
-            cmd(world, "setblock ~3 ~ ~-5 femboymod:vibe_scanner[facing=south]");
-            camera(context, world, CameraType.FIRST_PERSON, 180, 14, 70);
-            context.waitTicks(SETTLE);
-            shot(context, "docs_friends");
-            gone(world, "femboymod:stray_cat");
-            gone(world, "femboymod:cosplayer");
-            cmd(world, "setblock ~3 ~ ~-5 air");
-            context.waitTicks(SETTLE * 2);
-            cmd(world, "summon femboymod:pink_creeper ~-3 ~ ~-5 {NoAI:1b,PersistenceRequired:1b,Rotation:[10f,0f]}");
-            cmd(world, "summon femboymod:caffeinated_zombie ~-1.5 ~ ~-5.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[5f,0f],equipment:{mainhand:{id:\"femboymod:byte_energy_blue\",count:1}}}");
-            cmd(world, "summon femboymod:fashion_critic ~0.5 ~ ~-6 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f],equipment:{mainhand:{id:\"minecraft:writable_book\",count:1}}}");
-            cmd(world, "summon femboymod:hissy_cat ~2.2 ~ ~-4.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[-15f,0f]}");
-            cmd(world, "summon femboymod:bug ~3.5 ~ ~-4 {NoAI:1b,PersistenceRequired:1b,Rotation:[-30f,0f]}");
-            cmd(world, "summon femboymod:bug ~0 ~ ~-3.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f]}");
-            cmd(world, "time set noon");
-            camera(context, world, CameraType.FIRST_PERSON, 180, 8, 70);
-            context.waitTicks(SETTLE);
-            shot(context, "docs_mobs");
-            gone(world, "!minecraft:player");
-            cmd(world, "time set noon");
-
-            // UI: HUD panel + Outfit screen, and the creative tab
-            outfit(world, player -> {
-                wear(player, FemboySlots.HEAD_ACCESSORY, new ItemStack(FemboyItems.CAT_EARS.get()));
-                wear(player, FemboySlots.OUTFIT_TOP, colored(FemboyItems.OVERSIZED_HOODIE.get(), 0xF7B8D2));
+                wear(player, FemboySlots.OUTFIT_TOP, colored(FemboyItems.CAT_EAR_HOODIE.get(), 0xF7B8D2));
                 wear(player, FemboySlots.OUTFIT_BOTTOM, new ItemStack(FemboyItems.PLEATED_SKIRT.get()));
                 wear(player, FemboySlots.LEGS_OVERLAY, new ItemStack(FemboyItems.PROGRAMMING_SOCKS.get()));
                 wear(player, FemboySlots.TAIL, new ItemStack(FemboyItems.TAIL.get()));
@@ -187,27 +95,47 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
                 player.getInventory().add(new ItemStack(FemboyItems.BUBBLE_TEA.get(), 4));
                 player.getInventory().add(new ItemStack(FemboyItems.PHONE.get()));
             });
-            context.runOnClient(mc -> mc.options.guiScale().set(2));
+            cmd(world, "time set 13100"); // warm twilight glow for neon + lamps + screens
+            // Slightly angled wide shot so the keyboard+mouse on the desk are clearly visible beside the chair
+            cmd(world, "tp @p ~-1.4 ~ ~0.4 166 10");
+            camera(context, world, CameraType.FIRST_PERSON, 166, 10, 56);
+            context.waitTicks(SETTLE);
+            shot(context, "docs_gamer_room_wide");
+
+            // 3. UI: Outfit menu centered over the glowing cozy gamer room (native window size so GUI centers cleanly)
+            context.runOnClient(mc -> {
+                mc.options.guiScale().set(2);
+                mc.gui.toastManager().clear();
+            });
             cmd(world, "kill @e[type=minecraft:item]");
             world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst().openMenu(
                     new net.minecraft.world.SimpleMenuProvider((id, inventory, p) -> new dev.eliasnvx.femboymod.menu.CosmeticsMenu(id, inventory),
                             net.minecraft.network.chat.Component.translatable("container.femboymod.cosmetics"))));
             context.waitTicks(SETTLE / 2);
-            context.takeScreenshot("docs_outfit_screen"); // native window size: GUI layout matches
+            context.takeScreenshot("docs_outfit_screen");
             context.runOnClient(mc -> mc.player.closeContainer());
-            cmd(world, "gamemode creative @p");
-            context.waitTicks(SETTLE / 4);
-            context.setScreen(() -> new net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen(
-                    Minecraft.getInstance().player, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS, true));
-            context.waitTicks(SETTLE / 2);
-            context.takeScreenshot("docs_creative");
-            context.setScreen(() -> null);
-            cmd(world, "gamemode survival @p");
+            cmd(world, "tp @p 0.5 ~ 0.5 180 10");
+            clearArea(world);
 
-            // Photo Mode selfie (saved by the mod itself as an instant print)
-            camera(context, world, CameraType.FIRST_PERSON, 200, 10, 70);
-            context.runOnClient(mc -> dev.eliasnvx.femboymod.client.PhotoMode.start());
-            context.waitTicks(SETTLE * 2);
+            // 4. Friends & Plushies Parade in cherry meadow in bright morning sun
+            cmd(world, "time set 1000");
+            outfit(world, player -> { });
+            friendsScene(world);
+            camera(context, world, CameraType.FIRST_PERSON, 180, 11, 50);
+            context.waitTicks(SETTLE);
+            shot(context, "docs_friends");
+            gone(world, "femboymod:stray_cat");
+            gone(world, "femboymod:cosplayer");
+            clearArea(world);
+
+            // 5. World: Plants (strawberry bush, catnip, flytrap), Rose Quartz geodes, Ores & Meme Mobs
+            cmd(world, "time set 1200");
+            worldScene(world);
+            camera(context, world, CameraType.FIRST_PERSON, 180, 10, 54);
+            context.waitTicks(SETTLE);
+            shot(context, "docs_world");
+            gone(world, "!minecraft:player");
+            clearArea(world);
         }
     }
 
@@ -306,8 +234,8 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
     }
 
     private static void clearArea(TestSingleplayerContext world) {
-        cmd(world, "fill ~-8 ~ ~-9 ~8 ~6 ~2 air");
-        cmd(world, "fill ~-8 ~-1 ~-9 ~8 ~-1 ~2 minecraft:grass_block");
+        cmd(world, "fill ~-12 ~ ~-12 ~12 ~8 ~6 air");
+        cmd(world, "fill ~-12 ~-1 ~-12 ~12 ~-1 ~6 minecraft:grass_block");
         cmd(world, "kill @e[type=minecraft:item]");
         cmd(world, "kill @e[type=minecraft:painting]");
     }
@@ -319,48 +247,128 @@ public final class DocsShotsClientTest implements FabricClientGameTest {
     }
 
     private static void gamerRoom(TestSingleplayerContext world) {
-        cmd(world, "fill ~-6 ~-1 ~-8 ~6 ~-1 ~1 minecraft:pink_wool");
-        cmd(world, "fill ~-6 ~ ~-7 ~6 ~4 ~-7 minecraft:white_concrete");
-        cmd(world, "fill ~-6 ~ ~-7 ~-6 ~4 ~1 minecraft:white_concrete");
-        cmd(world, "fill ~6 ~ ~-7 ~6 ~4 ~1 minecraft:white_concrete");
-        cmd(world, "fill ~-2 ~ ~-6 ~2 ~ ~-5 minecraft:pink_concrete");
+        // Floor: warm cherry planks + pink fluffy rug centerpiece
+        cmd(world, "fill ~-6 ~-1 ~-8 ~6 ~-1 ~2 minecraft:cherry_planks");
+        for (int x = -2; x <= 2; x++) {
+            for (int z = -5; z <= -2; z++) {
+                cmd(world, "setblock ~" + x + " ~ ~" + z + " femboymod:fluffy_rug[color=pink,shape=square]");
+            }
+        }
+        // Walls & ceiling: clean smooth quartz + cherry log pillars + glass skylight/side window
+        cmd(world, "fill ~-6 ~ ~-7 ~6 ~4 ~-7 minecraft:smooth_quartz");
+        cmd(world, "fill ~-6 ~ ~-7 ~-6 ~4 ~2 minecraft:smooth_quartz");
+        cmd(world, "fill ~6 ~ ~-7 ~6 ~4 ~2 minecraft:smooth_quartz");
+        cmd(world, "fill ~-6 ~5 ~-7 ~6 ~5 ~2 minecraft:cherry_planks");
+        // Corner pillars
+        cmd(world, "fill ~-6 ~ ~-7 ~-6 ~4 ~-7 minecraft:stripped_cherry_log");
+        cmd(world, "fill ~6 ~ ~-7 ~6 ~4 ~-7 minecraft:stripped_cherry_log");
+        // Side window on east wall for warm twilight light
+        cmd(world, "fill ~6 ~1 ~-5 ~6 ~3 ~-3 minecraft:glass_pane");
+
+        // 5-wide Gamer Desk setup along the back wall
+        for (int x = -2; x <= 2; x++) {
+            cmd(world, "setblock ~" + x + " ~ ~-6 femboymod:gamer_desk[facing=south]");
+        }
+        // Desktop items: PC, Desk Mic, Monitor+Keyboard combo, 2nd Monitor, Ring Light, Plants & Duck
+        cmd(world, "setblock ~-2 ~1 ~-6 femboymod:gaming_pc[facing=south,lit=true]");
         cmd(world, "setblock ~-1 ~1 ~-6 femboymod:gamer_monitor[facing=south]");
-        cmd(world, "setblock ~1 ~1 ~-6 femboymod:gamer_monitor[facing=south]");
-        cmd(world, "setblock ~ ~1 ~-5 femboymod:gamer_keyboard[facing=south]");
-        cmd(world, "setblock ~2 ~1 ~-5 femboymod:rubber_duck[facing=south]");
-        cmd(world, "setblock ~-2 ~1 ~-5 femboymod:terminal[facing=south]");
-        cmd(world, "setblock ~ ~ ~-3 femboymod:gamer_chair[facing=north]");
+        cmd(world, "setblock ~ ~1 ~-6 femboymod:gamer_monitor[facing=south,with_keyboard=true]");
+        cmd(world, "setblock ~1 ~1 ~-6 femboymod:ring_light[facing=south,lit=true]");
+        cmd(world, "setblock ~2 ~1 ~-6 femboymod:sakura_bonsai[facing=south]");
+
+        // Gamer chair facing the desk (pink wool under it so the rug has no harsh plank hole)
+        cmd(world, "setblock ~ ~-1 ~-4 minecraft:pink_wool");
+        cmd(world, "setblock ~ ~ ~-4 femboymod:gamer_chair[facing=north]");
+
+        // Left side: Vanity Table, Bean Bag, Lava Lamp, Shark & Fox Plushies
+        cmd(world, "setblock ~-5 ~ ~-4 femboymod:vanity_table[facing=east,half=lower]");
+        cmd(world, "setblock ~-5 ~1 ~-4 femboymod:vanity_table[facing=east,half=upper]");
+        cmd(world, "setblock ~-4 ~ ~-2 femboymod:bean_bag[color=pink,facing=east]");
+        cmd(world, "setblock ~-4 ~ ~-6 femboymod:lava_lamp[color=pink,lit=true]");
+        cmd(world, "setblock ~-3 ~ ~-6 femboymod:shark_plush[facing=south]");
+        cmd(world, "setblock ~-5 ~ ~-6 femboymod:fox_plush[facing=south]");
+
+        // Right side: Mini Fridge, Cat Succulent, Pet Bed, Moonstone Lamp, Pink Creeper & Cat Plushies
+        cmd(world, "setblock ~5 ~ ~-6 femboymod:mini_fridge[facing=south]");
+        cmd(world, "setblock ~5 ~1 ~-6 femboymod:cat_succulent[facing=south]");
+        cmd(world, "setblock ~4 ~ ~-6 femboymod:pink_creeper_plush[facing=south]");
+        cmd(world, "setblock ~3 ~ ~-6 femboymod:rubber_duck[facing=south]");
+        cmd(world, "setblock ~4 ~ ~-3 femboymod:pet_bed[color=pink,facing=west]");
+        cmd(world, "setblock ~5 ~ ~-2 femboymod:moonstone_lamp");
+        cmd(world, "setblock ~3 ~ ~-2 femboymod:cat_plush[facing=north]");
+
+        // Wall decor: LED strip, Fairy Lights, Neon Signs, Paintings
         for (int x = -5; x <= 5; x++) {
             cmd(world, "setblock ~" + x + " ~4 ~-6 femboymod:led_strip[facing=south,color=" + (x % 2 == 0 ? 4 : 0) + "]");
         }
-        cmd(world, "setblock ~-4 ~ ~-6 femboymod:shark_plush[facing=south]");
-        cmd(world, "setblock ~4 ~ ~-6 femboymod:cat_plush[facing=south]");
-        cmd(world, "setblock ~5 ~ ~-3 femboymod:moonstone_lamp");
-        cmd(world, "setblock ~-5 ~2 ~-6 femboymod:neon_sign[facing=south,design=0]");
-        cmd(world, "summon minecraft:painting ~3 ~3 ~-6 {facing:0b,variant:\"femboymod:code_with_love\"}");
-        cmd(world, "summon minecraft:painting ~-3 ~3 ~-6 {facing:0b,variant:\"femboymod:night_coding\"}");
-        cmd(world, "summon minecraft:painting ~5 ~2 ~-6 {facing:0b,variant:\"femboymod:btw\"}");
+        cmd(world, "setblock ~-4 ~2 ~-6 femboymod:neon_sign[facing=south,design=0]");
+        cmd(world, "setblock ~4 ~2 ~-6 femboymod:neon_sign[facing=south,design=1]");
+        cmd(world, "setblock ~-5 ~3 ~-5 femboymod:fairy_lights[facing=east,mode=0]");
+        cmd(world, "setblock ~-5 ~3 ~-3 femboymod:fairy_lights[facing=east,mode=1]");
+        cmd(world, "summon minecraft:painting ~-2 ~3 ~-6 {facing:0b,variant:\"femboymod:night_coding\"}");
+        cmd(world, "summon minecraft:painting ~2 ~3 ~-6 {facing:0b,variant:\"femboymod:code_with_love\"}");
     }
 
-    private static void oreWall(TestSingleplayerContext world) {
-        cmd(world, "fill ~-5 ~ ~-7 ~5 ~4 ~-7 minecraft:deepslate");
-        cmd(world, "fill ~-5 ~-1 ~-6 ~5 ~-1 ~-3 minecraft:smooth_basalt");
-        cmd(world, "fill ~-4 ~ ~-6 ~-2 ~ ~-6 minecraft:calcite");
-        cmd(world, "fill ~-1 ~ ~-6 ~3 ~ ~-6 femboymod:budding_rose_quartz");
-        cmd(world, "setblock ~-1 ~1 ~-6 femboymod:small_rose_quartz_bud[facing=up]");
-        cmd(world, "setblock ~ ~1 ~-6 femboymod:medium_rose_quartz_bud[facing=up]");
-        cmd(world, "setblock ~1 ~1 ~-6 femboymod:large_rose_quartz_bud[facing=up]");
-        cmd(world, "setblock ~2 ~1 ~-6 femboymod:rose_quartz_cluster[facing=up]");
-        cmd(world, "setblock ~3 ~1 ~-6 femboymod:rose_quartz_cluster[facing=up]");
-        cmd(world, "setblock ~-4 ~1 ~-7 femboymod:deepslate_moonstone_ore");
-        cmd(world, "setblock ~-3 ~2 ~-7 femboymod:deepslate_moonstone_ore");
-        cmd(world, "setblock ~4 ~1 ~-7 femboymod:neon_quartz_ore");
-        cmd(world, "setblock ~4 ~2 ~-7 femboymod:neon_quartz_ore");
-        cmd(world, "setblock ~-2 ~2 ~-7 femboymod:rose_quartz_ore");
-        cmd(world, "setblock ~2 ~2 ~-7 femboymod:glitter_ore");
-        cmd(world, "setblock ~5 ~ ~-6 femboymod:moonstone_lamp");
-        for (int design = 0; design < 3; design++) {
-            cmd(world, "setblock ~" + (design * 2 - 2) + " ~3 ~-6 femboymod:neon_sign[facing=south,design=" + design + "]");
+    private static void friendsScene(TestSingleplayerContext world) {
+        garden(world);
+        // Clear petals from the porch area so cats & plushies stand cleanly on the cherry planks
+        cmd(world, "fill ~-5 ~ ~-7 ~5 ~1 ~-1 air");
+        cmd(world, "fill ~-5 ~-1 ~-7 ~5 ~-1 ~-2 minecraft:cherry_planks");
+        cmd(world, "setblock ~-4 ~ ~-6 femboymod:bean_bag[color=magenta,facing=south]");
+        cmd(world, "setblock ~4 ~ ~-6 femboymod:pet_bed[color=pink,facing=south]");
+        cmd(world, "setblock ~-5 ~ ~-5 femboymod:moonstone_lamp");
+        cmd(world, "setblock ~5 ~ ~-5 femboymod:moonstone_lamp");
+
+        // Plushie parade on a low cherry slab shelf
+        cmd(world, "fill ~-4 ~ ~-5 ~4 ~ ~-5 minecraft:cherry_slab[type=bottom]");
+        String[] plushies = {
+            "shark_plush", "pink_creeper_plush", "cat_plush", "fox_plush",
+            "rubber_duck", "axolotl_plush", "bunny_plush", "red_panda_plush", "creeper_plush"
+        };
+        for (int i = 0; i < plushies.length; i++) {
+            cmd(world, "setblock ~" + (i - 4) + " ~1 ~-5 femboymod:" + plushies[i] + "[facing=south]");
         }
+        // Stray cats in all 5 coats + Cosplayer
+        for (int coat = 0; coat < 5; coat++) {
+            cmd(world, "summon femboymod:stray_cat ~" + ((coat - 2) * 1.4) + " ~ ~-3.2 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f],femboymod_coat:" + coat + "}");
+        }
+        cmd(world, "summon femboymod:cosplayer ~ ~ ~-6.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f]}");
+    }
+
+    private static void worldScene(TestSingleplayerContext world) {
+        // Cherry backdrop trees
+        tree(world, -6, -10);
+        tree(world, 6, -10);
+        cmd(world, "fill ~-8 ~ ~-9 ~8 ~ ~-1 minecraft:pink_petals[flower_amount=2] replace air");
+
+        // Left: Plant garden (strawberry bushes, catnip, debug flytraps — clearly inside the frame)
+        cmd(world, "fill ~-4 ~ ~-5 ~-2 ~ ~-3 air");
+        cmd(world, "fill ~-4 ~-1 ~-5 ~-2 ~-1 ~-3 minecraft:farmland[moisture=7]");
+        cmd(world, "setblock ~-4 ~ ~-4 femboymod:strawberry_bush[age=3]");
+        cmd(world, "setblock ~-3 ~ ~-4 femboymod:strawberry_bush[age=3]");
+        cmd(world, "setblock ~-4 ~ ~-3 femboymod:catnip[age=3]");
+        cmd(world, "setblock ~-3 ~ ~-3 femboymod:catnip[age=3]");
+        cmd(world, "setblock ~-2 ~ ~-4 femboymod:debug_flytrap[stage=2]");
+        cmd(world, "setblock ~-2 ~ ~-3 femboymod:strawberry_bush[age=3]");
+
+        // Right/back: Rose quartz geode & ores outcrop
+        cmd(world, "fill ~2 ~ ~-7 ~5 ~2 ~-7 minecraft:deepslate");
+        cmd(world, "setblock ~2 ~ ~-6 femboymod:budding_rose_quartz");
+        cmd(world, "setblock ~3 ~ ~-6 femboymod:budding_rose_quartz");
+        cmd(world, "setblock ~4 ~ ~-6 femboymod:budding_rose_quartz");
+        cmd(world, "setblock ~2 ~1 ~-6 femboymod:large_rose_quartz_bud[facing=up]");
+        cmd(world, "setblock ~3 ~1 ~-6 femboymod:rose_quartz_cluster[facing=up]");
+        cmd(world, "setblock ~4 ~1 ~-6 femboymod:rose_quartz_cluster[facing=up]");
+        cmd(world, "setblock ~2 ~1 ~-7 femboymod:rose_quartz_ore");
+        cmd(world, "setblock ~3 ~2 ~-7 femboymod:deepslate_moonstone_ore");
+        cmd(world, "setblock ~4 ~1 ~-7 femboymod:neon_quartz_ore");
+        cmd(world, "setblock ~5 ~ ~-6 femboymod:moonstone_lamp");
+
+        // Center: Meme Mobs showcase
+        cmd(world, "summon femboymod:pink_creeper ~-0.8 ~ ~-5.2 {NoAI:1b,PersistenceRequired:1b,Rotation:[12f,0f]}");
+        cmd(world, "summon femboymod:caffeinated_zombie ~0.7 ~ ~-5.8 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f],equipment:{mainhand:{id:\"femboymod:byte_energy_blue\",count:1}}}");
+        cmd(world, "summon femboymod:fashion_critic ~2.1 ~ ~-5.0 {NoAI:1b,PersistenceRequired:1b,Rotation:[-18f,0f],equipment:{mainhand:{id:\"minecraft:writable_book\",count:1}}}");
+        cmd(world, "summon femboymod:hissy_cat ~1.0 ~ ~-3.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[-12f,0f]}");
+        cmd(world, "summon femboymod:bug ~-1.1 ~ ~-3.4 {NoAI:1b,PersistenceRequired:1b,Rotation:[20f,0f]}");
     }
 }

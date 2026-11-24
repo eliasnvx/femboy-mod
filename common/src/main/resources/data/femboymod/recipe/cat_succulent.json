@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    " P ",
+    " D "
+  ],
+  "key": {
+    "C": "minecraft:cactus",
+    "P": "minecraft:flower_pot",
+    "D": "minecraft:pink_dye"
+  },
+  "result": {
+    "id": "femboymod:cat_succulent",
+    "count": 1
+  }
+}
